@@ -420,7 +420,7 @@ function PlaceholderPrivacyContent() {
         <ul>
           <li>Encryption of data in transit (HTTPS/TLS)</li>
           <li>Encryption of data at rest</li>
-          <li>Secure password hashing (bcrypt)</li>
+          <li>Secure password hashing (scrypt)</li>
           <li>Regular security assessments</li>
           <li>Access controls and authentication</li>
           <li>Audit logging of sensitive operations</li>

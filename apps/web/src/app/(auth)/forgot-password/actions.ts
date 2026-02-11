@@ -106,8 +106,10 @@ export async function requestPasswordReset(
     //   resetUrl,
     // });
 
-    // For now, log the reset token (remove in production)
-    console.log(`[DEV] Password reset token for ${normalizedEmail}: ${resetToken}`);
+    // Log reset token in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[DEV] Password reset token for ${normalizedEmail}: ${resetToken}`);
+    }
 
     return { success: true };
   } catch (error) {

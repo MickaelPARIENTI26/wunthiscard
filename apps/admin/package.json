@@ -33,6 +33,8 @@
     "@tiptap/extension-placeholder": "^2.10.0",
     "@tiptap/react": "^2.10.0",
     "@tiptap/starter-kit": "^2.10.0",
+    "@upstash/ratelimit": "^2.0.0",
+    "@upstash/redis": "^1.34.0",
     "@winthiscard/database": "*",
     "@winthiscard/shared": "*",
     "class-variance-authority": "^0.7.0",

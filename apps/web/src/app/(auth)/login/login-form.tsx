@@ -86,6 +86,8 @@ export function LoginForm() {
           setServerError('Your account has been suspended. Please contact support.');
         } else if (result.error.includes('AccountLocked')) {
           setServerError('Your account has been temporarily locked. Please try again later.');
+        } else if (result.error.includes('TooManyRequests')) {
+          setServerError('Too many login attempts. Please try again later.');
         } else if (result.error === 'CredentialsSignin') {
           setServerError('Invalid email or password. Please try again.');
         } else {
@@ -127,6 +129,8 @@ export function LoginForm() {
         return 'Your account has been temporarily locked. Please try again later.';
       case 'AccountBanned':
         return 'Your account has been suspended. Please contact support.';
+      case 'TooManyRequests':
+        return 'Too many login attempts. Please try again later.';
       default:
         return 'An error occurred during sign in. Please try again.';
     }

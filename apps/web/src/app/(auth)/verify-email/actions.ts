@@ -209,8 +209,10 @@ export async function resendVerificationEmail(email: string): Promise<ResendResu
     //   verificationUrl,
     // });
 
-    // For now, log the verification token (remove in production)
-    console.log(`[DEV] Verification token for ${normalizedEmail}: ${verificationToken}`);
+    // Log verification token in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[DEV] Verification token for ${normalizedEmail}: ${verificationToken}`);
+    }
 
     return { success: true };
   } catch (error) {

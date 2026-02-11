@@ -134,8 +134,10 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
     //   verificationToken,
     // });
 
-    // For now, log the verification token (remove in production)
-    console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+    // Log verification token in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
+    }
 
     return { success: true };
   } catch (error) {
