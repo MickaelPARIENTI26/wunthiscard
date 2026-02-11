@@ -1,0 +1,363 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// AUTH & USERS
+// ==========================================
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  emailVerified       DateTime?
+  passwordHash        String? // null if OAuth only
+  firstName           String
+  lastName            String
+  displayName         String?
+  dateOfBirth         DateTime?
+  phone               String?
+  avatarUrl           String?
+  role                UserRole  @default(USER)
+  isActive            Boolean   @default(true)
+  isBanned            Boolean   @default(false)
+  banReason           String?
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  accounts  Account[]
+  sessions  Session[]
+  addresses Address[]
+  orders    Order[]
+  tickets   Ticket[]
+  wins      Win[]
+  auditLogs AuditLog[]
+
+  @@index([email])
+  @@index([role])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String // "oauth" | "credentials"
+  provider          String // "google" | "credentials"
+  providerAccountId String
+  access_token      String?
+  refresh_token     String?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  expires_at        Int?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String    @unique
+  expires    DateTime
+  type       TokenType @default(EMAIL_VERIFICATION)
+
+  @@unique([identifier, token])
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  ACCOUNT_UNLOCK
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  label     String? // "Home", "Office", etc.
+  line1     String
+  line2     String?
+  city      String
+  county    String?
+  postcode  String
+  country   String  @default("GB")
+  isDefault Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ==========================================
+// COMPETITIONS
+// ==========================================
+
+model Competition {
+  id               String              @id @default(cuid())
+  slug             String              @unique
+  title            String
+  subtitle         String?
+  descriptionShort String
+  descriptionLong  String // Rich HTML content
+  category         CompetitionCategory
+  subcategory      String?
+  status           CompetitionStatus   @default(DRAFT)
+
+  // Prize details
+  prizeValue        Decimal @db.Decimal(10, 2) // £ value
+  ticketPrice       Decimal @db.Decimal(10, 2)
+  totalTickets      Int
+  maxTicketsPerUser Int     @default(50)
+
+  // Dates
+  saleStartDate  DateTime? // When tickets go on sale
+  drawDate       DateTime // Latest date for the draw
+  actualDrawDate DateTime? // When the draw actually happened
+
+  // Media
+  mainImageUrl String
+  galleryUrls  String[] // Array of image URLs
+  videoUrl     String?
+
+  // Authentication / Grading
+  certificationNumber String?
+  grade               String?
+  condition           String?
+  provenance          String?
+
+  // Skill Question (QCM)
+  questionText    String
+  questionChoices Json // ["Choice A", "Choice B", "Choice C", "Choice D"]
+  questionAnswer  Int // Index of correct answer (0-3)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Draw result
+  winningTicketNumber Int?
+  drawProofUrl        String? // Link to video/proof
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets Ticket[]
+  orders  Order[]
+  wins    Win[]
+
+  @@index([status])
+  @@index([category])
+  @@index([drawDate])
+}
+
+enum CompetitionCategory {
+  POKEMON
+  ONE_PIECE
+  SPORTS_BASKETBALL
+  SPORTS_FOOTBALL
+  SPORTS_OTHER
+  MEMORABILIA
+  YUGIOH
+  MTG
+  OTHER
+}
+
+enum CompetitionStatus {
+  DRAFT
+  UPCOMING
+  ACTIVE
+  SOLD_OUT
+  DRAWING
+  COMPLETED
+  CANCELLED
+}
+
+// ==========================================
+// TICKETS & ORDERS
+// ==========================================
+
+model Ticket {
+  id            String       @id @default(cuid())
+  competitionId String
+  ticketNumber  Int // 1 to totalTickets
+  userId        String? // null = available
+  orderId       String?
+  isBonus       Boolean      @default(false) // Free bonus ticket
+  isFreeEntry   Boolean      @default(false) // Free postal entry
+  status        TicketStatus @default(AVAILABLE)
+  reservedUntil DateTime? // Temporary reservation during checkout
+
+  competition Competition @relation(fields: [competitionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order       Order?      @relation(fields: [orderId], references: [id])
+
+  @@unique([competitionId, ticketNumber])
+  @@index([competitionId, status])
+  @@index([userId])
+  @@index([orderId])
+}
+
+enum TicketStatus {
+  AVAILABLE
+  RESERVED // Temporarily held during checkout (5 min TTL)
+  SOLD
+  FREE_ENTRY // Postal free entry
+}
+
+model Order {
+  id               String  @id @default(cuid())
+  orderNumber      String  @unique // Human-readable: WTC-20260209-XXXX
+  userId           String? // Optional to allow anonymization on account deletion
+  competitionId    String
+  ticketCount      Int // Paid tickets
+  bonusTicketCount Int     @default(0)
+  totalAmount      Decimal @db.Decimal(10, 2) // £
+  currency         String  @default("GBP")
+
+  // Stripe
+  stripePaymentIntentId String?       @unique
+  stripeSessionId       String?
+  paymentStatus         PaymentStatus @default(PENDING)
+
+  // QCM
+  questionAnswered Boolean @default(false)
+  questionCorrect  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  competition Competition @relation(fields: [competitionId], references: [id])
+  tickets     Ticket[]
+
+  @@index([userId])
+  @@index([competitionId])
+  @@index([paymentStatus])
+  @@index([createdAt])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+// ==========================================
+// WINS & RESULTS
+// ==========================================
+
+model Win {
+  id              String    @id @default(cuid())
+  competitionId   String    @unique
+  userId          String?   // Optional to allow anonymization on account deletion
+  ticketNumber    Int
+  claimedAt       DateTime?
+  shippedAt       DateTime?
+  deliveredAt     DateTime?
+  trackingNumber  String?
+  trackingUrl     String?
+  shippingCarrier String?
+  notes           String?
+
+  competition Competition @relation(fields: [competitionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ==========================================
+// CMS & SETTINGS
+// ==========================================
+
+model StaticPage {
+  id        String   @id @default(cuid())
+  slug      String   @unique // "about-us", "faq", "how-it-works"
+  title     String
+  content   String // Rich HTML
+  updatedAt DateTime @updatedAt
+}
+
+model FaqItem {
+  id        String  @id @default(cuid())
+  category  String // "Account", "Tickets", "Payment", etc.
+  question  String
+  answer    String
+  sortOrder Int     @default(0)
+  isActive  Boolean @default(true)
+
+  @@index([category])
+  @@index([sortOrder])
+}
+
+model SiteSettings {
+  id   String @id @default("global")
+  data Json // All settings as JSON
+  // Contains: company info, social links, bonus tiers,
+  // default QCM, email config, etc.
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ==========================================
+// AUDIT LOG
+// ==========================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String // "TICKET_PURCHASED", "DRAW_EXECUTED", "USER_BANNED", etc.
+  entity    String // "competition", "ticket", "user", etc.
+  entityId  String?
+  metadata  Json? // Additional context
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}

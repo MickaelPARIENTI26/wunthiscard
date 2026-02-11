@@ -1,0 +1,150 @@
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { StructuredData } from '@/components/common/structured-data';
+import { generateHomePageSchema } from '@/lib/structured-data';
+import { CookieConsentBanner } from '@/components/legal/cookie-consent-banner';
+import { AuthHeader } from '@/components/layout/auth-header';
+import { Footer } from '@/components/layout/footer';
+import { SessionProvider } from '@/components/providers/session-provider';
+import { Toaster } from '@/components/ui/toaster';
+
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+
+/**
+ * Viewport configuration for mobile-first design
+ * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport
+ */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e40af' },
+  ],
+  colorScheme: 'light dark',
+};
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://winthiscard.com'),
+  title: {
+    default: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    template: '%s | WinThisCard',
+  },
+  description:
+    'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
+  keywords: [
+    'pokemon cards',
+    'one piece tcg',
+    'sports memorabilia',
+    'prize competition',
+    'win cards',
+    'collectibles',
+    'uk competition',
+    'trading cards',
+    'signed memorabilia',
+    'skill competition',
+  ],
+  authors: [{ name: 'WinThisCard' }],
+  creator: 'WinThisCard',
+  publisher: 'WinThisCard',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_GB',
+    url: 'https://winthiscard.com',
+    siteName: 'WinThisCard',
+    title: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    description:
+      'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
+    images: [
+      {
+        url: '/images/og-default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'WinThisCard - Win Collectible Cards & Memorabilia',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    description:
+      'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
+    site: '@winthiscard',
+    creator: '@winthiscard',
+    images: ['/images/og-default.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icons/icon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/icon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/icons/safari-pinned-tab.svg',
+        color: '#1e40af',
+      },
+    ],
+  },
+  manifest: '/manifest.webmanifest',
+  alternates: {
+    canonical: 'https://winthiscard.com',
+  },
+  category: 'entertainment',
+  classification: 'Prize Competitions',
+  referrer: 'origin-when-cross-origin',
+  other: {
+    'msapplication-TileColor': '#1e40af',
+    'msapplication-config': '/browserconfig.xml',
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en" className={inter.variable}>
+      <head>
+        {/* Default structured data for Organization and WebSite */}
+        <StructuredData data={generateHomePageSchema()} />
+      </head>
+      <body className="min-h-screen antialiased flex flex-col">
+        <SessionProvider>
+          <AuthHeader />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <CookieConsentBanner />
+          <Toaster />
+        </SessionProvider>
+      </body>
+    </html>
+  );
+}

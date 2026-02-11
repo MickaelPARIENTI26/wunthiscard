@@ -9,6 +9,8 @@ READ THESE FILES BEFORE ANY WORK:
 - `docs/tech_architecture.md` — Full tech stack, database schema (Prisma), project structure, API endpoints
 - `docs/security_rules.md` — All security requirements (auth, payments, rate limiting, headers, audit log)
 - `docs/dev_roadmap.md` — Development phases and task breakdown
+- `docs/e2e_manual_tests.md` — Manual test scenarios for QA
+- `docs/launch_checklist.md` — Production deployment checklist
 
 ## Tech Stack
 - **Monorepo**: Turborepo
@@ -43,10 +45,29 @@ READ THESE FILES BEFORE ANY WORK:
 ```bash
 docker compose up -d          # Start PostgreSQL + Redis
 npx turbo dev                 # Start both apps
+npx turbo build               # Build both apps
+npx turbo lint                # Run ESLint
+npm run test                  # Run unit tests (Vitest)
+npm run test:watch            # Run tests in watch mode
+npm run test:coverage         # Run tests with coverage
 npx prisma migrate dev        # Run migrations
 npx prisma db seed            # Seed test data
 npx prisma studio             # Visual DB browser
 ```
 
+## Testing
+- Unit tests: `npm run test` (76 tests for validators and business logic)
+- Test config: `vitest.config.ts` at root
+- Test files: `tests/unit/` directory
+
 ## Current Phase
-Phase 0 — Setup & Foundation (see dev_roadmap.md)
+Phase 6 — Testing & Launch (COMPLETE)
+
+All phases completed:
+- Phase 0: Setup & Foundation ✅
+- Phase 1: Auth & User Management ✅
+- Phase 2: Competition System ✅
+- Phase 3: Ticket Purchase Flow ✅
+- Phase 4: Draw & Results ✅
+- Phase 5: Security & Polish ✅
+- Phase 6: Testing & Launch ✅
