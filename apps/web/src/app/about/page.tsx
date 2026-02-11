@@ -55,13 +55,18 @@ export default async function AboutPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-background px-4 py-16 sm:px-6 lg:px-8">
+      <section
+        className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8"
+        style={{
+          background: 'linear-gradient(180deg, oklch(0.10 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+        }}
+      >
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-4 flex justify-center">
             <Building2 className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            About WinThisCard
+          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">About WinThisCard</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Your trusted destination for premium collectible card and
@@ -74,7 +79,7 @@ export default async function AboutPage() {
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <h2 className="mb-4 text-2xl font-bold">Our Mission</h2>
+            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]">Our Mission</h2>
             <p className="mb-4 text-muted-foreground">
               At WinThisCard, we believe that everyone should have the
               opportunity to own their dream collectibles. Whether it is a PSA
@@ -94,7 +99,10 @@ export default async function AboutPage() {
 
       {/* Dynamic Content from CMS */}
       {aboutContent && (
-        <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
+        <section
+          className="px-4 py-12 sm:px-6 lg:px-8"
+          style={{ background: 'oklch(0.06 0.02 270)' }}
+        >
           <div className="mx-auto max-w-4xl">
             <SafeHtml
               html={aboutContent.content}
@@ -107,7 +115,7 @@ export default async function AboutPage() {
       {/* Values Section */}
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">
+          <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
             Our Values
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -130,9 +138,12 @@ export default async function AboutPage() {
       </section>
 
       {/* Team Section Placeholder */}
-      <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
+      <section
+        className="px-4 py-12 sm:px-6 lg:px-8"
+        style={{ background: 'oklch(0.06 0.02 270)' }}
+      >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
             Meet the Team
           </h2>
           <p className="mb-8 text-muted-foreground">
@@ -155,7 +166,7 @@ export default async function AboutPage() {
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <h2 className="mb-4 text-2xl font-bold">
+            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]">
               UK Compliance & Regulation
             </h2>
             <p className="mb-4 text-muted-foreground">
@@ -174,15 +185,24 @@ export default async function AboutPage() {
       </section>
 
       {/* Contact CTA */}
-      <section className="bg-primary/5 px-4 py-16 sm:px-6 lg:px-8">
+      <section
+        className="px-4 py-16 sm:px-6 lg:px-8"
+        style={{ background: 'oklch(0.10 0.02 270)' }}
+      >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">Get in Touch</h2>
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">Get in Touch</span>
+          </h2>
           <p className="mb-8 text-muted-foreground">
             Have questions about WinThisCard? We would love to hear from you.
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-semibold shadow transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              color: 'black',
+            }}
           >
             Contact Us
             <ArrowRight className="h-4 w-4" />

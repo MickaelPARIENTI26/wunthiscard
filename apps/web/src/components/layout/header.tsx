@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Menu, User, Ticket, Trophy, Settings } from 'lucide-react';
+import { Menu, User, Ticket, Trophy, Settings, Sparkles } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -61,19 +61,45 @@ export function Header({ user = null }: HeaderProps) {
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300',
         isScrolled
-          ? 'border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'
-          : 'bg-background'
+          ? 'border-b backdrop-blur-xl'
+          : 'bg-transparent'
       )}
+      style={isScrolled ? {
+        background: 'linear-gradient(180deg, oklch(0.08 0.02 270 / 0.95) 0%, oklch(0.06 0.02 270 / 0.9) 100%)',
+        borderColor: 'oklch(0.25 0.02 270)',
+      } : undefined}
     >
+      {/* Subtle gold line at top when scrolled */}
+      {isScrolled && (
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{
+            background: 'linear-gradient(90deg, transparent 0%, oklch(0.65 0.18 85 / 0.3) 50%, transparent 100%)',
+          }}
+        />
+      )}
+
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <span className="text-lg font-bold text-primary-foreground">W</span>
+        <Link href="/" className="group flex items-center gap-3">
+          <div
+            className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden transition-transform duration-300 group-hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+            }}
+          >
+            {/* Shine effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+            <Trophy className="h-5 w-5 text-black relative z-10" />
           </div>
-          <span className="hidden text-xl font-bold tracking-tight sm:inline-block">
-            WinThisCard
-          </span>
+          <div className="flex flex-col">
+            <span className="hidden text-lg font-bold tracking-tight sm:inline-block font-[family-name:var(--font-display)] text-gradient-gold">
+              WinThisCard
+            </span>
+            <span className="hidden text-[10px] text-muted-foreground sm:inline-block -mt-0.5">
+              Premium Collectibles
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}
@@ -82,31 +108,61 @@ export function Header({ user = null }: HeaderProps) {
             <Link
               key={link.href}
               href={link.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              className="group relative rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              {link.label}
+              <span className="relative z-10">{link.label}</span>
+              {/* Hover underline */}
+              <span
+                className="absolute inset-x-4 -bottom-0.5 h-0.5 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"
+                style={{
+                  background: 'linear-gradient(90deg, oklch(0.82 0.165 85), oklch(0.65 0.18 85))',
+                }}
+              />
+              {/* Hover background */}
+              <span
+                className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85 / 0.1) 0%, transparent 100%)',
+                }}
+              />
             </Link>
           ))}
         </nav>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Desktop: User menu or Login/Register */}
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
+          <div className="hidden lg:flex lg:items-center lg:gap-3">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-9 w-9 rounded-full"
+                    className="relative h-10 w-10 rounded-full p-0 ring-2 ring-transparent transition-all hover:ring-primary/50"
                   >
-                    <Avatar className="h-9 w-9">
+                    <Avatar className="h-10 w-10">
                       <AvatarImage src={user.avatarUrl} alt={user.name} />
-                      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                      <AvatarFallback
+                        className="font-semibold"
+                        style={{
+                          background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                          color: 'black',
+                        }}
+                      >
+                        {getInitials(user.name)}
+                      </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent
+                  className="w-56"
+                  align="end"
+                  forceMount
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+                    border: '1px solid oklch(0.25 0.02 270)',
+                  }}
+                >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
@@ -117,7 +173,7 @@ export function Header({ user = null }: HeaderProps) {
                       </p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-border/50" />
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
@@ -132,7 +188,7 @@ export function Header({ user = null }: HeaderProps) {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-wins" className="cursor-pointer">
-                      <Trophy className="mr-2 h-4 w-4" />
+                      <Trophy className="mr-2 h-4 w-4 text-primary" />
                       My Wins
                     </Link>
                   </DropdownMenuItem>
@@ -142,7 +198,7 @@ export function Header({ user = null }: HeaderProps) {
                       Settings
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="bg-border/50" />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive focus:text-destructive"
                     onClick={() => signOut({ callbackUrl: '/' })}
@@ -153,11 +209,25 @@ export function Header({ user = null }: HeaderProps) {
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" asChild>
+                <Button
+                  variant="ghost"
+                  asChild
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   <Link href="/login">Login</Link>
                 </Button>
-                <Button asChild>
-                  <Link href="/register">Register</Link>
+                <Button
+                  asChild
+                  className="relative overflow-hidden font-semibold transition-all duration-300 hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                    color: 'black',
+                  }}
+                >
+                  <Link href="/register" className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Register
+                  </Link>
                 </Button>
               </>
             )}
@@ -167,7 +237,7 @@ export function Header({ user = null }: HeaderProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="lg:hidden relative"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
           >

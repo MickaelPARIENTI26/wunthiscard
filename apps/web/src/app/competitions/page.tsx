@@ -189,7 +189,9 @@ export default async function CompetitionsPage({
       <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Page Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Competitions</h1>
+          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">Competitions</span>
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
             Browse our latest prize competitions and win amazing collectibles
           </p>

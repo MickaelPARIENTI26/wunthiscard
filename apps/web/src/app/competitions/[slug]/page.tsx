@@ -1,11 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Gift, Ticket } from 'lucide-react';
+import { ChevronLeft, Gift, Ticket, Sparkles, Trophy, Clock } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { CountdownTimer } from '@/components/common/countdown-timer';
 import { ProgressBar } from '@/components/common/progress-bar';
 import { ImageGallery } from '@/components/competition/image-gallery';
@@ -28,16 +27,16 @@ const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
   OTHER: 'Other',
 };
 
-const CATEGORY_COLORS: Record<CompetitionCategory, string> = {
-  POKEMON: 'bg-yellow-500 text-white',
-  ONE_PIECE: 'bg-red-500 text-white',
-  SPORTS_BASKETBALL: 'bg-orange-500 text-white',
-  SPORTS_FOOTBALL: 'bg-green-600 text-white',
-  SPORTS_OTHER: 'bg-blue-500 text-white',
-  MEMORABILIA: 'bg-purple-500 text-white',
-  YUGIOH: 'bg-indigo-500 text-white',
-  MTG: 'bg-slate-600 text-white',
-  OTHER: 'bg-gray-500 text-white',
+const CATEGORY_GRADIENTS: Record<CompetitionCategory, string> = {
+  POKEMON: 'linear-gradient(135deg, oklch(0.75 0.18 85) 0%, oklch(0.65 0.15 85) 100%)',
+  ONE_PIECE: 'linear-gradient(135deg, oklch(0.55 0.2 25) 0%, oklch(0.45 0.18 25) 100%)',
+  SPORTS_BASKETBALL: 'linear-gradient(135deg, oklch(0.65 0.18 45) 0%, oklch(0.55 0.16 45) 100%)',
+  SPORTS_FOOTBALL: 'linear-gradient(135deg, oklch(0.55 0.18 145) 0%, oklch(0.45 0.15 145) 100%)',
+  SPORTS_OTHER: 'linear-gradient(135deg, oklch(0.55 0.18 250) 0%, oklch(0.45 0.15 250) 100%)',
+  MEMORABILIA: 'linear-gradient(135deg, oklch(0.55 0.18 300) 0%, oklch(0.45 0.15 300) 100%)',
+  YUGIOH: 'linear-gradient(135deg, oklch(0.5 0.18 280) 0%, oklch(0.4 0.15 280) 100%)',
+  MTG: 'linear-gradient(135deg, oklch(0.4 0.1 270) 0%, oklch(0.3 0.08 270) 100%)',
+  OTHER: 'linear-gradient(135deg, oklch(0.45 0.05 270) 0%, oklch(0.35 0.04 270) 100%)',
 };
 
 function formatPrice(amount: number | string): string {
@@ -179,12 +178,12 @@ export default async function CompetitionDetailPage({
   const allImages = [competition.mainImageUrl, ...competition.galleryUrls];
 
   return (
-    <main className="min-h-screen bg-background pb-24 sm:pb-8 overflow-x-hidden">
+    <main className="min-h-screen pb-24 sm:pb-8 overflow-x-hidden">
       <div className="container mx-auto px-4 py-4 sm:py-6 max-w-full overflow-hidden">
         {/* Back Navigation */}
         <Link
           href="/competitions"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
           Back to Competitions
@@ -202,13 +201,20 @@ export default async function CompetitionDetailPage({
             <div>
               {/* Category Badge */}
               <Badge
-                className={`mb-3 ${CATEGORY_COLORS[competition.category as CompetitionCategory]}`}
+                className="mb-3 font-semibold"
+                style={{
+                  background: CATEGORY_GRADIENTS[competition.category as CompetitionCategory],
+                  color: 'white',
+                  border: 'none',
+                }}
               >
                 {CATEGORY_LABELS[competition.category as CompetitionCategory]}
               </Badge>
 
               {/* Title */}
-              <h1 className="text-2xl font-bold sm:text-3xl">{competition.title}</h1>
+              <h1 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
+                {competition.title}
+              </h1>
 
               {/* Subtitle */}
               {competition.subtitle && (
@@ -219,26 +225,42 @@ export default async function CompetitionDetailPage({
             </div>
 
             {/* Prize Value Card */}
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                    <Gift className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Prize Value</p>
-                    <p className="text-2xl font-bold text-primary sm:text-3xl">
-                      {formatPrice(competition.prizeValue)}
-                    </p>
-                  </div>
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+                border: '1px solid oklch(0.25 0.02 270)',
+              }}
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="flex h-14 w-14 items-center justify-center rounded-xl"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                  }}
+                >
+                  <Gift className="h-7 w-7 text-black" />
                 </div>
-              </CardContent>
-            </Card>
+                <div>
+                  <p className="text-sm text-muted-foreground">Prize Value</p>
+                  <p className="text-3xl font-bold text-gradient-gold sm:text-4xl font-[family-name:var(--font-display)]">
+                    {formatPrice(competition.prizeValue)}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {/* Countdown Timer - for active/upcoming competitions */}
             {(isActive || isUpcoming) && (
-              <div className="rounded-lg border bg-card p-4">
-                <p className="mb-3 text-center text-sm text-muted-foreground">
+              <div
+                className="rounded-2xl p-5"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+                  border: '1px solid oklch(0.22 0.02 270)',
+                }}
+              >
+                <p className="mb-3 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Clock className="h-4 w-4" />
                   {isActive ? 'Competition ends in' : 'Sale starts in'}
                 </p>
                 <div className="flex justify-center">
@@ -260,17 +282,32 @@ export default async function CompetitionDetailPage({
 
             {/* Ticket Price and CTA */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div
+                className="flex items-center justify-between rounded-xl p-4"
+                style={{
+                  background: 'oklch(0.12 0.02 270)',
+                  border: '1px solid oklch(0.22 0.02 270)',
+                }}
+              >
                 <div className="flex items-center gap-2">
-                  <Ticket className="h-5 w-5 text-muted-foreground" />
+                  <Ticket className="h-5 w-5 text-primary/70" />
                   <span className="text-muted-foreground">Ticket Price</span>
                 </div>
-                <span className="text-2xl font-bold">{formatPrice(competition.ticketPrice)}</span>
+                <span className="text-2xl font-bold font-[family-name:var(--font-display)]">
+                  {formatPrice(competition.ticketPrice)}
+                </span>
               </div>
 
               {/* Bonus Tickets Notice */}
               {isActive && (
-                <div className="rounded-lg bg-green-50 p-3 text-center text-sm font-medium text-green-700 dark:bg-green-950/30 dark:text-green-400">
+                <div
+                  className="rounded-xl p-3 text-center text-sm font-medium"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.2 0.08 145) 0%, oklch(0.15 0.06 145) 100%)',
+                    border: '1px solid oklch(0.35 0.1 145)',
+                    color: 'oklch(0.8 0.15 145)',
+                  }}
+                >
                   <span className="mr-2">🎁</span>
                   {getBonusTicketsMessage(10)}
                 </div>
@@ -280,30 +317,62 @@ export default async function CompetitionDetailPage({
               {isActive && (
                 <GetTicketsButton
                   competitionSlug={slug}
-                  className="w-full text-lg"
+                  className="w-full text-lg font-semibold"
                   size="lg"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                    color: 'black',
+                  }}
                 >
+                  <Sparkles className="h-5 w-5 mr-2" />
                   Get Your Tickets
                 </GetTicketsButton>
               )}
 
               {isUpcoming && (
-                <Button size="lg" className="w-full text-lg" disabled>
+                <Button
+                  size="lg"
+                  className="w-full text-lg"
+                  disabled
+                  style={{
+                    background: 'oklch(0.25 0.02 270)',
+                    color: 'oklch(0.6 0.02 270)',
+                  }}
+                >
+                  <Clock className="h-5 w-5 mr-2" />
                   Coming Soon
                 </Button>
               )}
 
               {isSoldOut && (
-                <Button size="lg" className="w-full text-lg" variant="secondary" disabled>
+                <Button
+                  size="lg"
+                  className="w-full text-lg"
+                  variant="secondary"
+                  disabled
+                  style={{
+                    background: 'oklch(0.2 0.02 270)',
+                    color: 'oklch(0.6 0.02 270)',
+                  }}
+                >
                   Sold Out - Draw Pending
                 </Button>
               )}
 
               {isCompleted && (
-                <div className="rounded-lg bg-muted p-4 text-center">
-                  <p className="text-lg font-semibold">Competition Completed</p>
+                <div
+                  className="rounded-2xl p-5 text-center"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.15 0.05 85) 0%, oklch(0.12 0.04 85) 100%)',
+                    border: '1px solid oklch(0.3 0.08 85)',
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Trophy className="h-6 w-6 text-primary" />
+                    <p className="text-lg font-semibold text-gradient-gold">Competition Completed</p>
+                  </div>
                   <p className="text-muted-foreground">
-                    Winning ticket: #{competition.winningTicketNumber}
+                    Winning ticket: <span className="font-mono font-bold text-primary">#{competition.winningTicketNumber}</span>
                   </p>
                   {competition.winnerDisplayName && (
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -314,8 +383,14 @@ export default async function CompetitionDetailPage({
               )}
 
               {isCancelled && (
-                <div className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-center">
-                  <p className="text-lg font-semibold text-destructive">
+                <div
+                  className="rounded-2xl p-5 text-center"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.2 0.12 25) 0%, oklch(0.15 0.1 25) 100%)',
+                    border: '2px solid oklch(0.45 0.18 25)',
+                  }}
+                >
+                  <p className="text-lg font-semibold" style={{ color: 'oklch(0.7 0.18 25)' }}>
                     This competition was cancelled
                   </p>
                   <p className="text-muted-foreground">
@@ -346,11 +421,19 @@ export default async function CompetitionDetailPage({
         {/* Additional Information Sections */}
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           {/* Description */}
-          <div>
-            <h2 className="mb-4 text-xl font-semibold">About This Prize</h2>
+          <div
+            className="rounded-2xl p-6"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+              border: '1px solid oklch(0.22 0.02 270)',
+            }}
+          >
+            <h2 className="mb-4 text-xl font-semibold font-[family-name:var(--font-display)] text-gradient-gold">
+              About This Prize
+            </h2>
             <SafeHtml
               html={competition.descriptionLong}
-              className="prose prose-sm max-w-none dark:prose-invert"
+              className="prose prose-sm max-w-none dark:prose-invert prose-p:text-muted-foreground prose-headings:text-foreground"
             />
           </div>
 
@@ -372,13 +455,30 @@ export default async function CompetitionDetailPage({
 
       {/* Fixed Bottom CTA - Mobile Only */}
       {isActive && (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 p-4 backdrop-blur-sm sm:hidden">
+        <div
+          className="fixed bottom-0 left-0 right-0 p-4 backdrop-blur-xl sm:hidden"
+          style={{
+            background: 'linear-gradient(180deg, oklch(0.08 0.02 270 / 0.95) 0%, oklch(0.06 0.02 270 / 0.98) 100%)',
+            borderTop: '1px solid oklch(0.25 0.02 270)',
+          }}
+        >
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Ticket Price</p>
-              <p className="text-xl font-bold">{formatPrice(competition.ticketPrice)}</p>
+              <p className="text-xs text-muted-foreground">Ticket Price</p>
+              <p className="text-xl font-bold font-[family-name:var(--font-display)]">
+                {formatPrice(competition.ticketPrice)}
+              </p>
             </div>
-            <GetTicketsButton competitionSlug={slug} size="lg">
+            <GetTicketsButton
+              competitionSlug={slug}
+              size="lg"
+              className="font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                color: 'black',
+              }}
+            >
+              <Sparkles className="h-4 w-4 mr-1" />
               Get Tickets
             </GetTicketsButton>
           </div>

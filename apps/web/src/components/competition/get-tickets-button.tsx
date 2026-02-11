@@ -6,6 +6,7 @@ interface GetTicketsButtonProps {
   className?: string;
   size?: 'default' | 'sm' | 'lg' | 'icon';
   children?: React.ReactNode;
+  style?: React.CSSProperties;
 }
 
 export function GetTicketsButton({
@@ -13,9 +14,10 @@ export function GetTicketsButton({
   className,
   size = 'lg',
   children = 'Get Your Tickets',
+  style,
 }: GetTicketsButtonProps) {
   return (
-    <Button asChild size={size} className={className}>
+    <Button asChild size={size} className={className} style={style}>
       <Link href={`/competitions/${competitionSlug}/tickets`}>
         {children}
       </Link>

@@ -57,10 +57,15 @@ export default function HowItWorksPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-background px-4 py-16 sm:px-6 lg:px-8">
+      <section
+        className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8"
+        style={{
+          background: 'linear-gradient(180deg, oklch(0.10 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+        }}
+      >
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            How It Works
+          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">How It Works</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Win your dream collectible cards and memorabilia in just four simple
@@ -101,11 +106,14 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Skill Question Section */}
-      <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
+      <section
+        className="px-4 py-12 sm:px-6 lg:px-8"
+        style={{ background: 'oklch(0.06 0.02 270)' }}
+      >
         <div className="mx-auto max-w-4xl">
           <div className="mb-8 flex items-center justify-center gap-3">
             <ShieldCheck className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl">
+            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
               The Skill Question
             </h2>
           </div>
@@ -139,7 +147,7 @@ export default function HowItWorksPage() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-8 flex items-center justify-center gap-3">
             <Trophy className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl">
+            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
               The Draw Process
             </h2>
           </div>
@@ -181,11 +189,14 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Free Entry Section */}
-      <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
+      <section
+        className="px-4 py-12 sm:px-6 lg:px-8"
+        style={{ background: 'oklch(0.06 0.02 270)' }}
+      >
         <div className="mx-auto max-w-4xl">
           <div className="mb-8 flex items-center justify-center gap-3">
             <Mail className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl">Free Entry Route</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">Free Entry Route</h2>
           </div>
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
             <p className="mb-4 text-muted-foreground">
@@ -239,15 +250,19 @@ export default function HowItWorksPage() {
       {/* CTA Section */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
-            Ready to Win Your Dream Card?
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">Ready to Win Your Dream Card?</span>
           </h2>
           <p className="mb-8 text-muted-foreground">
             Browse our current competitions and find your next grail piece.
           </p>
           <Link
             href="/competitions"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-semibold shadow transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              color: 'black',
+            }}
           >
             Browse Competitions
             <ArrowRight className="h-4 w-4" />

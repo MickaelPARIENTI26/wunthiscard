@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateHomePageSchema } from '@/lib/structured-data';
@@ -15,6 +15,12 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-display',
+});
+
 /**
  * Viewport configuration for mobile-first design
  * @see https://nextjs.org/docs/app/api-reference/functions/generate-viewport
@@ -23,11 +29,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#1e40af' },
-  ],
-  colorScheme: 'light dark',
+  themeColor: '#0a0a14',
+  colorScheme: 'dark',
 };
 
 export const metadata: Metadata = {
@@ -131,12 +134,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
       </head>
-      <body className="min-h-screen antialiased flex flex-col">
+      <body className="min-h-screen antialiased flex flex-col font-sans">
         <SessionProvider>
           <AuthHeader />
           <main className="flex-1">{children}</main>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CompetitionCard } from '@/components/competition/competition-card';
 import { cn } from '@/lib/utils';
@@ -49,16 +49,23 @@ const itemVariants = {
 export function LiveCompetitions({ competitions, className }: LiveCompetitionsProps) {
   if (competitions.length === 0) {
     return (
-      <section className={cn('py-12 md:py-16 lg:py-20', className)}>
+      <section className={cn('py-16 md:py-20 lg:py-24', className)}>
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
-              Live Competitions
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
+              <span className="text-gradient-gold">Live Competitions</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8">
               No live competitions at the moment. Check back soon!
             </p>
-            <Button asChild variant="outline">
+            <Button
+              asChild
+              variant="outline"
+              style={{
+                background: 'transparent',
+                borderColor: 'oklch(0.3 0.02 270)',
+              }}
+            >
               <Link href="/competitions">View All Competitions</Link>
             </Button>
           </div>
@@ -68,28 +75,50 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
   }
 
   return (
-    <section className={cn('py-12 md:py-16 lg:py-20', className)}>
-      <div className="container mx-auto px-4">
+    <section className={cn('py-16 md:py-20 lg:py-24 relative', className)}>
+      {/* Decorative background glow */}
+      <div
+        className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none"
+        style={{ background: 'oklch(0.82 0.165 85 / 0.04)' }}
+      />
+
+      <div className="container mx-auto px-4 relative">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 md:mb-12"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 md:mb-14"
         >
           <div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-              Live Competitions
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-3 font-[family-name:var(--font-display)]">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl animate-pulse"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.6 0.2 25) 0%, oklch(0.45 0.18 25) 100%)',
+                }}
+              >
+                <Zap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-gradient-gold">Live Competitions</span>
             </h2>
             <p className="text-muted-foreground mt-2">
               Enter now for your chance to win amazing prizes
             </p>
           </div>
-          <Button asChild variant="outline" className="self-start sm:self-auto">
+          <Button
+            asChild
+            variant="outline"
+            className="self-start sm:self-auto group transition-all hover:border-primary/50"
+            style={{
+              background: 'transparent',
+              borderColor: 'oklch(0.3 0.02 270)',
+            }}
+          >
             <Link href="/competitions" className="flex items-center gap-2">
               View All
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </motion.div>
@@ -129,8 +158,16 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
             viewport={{ once: true }}
             className="mt-8 text-center sm:hidden"
           >
-            <Button asChild>
+            <Button
+              asChild
+              className="font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                color: 'black',
+              }}
+            >
               <Link href="/competitions" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
                 View All Competitions
                 <ArrowRight className="h-4 w-4" />
               </Link>

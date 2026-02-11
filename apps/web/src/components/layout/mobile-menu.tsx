@@ -11,6 +11,7 @@ import {
   Instagram,
   Twitter,
   Facebook,
+  Sparkles,
 } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
@@ -118,14 +119,34 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="flex w-full flex-col sm:max-w-sm">
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col sm:max-w-sm border-l"
+        style={{
+          background: 'linear-gradient(180deg, oklch(0.08 0.02 270) 0%, oklch(0.05 0.02 270) 100%)',
+          borderColor: 'oklch(0.2 0.02 270)',
+        }}
+      >
         <SheetHeader className="text-left">
           <SheetTitle>
-            <Link href="/" onClick={onClose} className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-base font-bold text-primary-foreground">W</span>
+            <Link href="/" onClick={onClose} className="flex items-center gap-3">
+              <div
+                className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+                <Trophy className="h-5 w-5 text-black relative z-10" />
               </div>
-              <span className="text-lg font-bold tracking-tight">WinThisCard</span>
+              <div className="flex flex-col">
+                <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
+                  WinThisCard
+                </span>
+                <span className="text-[10px] text-muted-foreground -mt-0.5">
+                  Premium Collectibles
+                </span>
+              </div>
             </Link>
           </SheetTitle>
         </SheetHeader>
@@ -133,10 +154,24 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         <div className="flex flex-1 flex-col gap-6 overflow-y-auto py-6">
           {/* User section (if logged in) */}
           {user && (
-            <div className="flex items-center gap-3 rounded-lg bg-muted/50 p-3">
-              <Avatar className="h-12 w-12">
+            <div
+              className="flex items-center gap-3 rounded-xl p-4"
+              style={{
+                background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+                border: '1px solid oklch(0.25 0.02 270)',
+              }}
+            >
+              <Avatar className="h-12 w-12 ring-2 ring-primary/30">
                 <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                <AvatarFallback
+                  className="font-semibold"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                    color: 'black',
+                  }}
+                >
+                  {getInitials(user.name)}
+                </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
                 <span className="text-sm font-medium">{user.name}</span>
@@ -147,7 +182,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
 
           {/* Main navigation */}
           <nav className="flex flex-col gap-1">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
               Menu
             </p>
             {navLinks.map((link) => (
@@ -155,9 +190,16 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 key={link.href}
                 href={link.href}
                 onClick={onClose}
-                className="rounded-md px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground active:bg-accent"
+                className="group relative rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-primary/10"
               >
-                {link.label}
+                <span className="relative z-10">{link.label}</span>
+                {/* Left border indicator on hover */}
+                <span
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full scale-y-0 transition-transform group-hover:scale-y-100"
+                  style={{
+                    background: 'linear-gradient(180deg, oklch(0.82 0.165 85), oklch(0.65 0.18 85))',
+                  }}
+                />
               </Link>
             ))}
           </nav>
@@ -165,7 +207,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {/* Account links (if logged in) */}
           {user && (
             <nav className="flex flex-col gap-1">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
                 Account
               </p>
               {accountLinks.map((link) => (
@@ -173,9 +215,9 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   key={link.href}
                   href={link.href}
                   onClick={onClose}
-                  className="flex items-center gap-3 rounded-md px-3 py-3 text-base font-medium transition-colors hover:bg-accent hover:text-accent-foreground active:bg-accent"
+                  className="group flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-primary/10"
                 >
-                  <link.icon className="h-5 w-5 text-muted-foreground" />
+                  <link.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   {link.label}
                 </Link>
               ))}
@@ -184,13 +226,31 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
 
           {/* Auth buttons (if not logged in) */}
           {!user && (
-            <div className="flex flex-col gap-2">
-              <Button asChild size="lg" className="w-full">
-                <Link href="/register" onClick={onClose}>
+            <div className="flex flex-col gap-3 pt-2">
+              <Button
+                asChild
+                size="lg"
+                className="w-full font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                  color: 'black',
+                }}
+              >
+                <Link href="/register" onClick={onClose} className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
                   Register
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="w-full">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="w-full"
+                style={{
+                  background: 'transparent',
+                  borderColor: 'oklch(0.3 0.02 270)',
+                }}
+              >
                 <Link href="/login" onClick={onClose}>
                   Login
                 </Link>
@@ -202,22 +262,31 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           <div className="flex-1" />
 
           {/* Social links */}
-          <div className="border-t pt-6">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div
+            className="pt-6"
+            style={{
+              borderTop: '1px solid oklch(0.2 0.02 270)',
+            }}
+          >
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
               Follow us
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {socialLinks.map((social) => (
                 <a
                   key={social.href}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 rounded-full bg-muted px-3 py-2 text-sm transition-colors hover:bg-muted/80"
+                  className="group flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+                    border: '1px solid oklch(0.25 0.02 270)',
+                  }}
                   aria-label={`Follow us on ${social.label}`}
                 >
-                  <social.icon className="h-4 w-4" />
-                  <span className="text-xs font-medium text-muted-foreground">
+                  <social.icon className="h-4 w-4 transition-colors group-hover:text-primary" />
+                  <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                     {social.followers}
                   </span>
                 </a>
@@ -229,7 +298,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {user && (
             <Button
               variant="ghost"
-              className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive mt-2"
               onClick={() => {
                 onClose();
                 signOut({ callbackUrl: '/' });

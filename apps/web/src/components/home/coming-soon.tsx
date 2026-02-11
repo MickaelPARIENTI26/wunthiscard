@@ -3,10 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Bell, ArrowRight } from 'lucide-react';
+import { Bell, ArrowRight, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { CountdownTimer } from '@/components/common/countdown-timer';
 import { cn } from '@/lib/utils';
 import type { CompetitionCategory } from '@winthiscard/shared/types';
@@ -61,7 +60,13 @@ const itemVariants = {
 function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
   return (
     <motion.div variants={itemVariants}>
-      <Card className="overflow-hidden group h-full">
+      <div
+        className="overflow-hidden group h-full rounded-2xl transition-all duration-300 hover:scale-[1.02]"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+          border: '1px solid oklch(0.25 0.02 270)',
+        }}
+      >
         <div className="relative">
           {/* Image with greyscale effect */}
           <div className="relative aspect-[4/3] overflow-hidden">
@@ -70,40 +75,53 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
               alt={competition.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-110"
               loading="lazy"
             />
             {/* Overlay */}
-            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
+            <div
+              className="absolute inset-0 transition-opacity duration-300"
+              style={{
+                background: 'linear-gradient(180deg, oklch(0 0 0 / 0.3) 0%, oklch(0 0 0 / 0.6) 100%)',
+              }}
+            />
           </div>
 
           {/* Coming Soon Badge */}
           <Badge
-            variant="secondary"
-            className="absolute top-3 left-3 bg-background/90 backdrop-blur-sm"
+            className="absolute top-3 left-3 backdrop-blur-sm font-semibold"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.55 0.2 255) 0%, oklch(0.45 0.18 270) 100%)',
+              color: 'white',
+              border: 'none',
+            }}
           >
             Coming Soon
           </Badge>
 
           {/* Category Badge */}
           <Badge
-            className="absolute top-3 right-3 bg-muted/90 backdrop-blur-sm text-muted-foreground"
+            className="absolute top-3 right-3 backdrop-blur-sm"
+            style={{
+              background: 'oklch(0.15 0.02 270 / 0.9)',
+              border: '1px solid oklch(0.3 0.02 270)',
+            }}
           >
             {categoryLabels[competition.category]}
           </Badge>
         </div>
 
-        <CardContent className="p-4">
+        <div className="p-5">
           {/* Title */}
-          <h3 className="font-semibold text-lg line-clamp-2 mb-3">
+          <h3 className="font-semibold text-lg line-clamp-2 mb-4 font-[family-name:var(--font-display)]">
             {competition.title}
           </h3>
 
           {/* Prize Value & Ticket Price */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-5">
             <div>
               <p className="text-xs text-muted-foreground">Prize Value</p>
-              <p className="text-lg font-bold text-primary">
+              <p className="text-xl font-bold text-gradient-gold">
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
@@ -125,8 +143,9 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
           </div>
 
           {/* Countdown to Sale Start */}
-          <div className="mb-4">
-            <p className="text-xs text-muted-foreground mb-2">
+          <div className="mb-5">
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+              <Clock className="h-3 w-3" />
               Sale starts in:
             </p>
             <CountdownTimer
@@ -137,14 +156,22 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
           </div>
 
           {/* Notify Button */}
-          <Button asChild variant="outline" className="w-full">
+          <Button
+            asChild
+            variant="outline"
+            className="w-full group/btn transition-all hover:border-primary/50"
+            style={{
+              background: 'transparent',
+              borderColor: 'oklch(0.3 0.02 270)',
+            }}
+          >
             <Link href={`/competitions/${competition.slug}`} className="flex items-center gap-2">
-              <Bell className="h-4 w-4" />
+              <Bell className="h-4 w-4 transition-transform group-hover/btn:scale-110" />
               Get Notified
             </Link>
           </Button>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -155,7 +182,12 @@ export function ComingSoon({ competitions, className }: ComingSoonProps) {
   }
 
   return (
-    <section className={cn('py-12 md:py-16 lg:py-20 bg-muted/30', className)}>
+    <section
+      className={cn('py-16 md:py-20 lg:py-24 relative', className)}
+      style={{
+        background: 'linear-gradient(180deg, oklch(0.06 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+      }}
+    >
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <motion.div
@@ -163,20 +195,36 @@ export function ComingSoon({ competitions, className }: ComingSoonProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 md:mb-12"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 md:mb-14"
         >
           <div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold">
-              Coming Soon
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-3 font-[family-name:var(--font-display)]">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.55 0.2 255) 0%, oklch(0.45 0.18 270) 100%)',
+                }}
+              >
+                <Clock className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-gradient-gold">Coming Soon</span>
             </h2>
             <p className="text-muted-foreground mt-2">
               Get notified when these competitions go live
             </p>
           </div>
-          <Button asChild variant="outline" className="self-start sm:self-auto">
+          <Button
+            asChild
+            variant="outline"
+            className="self-start sm:self-auto group transition-all hover:border-primary/50"
+            style={{
+              background: 'transparent',
+              borderColor: 'oklch(0.3 0.02 270)',
+            }}
+          >
             <Link href="/competitions?status=upcoming" className="flex items-center gap-2">
               View All Upcoming
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </motion.div>

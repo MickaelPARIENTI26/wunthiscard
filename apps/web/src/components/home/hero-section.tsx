@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CountdownTimer } from '@/components/common/countdown-timer';
 import { cn } from '@/lib/utils';
+import { Sparkles, Zap } from 'lucide-react';
 
 interface FeaturedCompetition {
   id: string;
@@ -24,11 +25,47 @@ interface HeroSectionProps {
   className?: string;
 }
 
+// Floating particle component
+function FloatingParticle({ delay, size, x, y }: { delay: number; size: number; x: number; y: number }) {
+  return (
+    <motion.div
+      className="absolute rounded-full bg-gradient-to-br from-primary/40 to-primary/10"
+      style={{ width: size, height: size, left: `${x}%`, top: `${y}%` }}
+      animate={{
+        y: [0, -30, 0],
+        opacity: [0.3, 0.8, 0.3],
+        scale: [1, 1.2, 1],
+      }}
+      transition={{
+        duration: 4,
+        delay,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    />
+  );
+}
+
 export function HeroSection({ featuredCompetition, className }: HeroSectionProps) {
   if (!featuredCompetition) {
     return (
-      <section className={cn('relative min-h-[70vh] flex items-center', className)}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background" />
+      <section className={cn('relative min-h-[80vh] flex items-center overflow-hidden', className)}>
+        {/* Dark gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-background" />
+
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(8)].map((_, i) => (
+            <FloatingParticle
+              key={i}
+              delay={i * 0.5}
+              size={4 + (i % 3) * 4}
+              x={10 + (i * 12)}
+              y={20 + (i * 8) % 60}
+            />
+          ))}
+        </div>
+
         <div className="container mx-auto px-4 py-16 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -36,19 +73,36 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Badge className="mb-6 bg-primary/20 border border-primary/30 text-primary hover:bg-primary/30">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Premium Collectibles
+              </Badge>
+            </motion.div>
+
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-display)]">
               Win{' '}
-              <span className="text-primary">Amazing</span>{' '}
+              <span className="text-gradient-gold">Rare</span>{' '}
+              <br className="hidden sm:block" />
               Collectibles
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+
+            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
               Enter prize competitions to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based with free postal entry available.
             </p>
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8">
-                <Link href="/competitions">View Competitions</Link>
+              <Button asChild size="lg" className="text-lg px-8 bg-primary hover:bg-primary/90 glow-gold-sm font-semibold">
+                <Link href="/competitions">
+                  <Zap className="w-5 h-5 mr-2" />
+                  View Competitions
+                </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8">
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5">
                 <Link href="/how-it-works">How It Works</Link>
               </Button>
             </div>
@@ -59,8 +113,11 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
   }
 
   return (
-    <section className={cn('relative min-h-[80vh] md:min-h-[70vh] flex items-center overflow-hidden', className)}>
-      {/* Background Image */}
+    <section className={cn('relative min-h-[90vh] md:min-h-[85vh] flex items-center overflow-hidden', className)}>
+      {/* Dark Background with subtle gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-card/50 to-background" />
+
+      {/* Background Image with heavy overlay */}
       <div className="absolute inset-0">
         <Image
           src={featuredCompetition.mainImageUrl}
@@ -68,43 +125,78 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-cover opacity-30"
         />
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {/* Dark overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <FloatingParticle
+            key={i}
+            delay={i * 0.4}
+            size={3 + (i % 4) * 3}
+            x={5 + (i * 8)}
+            y={15 + (i * 7) % 70}
+          />
+        ))}
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
+      <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           {/* Text Content */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-white"
+            className="text-center lg:text-left"
           >
-            <Badge className="mb-4 bg-primary/90 hover:bg-primary text-primary-foreground">
-              Featured Competition
-            </Badge>
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Badge className="mb-4 bg-primary/20 border border-primary/30 text-primary hover:bg-primary/30">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Featured Competition
+              </Badge>
+            </motion.div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 font-[family-name:var(--font-display)]"
+            >
               {featuredCompetition.title}
-            </h1>
+            </motion.h1>
 
             {featuredCompetition.subtitle && (
-              <p className="text-lg md:text-xl text-white/80 mb-6">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-lg md:text-xl text-muted-foreground mb-6"
+              >
                 {featuredCompetition.subtitle}
-              </p>
+              </motion.p>
             )}
 
             {/* Prize Value */}
-            <div className="mb-8">
-              <p className="text-sm uppercase tracking-wider text-white/60 mb-1">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mb-8"
+            >
+              <p className="text-sm uppercase tracking-wider text-muted-foreground mb-2">
                 Prize Value
               </p>
-              <p className="text-4xl md:text-5xl font-bold text-primary">
+              <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold glow-gold-text tabular-nums font-[family-name:var(--font-display)]">
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
@@ -112,11 +204,16 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                   maximumFractionDigits: 0,
                 }).format(featuredCompetition.prizeValue)}
               </p>
-            </div>
+            </motion.div>
 
             {/* Countdown */}
-            <div className="mb-8">
-              <p className="text-sm uppercase tracking-wider text-white/60 mb-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mb-8"
+            >
+              <p className="text-sm uppercase tracking-wider text-muted-foreground mb-3">
                 Draw Ends In
               </p>
               <CountdownTimer
@@ -124,16 +221,22 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 size="lg"
                 showLabels={true}
               />
-            </div>
+            </motion.div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+            >
               <Button
                 asChild
                 size="lg"
-                className="text-lg px-8 bg-primary hover:bg-primary/90"
+                className="text-lg px-8 bg-primary hover:bg-primary/90 glow-gold-sm font-semibold"
               >
                 <Link href={`/competitions/${featuredCompetition.slug}`}>
+                  <Zap className="w-5 h-5 mr-2" />
                   Enter Now
                 </Link>
               </Button>
@@ -141,30 +244,43 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 border-white/30 text-white hover:bg-white/10 hover:text-white"
+                className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5"
               >
                 <Link href="/competitions">View All Competitions</Link>
               </Button>
-            </div>
+            </motion.div>
           </motion.div>
 
-          {/* Featured Image (Hidden on mobile, shown on desktop) */}
+          {/* Featured Card Image with holographic effect */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden md:block"
+            initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
+            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="hidden lg:block"
           >
-            <div className="relative aspect-square max-w-md mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent rounded-2xl" />
-              <Image
-                src={featuredCompetition.mainImageUrl}
-                alt={featuredCompetition.title}
-                fill
-                priority
-                sizes="(max-width: 768px) 0vw, 50vw"
-                className="object-cover rounded-2xl shadow-2xl"
-              />
+            <div className="relative max-w-md mx-auto">
+              {/* Glow effect behind card */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/20 blur-3xl scale-110" />
+
+              {/* Card container with 3D effect */}
+              <div className="relative card-3d">
+                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-primary/30 glow-gold holo-shimmer">
+                  <Image
+                    src={featuredCompetition.mainImageUrl}
+                    alt={featuredCompetition.title}
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 0vw, 400px"
+                    className="object-cover"
+                  />
+
+                  {/* Holographic overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent pointer-events-none" />
+
+                  {/* Bottom gradient overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent" />
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>

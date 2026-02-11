@@ -3,9 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Trophy, ArrowRight } from 'lucide-react';
+import { Trophy, ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
 interface Winner {
@@ -62,32 +61,60 @@ const itemVariants = {
 
 function WinnerCard({ winner }: { winner: Winner }) {
   return (
-    <motion.div variants={itemVariants} className="flex-shrink-0 w-72 sm:w-80">
-      <Card className="overflow-hidden h-full">
-        <div className="relative aspect-square">
+    <motion.div variants={itemVariants} className="flex-shrink-0 w-72 sm:w-80 group">
+      <div
+        className="overflow-hidden h-full rounded-2xl transition-all duration-300 hover:scale-[1.02]"
+        style={{
+          background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+          border: '1px solid oklch(0.25 0.02 270)',
+        }}
+      >
+        <div className="relative aspect-square overflow-hidden">
           <Image
             src={winner.prizeImageUrl}
             alt={winner.competitionTitle}
             fill
             sizes="(max-width: 640px) 288px, 320px"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
           />
+
+          {/* Gradient overlay */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(180deg, transparent 50%, oklch(0.10 0.02 270) 100%)',
+            }}
+          />
+
           {/* Winner Badge Overlay */}
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-yellow-500 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
+          <div
+            className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              color: 'black',
+            }}
+          >
             <Trophy className="h-3.5 w-3.5" />
-            Winner
+            WINNER
+          </div>
+
+          {/* Confetti/stars effect */}
+          <div className="absolute top-3 right-3">
+            <Sparkles className="h-5 w-5 text-primary animate-pulse" />
           </div>
         </div>
 
-        <CardContent className="p-4">
+        <div className="p-4">
           {/* Competition Title */}
-          <h3 className="font-semibold text-base line-clamp-2 mb-2">
+          <h3 className="font-semibold text-base line-clamp-2 mb-2 font-[family-name:var(--font-display)]">
             {winner.competitionTitle}
           </h3>
 
           {/* Prize Value */}
-          <p className="text-xl font-bold text-primary mb-3">
+          <p
+            className="text-xl font-bold mb-3 text-gradient-gold"
+          >
             {new Intl.NumberFormat('en-GB', {
               style: 'currency',
               currency: 'GBP',
@@ -98,11 +125,14 @@ function WinnerCard({ winner }: { winner: Winner }) {
 
           {/* Winner Info */}
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{anonymizeName(winner.winnerFirstName, winner.winnerLastName)}</span>
+            <span className="flex items-center gap-1">
+              <Star className="h-3 w-3 text-primary/70" />
+              {anonymizeName(winner.winnerFirstName, winner.winnerLastName)}
+            </span>
             <span>{formatDate(winner.wonAt)}</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }
@@ -113,7 +143,13 @@ export function RecentWinners({ winners, className }: RecentWinnersProps) {
   }
 
   return (
-    <section className={cn('py-12 md:py-16 lg:py-20', className)}>
+    <section className={cn('py-16 md:py-20 lg:py-24 relative', className)}>
+      {/* Decorative background elements */}
+      <div
+        className="absolute top-0 left-0 w-96 h-96 rounded-full blur-[120px] pointer-events-none"
+        style={{ background: 'oklch(0.82 0.165 85 / 0.05)' }}
+      />
+
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <motion.div
@@ -121,21 +157,36 @@ export function RecentWinners({ winners, className }: RecentWinnersProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 md:mb-12"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 md:mb-14"
         >
           <div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-3">
-              <Trophy className="h-8 w-8 text-yellow-500" />
-              Recent Winners
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-3 font-[family-name:var(--font-display)]">
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                }}
+              >
+                <Trophy className="h-5 w-5 text-black" />
+              </div>
+              <span className="text-gradient-gold">Recent Winners</span>
             </h2>
             <p className="text-muted-foreground mt-2">
               Check out our latest lucky winners
             </p>
           </div>
-          <Button asChild variant="outline" className="self-start sm:self-auto">
+          <Button
+            asChild
+            variant="outline"
+            className="self-start sm:self-auto group transition-all hover:border-primary/50"
+            style={{
+              background: 'transparent',
+              borderColor: 'oklch(0.3 0.02 270)',
+            }}
+          >
             <Link href="/winners" className="flex items-center gap-2">
               View All Winners
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
         </motion.div>
@@ -172,7 +223,14 @@ export function RecentWinners({ winners, className }: RecentWinnersProps) {
           viewport={{ once: true }}
           className="mt-6 text-center md:hidden"
         >
-          <Button asChild variant="outline">
+          <Button
+            asChild
+            variant="outline"
+            style={{
+              background: 'transparent',
+              borderColor: 'oklch(0.3 0.02 270)',
+            }}
+          >
             <Link href="/winners" className="flex items-center gap-2">
               View All Winners
               <ArrowRight className="h-4 w-4" />

@@ -66,13 +66,18 @@ export default async function FaqPage() {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-background px-4 py-16 sm:px-6 lg:px-8">
+      <section
+        className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8"
+        style={{
+          background: 'linear-gradient(180deg, oklch(0.10 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+        }}
+      >
         <div className="mx-auto max-w-4xl text-center">
           <div className="mb-4 flex justify-center">
             <HelpCircle className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Frequently Asked Questions
+          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
+            <span className="text-gradient-gold">Frequently Asked Questions</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             Find answers to common questions about our prize competitions. Can
@@ -119,17 +124,24 @@ export default async function FaqPage() {
       </section>
 
       {/* Contact CTA */}
-      <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
+      <section
+        className="px-4 py-12 sm:px-6 lg:px-8"
+        style={{ background: 'oklch(0.06 0.02 270)' }}
+      >
         <div className="mx-auto max-w-3xl text-center">
           <MessageSquare className="mx-auto mb-4 h-10 w-10 text-primary" />
-          <h2 className="mb-3 text-xl font-semibold">Still Have Questions?</h2>
+          <h2 className="mb-3 text-xl font-semibold font-[family-name:var(--font-display)]">Still Have Questions?</h2>
           <p className="mb-6 text-muted-foreground">
             Our support team is here to help. Get in touch and we will respond
             as soon as possible.
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold shadow transition-all hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              color: 'black',
+            }}
           >
             Contact Us
           </Link>

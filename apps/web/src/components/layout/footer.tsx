@@ -1,5 +1,7 @@
+'use client';
+
 import Link from 'next/link';
-import { Instagram, Twitter, Facebook } from 'lucide-react';
+import { Instagram, Twitter, Facebook, Trophy, Shield, Sparkles } from 'lucide-react';
 
 // TikTok icon (not in lucide-react)
 function TikTokIcon({ className }: { className?: string }) {
@@ -29,16 +31,16 @@ function DiscordIcon({ className }: { className?: string }) {
   );
 }
 
-// Payment card icons
+// Payment card icons - muted grey versions
 function VisaIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="32" rx="4" fill="#1A1F71" />
-      <path d="M19.5 21H17L18.75 11H21.25L19.5 21Z" fill="white" />
-      <path d="M28.5 11.25C28 11.083 27.25 10.917 26.333 10.917C23.833 10.917 22.083 12.167 22.083 14C22.083 15.417 23.417 16.167 24.417 16.667C25.417 17.167 25.833 17.5 25.833 17.917C25.833 18.583 25 18.917 24.25 18.917C23.167 18.917 22.583 18.75 21.667 18.333L21.25 18.167L20.833 20.75C21.5 21.083 22.75 21.333 24.083 21.333C26.75 21.333 28.5 20.083 28.5 18.167C28.5 17.083 27.833 16.25 26.333 15.583C25.417 15.167 24.833 14.833 24.833 14.417C24.833 14.083 25.25 13.667 26.083 13.667C26.833 13.667 27.417 13.833 27.833 14L28.083 14.083L28.5 11.25Z" fill="white" />
-      <path d="M32.5 11H30.5C29.917 11 29.417 11.167 29.167 11.833L25.5 21H28.167L28.667 19.5H31.833L32.167 21H34.5L32.5 11ZM29.333 17.5L30.5 14.167L31.167 17.5H29.333Z" fill="white" />
-      <path d="M16.167 11L13.667 17.833L13.417 16.583C12.917 15 11.417 13.25 9.75 12.333L12 21H14.667L18.833 11H16.167Z" fill="white" />
-      <path d="M11.667 11H7.5L7.417 11.25C10.583 12 12.75 14 13.417 16.583L12.667 11.833C12.583 11.167 12.083 11 11.667 11Z" fill="#F9A533" />
+      <rect width="48" height="32" rx="4" fill="currentColor" fillOpacity="0.1" />
+      <path d="M19.5 21H17L18.75 11H21.25L19.5 21Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M28.5 11.25C28 11.083 27.25 10.917 26.333 10.917C23.833 10.917 22.083 12.167 22.083 14C22.083 15.417 23.417 16.167 24.417 16.667C25.417 17.167 25.833 17.5 25.833 17.917C25.833 18.583 25 18.917 24.25 18.917C23.167 18.917 22.583 18.75 21.667 18.333L21.25 18.167L20.833 20.75C21.5 21.083 22.75 21.333 24.083 21.333C26.75 21.333 28.5 20.083 28.5 18.167C28.5 17.083 27.833 16.25 26.333 15.583C25.417 15.167 24.833 14.833 24.833 14.417C24.833 14.083 25.25 13.667 26.083 13.667C26.833 13.667 27.417 13.833 27.833 14L28.083 14.083L28.5 11.25Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M32.5 11H30.5C29.917 11 29.417 11.167 29.167 11.833L25.5 21H28.167L28.667 19.5H31.833L32.167 21H34.5L32.5 11ZM29.333 17.5L30.5 14.167L31.167 17.5H29.333Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M16.167 11L13.667 17.833L13.417 16.583C12.917 15 11.417 13.25 9.75 12.333L12 21H14.667L18.833 11H16.167Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M11.667 11H7.5L7.417 11.25C10.583 12 12.75 14 13.417 16.583L12.667 11.833C12.583 11.167 12.083 11 11.667 11Z" fill="currentColor" fillOpacity="0.3" />
     </svg>
   );
 }
@@ -46,10 +48,10 @@ function VisaIcon({ className }: { className?: string }) {
 function MastercardIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="32" rx="4" fill="#F5F5F5" />
-      <circle cx="19" cy="16" r="9" fill="#EB001B" />
-      <circle cx="29" cy="16" r="9" fill="#F79E1B" />
-      <path d="M24 9.3C25.8 10.8 27 12.8 27 16C27 19.2 25.8 21.2 24 22.7C22.2 21.2 21 19.2 21 16C21 12.8 22.2 10.8 24 9.3Z" fill="#FF5F00" />
+      <rect width="48" height="32" rx="4" fill="currentColor" fillOpacity="0.1" />
+      <circle cx="19" cy="16" r="9" fill="currentColor" fillOpacity="0.3" />
+      <circle cx="29" cy="16" r="9" fill="currentColor" fillOpacity="0.4" />
+      <path d="M24 9.3C25.8 10.8 27 12.8 27 16C27 19.2 25.8 21.2 24 22.7C22.2 21.2 21 19.2 21 16C21 12.8 22.2 10.8 24 9.3Z" fill="currentColor" fillOpacity="0.5" />
     </svg>
   );
 }
@@ -57,11 +59,11 @@ function MastercardIcon({ className }: { className?: string }) {
 function ApplePayIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="32" rx="4" fill="#000000" />
-      <path d="M15.5 10.5C15.9 10 16.2 9.3 16.1 8.6C15.5 8.6 14.7 9 14.3 9.5C13.9 10 13.5 10.7 13.6 11.4C14.3 11.4 15 11 15.5 10.5Z" fill="white" />
-      <path d="M16.1 11.5C15 11.4 14.1 12.1 13.5 12.1C13 12.1 12.2 11.5 11.3 11.5C10.1 11.5 9 12.2 8.4 13.3C7.1 15.5 8.1 18.7 9.4 20.5C10 21.4 10.8 22.4 11.8 22.4C12.7 22.3 13.1 21.8 14.2 21.8C15.3 21.8 15.6 22.4 16.6 22.3C17.6 22.3 18.3 21.4 18.9 20.5C19.6 19.5 19.9 18.6 19.9 18.5C19.9 18.5 17.8 17.7 17.8 15.3C17.8 13.2 19.5 12.3 19.5 12.3C18.7 11.1 17.3 11.5 16.1 11.5Z" fill="white" />
-      <path d="M25.5 9.5V22H27.3V17.6H30C32.3 17.6 34 16 34 13.6C34 11.2 32.4 9.5 30.1 9.5H25.5ZM27.3 11.2H29.5C31.1 11.2 32.1 12.2 32.1 13.6C32.1 15 31.1 16 29.5 16H27.3V11.2Z" fill="white" />
-      <path d="M38.5 22.1C40 22.1 41.3 21.3 41.9 20.1H41.9V22H43.6V15.6C43.6 13.5 42 12.2 39.6 12.2C37.4 12.2 35.7 13.5 35.6 15.3H37.3C37.5 14.5 38.3 13.9 39.5 13.9C40.9 13.9 41.7 14.6 41.7 15.9V16.6L38.9 16.8C36.4 16.9 35 18.1 35 19.9C35 21.8 36.5 22.1 38.5 22.1ZM38.9 20.5C37.7 20.5 36.9 19.9 36.9 19C36.9 18 37.6 17.5 39.1 17.4L41.7 17.2V17.9C41.7 19.4 40.5 20.5 38.9 20.5Z" fill="white" />
+      <rect width="48" height="32" rx="4" fill="currentColor" fillOpacity="0.1" />
+      <path d="M15.5 10.5C15.9 10 16.2 9.3 16.1 8.6C15.5 8.6 14.7 9 14.3 9.5C13.9 10 13.5 10.7 13.6 11.4C14.3 11.4 15 11 15.5 10.5Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M16.1 11.5C15 11.4 14.1 12.1 13.5 12.1C13 12.1 12.2 11.5 11.3 11.5C10.1 11.5 9 12.2 8.4 13.3C7.1 15.5 8.1 18.7 9.4 20.5C10 21.4 10.8 22.4 11.8 22.4C12.7 22.3 13.1 21.8 14.2 21.8C15.3 21.8 15.6 22.4 16.6 22.3C17.6 22.3 18.3 21.4 18.9 20.5C19.6 19.5 19.9 18.6 19.9 18.5C19.9 18.5 17.8 17.7 17.8 15.3C17.8 13.2 19.5 12.3 19.5 12.3C18.7 11.1 17.3 11.5 16.1 11.5Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M25.5 9.5V22H27.3V17.6H30C32.3 17.6 34 16 34 13.6C34 11.2 32.4 9.5 30.1 9.5H25.5ZM27.3 11.2H29.5C31.1 11.2 32.1 12.2 32.1 13.6C32.1 15 31.1 16 29.5 16H27.3V11.2Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M38.5 22.1C40 22.1 41.3 21.3 41.9 20.1H41.9V22H43.6V15.6C43.6 13.5 42 12.2 39.6 12.2C37.4 12.2 35.7 13.5 35.6 15.3H37.3C37.5 14.5 38.3 13.9 39.5 13.9C40.9 13.9 41.7 14.6 41.7 15.9V16.6L38.9 16.8C36.4 16.9 35 18.1 35 19.9C35 21.8 36.5 22.1 38.5 22.1ZM38.9 20.5C37.7 20.5 36.9 19.9 36.9 19C36.9 18 37.6 17.5 39.1 17.4L41.7 17.2V17.9C41.7 19.4 40.5 20.5 38.9 20.5Z" fill="currentColor" fillOpacity="0.5" />
     </svg>
   );
 }
@@ -69,14 +71,14 @@ function ApplePayIcon({ className }: { className?: string }) {
 function GooglePayIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="32" rx="4" fill="#F5F5F5" />
-      <path d="M22.7 16.3V20H21.2V11H25C25.8 11 26.5 11.3 27 11.8C27.6 12.3 27.9 13 27.9 13.8C27.9 14.6 27.6 15.3 27 15.8C26.5 16.3 25.8 16.5 25 16.5L22.7 16.3ZM22.7 12.4V14.9H25.1C25.5 14.9 25.8 14.7 26.1 14.5C26.3 14.2 26.5 13.9 26.5 13.6C26.5 13.3 26.4 13.1 26.1 12.8C25.9 12.6 25.5 12.4 25.1 12.4H22.7Z" fill="#5F6368" />
-      <path d="M31.5 14C32.4 14 33.1 14.3 33.6 14.8C34.1 15.3 34.4 16 34.4 16.9V20H33V19.1H32.9C32.5 19.7 31.9 20.1 31.1 20.1C30.4 20.1 29.8 19.9 29.4 19.5C28.9 19.1 28.7 18.5 28.7 17.9C28.7 17.2 29 16.7 29.5 16.3C30 15.9 30.7 15.7 31.5 15.7C32.2 15.7 32.8 15.8 33.2 16V15.8C33.2 15.4 33 15.1 32.8 14.8C32.5 14.6 32.2 14.5 31.8 14.5C31.2 14.5 30.7 14.7 30.4 15.2L29.1 14.5C29.7 13.5 30.5 14 31.5 14ZM30.2 17.9C30.2 18.2 30.3 18.4 30.5 18.6C30.7 18.8 31 18.9 31.3 18.9C31.8 18.9 32.2 18.7 32.5 18.4C32.9 18.1 33 17.7 33 17.3C32.7 17.1 32.2 17 31.6 17C31.1 17 30.7 17.1 30.5 17.3C30.3 17.5 30.2 17.7 30.2 17.9Z" fill="#5F6368" />
-      <path d="M40.4 14.1L36.8 22H35.2L36.6 19.1L34.2 14.1H35.9L37.5 17.7L39 14.1H40.4Z" fill="#5F6368" />
-      <path d="M17.7 15.4C17.7 15 17.7 14.7 17.6 14.3H13V16.2H15.7C15.6 16.9 15.2 17.5 14.6 17.9V19.3H16.3C17.2 18.4 17.7 17.1 17.7 15.4Z" fill="#4285F4" />
-      <path d="M13 20.5C14.5 20.5 15.8 20 16.7 19.2L14.9 17.8C14.4 18.1 13.8 18.3 13 18.3C11.6 18.3 10.4 17.4 10 16.1H8.3V17.5C9.2 19.3 11 20.5 13 20.5Z" fill="#34A853" />
-      <path d="M10 16.1C9.8 15.5 9.8 14.8 10 14.2V12.8H8.3C7.5 14.3 7.5 16.1 8.3 17.5L10 16.1Z" fill="#FBBC04" />
-      <path d="M13 12C13.8 12 14.6 12.3 15.2 12.8L16.7 11.3C15.8 10.5 14.5 10 13 10C11 10 9.2 11.2 8.3 13L10 14.4C10.4 13.1 11.6 12 13 12Z" fill="#EA4335" />
+      <rect width="48" height="32" rx="4" fill="currentColor" fillOpacity="0.1" />
+      <path d="M22.7 16.3V20H21.2V11H25C25.8 11 26.5 11.3 27 11.8C27.6 12.3 27.9 13 27.9 13.8C27.9 14.6 27.6 15.3 27 15.8C26.5 16.3 25.8 16.5 25 16.5L22.7 16.3ZM22.7 12.4V14.9H25.1C25.5 14.9 25.8 14.7 26.1 14.5C26.3 14.2 26.5 13.9 26.5 13.6C26.5 13.3 26.4 13.1 26.1 12.8C25.9 12.6 25.5 12.4 25.1 12.4H22.7Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M31.5 14C32.4 14 33.1 14.3 33.6 14.8C34.1 15.3 34.4 16 34.4 16.9V20H33V19.1H32.9C32.5 19.7 31.9 20.1 31.1 20.1C30.4 20.1 29.8 19.9 29.4 19.5C28.9 19.1 28.7 18.5 28.7 17.9C28.7 17.2 29 16.7 29.5 16.3C30 15.9 30.7 15.7 31.5 15.7C32.2 15.7 32.8 15.8 33.2 16V15.8C33.2 15.4 33 15.1 32.8 14.8C32.5 14.6 32.2 14.5 31.8 14.5C31.2 14.5 30.7 14.7 30.4 15.2L29.1 14.5C29.7 13.5 30.5 14 31.5 14ZM30.2 17.9C30.2 18.2 30.3 18.4 30.5 18.6C30.7 18.8 31 18.9 31.3 18.9C31.8 18.9 32.2 18.7 32.5 18.4C32.9 18.1 33 17.7 33 17.3C32.7 17.1 32.2 17 31.6 17C31.1 17 30.7 17.1 30.5 17.3C30.3 17.5 30.2 17.7 30.2 17.9Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M40.4 14.1L36.8 22H35.2L36.6 19.1L34.2 14.1H35.9L37.5 17.7L39 14.1H40.4Z" fill="currentColor" fillOpacity="0.5" />
+      <path d="M17.7 15.4C17.7 15 17.7 14.7 17.6 14.3H13V16.2H15.7C15.6 16.9 15.2 17.5 14.6 17.9V19.3H16.3C17.2 18.4 17.7 17.1 17.7 15.4Z" fill="currentColor" fillOpacity="0.4" />
+      <path d="M13 20.5C14.5 20.5 15.8 20 16.7 19.2L14.9 17.8C14.4 18.1 13.8 18.3 13 18.3C11.6 18.3 10.4 17.4 10 16.1H8.3V17.5C9.2 19.3 11 20.5 13 20.5Z" fill="currentColor" fillOpacity="0.4" />
+      <path d="M10 16.1C9.8 15.5 9.8 14.8 10 14.2V12.8H8.3C7.5 14.3 7.5 16.1 8.3 17.5L10 16.1Z" fill="currentColor" fillOpacity="0.4" />
+      <path d="M13 12C13.8 12 14.6 12.3 15.2 12.8L16.7 11.3C15.8 10.5 14.5 10 13 10C11 10 9.2 11.2 8.3 13L10 14.4C10.4 13.1 11.6 12 13 12Z" fill="currentColor" fillOpacity="0.4" />
     </svg>
   );
 }
@@ -84,8 +86,8 @@ function GooglePayIcon({ className }: { className?: string }) {
 function StripeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="32" rx="4" fill="#635BFF" />
-      <path fillRule="evenodd" clipRule="evenodd" d="M22.2 13.5C22.2 12.7 22.9 12.4 24 12.4C25.5 12.4 27.4 12.9 28.9 13.7V9.5C27.3 8.9 25.6 8.6 24 8.6C20.3 8.6 17.8 10.6 17.8 13.7C17.8 18.6 24.5 17.8 24.5 19.9C24.5 20.9 23.6 21.2 22.4 21.2C20.8 21.2 18.7 20.5 17 19.6V23.9C18.9 24.6 20.7 24.9 22.4 24.9C26.2 24.9 28.9 23 28.9 19.8C28.9 14.5 22.2 15.4 22.2 13.5Z" fill="white" />
+      <rect width="48" height="32" rx="4" fill="currentColor" fillOpacity="0.1" />
+      <path fillRule="evenodd" clipRule="evenodd" d="M22.2 13.5C22.2 12.7 22.9 12.4 24 12.4C25.5 12.4 27.4 12.9 28.9 13.7V9.5C27.3 8.9 25.6 8.6 24 8.6C20.3 8.6 17.8 10.6 17.8 13.7C17.8 18.6 24.5 17.8 24.5 19.9C24.5 20.9 23.6 21.2 22.4 21.2C20.8 21.2 18.7 20.5 17 19.6V23.9C18.9 24.6 20.7 24.9 22.4 24.9C26.2 24.9 28.9 23 28.9 19.8C28.9 14.5 22.2 15.4 22.2 13.5Z" fill="currentColor" fillOpacity="0.5" />
     </svg>
   );
 }
@@ -146,126 +148,202 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t bg-muted/30">
-      {/* Main footer content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Column 1: Logo, tagline, social */}
-          <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <span className="text-xl font-bold text-primary-foreground">W</span>
-              </div>
-              <span className="text-xl font-bold tracking-tight">WinThisCard</span>
-            </Link>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Win rare collectible cards and memorabilia. UK-based prize competitions
-              with transparent draws and guaranteed authenticity.
-            </p>
+    <footer className="relative">
+      {/* Gold gradient top border */}
+      <div
+        className="absolute inset-x-0 top-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent 0%, oklch(0.65 0.18 85) 20%, oklch(0.82 0.165 85) 50%, oklch(0.65 0.18 85) 80%, transparent 100%)',
+        }}
+      />
 
-            {/* Social links with follower counts */}
-            <div className="mt-6">
-              <p className="mb-3 text-sm font-semibold">Follow us</p>
-              <div className="flex flex-wrap gap-2">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.href}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1.5 text-sm transition-colors hover:bg-muted/80"
-                    aria-label={`Follow us on ${social.label}`}
-                  >
-                    <social.icon className="h-4 w-4" />
-                    <span className="text-xs text-muted-foreground">{social.followers}</span>
-                  </a>
-                ))}
+      {/* Main footer content */}
+      <div
+        className="pt-12 pb-8"
+        style={{
+          background: 'linear-gradient(180deg, oklch(0.06 0.02 270) 0%, oklch(0.04 0.02 270) 100%)',
+        }}
+      >
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Column 1: Logo, tagline, social */}
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Link href="/" className="group inline-flex items-center gap-3">
+                <div
+                  className="relative flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                  }}
+                >
+                  {/* Shine effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
+                  <Trophy className="h-6 w-6 text-black relative z-10" />
+                </div>
+                <div>
+                  <span className="text-xl font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
+                    WinThisCard
+                  </span>
+                  <span className="block text-xs text-muted-foreground">Premium Collectibles</span>
+                </div>
+              </Link>
+
+              <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
+                Win rare collectible cards and memorabilia. UK-based prize competitions
+                with transparent draws and guaranteed authenticity.
+              </p>
+
+              {/* Trust badges */}
+              <div className="mt-6 flex items-center gap-4">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Shield className="h-4 w-4 text-primary/70" />
+                  <span>SSL Secured</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <Sparkles className="h-4 w-4 text-primary/70" />
+                  <span>Verified Draws</span>
+                </div>
+              </div>
+
+              {/* Social links with hover glow */}
+              <div className="mt-6">
+                <p className="mb-3 text-sm font-semibold text-foreground/80">Follow us</p>
+                <div className="flex flex-wrap gap-2">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.href}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group/social flex items-center gap-1.5 rounded-full px-3 py-2 text-sm transition-all duration-300 hover:scale-105"
+                      style={{
+                        background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+                        border: '1px solid oklch(0.25 0.02 270)',
+                      }}
+                      aria-label={`Follow us on ${social.label}`}
+                    >
+                      <social.icon className="h-4 w-4 transition-colors group-hover/social:text-primary" />
+                      <span className="text-xs text-muted-foreground transition-colors group-hover/social:text-foreground">
+                        {social.followers}
+                      </span>
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Column 2: Quick Links */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold">Quick Links</h3>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Column 2: Quick Links */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+                Quick Links
+              </h3>
+              <ul className="space-y-3">
+                {quickLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="group relative inline-block text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <span>{link.label}</span>
+                      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Column 3: Support */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold">Support</h3>
-            <ul className="space-y-3">
-              {supportLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Column 3: Support */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+                Support
+              </h3>
+              <ul className="space-y-3">
+                {supportLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="group relative inline-block text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <span>{link.label}</span>
+                      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Column 4: Legal */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold">Legal</h3>
-            <ul className="space-y-3">
-              {legalLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Column 4: Legal */}
+            <div>
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+                Legal
+              </h3>
+              <ul className="space-y-3">
+                {legalLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="group relative inline-block text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <span>{link.label}</span>
+                      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary transition-all duration-300 group-hover:w-full" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t bg-muted/50">
-        <div className="container mx-auto px-4 py-6">
+      <div
+        className="py-6"
+        style={{
+          background: 'oklch(0.04 0.02 270)',
+          borderTop: '1px solid oklch(0.15 0.02 270)',
+        }}
+      >
+        <div className="container mx-auto px-4">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             {/* Left side: Payment methods */}
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs text-muted-foreground">We accept:</span>
-              <div className="flex items-center gap-2">
-                <VisaIcon className="h-6 w-auto" />
-                <MastercardIcon className="h-6 w-auto" />
-                <ApplePayIcon className="h-6 w-auto" />
-                <GooglePayIcon className="h-6 w-auto" />
-                <StripeIcon className="h-6 w-auto" />
+              <span className="text-xs text-muted-foreground">Secure payments:</span>
+              <div className="flex items-center gap-2 text-muted-foreground/60">
+                <VisaIcon className="h-7 w-auto" />
+                <MastercardIcon className="h-7 w-auto" />
+                <ApplePayIcon className="h-7 w-auto" />
+                <GooglePayIcon className="h-7 w-auto" />
+                <StripeIcon className="h-7 w-auto" />
               </div>
             </div>
 
             {/* Middle: 18+ badge and warnings */}
             <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 px-3 py-1.5">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-destructive text-xs font-bold text-destructive">
+              <div
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.25 0.15 25) 0%, oklch(0.18 0.12 25) 100%)',
+                  border: '1px solid oklch(0.4 0.15 25)',
+                }}
+              >
+                <div
+                  className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
+                  style={{
+                    border: '2px solid oklch(0.65 0.2 25)',
+                    color: 'oklch(0.75 0.2 25)',
+                  }}
+                >
                   18+
                 </div>
-                <span className="text-xs font-medium text-destructive">
+                <span
+                  className="text-xs font-medium"
+                  style={{ color: 'oklch(0.75 0.2 25)' }}
+                >
                   Over 18s only
                 </span>
               </div>
               <span className="text-xs text-muted-foreground">
                 Free postal entry available.{' '}
-                <Link href="/competition-rules" className="underline hover:text-foreground">
+                <Link href="/competition-rules" className="text-primary/80 hover:text-primary underline-offset-2 hover:underline">
                   See rules
                 </Link>
               </span>
@@ -274,7 +352,7 @@ export function Footer() {
             {/* Right side: Copyright */}
             <div className="text-xs text-muted-foreground">
               <p>&copy; {currentYear} WinThisCard Ltd. All rights reserved.</p>
-              <p className="mt-1">Registered in England & Wales.</p>
+              <p className="mt-1 opacity-70">Registered in England & Wales.</p>
             </div>
           </div>
         </div>
