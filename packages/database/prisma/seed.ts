@@ -296,8 +296,8 @@ async function main() {
       condition: 'Mint',
       winningTicketNumber: 42,
       drawProofUrl: 'https://example.com/draw-proof-blastoise.mp4',
-      questionText: 'What type of Pokémon is Blastoise?',
-      questionChoices: ['Fire', 'Water', 'Grass', 'Electric'],
+      questionText: 'In the original Pokémon Red/Blue, what level does Wartortle evolve into Blastoise?',
+      questionChoices: ['32', '36', '40', '44'],
       questionAnswer: 1,
     },
   });
