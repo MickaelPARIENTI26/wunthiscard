@@ -7,13 +7,18 @@ import { ChevronRight, Home } from 'lucide-react';
 const routeLabels: Record<string, string> = {
   dashboard: 'Dashboard',
   competitions: 'Competitions',
+  wins: 'Winners',
   users: 'Users',
   orders: 'Orders',
+  'free-entries': 'Free Entries',
   pages: 'Pages',
   faq: 'FAQ',
+  audit: 'Audit Log',
   settings: 'Settings',
+  profile: 'Profile',
   new: 'New',
   edit: 'Edit',
+  draw: 'Draw',
 };
 
 export function Breadcrumbs() {

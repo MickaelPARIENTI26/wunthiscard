@@ -32,7 +32,16 @@ export function LoginForm() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password. Please check your credentials.');
+        // Handle specific error types from authorize
+        if (result.error.includes('AccessDenied')) {
+          setError('Access denied. Admin accounts only.');
+        } else if (result.error.includes('AccountDisabled')) {
+          setError('Your account has been disabled. Contact support.');
+        } else if (result.error.includes('AccountLocked')) {
+          setError('Your account is temporarily locked. Please try again later.');
+        } else {
+          setError('Invalid email or password. Please check your credentials.');
+        }
       } else {
         router.push('/dashboard');
         router.refresh();

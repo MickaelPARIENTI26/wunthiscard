@@ -42,17 +42,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // Check if user is admin
         if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
-          return null;
+          throw new Error('AccessDenied');
         }
 
         // Check if user is banned or inactive
         if (user.isBanned || !user.isActive) {
-          return null;
+          throw new Error('AccountDisabled');
         }
 
         // Check if account is locked
         if (user.lockedUntil && user.lockedUntil > new Date()) {
-          return null;
+          throw new Error('AccountLocked');
         }
 
         // Verify password
