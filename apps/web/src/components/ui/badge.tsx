@@ -29,8 +29,18 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+const variantStyles: Record<string, React.CSSProperties> = {
+  default: { backgroundColor: '#FFD700', color: '#0f0f1a' },
+  secondary: { backgroundColor: '#1f1f35', color: '#f5f5f5' },
+  destructive: { backgroundColor: '#dc2626', color: '#f5f5f5' },
+  outline: { backgroundColor: 'transparent', color: '#f5f5f5', borderColor: '#2a2a4a' },
+  success: { backgroundColor: '#22c55e', color: '#ffffff' },
+  warning: { backgroundColor: '#eab308', color: '#ffffff' },
+};
+
+function Badge({ className, variant, style, ...props }: BadgeProps) {
+  const inlineStyle = { ...variantStyles[variant || 'default'], ...style };
+  return <div className={cn(badgeVariants({ variant }), className)} style={inlineStyle} {...props} />;
 }
 
 export { Badge, badgeVariants };

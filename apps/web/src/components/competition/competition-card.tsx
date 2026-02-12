@@ -196,22 +196,25 @@ export function CompetitionCard({
             </div>
           </div>
 
-          <CardContent className="flex-1 p-4 flex flex-col">
+          <CardContent className="flex-1 p-4 flex flex-col" style={{ color: '#f5f5f5' }}>
             {/* Title */}
-            <h3 className="font-semibold text-lg line-clamp-2 mb-3 min-h-[3.5rem] group-hover:text-primary transition-colors font-[family-name:var(--font-display)]">
+            <h3
+              className="font-semibold text-lg line-clamp-2 mb-3 min-h-[3.5rem] group-hover:text-primary transition-colors font-[family-name:var(--font-display)]"
+              style={{ color: '#f5f5f5' }}
+            >
               {title}
             </h3>
 
             {/* Ticket Price */}
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-2xl font-bold text-primary tabular-nums">
+              <span className="text-2xl font-bold tabular-nums" style={{ color: '#FFD700' }}>
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
                   minimumFractionDigits: 2,
                 }).format(ticketPrice)}
               </span>
-              <span className="text-sm text-muted-foreground">per ticket</span>
+              <span className="text-sm" style={{ color: '#a0a0a0' }}>per ticket</span>
             </div>
 
             {/* Progress Bar */}
@@ -225,7 +228,7 @@ export function CompetitionCard({
             {/* Countdown */}
             {(isActive || isUpcoming) && (
               <div className="mt-auto">
-                <p className="text-xs text-muted-foreground mb-2">
+                <p className="text-xs mb-2" style={{ color: '#a0a0a0' }}>
                   {isActive ? 'Draw ends in:' : 'Sale starts in:'}
                 </p>
                 <CountdownTimer
@@ -237,16 +240,15 @@ export function CompetitionCard({
             )}
 
             {/* CTA Button */}
-            <div className="mt-4 pt-3 border-t border-border/50">
+            <div className="mt-4 pt-3 border-t" style={{ borderColor: '#2a2a4a' }}>
               <span
                 className={cn(
-                  'block w-full text-center py-2.5 rounded-lg font-semibold transition-all duration-300',
-                  isActive
-                    ? 'bg-primary text-primary-foreground group-hover:glow-gold-sm'
-                    : isSoldOut
-                      ? 'bg-muted text-muted-foreground cursor-not-allowed'
-                      : 'bg-secondary text-secondary-foreground group-hover:bg-secondary/80'
+                  'block w-full text-center py-2.5 rounded-lg font-semibold transition-all duration-300'
                 )}
+                style={{
+                  backgroundColor: isActive ? '#FFD700' : isSoldOut ? '#1f1f35' : '#1f1f35',
+                  color: isActive ? '#0f0f1a' : '#a0a0a0',
+                }}
               >
                 {isActive ? 'Enter Now' : isUpcoming ? 'View Details' : isSoldOut ? 'Sold Out' : 'View Details'}
               </span>

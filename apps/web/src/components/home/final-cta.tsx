@@ -84,13 +84,13 @@ export function FinalCTA({ className }: FinalCTAProps) {
           </motion.div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-display)]">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             Ready to{' '}
             <span className="text-gradient-gold">Win</span>?
           </h2>
 
           {/* Description */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#a0a0a0' }}>
             Browse our live competitions and enter for your chance to win incredible collectible cards and memorabilia. Your next big win could be just one ticket away!
           </p>
 
@@ -136,6 +136,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className="mt-10 text-sm text-muted-foreground"
+            style={{ color: '#a0a0a0' }}
           >
             18+ Only. Free postal entry available on all competitions.{' '}
             <Link

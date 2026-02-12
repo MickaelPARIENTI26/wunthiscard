@@ -107,7 +107,7 @@ function WinnerCard({ winner }: { winner: Winner }) {
 
         <div className="p-4">
           {/* Competition Title */}
-          <h3 className="font-semibold text-base line-clamp-2 mb-2 font-[family-name:var(--font-display)]">
+          <h3 className="font-semibold text-base line-clamp-2 mb-2 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             {winner.competitionTitle}
           </h3>
 
@@ -124,7 +124,7 @@ function WinnerCard({ winner }: { winner: Winner }) {
           </p>
 
           {/* Winner Info */}
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center justify-between text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
             <span className="flex items-center gap-1">
               <Star className="h-3 w-3 text-primary/70" />
               {anonymizeName(winner.winnerFirstName, winner.winnerLastName)}
@@ -171,7 +171,7 @@ export function RecentWinners({ winners, className }: RecentWinnersProps) {
               </div>
               <span className="text-gradient-gold">Recent Winners</span>
             </h2>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2" style={{ color: '#a0a0a0' }}>
               Check out our latest lucky winners
             </p>
           </div>

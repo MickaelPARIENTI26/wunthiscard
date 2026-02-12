@@ -70,6 +70,46 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Fallback colors for visibility */
+    background-color: #0f0f1a;
+    color: #f5f5f5;
+  }
+
+  /* Ensure text is visible throughout the app */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-foreground, #f5f5f5);
+  }
+
+  p, span, div, li, a, label {
+    color: inherit;
+  }
+
+  /* Card styling fallback */
+  .bg-card {
+    background-color: var(--color-card, #1a1a2e) !important;
+    color: var(--color-card-foreground, #f5f5f5) !important;
+  }
+
+  /* Text color utilities fallback */
+  .text-foreground {
+    color: var(--color-foreground, #f5f5f5) !important;
+  }
+
+  .text-muted-foreground {
+    color: var(--color-muted-foreground, #a0a0a0) !important;
+  }
+
+  .text-primary {
+    color: var(--color-primary, #FFD700) !important;
+  }
+
+  /* Background utilities fallback */
+  .bg-background {
+    background-color: var(--color-background, #0f0f1a) !important;
+  }
+
+  .bg-muted {
+    background-color: var(--color-muted, #1f1f35) !important;
   }
 
   :focus-visible {

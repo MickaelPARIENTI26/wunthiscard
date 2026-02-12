@@ -50,16 +50,16 @@ export function ProgressBar({
 
   // Get label color based on urgency
   const getLabelColor = () => {
-    if (isCritical) return 'text-red-400';
-    if (isUrgent) return 'text-orange-400';
-    return 'text-muted-foreground';
+    if (isCritical) return '#f87171'; // red-400
+    if (isUrgent) return '#fb923c'; // orange-400
+    return '#a0a0a0'; // muted
   };
 
   return (
     <div className={cn('w-full', className)}>
       {showLabel && (
         <div className="flex items-center justify-between mb-2">
-          <span className={cn('text-xs font-medium', getLabelColor())}>
+          <span className="text-xs font-medium" style={{ color: getLabelColor() }}>
             {remaining > 0 ? (
               <>
                 <span className="tabular-nums">{remaining.toLocaleString('en-GB')}</span>
@@ -70,7 +70,7 @@ export function ProgressBar({
             )}
           </span>
           {showPercentage && (
-            <span className={cn('text-xs font-bold tabular-nums', getLabelColor())}>
+            <span className="text-xs font-bold tabular-nums" style={{ color: getLabelColor() }}>
               {Math.round(percentage)}%
             </span>
           )}
@@ -78,9 +78,10 @@ export function ProgressBar({
       )}
       <div
         className={cn(
-          'w-full overflow-hidden rounded-full bg-secondary/50 border border-border/50',
+          'w-full overflow-hidden rounded-full',
           sizeClasses[size]
         )}
+        style={{ backgroundColor: 'rgba(31, 31, 53, 0.5)', borderColor: '#2a2a4a', borderWidth: 1, borderStyle: 'solid' }}
       >
         <motion.div
           className={cn(
@@ -105,7 +106,7 @@ export function ProgressBar({
       </div>
       {!showLabel && showPercentage && (
         <div className="flex justify-end mt-1">
-          <span className={cn('text-xs font-bold tabular-nums', getLabelColor())}>
+          <span className="text-xs font-bold tabular-nums" style={{ color: getLabelColor() }}>
             {Math.round(percentage)}%
           </span>
         </div>

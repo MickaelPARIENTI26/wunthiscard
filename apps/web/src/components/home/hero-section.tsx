@@ -84,14 +84,17 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               </Badge>
             </motion.div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-display)]">
+            <h1
+              className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-display)]"
+              style={{ color: '#f5f5f5' }}
+            >
               Win{' '}
               <span className="text-gradient-gold">Rare</span>{' '}
               <br className="hidden sm:block" />
               Collectibles
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
               Enter prize competitions to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based with free postal entry available.
             </p>
 

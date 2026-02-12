@@ -113,14 +113,14 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
 
         <div className="p-5">
           {/* Title */}
-          <h3 className="font-semibold text-lg line-clamp-2 mb-4 font-[family-name:var(--font-display)]">
+          <h3 className="font-semibold text-lg line-clamp-2 mb-4 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             {competition.title}
           </h3>
 
           {/* Prize Value & Ticket Price */}
           <div className="flex items-center justify-between mb-5">
             <div>
-              <p className="text-xs text-muted-foreground">Prize Value</p>
+              <p className="text-xs text-muted-foreground" style={{ color: '#a0a0a0' }}>Prize Value</p>
               <p className="text-xl font-bold text-gradient-gold">
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
@@ -131,8 +131,8 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-muted-foreground">Ticket Price</p>
-              <p className="text-lg font-semibold">
+              <p className="text-xs text-muted-foreground" style={{ color: '#a0a0a0' }}>Ticket Price</p>
+              <p className="text-lg font-semibold" style={{ color: '#f5f5f5' }}>
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
@@ -144,7 +144,7 @@ function UpcomingCard({ competition }: { competition: UpcomingCompetition }) {
 
           {/* Countdown to Sale Start */}
           <div className="mb-5">
-            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+            <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1" style={{ color: '#a0a0a0' }}>
               <Clock className="h-3 w-3" />
               Sale starts in:
             </p>
@@ -209,7 +209,7 @@ export function ComingSoon({ competitions, className }: ComingSoonProps) {
               </div>
               <span className="text-gradient-gold">Coming Soon</span>
             </h2>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2" style={{ color: '#a0a0a0' }}>
               Get notified when these competitions go live
             </p>
           </div>

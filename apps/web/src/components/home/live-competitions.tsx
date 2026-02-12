@@ -55,7 +55,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
               <span className="text-gradient-gold">Live Competitions</span>
             </h2>
-            <p className="text-muted-foreground text-lg mb-8">
+            <p className="text-muted-foreground text-lg mb-8" style={{ color: '#a0a0a0' }}>
               No live competitions at the moment. Check back soon!
             </p>
             <Button
@@ -103,7 +103,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
               </div>
               <span className="text-gradient-gold">Live Competitions</span>
             </h2>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-muted-foreground mt-2" style={{ color: '#a0a0a0' }}>
               Enter now for your chance to win amazing prizes
             </p>
           </div>

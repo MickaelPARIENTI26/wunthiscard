@@ -50,10 +50,10 @@ export default function ContactPage() {
           <div className="mb-4 flex justify-center">
             <Mail className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl" style={{ color: '#f5f5f5' }}>
             Contact Us
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Have a question or need help? We are here for you. Send us a message
             and we will get back to you as soon as possible.
           </p>
@@ -67,7 +67,7 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-                <h2 className="mb-6 text-xl font-semibold">Send us a Message</h2>
+                <h2 className="mb-6 text-xl font-semibold" style={{ color: '#f5f5f5' }}>Send us a Message</h2>
                 <ContactForm />
               </div>
             </div>
@@ -80,11 +80,12 @@ export default function ContactPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <Mail className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-semibold">Email</h3>
+                  <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Email</h3>
                 </div>
                 <a
                   href="mailto:hello@winthiscard.com"
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                  style={{ color: '#a0a0a0' }}
                 >
                   hello@winthiscard.com
                 </a>
@@ -96,9 +97,9 @@ export default function ContactPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <MapPin className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-semibold">Address</h3>
+                  <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Address</h3>
                 </div>
-                <address className="text-sm not-italic text-muted-foreground">
+                <address className="text-sm not-italic text-muted-foreground" style={{ color: '#a0a0a0' }}>
                   WinThisCard Ltd
                   <br />
                   [Address Line 1]
@@ -117,9 +118,9 @@ export default function ContactPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <Clock className="h-5 w-5 text-primary" />
                   </div>
-                  <h3 className="font-semibold">Response Time</h3>
+                  <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Response Time</h3>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                   We aim to respond to all enquiries within 24-48 hours during
                   business days.
                 </p>
@@ -127,7 +128,7 @@ export default function ContactPage() {
 
               {/* Social Media */}
               <div className="rounded-lg border bg-card p-6 shadow-sm">
-                <h3 className="mb-4 font-semibold">Follow Us</h3>
+                <h3 className="mb-4 font-semibold" style={{ color: '#f5f5f5' }}>Follow Us</h3>
                 <div className="space-y-3">
                   {socialLinks.map((social) => (
                     <a
@@ -136,6 +137,7 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
+                      style={{ color: '#a0a0a0' }}
                     >
                       <social.icon className="h-5 w-5" />
                       <span>{social.handle}</span>
@@ -151,10 +153,10 @@ export default function ContactPage() {
       {/* FAQ Prompt */}
       <section className="bg-muted/50 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-3 text-xl font-semibold">
+          <h2 className="mb-3 text-xl font-semibold" style={{ color: '#f5f5f5' }}>
             Looking for Quick Answers?
           </h2>
-          <p className="mb-6 text-muted-foreground">
+          <p className="mb-6 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Check out our FAQ section for answers to common questions about
             competitions, payments, delivery, and more.
           </p>

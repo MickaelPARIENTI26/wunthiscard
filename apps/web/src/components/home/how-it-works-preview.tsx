@@ -89,7 +89,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">How It Works</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
             Enter our prize competitions in 4 simple steps and win amazing collectibles
           </p>
         </motion.div>
@@ -150,12 +150,12 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-semibold mb-3 font-[family-name:var(--font-display)]">
+                <h3 className="text-xl font-semibold mb-3 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-muted-foreground text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed" style={{ color: '#a0a0a0' }}>
                   {step.description}
                 </p>
               </motion.div>
@@ -198,7 +198,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
             borderTop: '1px solid oklch(0.2 0.02 270)',
           }}
         >
-          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-center text-sm text-muted-foreground">
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-center text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
             <div className="flex items-center gap-2.5">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"

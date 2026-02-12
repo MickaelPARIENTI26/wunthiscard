@@ -133,10 +133,10 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
           <div className="mb-4 flex justify-center">
             <Trophy className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl" style={{ color: '#f5f5f5' }}>
             Our Winners
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Real prizes, real winners. Check out the lucky collectors who have
             won amazing cards and memorabilia through WinThisCard.
           </p>
@@ -147,7 +147,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
       <section className="border-b px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
               <Filter className="h-4 w-4" />
               <span>
                 Showing {winners.length} of {totalCount} winner
@@ -194,15 +194,15 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
                       </div>
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="mb-2 line-clamp-2 font-semibold">
+                      <h3 className="mb-2 line-clamp-2 font-semibold" style={{ color: '#f5f5f5' }}>
                         {win.competition.title}
                       </h3>
                       <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
                           <Trophy className="h-4 w-4 text-primary" />
                           <span>
                             Won by{' '}
-                            <span className="font-medium text-foreground">
+                            <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
                               {win.user
                                 ? anonymizeWinnerName(
                                     win.user.firstName,
@@ -212,18 +212,18 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
                             </span>
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
                           <Ticket className="h-4 w-4" />
                           <span>
                             Ticket #{win.ticketNumber} - Prize value{' '}
-                            <span className="font-medium text-foreground">
+                            <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
                               {formatPrizeValue(
                                 Number(win.competition.prizeValue)
                               )}
                             </span>
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 text-muted-foreground">
+                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
                           <Calendar className="h-4 w-4" />
                           <span>{formatDate(win.createdAt)}</span>
                         </div>
@@ -247,8 +247,8 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
           ) : (
             <div className="rounded-lg border bg-card p-12 text-center">
               <Trophy className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
-              <h3 className="mb-2 text-lg font-semibold">No Winners Yet</h3>
-              <p className="mb-6 text-muted-foreground">
+              <h3 className="mb-2 text-lg font-semibold" style={{ color: '#f5f5f5' }}>No Winners Yet</h3>
+              <p className="mb-6 text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 {category
                   ? 'No winners in this category yet. Be the first!'
                   : 'Our first winners will be announced soon. Enter a competition to be in with a chance!'}
@@ -267,10 +267,10 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
       {/* CTA Section */}
       <section className="bg-primary/5 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl" style={{ color: '#f5f5f5' }}>
             You Could Be Next!
           </h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Browse our current competitions and enter for your chance to win
             amazing collectible cards and memorabilia.
           </p>

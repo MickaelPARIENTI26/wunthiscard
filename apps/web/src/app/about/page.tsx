@@ -68,7 +68,7 @@ export default async function AboutPage() {
           <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">About WinThisCard</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Your trusted destination for premium collectible card and
             memorabilia prize competitions in the United Kingdom.
           </p>
@@ -79,15 +79,15 @@ export default async function AboutPage() {
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]">Our Mission</h2>
-            <p className="mb-4 text-muted-foreground">
+            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>Our Mission</h2>
+            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
               At WinThisCard, we believe that everyone should have the
               opportunity to own their dream collectibles. Whether it is a PSA
               10 Charizard, a signed sports jersey, or a rare One Piece TCG
               card, we make it possible through fair, transparent, and exciting
               prize competitions.
             </p>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground" style={{ color: '#a0a0a0' }}>
               Founded by collectors, for collectors, we understand the passion
               that drives our community. Our mission is to create a trusted
               platform where collectors can compete for amazing prizes while
@@ -115,7 +115,7 @@ export default async function AboutPage() {
       {/* Values Section */}
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
-          <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
+          <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             Our Values
           </h2>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -127,8 +127,8 @@ export default async function AboutPage() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                   <value.icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">{value.title}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="mb-2 text-lg font-semibold" style={{ color: '#f5f5f5' }}>{value.title}</h3>
+                <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                   {value.description}
                 </p>
               </div>
@@ -143,10 +143,10 @@ export default async function AboutPage() {
         style={{ background: 'oklch(0.06 0.02 270)' }}
       >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
+          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             Meet the Team
           </h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             We are a passionate team of collectors and tech enthusiasts
             dedicated to creating the best prize competition experience.
           </p>
@@ -154,8 +154,8 @@ export default async function AboutPage() {
             {[1, 2, 3].map((i) => (
               <div key={i} className="rounded-lg border bg-card p-6 shadow-sm">
                 <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-muted" />
-                <h3 className="font-semibold">Team Member</h3>
-                <p className="text-sm text-muted-foreground">Position</p>
+                <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Team Member</h3>
+                <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>Position</p>
               </div>
             ))}
           </div>
@@ -166,16 +166,16 @@ export default async function AboutPage() {
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]">
+            <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
               UK Compliance & Regulation
             </h2>
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
               WinThisCard operates as a prize competition platform in full
               compliance with the UK Gambling Act 2005. Our competitions include
               a skill-based question requirement and a free postal entry route,
               ensuring we meet all regulatory standards.
             </p>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground" style={{ color: '#a0a0a0' }}>
               We are committed to responsible gaming practices. All participants
               must be 18 years or older, and we encourage responsible
               participation in our competitions.
@@ -193,7 +193,7 @@ export default async function AboutPage() {
           <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">Get in Touch</span>
           </h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Have questions about WinThisCard? We would love to hear from you.
           </p>
           <Link

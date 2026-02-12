@@ -189,10 +189,10 @@ export default async function CompetitionsPage({
       <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Page Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl font-[family-name:var(--font-display)]">
+          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
             <span className="text-gradient-gold">Competitions</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base" style={{ color: '#a0a0a0' }}>
             Browse our latest prize competitions and win amazing collectibles
           </p>
         </div>

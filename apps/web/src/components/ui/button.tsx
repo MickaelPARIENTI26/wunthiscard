@@ -8,13 +8,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
-        destructive: 'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
+        default: 'shadow hover:opacity-90',
+        destructive: 'shadow-sm hover:opacity-90',
         outline:
-          'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+          'border shadow-sm hover:opacity-90',
+        secondary: 'shadow-sm hover:opacity-80',
+        ghost: 'hover:opacity-80',
+        link: 'underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-9 px-4 py-2',
@@ -36,10 +36,28 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+// Inline style fallbacks for button variants
+const variantStyles: Record<string, React.CSSProperties> = {
+  default: { backgroundColor: '#FFD700', color: '#0f0f1a' },
+  destructive: { backgroundColor: '#dc2626', color: '#f5f5f5' },
+  outline: { backgroundColor: 'transparent', color: '#f5f5f5', borderColor: '#2a2a4a' },
+  secondary: { backgroundColor: '#1f1f35', color: '#f5f5f5' },
+  ghost: { backgroundColor: 'transparent', color: '#f5f5f5' },
+  link: { backgroundColor: 'transparent', color: '#FFD700' },
+};
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant = 'default', size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    const inlineStyle = { ...variantStyles[variant || 'default'], ...style };
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        style={inlineStyle}
+        {...props}
+      />
+    );
   }
 );
 Button.displayName = 'Button';

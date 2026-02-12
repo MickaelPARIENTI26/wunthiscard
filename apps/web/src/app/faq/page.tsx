@@ -79,7 +79,7 @@ export default async function FaqPage() {
           <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">Frequently Asked Questions</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Find answers to common questions about our prize competitions. Can
             not find what you are looking for? Contact us and we will help.
           </p>
@@ -113,8 +113,8 @@ export default async function FaqPage() {
           ) : (
             <div className="rounded-lg border bg-card p-8 text-center">
               <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold">No FAQs Available</h3>
-              <p className="text-muted-foreground">
+              <h3 className="mb-2 text-lg font-semibold" style={{ color: '#f5f5f5' }}>No FAQs Available</h3>
+              <p className="text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 We are working on adding frequently asked questions. In the
                 meantime, please contact us with any questions you may have.
               </p>
@@ -130,8 +130,8 @@ export default async function FaqPage() {
       >
         <div className="mx-auto max-w-3xl text-center">
           <MessageSquare className="mx-auto mb-4 h-10 w-10 text-primary" />
-          <h2 className="mb-3 text-xl font-semibold font-[family-name:var(--font-display)]">Still Have Questions?</h2>
-          <p className="mb-6 text-muted-foreground">
+          <h2 className="mb-3 text-xl font-semibold font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>Still Have Questions?</h2>
+          <p className="mb-6 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Our support team is here to help. Get in touch and we will respond
             as soon as possible.
           </p>

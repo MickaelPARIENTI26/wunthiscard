@@ -92,14 +92,15 @@ function TimeUnit({
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 30, opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.3, type: 'spring', bounce: 0.3 }}
-            className="tabular-nums text-primary font-[family-name:var(--font-display)]"
+            className="tabular-nums font-[family-name:var(--font-display)]"
+            style={{ color: '#FFD700' }}
           >
             {value.toString().padStart(2, '0')}
           </motion.span>
         </AnimatePresence>
       </div>
       {showLabel && (
-        <span className={cn('mt-1.5 text-muted-foreground uppercase tracking-widest font-medium', classes.label)}>
+        <span className={cn('mt-1.5 uppercase tracking-widest font-medium', classes.label)} style={{ color: '#a0a0a0' }}>
           {label}
         </span>
       )}
@@ -153,15 +154,15 @@ export function CountdownTimer({
   return (
     <div className={cn('flex items-center justify-center lg:justify-start', classes.container, className)}>
       <TimeUnit value={timeLeft.days} label="Days" size={size} showLabel={showLabels} />
-      <span className={cn('font-bold text-primary/50 self-start mt-2 sm:mt-3', classes.separator)}>
+      <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
       <TimeUnit value={timeLeft.hours} label="Hours" size={size} showLabel={showLabels} />
-      <span className={cn('font-bold text-primary/50 self-start mt-2 sm:mt-3', classes.separator)}>
+      <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
       <TimeUnit value={timeLeft.minutes} label="Mins" size={size} showLabel={showLabels} />
-      <span className={cn('font-bold text-primary/50 self-start mt-2 sm:mt-3', classes.separator)}>
+      <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
       <TimeUnit value={timeLeft.seconds} label="Secs" size={size} showLabel={showLabels} />

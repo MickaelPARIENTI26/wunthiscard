@@ -67,7 +67,7 @@ export default function HowItWorksPage() {
           <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">How It Works</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Win your dream collectible cards and memorabilia in just four simple
             steps. Our competitions are fair, transparent, and fully compliant
             with UK law.
@@ -93,11 +93,11 @@ export default function HowItWorksPage() {
                       {index + 1}
                     </div>
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold">{step.title}</h3>
-                  <p className="mb-3 font-medium text-primary">
+                  <h3 className="mb-2 text-xl font-semibold" style={{ color: '#f5f5f5' }}>{step.title}</h3>
+                  <p className="mb-3 font-medium text-primary" style={{ color: '#FFD700' }}>
                     {step.description}
                   </p>
-                  <p className="text-sm text-muted-foreground">{step.details}</p>
+                  <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>{step.details}</p>
                 </CardContent>
               </Card>
             ))}
@@ -118,12 +118,12 @@ export default function HowItWorksPage() {
             </h2>
           </div>
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
               Under the UK Gambling Act 2005, prize competitions must include an
               element of skill to distinguish them from lotteries. This is why
               we include a multiple-choice question with every entry.
             </p>
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
               The questions are designed to test genuine knowledge related to
               the collectibles world. They are challenging enough to require
               thought, but fair for anyone with an interest in the hobby.
@@ -153,32 +153,32 @@ export default function HowItWorksPage() {
           </div>
           <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold">Certified RNG</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Certified RNG</h3>
+              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 We use a certified Random Number Generator to ensure every draw
                 is completely fair and unbiased. The RNG is cryptographically
                 secure and cannot be manipulated.
               </p>
             </div>
             <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold">Transparent Results</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Transparent Results</h3>
+              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 Every draw result is published publicly, showing the winning
                 ticket number, date and time of the draw, and the anonymised
                 winner details. Full transparency is our priority.
               </p>
             </div>
             <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold">Independent Supervision</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Independent Supervision</h3>
+              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 For high-value prizes, draws are conducted under independent
                 supervision. We may also live stream draws on social media for
                 complete transparency.
               </p>
             </div>
             <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold">Secure Delivery</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Secure Delivery</h3>
+              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 Winners receive their prizes via tracked, insured delivery.
                 Every item is carefully packaged and photographed before
                 dispatch for your peace of mind.
@@ -199,15 +199,15 @@ export default function HowItWorksPage() {
             <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">Free Entry Route</h2>
           </div>
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <p className="mb-4 text-muted-foreground">
+            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
               In accordance with UK regulations, we offer a free postal entry
               route for all our competitions. This ensures everyone has the
               opportunity to participate, regardless of their financial
               situation.
             </p>
             <div className="mb-4 rounded-md bg-primary/5 p-4">
-              <h3 className="mb-2 font-semibold">How to Enter for Free:</h3>
-              <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground">
+              <h3 className="mb-2 font-semibold" style={{ color: '#f5f5f5' }}>How to Enter for Free:</h3>
+              <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 <li>
                   Write a letter including your full name, email address, and
                   the competition you wish to enter
@@ -225,13 +225,13 @@ export default function HowItWorksPage() {
                 </li>
               </ol>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
               Free postal entries are treated exactly the same as paid entries
               in the draw. There is no discrimination between entry methods.
             </p>
             <div className="mt-4 rounded-md border p-4">
-              <p className="text-sm font-medium">Postal Address:</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-medium" style={{ color: '#f5f5f5' }}>Postal Address:</p>
+              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
                 WinThisCard Ltd
                 <br />
                 Competition Entry
@@ -253,7 +253,7 @@ export default function HowItWorksPage() {
           <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
             <span className="text-gradient-gold">Ready to Win Your Dream Card?</span>
           </h2>
-          <p className="mb-8 text-muted-foreground">
+          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Browse our current competitions and find your next grail piece.
           </p>
           <Link
