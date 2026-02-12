@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log('Unhandled event type:', event.type);
+        // Unhandled event types are safely ignored
+        break;
     }
 
     return NextResponse.json({ received: true });
@@ -101,7 +103,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     });
 
     if (currentOrder?.paymentStatus === 'SUCCEEDED') {
-      console.log('Order already processed (inside transaction):', orderId);
       return { alreadyProcessed: true };
     }
 
@@ -118,7 +119,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     });
 
     if (!updatedOrder) {
-      console.log('Order status conflict:', orderId);
       return { alreadyProcessed: true };
     }
 
@@ -227,8 +227,6 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     },
   });
 
-  console.log('Payment processed successfully:', order.orderNumber);
-
   // Get the final ticket numbers including bonuses
   const finalTickets = await prisma.ticket.findMany({
     where: {
@@ -321,15 +319,12 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
       },
     },
   });
-
-  console.log('Checkout session expired:', order.orderNumber);
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const orderId = paymentIntent.metadata?.orderId;
 
   if (!orderId) {
-    console.log('No orderId in payment intent metadata');
     return;
   }
 
@@ -343,8 +338,6 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       stripePaymentIntentId: paymentIntent.id,
     },
   });
-
-  console.log('Payment intent succeeded:', paymentIntent.id);
 }
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
@@ -378,6 +371,4 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       },
     },
   });
-
-  console.log('Payment failed:', order.orderNumber);
 }

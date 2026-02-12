@@ -18,7 +18,7 @@ import { Progress } from '@/components/ui/progress';
 import { registerSchema } from '@winthiscard/shared/validators';
 import { registerUser } from './actions';
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 // Extended schema with terms acceptance
 const registerFormSchema = registerSchema.extend({
@@ -71,7 +71,7 @@ const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 't
 export function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -113,7 +113,7 @@ export function RegisterForm() {
         lastName: data.lastName,
         email: data.email,
         password: data.password,
-        turnstileToken: turnstileToken || undefined,
+        turnstileToken: turnstileToken ?? undefined,
       });
 
       if (!result.success) {

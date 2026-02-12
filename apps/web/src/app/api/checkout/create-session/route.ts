@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
@@ -174,7 +175,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Get base URL for redirects
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
     // Create Stripe Checkout Session
     const checkoutSession = await stripe.checkout.sessions.create({

@@ -49,7 +49,7 @@ const providers: Provider[] = [
         where: { email: email.toLowerCase() },
       });
 
-      if (!user || !user.passwordHash) {
+      if (!user?.passwordHash) {
         return null;
       }
 

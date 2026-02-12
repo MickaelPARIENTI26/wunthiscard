@@ -8,6 +8,7 @@ import { ChevronLeft, Clock, CreditCard, Gift, Loader2, AlertCircle, Lock } from
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { formatPrice, calculateBonusTickets } from '@winthiscard/shared/utils';
 
 interface CheckoutClientProps {
   competitionId: string;
@@ -15,22 +16,6 @@ interface CheckoutClientProps {
   competitionTitle: string;
   mainImageUrl: string;
   ticketPrice: number;
-}
-
-function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
-
-function calculateBonusTickets(quantity: number): number {
-  if (quantity >= 50) return 5;
-  if (quantity >= 20) return 3;
-  if (quantity >= 15) return 2;
-  if (quantity >= 10) return 1;
-  return 0;
 }
 
 export function CheckoutClient({

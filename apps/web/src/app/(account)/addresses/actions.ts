@@ -58,11 +58,11 @@ export async function addAddress(
     await prisma.address.create({
       data: {
         userId: session.user.id,
-        label: label || null,
+        label: label ? label : null,
         line1,
-        line2: line2 || null,
+        line2: line2 ? line2 : null,
         city,
-        county: county || null,
+        county: county ? county : null,
         postcode: postcode.toUpperCase(),
         country,
         isDefault,
@@ -134,11 +134,11 @@ export async function updateAddress(
     await prisma.address.update({
       where: { id: addressId },
       data: {
-        label: label || null,
+        label: label ? label : null,
         line1,
-        line2: line2 || null,
+        line2: line2 ? line2 : null,
         city,
-        county: county || null,
+        county: county ? county : null,
         postcode: postcode.toUpperCase(),
         country,
         isDefault,

@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 const BASE_URL = 'https://winthiscard.com';
 const SITE_NAME = 'WinThisCard';

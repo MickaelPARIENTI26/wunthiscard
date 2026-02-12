@@ -61,8 +61,8 @@ export async function submitContactForm(
 ): Promise<ContactFormState> {
   // Rate limiting
   const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-             headersList.get('x-real-ip') ||
+  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+             headersList.get('x-real-ip') ??
              'unknown';
   const { success: rateLimitSuccess } = await rateLimits.contact.limit(ip);
   if (!rateLimitSuccess) {

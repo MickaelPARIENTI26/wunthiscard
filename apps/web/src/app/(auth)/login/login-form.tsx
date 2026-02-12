@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { loginSchema, type LoginInput } from '@winthiscard/shared/validators';
 import { checkLoginRateLimit, logLoginSuccess, logLoginFailure, verifyLoginCaptcha } from './actions';
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 // Check if Google OAuth is enabled via public env variable
 const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true';
@@ -23,7 +23,7 @@ const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 't
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const error = searchParams.get('error');
 
   const [isLoading, setIsLoading] = useState(false);

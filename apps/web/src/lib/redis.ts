@@ -544,7 +544,7 @@ export async function isQcmBlocked(
   const attemptKey = getQcmAttemptKey(competitionId, userId);
 
   const isBlocked = await redis.exists(blockKey);
-  const attempts = await redis.get<number>(attemptKey) || 0;
+  const attempts = await redis.get<number>(attemptKey) ?? 0;
 
   if (isBlocked === 1) {
     // Estimate remaining time (TTL is QCM_ATTEMPT_TTL seconds)

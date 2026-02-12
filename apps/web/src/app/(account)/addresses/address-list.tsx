@@ -85,7 +85,7 @@ export function AddressList({ addresses }: AddressListProps) {
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">
-                    {address.label || 'Address'}
+                    {address.label ?? 'Address'}
                   </span>
                   {address.isDefault && (
                     <Badge variant="secondary" className="gap-1">

@@ -7,6 +7,7 @@ import { Gift, Ticket, AlertTriangle, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { formatPrice, calculateBonusTickets } from '@winthiscard/shared/utils';
 
 interface CheckoutSummaryProps {
   competitionId: string;
@@ -16,22 +17,6 @@ interface CheckoutSummaryProps {
   ticketPrice: number;
   userEmail: string;
   userName: string;
-}
-
-function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
-
-function calculateBonusTickets(quantity: number): number {
-  if (quantity >= 50) return 5;
-  if (quantity >= 20) return 3;
-  if (quantity >= 15) return 2;
-  if (quantity >= 10) return 1;
-  return 0;
 }
 
 export function CheckoutSummary({

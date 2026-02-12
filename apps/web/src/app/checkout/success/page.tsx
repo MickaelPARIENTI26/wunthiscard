@@ -11,6 +11,7 @@ import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { formatPrice } from '@winthiscard/shared/utils';
 
 export const metadata: Metadata = {
   title: 'Purchase Successful - WinThisCard',
@@ -152,8 +153,6 @@ async function processPaymentIfNeeded(orderId: string, stripeSession: { payment_
       },
     },
   });
-
-  console.log('Payment processed via success page fallback:', order.orderNumber);
 }
 
 async function getOrderDetails(sessionId: string) {
@@ -200,14 +199,6 @@ async function getOrderDetails(sessionId: string) {
     console.error('Error fetching order details:', error);
     return null;
   }
-}
-
-function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-  }).format(amount);
 }
 
 function formatDate(date: Date): string {

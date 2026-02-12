@@ -33,8 +33,8 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
   try {
     // Rate limiting
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
     const { success: rateLimitSuccess } = await rateLimits.signup.limit(ip);
     if (!rateLimitSuccess) {

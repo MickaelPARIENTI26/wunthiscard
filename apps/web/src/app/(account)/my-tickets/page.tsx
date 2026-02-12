@@ -102,12 +102,10 @@ export default async function MyTicketsPage() {
     >
   >((acc, ticket) => {
     const compId = ticket.competitionId;
-    if (!acc[compId]) {
-      acc[compId] = {
-        competition: ticket.competition,
-        ticketNumbers: [],
-      };
-    }
+    acc[compId] ??= {
+      competition: ticket.competition,
+      ticketNumbers: [],
+    };
     acc[compId].ticketNumbers.push(ticket.ticketNumber);
     return acc;
   }, {});

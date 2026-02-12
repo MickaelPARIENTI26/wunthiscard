@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     // Rate limiting
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
     const { success: rateLimitSuccess } = await rateLimits.ticketReserve.limit(
       `${userId}:${ip}`
     );

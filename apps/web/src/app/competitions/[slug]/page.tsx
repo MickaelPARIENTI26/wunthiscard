@@ -14,6 +14,7 @@ import { FreeEntryNotice } from '@/components/competition/free-entry-notice';
 import { GetTicketsButton } from '@/components/competition/get-tickets-button';
 import { SafeHtml } from '@/components/common/safe-html';
 import type { CompetitionCategory } from '@winthiscard/shared/types';
+import { formatPrice } from '@winthiscard/shared/utils';
 
 const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
   POKEMON: 'Pokemon',
@@ -38,15 +39,6 @@ const CATEGORY_GRADIENTS: Record<CompetitionCategory, string> = {
   MTG: 'linear-gradient(135deg, oklch(0.4 0.1 270) 0%, oklch(0.3 0.08 270) 100%)',
   OTHER: 'linear-gradient(135deg, oklch(0.45 0.05 270) 0%, oklch(0.35 0.04 270) 100%)',
 };
-
-function formatPrice(amount: number | string): string {
-  const num = typeof amount === 'string' ? parseFloat(amount) : amount;
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-  }).format(num);
-}
 
 function getBonusTicketsMessage(quantity: number): string | null {
   if (quantity >= 50) return 'Buy 50 tickets, get 5 FREE!';

@@ -79,11 +79,11 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
 
     try {
       const result = await updateAddress(address.id, {
-        label: data.label || undefined,
+        label: data.label ? data.label : undefined,
         line1: data.line1,
-        line2: data.line2 || undefined,
+        line2: data.line2 ? data.line2 : undefined,
         city: data.city,
-        county: data.county || undefined,
+        county: data.county ? data.county : undefined,
         postcode: data.postcode.toUpperCase(),
         country: 'GB',
         isDefault: data.isDefault,

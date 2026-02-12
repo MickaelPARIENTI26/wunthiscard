@@ -1,5 +1,6 @@
 import { handlers } from '@/lib/auth';
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { rateLimits } from '@/lib/redis';
 
 export const { GET } = handlers;

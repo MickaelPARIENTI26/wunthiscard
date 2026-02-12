@@ -21,8 +21,8 @@ export async function requestPasswordReset(
   try {
     // Rate limiting
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
     const { success: rateLimitSuccess } = await rateLimits.passwordReset.limit(ip);
     if (!rateLimitSuccess) {
@@ -51,15 +51,11 @@ export async function requestPasswordReset(
     // Always return success to prevent email enumeration attacks
     // But only actually send email if user exists
     if (!user) {
-      // Log for monitoring but don't reveal to user
-      console.log(`[SECURITY] Password reset requested for non-existent email: ${normalizedEmail}`);
       return { success: true };
     }
 
     // Check if account is banned
     if (user.isBanned) {
-      // Log for monitoring
-      console.log(`[SECURITY] Password reset requested for banned account: ${normalizedEmail}`);
       return { success: true };
     }
 

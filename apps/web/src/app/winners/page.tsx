@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db';
 import { Card, CardContent } from '@/components/ui/card';
 import { WinnersFilter } from './winners-filter';
 import { WinnersPagination } from './winners-pagination';
+import { formatDate, formatPrice } from '@winthiscard/shared/utils';
 
 export const metadata: Metadata = {
   title: 'Winners',
@@ -37,27 +38,10 @@ const categoryDisplayNames: Record<string, string> = {
   OTHER: 'Other',
 };
 
-function anonymizeWinnerName(firstName: string, lastName: string): string {
+function anonymizeWinnerInitials(firstName: string, lastName: string): string {
   const firstInitial = firstName.charAt(0).toUpperCase();
   const lastInitial = lastName.charAt(0).toUpperCase();
   return `${firstInitial}. ${lastInitial}.`;
-}
-
-function formatPrizeValue(value: number): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-function formatDate(date: Date): string {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
 }
 
 async function getWinners(category?: string, page: number = 1) {
@@ -204,7 +188,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
                             Won by{' '}
                             <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
                               {win.user
-                                ? anonymizeWinnerName(
+                                ? anonymizeWinnerInitials(
                                     win.user.firstName,
                                     win.user.lastName
                                   )
@@ -217,7 +201,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
                           <span>
                             Ticket #{win.ticketNumber} - Prize value{' '}
                             <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
-                              {formatPrizeValue(
+                              {formatPrice(
                                 Number(win.competition.prizeValue)
                               )}
                             </span>

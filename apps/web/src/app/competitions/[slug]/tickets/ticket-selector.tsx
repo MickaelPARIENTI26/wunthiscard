@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
+import { formatPrice, calculateBonusTickets } from '@winthiscard/shared/utils';
 
 interface TicketSelectorProps {
   competitionId: string;
@@ -32,22 +33,6 @@ interface TicketSelectorProps {
   maxTicketsPerUser: number;
   availableTicketCount: number;
   userTicketCount?: number;
-}
-
-function formatPrice(amount: number): string {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: 'GBP',
-    minimumFractionDigits: 2,
-  }).format(amount);
-}
-
-function calculateBonusTickets(quantity: number): number {
-  if (quantity >= 50) return 5;
-  if (quantity >= 20) return 3;
-  if (quantity >= 15) return 2;
-  if (quantity >= 10) return 1;
-  return 0;
 }
 
 const BONUS_TIERS = [

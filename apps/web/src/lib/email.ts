@@ -6,8 +6,8 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winthiscard.com';
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@winthiscard.com';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 interface SendEmailOptions {
   to: string;

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Trophy, ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { anonymizeWinnerName } from '@winthiscard/shared/utils';
 
 interface Winner {
   id: string;
@@ -21,15 +22,6 @@ interface Winner {
 interface RecentWinnersProps {
   winners: Winner[];
   className?: string;
-}
-
-function anonymizeName(firstName: string, lastName: string): string {
-  const anonymizeWord = (word: string): string => {
-    if (word.length <= 1) return word;
-    return word[0] + '***';
-  };
-
-  return `${anonymizeWord(firstName)} ${anonymizeWord(lastName)}`;
 }
 
 function formatDate(date: Date): string {
@@ -127,7 +119,7 @@ function WinnerCard({ winner }: { winner: Winner }) {
           <div className="flex items-center justify-between text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
             <span className="flex items-center gap-1">
               <Star className="h-3 w-3 text-primary/70" />
-              {anonymizeName(winner.winnerFirstName, winner.winnerLastName)}
+              {anonymizeWinnerName(winner.winnerFirstName, winner.winnerLastName)}
             </span>
             <span>{formatDate(winner.wonAt)}</span>
           </div>

@@ -23,8 +23,8 @@ interface TurnstileCheckResult {
 export async function verifyLoginCaptcha(token: string): Promise<TurnstileCheckResult> {
   try {
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
 
     const result = await verifyTurnstileToken(token, ip);
@@ -43,8 +43,8 @@ export async function verifyLoginCaptcha(token: string): Promise<TurnstileCheckR
 export async function checkLoginRateLimit(): Promise<RateLimitCheckResult> {
   try {
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
 
     const { success, reset } = await rateLimits.login.limit(ip);
@@ -72,8 +72,8 @@ export async function checkLoginRateLimit(): Promise<RateLimitCheckResult> {
 export async function logLoginSuccess(email: string): Promise<void> {
   try {
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
 
     const user = await prisma.user.findUnique({
@@ -108,8 +108,8 @@ export async function logLoginSuccess(email: string): Promise<void> {
 export async function logLoginFailure(email: string, reason: string): Promise<void> {
   try {
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               headersList.get('x-real-ip') ||
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
                'unknown';
 
     const user = await prisma.user.findUnique({

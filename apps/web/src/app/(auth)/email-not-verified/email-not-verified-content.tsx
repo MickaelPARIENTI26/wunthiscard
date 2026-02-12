@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export function EmailNotVerifiedContent() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
 
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);

@@ -56,7 +56,7 @@ export async function updateProfile(
       data: {
         firstName,
         lastName,
-        phone: phone || null,
+        phone: phone ? phone : null,
         dateOfBirth: parsedDateOfBirth,
       },
     });
