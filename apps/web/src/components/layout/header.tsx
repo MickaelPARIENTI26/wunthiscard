@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Menu, User, Ticket, Trophy, Settings, Sparkles } from 'lucide-react';
-import { signOut } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -35,8 +35,13 @@ interface HeaderProps {
 }
 
 export function Header({ user = null }: HeaderProps) {
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    router.push('/logout');
+  };
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -201,7 +206,7 @@ export function Header({ user = null }: HeaderProps) {
                   <DropdownMenuSeparator className="bg-border/50" />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive focus:text-destructive"
-                    onClick={() => signOut({ callbackUrl: '/' })}
+                    onClick={handleLogout}
                   >
                     Log out
                   </DropdownMenuItem>

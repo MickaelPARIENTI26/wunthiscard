@@ -86,6 +86,8 @@ export function LoginForm() {
           setServerError('Your account has been suspended. Please contact support.');
         } else if (result.error.includes('AccountLocked')) {
           setServerError('Your account has been temporarily locked. Please try again later.');
+        } else if (result.error.includes('OAuthAccountOnly')) {
+          setServerError('This account uses Google Sign-In. Please click "Sign in with Google" below.');
         } else if (result.error.includes('TooManyRequests')) {
           setServerError('Too many login attempts. Please try again later.');
         } else if (result.error === 'CredentialsSignin') {
@@ -123,6 +125,8 @@ export function LoginForm() {
     switch (errorCode) {
       case 'OAuthAccountNotLinked':
         return 'This email is already associated with another sign-in method.';
+      case 'OAuthAccountOnly':
+        return 'This account uses Google Sign-In. Please click "Sign in with Google" below.';
       case 'EmailNotVerified':
         return 'Please verify your email before signing in.';
       case 'AccountLocked':

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   User,
   LogOut,
@@ -13,7 +14,6 @@ import {
   Facebook,
   Sparkles,
 } from 'lucide-react';
-import { signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -108,6 +108,13 @@ const accountLinks = [
 ];
 
 export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps) {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    onClose();
+    router.push('/logout');
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -299,10 +306,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             <Button
               variant="ghost"
               className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive mt-2"
-              onClick={() => {
-                onClose();
-                signOut({ callbackUrl: '/' });
-              }}
+              onClick={handleLogout}
             >
               <LogOut className="mr-2 h-5 w-5" />
               Log out

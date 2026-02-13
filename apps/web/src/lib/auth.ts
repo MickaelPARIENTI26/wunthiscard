@@ -49,8 +49,13 @@ const providers: Provider[] = [
         where: { email: email.toLowerCase() },
       });
 
-      if (!user?.passwordHash) {
+      if (!user) {
         return null;
+      }
+
+      // Check if user has no password (OAuth-only account)
+      if (!user.passwordHash) {
+        throw new Error('OAuthAccountOnly');
       }
 
       // Public site: only allow regular users (not admin-only accounts)
