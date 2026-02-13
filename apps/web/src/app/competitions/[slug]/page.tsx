@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { CountdownTimer } from '@/components/common/countdown-timer';
 import { ProgressBar } from '@/components/common/progress-bar';
 import { ImageGallery } from '@/components/competition/image-gallery';
-import { TicketSelectorPreview } from '@/components/competition/ticket-selector-preview';
 import { CompetitionInfo } from '@/components/competition/competition-info';
 import { FreeEntryNotice } from '@/components/competition/free-entry-notice';
 import { GetTicketsButton } from '@/components/competition/get-tickets-button';
@@ -56,14 +55,15 @@ async function getCompetition(slug: string) {
   const competition = await prisma.competition.findUnique({
     where: { slug },
     include: {
-      tickets: {
-        where: {
-          status: {
-            in: ['SOLD', 'FREE_ENTRY'],
-          },
-        },
+      _count: {
         select: {
-          ticketNumber: true,
+          tickets: {
+            where: {
+              status: {
+                in: ['SOLD', 'FREE_ENTRY'],
+              },
+            },
+          },
         },
       },
       wins: {
@@ -87,7 +87,7 @@ async function getCompetition(slug: string) {
     return null;
   }
 
-  const soldTicketNumbers = competition.tickets.map((t) => t.ticketNumber);
+  const soldTicketsCount = competition._count.tickets;
   const winner = competition.wins[0];
   const winnerDisplayName = winner && winner.user
     ? `${winner.user.firstName} ${winner.user.lastName?.charAt(0) ?? ''}.`
@@ -103,8 +103,7 @@ async function getCompetition(slug: string) {
       typeof competition.ticketPrice === 'object' && 'toNumber' in competition.ticketPrice
         ? (competition.ticketPrice as { toNumber: () => number }).toNumber()
         : Number(competition.ticketPrice),
-    soldTickets: soldTicketNumbers.length,
-    soldTicketNumbers,
+    soldTickets: soldTicketsCount,
     winnerDisplayName,
   };
 }
@@ -398,17 +397,6 @@ export default async function CompetitionDetailPage({
             )}
           </div>
         </div>
-
-        {/* Ticket Selector Preview - Full width on mobile */}
-        {!isCompleted && !isCancelled && (
-          <div className="mt-8">
-            <TicketSelectorPreview
-              totalTickets={competition.totalTickets}
-              soldTicketNumbers={competition.soldTicketNumbers}
-              isActive={isActive}
-            />
-          </div>
-        )}
 
         {/* Additional Information Sections */}
         <div className="mt-8 grid gap-6 lg:grid-cols-2">

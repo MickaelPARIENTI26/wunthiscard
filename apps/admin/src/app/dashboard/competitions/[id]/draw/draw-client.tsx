@@ -251,14 +251,16 @@ export function DrawClient({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Draw Result</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>
-                You are about to confirm <strong>Ticket #{winningNumber}</strong> as the winner for:
-              </p>
-              <p className="font-medium">{competitionTitle}</p>
-              <p className="text-sm text-amber-600 dark:text-amber-400">
-                This action is irreversible. The result will be recorded in the audit log and the winner will be notified.
-              </p>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>
+                  You are about to confirm <strong>Ticket #{winningNumber}</strong> as the winner for:
+                </p>
+                <p className="font-medium">{competitionTitle}</p>
+                <p className="text-amber-600 dark:text-amber-400">
+                  This action is irreversible. The result will be recorded in the audit log and the winner will be notified.
+                </p>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
