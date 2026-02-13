@@ -4,6 +4,12 @@ import type { NextAuthConfig } from 'next-auth';
  * Edge-compatible NextAuth configuration
  * This config excludes any Node.js-specific crypto operations
  * so it can be used in middleware (Edge runtime)
+ *
+ * SECURITY NOTES:
+ * - AUTH_SECRET must be a strong random string (min 32 chars)
+ * - In production, generate with: openssl rand -base64 32
+ * - Session uses JWT strategy with HttpOnly cookies
+ * - Cookies are Secure in production (HTTPS only)
  */
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
@@ -13,7 +19,36 @@ export const authConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 30 * 24 * 60 * 60, // 30 days - reasonable for user convenience
+  },
+  cookies: {
+    sessionToken: {
+      name: 'wtc.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: 'wtc.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: 'wtc.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
   callbacks: {
     async jwt({ token, user }) {

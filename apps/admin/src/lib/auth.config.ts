@@ -1,5 +1,14 @@
 import type { NextAuthConfig } from 'next-auth';
 
+/**
+ * Admin panel NextAuth configuration
+ *
+ * SECURITY NOTES:
+ * - Uses separate cookie names from public site (wtc-admin.*)
+ * - Only ADMIN and SUPER_ADMIN roles can access
+ * - Session expires after 8 hours for security
+ * - AUTH_SECRET must be a strong random string
+ */
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
   pages: {
@@ -8,7 +17,36 @@ export const authConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 24 * 60 * 60, // 24 hours
+    maxAge: 8 * 60 * 60, // 8 hours - shorter for admin security
+  },
+  cookies: {
+    sessionToken: {
+      name: 'wtc-admin.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: 'wtc-admin.callback-url',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: 'wtc-admin.csrf-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: process.env.NODE_ENV === 'production',
+      },
+    },
   },
   callbacks: {
     async jwt({ token, user }) {

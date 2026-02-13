@@ -33,6 +33,8 @@ async function main() {
   console.log('✅ Cleaned existing data');
 
   // Create users
+  // NOTE: All seed users have emailVerified = new Date() for development testing
+  // In production, new users require email verification before purchasing
   const adminPassword = await hashPassword('Admin123!');
   const userPassword = await hashPassword('User123!');
 
