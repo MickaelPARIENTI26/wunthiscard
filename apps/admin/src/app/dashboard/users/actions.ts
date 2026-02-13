@@ -19,6 +19,26 @@ export async function banUser(userId: string) {
   const session = await auth();
   const adminId = requireAdmin(session);
 
+  // Cannot ban yourself
+  if (userId === adminId) {
+    throw new Error('You cannot ban yourself');
+  }
+
+  // Check if target user is an admin
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+
+  if (!targetUser) {
+    throw new Error('User not found');
+  }
+
+  // Cannot ban other admins
+  if (targetUser.role === 'ADMIN' || targetUser.role === 'SUPER_ADMIN') {
+    throw new Error('Cannot ban admin users');
+  }
+
   const user = await prisma.user.update({
     where: { id: userId },
     data: { isBanned: true },

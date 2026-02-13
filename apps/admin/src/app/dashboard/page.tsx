@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { prisma } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, Ticket, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, ShoppingCart, Users, Trophy } from 'lucide-react';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { RecentOrders } from '@/components/dashboard/recent-orders';
 import { ActiveCompetitions } from '@/components/dashboard/active-competitions';
@@ -17,6 +17,7 @@ async function getStats() {
   const [
     totalUsers,
     activeCompetitions,
+    totalOrdersData,
     todayOrders,
     weekOrders,
     monthOrders,
@@ -26,6 +27,11 @@ async function getStats() {
   ] = await Promise.all([
     prisma.user.count({ where: { role: 'USER' } }),
     prisma.competition.count({ where: { status: 'ACTIVE' } }),
+    prisma.order.aggregate({
+      where: { paymentStatus: 'SUCCEEDED' },
+      _sum: { totalAmount: true },
+      _count: true,
+    }),
     prisma.order.aggregate({
       where: {
         paymentStatus: 'SUCCEEDED',
@@ -82,6 +88,8 @@ async function getStats() {
   return {
     totalUsers,
     activeCompetitions,
+    totalOrders: totalOrdersData._count,
+    totalRevenue: Number(totalOrdersData._sum.totalAmount ?? 0),
     todayRevenue: Number(todayOrders._sum.totalAmount ?? 0),
     todayOrders: todayOrders._count,
     weekRevenue: Number(weekOrders._sum.totalAmount ?? 0),
@@ -186,28 +194,28 @@ async function DashboardStats() {
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title="Today's Revenue"
-          value={formatPrice(stats.todayRevenue)}
-          description={`${stats.todayOrders} orders today`}
-          icon={DollarSign}
-        />
-        <StatCard
-          title="Week Revenue"
-          value={formatPrice(stats.weekRevenue)}
-          description="Last 7 days"
-          icon={TrendingUp}
-        />
-        <StatCard
-          title="Tickets Sold"
-          value={stats.totalTicketsSold.toLocaleString()}
-          description="All time"
-          icon={Ticket}
-        />
-        <StatCard
-          title="Registered Users"
+          title="Total Users"
           value={stats.totalUsers.toLocaleString()}
-          description={`${stats.activeCompetitions} active competitions`}
+          description={`${stats.totalTicketsSold.toLocaleString()} tickets sold`}
           icon={Users}
+        />
+        <StatCard
+          title="Active Competitions"
+          value={stats.activeCompetitions.toLocaleString()}
+          description="Currently live"
+          icon={Trophy}
+        />
+        <StatCard
+          title="Total Orders"
+          value={stats.totalOrders.toLocaleString()}
+          description={`${stats.todayOrders} orders today`}
+          icon={ShoppingCart}
+        />
+        <StatCard
+          title="Total Revenue"
+          value={formatPrice(stats.totalRevenue)}
+          description={`${formatPrice(stats.weekRevenue)} this week`}
+          icon={DollarSign}
         />
       </div>
 

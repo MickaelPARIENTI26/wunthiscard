@@ -44,9 +44,67 @@ export async function createCompetition(formData: FormData) {
   const metaTitle = formData.get('metaTitle') as string | null;
   const metaDescription = formData.get('metaDescription') as string | null;
 
+  const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const questionChoices = JSON.parse(questionChoicesStr || '[]') as string[];
+
+  // Validation
+  const errors: string[] = [];
+
+  // P1-62: Title required
+  if (!title || title.trim().length === 0) {
+    errors.push('Title is required');
+  }
+
+  // P1-63, P1-64: Ticket price must be positive (at least £1)
+  if (isNaN(ticketPrice) || ticketPrice < 1) {
+    errors.push('Ticket price must be at least £1');
+  }
+
+  // P1-65: Total tickets must be positive
+  if (isNaN(totalTickets) || totalTickets < 1) {
+    errors.push('Total tickets must be at least 1');
+  }
+
+  // P1-66: Main image required
+  if (!mainImageUrl || mainImageUrl.trim().length === 0) {
+    errors.push('Main image is required');
+  }
+
+  // P1-67: QCM question required
+  if (!questionText || questionText.trim().length === 0) {
+    errors.push('Skill question is required');
+  }
+
+  // P1-68: Must have exactly 4 choices
+  const validChoices = questionChoices.filter(c => c && c.trim().length > 0);
+  if (validChoices.length !== 4) {
+    errors.push('Skill question must have exactly 4 answer choices');
+  }
+
+  // P1-69: Answer must be valid (0-3)
+  if (isNaN(questionAnswer) || questionAnswer < 0 || questionAnswer > 3) {
+    errors.push('Please select a correct answer');
+  }
+
+  // P1-70: Draw date must be in the future
+  const drawDateObj = new Date(drawDate);
+  if (isNaN(drawDateObj.getTime()) || drawDateObj <= new Date()) {
+    errors.push('Draw date must be in the future');
+  }
+
+  // P1-71: Sale start date must be before draw date
+  if (saleStartDate) {
+    const saleStartDateObj = new Date(saleStartDate);
+    if (saleStartDateObj >= drawDateObj) {
+      errors.push('Sale start date must be before draw date');
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(errors.join('. '));
+  }
+
   const slug = generateSlug(title);
-  const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').filter(Boolean) : [];
-  const questionChoices = JSON.parse(questionChoicesStr || '[]');
 
   // Check for unique slug
   let uniqueSlug = slug;
@@ -215,6 +273,18 @@ export async function updateCompetitionStatus(id: string, status: CompetitionSta
 
   if (!validTransitions[oldStatus]?.includes(status)) {
     throw new Error(`Invalid status transition from ${oldStatus} to ${status}`);
+  }
+
+  // Additional validation when activating
+  if (status === 'ACTIVE') {
+    // P1-93: Must have draw date
+    if (!competition.drawDate) {
+      throw new Error('Cannot activate: Draw date is required');
+    }
+    // P1-94: Must have QCM question
+    if (!competition.questionText || !competition.questionChoices || (competition.questionChoices as string[]).length !== 4) {
+      throw new Error('Cannot activate: Skill question with 4 choices is required');
+    }
   }
 
   // If activating, create tickets
