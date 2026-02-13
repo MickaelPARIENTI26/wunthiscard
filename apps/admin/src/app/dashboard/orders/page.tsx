@@ -8,6 +8,7 @@ interface OrdersPageProps {
   searchParams: Promise<{
     search?: string;
     status?: string;
+    competition?: string;
     page?: string;
   }>;
 }
@@ -16,6 +17,7 @@ async function OrdersData({ searchParams }: { searchParams: OrdersPageProps['sea
   const params = await searchParams;
   const search = params.search || '';
   const status = params.status || 'all';
+  const competitionId = params.competition || 'all';
   const page = parseInt(params.page || '1', 10);
   const pageSize = 20;
 
@@ -28,9 +30,10 @@ async function OrdersData({ searchParams }: { searchParams: OrdersPageProps['sea
       ],
     }),
     ...(status !== 'all' && { paymentStatus: status as 'PENDING' | 'SUCCEEDED' | 'FAILED' | 'REFUNDED' }),
+    ...(competitionId !== 'all' && { competitionId }),
   };
 
-  const [orders, totalCount] = await Promise.all([
+  const [orders, totalCount, competitions] = await Promise.all([
     prisma.order.findMany({
       where,
       include: {
@@ -49,6 +52,10 @@ async function OrdersData({ searchParams }: { searchParams: OrdersPageProps['sea
       take: pageSize,
     }),
     prisma.order.count({ where }),
+    prisma.competition.findMany({
+      select: { id: true, title: true },
+      orderBy: { title: 'asc' },
+    }),
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -62,6 +69,7 @@ async function OrdersData({ searchParams }: { searchParams: OrdersPageProps['sea
   return (
     <OrdersTable
       orders={serializedOrders}
+      competitions={competitions}
       currentPage={page}
       totalPages={totalPages}
       totalCount={totalCount}

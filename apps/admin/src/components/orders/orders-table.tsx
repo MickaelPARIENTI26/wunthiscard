@@ -53,8 +53,14 @@ interface OrderWithRelations {
   };
 }
 
+interface Competition {
+  id: string;
+  title: string;
+}
+
 interface OrdersTableProps {
   orders: OrderWithRelations[];
+  competitions: Competition[];
   currentPage: number;
   totalPages: number;
   totalCount: number;
@@ -69,7 +75,7 @@ const statusColors: Record<PaymentStatus, 'default' | 'secondary' | 'destructive
   CANCELLED: 'secondary',
 };
 
-export function OrdersTable({ orders, currentPage, totalPages, totalCount }: OrdersTableProps) {
+export function OrdersTable({ orders, competitions, currentPage, totalPages, totalCount }: OrdersTableProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -257,6 +263,22 @@ export function OrdersTable({ orders, currentPage, totalPages, totalCount }: Ord
             <SelectItem value="PENDING">Pending</SelectItem>
             <SelectItem value="FAILED">Failed</SelectItem>
             <SelectItem value="REFUNDED">Refunded</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select
+          value={searchParams.get('competition') || 'all'}
+          onValueChange={(value) => updateSearchParams('competition', value === 'all' ? '' : value)}
+        >
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Filter competition" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Competitions</SelectItem>
+            {competitions.map((comp) => (
+              <SelectItem key={comp.id} value={comp.id}>
+                {comp.title}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Button onClick={handleSearch}>Search</Button>

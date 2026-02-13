@@ -313,7 +313,7 @@ export const rateLimits = {
 };
 
 // Ticket reservation lock constants
-export const TICKET_RESERVATION_TTL = 600; // 10 minutes in seconds
+export const TICKET_RESERVATION_TTL = 300; // 5 minutes in seconds
 export const QCM_ATTEMPT_TTL = 900; // 15 minutes in seconds
 export const MAX_QCM_ATTEMPTS = 3;
 
