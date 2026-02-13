@@ -58,11 +58,11 @@ const CATEGORY_TABS = [
   { value: 'other', label: 'Other' },
 ];
 
+// No "Completed" option - users can see completed competitions on /winners page
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All Status' },
   { value: 'active', label: 'Active' },
-  { value: 'upcoming', label: 'Upcoming' },
-  { value: 'completed', label: 'Completed' },
+  { value: 'upcoming', label: 'Coming Soon' },
 ];
 
 const SORT_OPTIONS = [

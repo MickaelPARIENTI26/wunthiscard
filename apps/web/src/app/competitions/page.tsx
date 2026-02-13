@@ -36,11 +36,20 @@ const CATEGORY_FILTER_MAP: Record<string, string[]> = {
   other: ['YUGIOH', 'MTG', 'OTHER'],
 };
 
+// Only show ACTIVE, SOLD_OUT, and UPCOMING competitions
+// COMPLETED, CANCELLED, and DRAFT are hidden from the public competitions page
+// (Users can see completed competitions on the /winners page)
 const STATUS_FILTER_MAP: Record<string, string[]> = {
-  all: ['UPCOMING', 'ACTIVE', 'SOLD_OUT', 'COMPLETED'],
-  active: ['ACTIVE'],
+  all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING'],
+  active: ['ACTIVE', 'SOLD_OUT'], // Include SOLD_OUT with active (draw is still pending)
   upcoming: ['UPCOMING'],
-  completed: ['COMPLETED'],
+};
+
+// Status priority for sorting: ACTIVE first, then SOLD_OUT, then UPCOMING
+const STATUS_PRIORITY: Record<string, number> = {
+  ACTIVE: 1,
+  SOLD_OUT: 2,
+  UPCOMING: 3,
 };
 
 type SortOption = 'end-date' | 'price-low' | 'price-high' | 'popularity';
@@ -140,13 +149,42 @@ async function getCompetitions(searchParams: SearchParams) {
     },
   });
 
-  // If sorting by popularity, we need to sort by ticket count in JS
-  let sortedCompetitions = competitions as unknown as CompetitionWithCount[];
-  if (sort === 'popularity') {
-    sortedCompetitions = [...competitions].sort(
-      (a, b) => b._count.tickets - a._count.tickets
-    ) as unknown as CompetitionWithCount[];
-  }
+  // Sort competitions: first by status priority (ACTIVE > SOLD_OUT > UPCOMING), then by user's sort preference
+  let sortedCompetitions = [...competitions].sort((a, b) => {
+    // First, sort by status priority
+    const statusA = STATUS_PRIORITY[a.status] ?? 99;
+    const statusB = STATUS_PRIORITY[b.status] ?? 99;
+    if (statusA !== statusB) {
+      return statusA - statusB;
+    }
+
+    // Within the same status, apply the user's sort preference
+    switch (sort) {
+      case 'price-low': {
+        const priceA = typeof a.ticketPrice === 'object' && 'toNumber' in a.ticketPrice
+          ? a.ticketPrice.toNumber()
+          : Number(a.ticketPrice);
+        const priceB = typeof b.ticketPrice === 'object' && 'toNumber' in b.ticketPrice
+          ? b.ticketPrice.toNumber()
+          : Number(b.ticketPrice);
+        return priceA - priceB;
+      }
+      case 'price-high': {
+        const priceA = typeof a.ticketPrice === 'object' && 'toNumber' in a.ticketPrice
+          ? a.ticketPrice.toNumber()
+          : Number(a.ticketPrice);
+        const priceB = typeof b.ticketPrice === 'object' && 'toNumber' in b.ticketPrice
+          ? b.ticketPrice.toNumber()
+          : Number(b.ticketPrice);
+        return priceB - priceA;
+      }
+      case 'popularity':
+        return b._count.tickets - a._count.tickets;
+      case 'end-date':
+      default:
+        return new Date(a.drawDate).getTime() - new Date(b.drawDate).getTime();
+    }
+  }) as unknown as CompetitionWithCount[];
 
   return {
     competitions: sortedCompetitions.map((comp) => ({
