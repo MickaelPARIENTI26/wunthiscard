@@ -4,10 +4,11 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
-import { getReservation, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
+import { getReservation, extendReservation, recreateReservation, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
+  ticketNumbers: z.array(z.number().int().positive()).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { competitionId } = validation.data;
+    const { competitionId, ticketNumbers: providedTicketNumbers } = validation.data;
 
     // Verify user has passed QCM (check by userId first, then by IP for anonymous users who just logged in)
     let qcmPassed = await hasPassedQcm(competitionId, userId);
@@ -69,18 +70,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify user has a valid reservation
-    const reservation = await getReservation(competitionId, userId);
+    let reservation = await getReservation(competitionId, userId);
+
+    if (reservation) {
+      // Reservation exists - extend it for checkout
+      await extendReservation(competitionId, userId);
+      // Refresh reservation data after extension
+      reservation = await getReservation(competitionId, userId);
+    } else if (providedTicketNumbers && providedTicketNumbers.length > 0) {
+      // Reservation expired but client provided ticket numbers - recreate it
+      const recreateResult = await recreateReservation(competitionId, userId, providedTicketNumbers);
+      if (!recreateResult.success) {
+        return NextResponse.json(
+          { error: recreateResult.error || 'Failed to reserve tickets. Please select tickets again.' },
+          { status: 400 }
+        );
+      }
+      reservation = await getReservation(competitionId, userId);
+    }
+
     if (!reservation) {
       return NextResponse.json(
         { error: 'No active ticket reservation found. Please select tickets again.' },
-        { status: 400 }
-      );
-    }
-
-    // Check if reservation has expired
-    if (reservation.expiresAt < Date.now()) {
-      return NextResponse.json(
-        { error: 'Your ticket reservation has expired. Please select tickets again.' },
         { status: 400 }
       );
     }

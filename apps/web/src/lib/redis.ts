@@ -467,6 +467,47 @@ export async function getReservation(
   return typeof data === 'string' ? JSON.parse(data) : data;
 }
 
+// Extend/refresh an existing reservation TTL
+export async function extendReservation(
+  competitionId: string,
+  userId: string
+): Promise<{ success: boolean; expiresAt: number }> {
+  const reservationKey = getTicketReservationKey(competitionId, userId);
+  const data = await redis.get<string>(reservationKey);
+
+  if (!data) {
+    return { success: false, expiresAt: 0 };
+  }
+
+  const reservationData: ReservationData = typeof data === 'string' ? JSON.parse(data) : data;
+  const newExpiresAt = Date.now() + TICKET_RESERVATION_TTL * 1000;
+
+  // Update reservation with new expiry
+  reservationData.expiresAt = newExpiresAt;
+  await redis.set(reservationKey, JSON.stringify(reservationData), { ex: TICKET_RESERVATION_TTL });
+
+  // Also extend all ticket locks
+  for (const ticketNumber of reservationData.ticketNumbers) {
+    const lockKey = getTicketLockKey(competitionId, ticketNumber);
+    const lockedBy = await redis.get<string>(lockKey);
+    if (lockedBy === userId) {
+      await redis.expire(lockKey, TICKET_RESERVATION_TTL);
+    }
+  }
+
+  return { success: true, expiresAt: newExpiresAt };
+}
+
+// Recreate a reservation from ticket numbers (used when reservation expired but sessionStorage still has data)
+export async function recreateReservation(
+  competitionId: string,
+  userId: string,
+  ticketNumbers: number[]
+): Promise<{ success: boolean; expiresAt: number; error?: string }> {
+  // Simply call reserveTicketsInRedis - it handles atomicity
+  return reserveTicketsInRedis(competitionId, userId, ticketNumbers);
+}
+
 // Check if ticket is locked
 export async function isTicketLocked(
   competitionId: string,

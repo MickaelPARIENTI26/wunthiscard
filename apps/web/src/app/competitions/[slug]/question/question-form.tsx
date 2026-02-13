@@ -73,14 +73,9 @@ export function QuestionForm({
       const res = JSON.parse(reservationStored);
       setReservation(res);
 
-      // Check if reservation has expired
-      if (res.expiresAt < Date.now()) {
-        setError('Your ticket reservation has expired. Please select tickets again.');
-        sessionStorage.removeItem(`tickets_${competitionId}`);
-        sessionStorage.removeItem(`reservation_${competitionId}`);
-        setIsLoading(false);
-        return;
-      }
+      // If reservation looks expired locally, don't block - let the user try anyway
+      // The backend will attempt to recreate the reservation using the ticket numbers
+      // Only clear data if the user tries and fails
     } else if (pendingQuantityStored) {
       // Anonymous user - no reservation timer, just pending quantity
       const pending = JSON.parse(pendingQuantityStored);
@@ -112,9 +107,9 @@ export function QuestionForm({
     const updateCountdown = () => {
       const remaining = reservation.expiresAt - Date.now();
       if (remaining <= 0) {
-        setCountdown('0:00');
-        setError('Your ticket reservation has expired. Please select tickets again.');
-        setReservation(null);
+        // Timer expired but don't show hard error - user can still try
+        // Backend will attempt to recreate reservation using ticket numbers
+        setCountdown('expired');
       } else {
         setCountdown(formatCountdown(remaining));
       }
@@ -164,6 +159,8 @@ export function QuestionForm({
           competitionId,
           answer: selectedAnswer,
           turnstileToken: turnstileToken || undefined,
+          // Include ticket numbers so backend can recreate reservation if expired
+          ticketNumbers: selectedTickets.length > 0 ? selectedTickets : undefined,
         }),
       });
 
@@ -188,6 +185,18 @@ export function QuestionForm({
       if (data.correct) {
         // Store that they passed
         sessionStorage.setItem(`qcm_passed_${competitionId}`, 'true');
+
+        // Update reservation expiry if backend extended/recreated it
+        if (data.expiresAt) {
+          const reservationData = sessionStorage.getItem(`reservation_${competitionId}`);
+          if (reservationData) {
+            const parsed = JSON.parse(reservationData);
+            parsed.expiresAt = data.expiresAt;
+            sessionStorage.setItem(`reservation_${competitionId}`, JSON.stringify(parsed));
+            // Update local state so timer shows correct time
+            setReservation({ ...reservation, expiresAt: data.expiresAt } as { expiresAt: number });
+          }
+        }
       }
     } catch {
       setError('Network error. Please try again.');
@@ -281,11 +290,19 @@ export function QuestionForm({
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Reservation timer for authenticated users */}
-          {reservation && countdown && (
+          {reservation && countdown && countdown !== 'expired' && (
             <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
               <Clock className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-amber-800 dark:text-amber-200">
                 Complete checkout within <span className="font-bold">{countdown}</span>
+              </AlertDescription>
+            </Alert>
+          )}
+          {reservation && countdown === 'expired' && (
+            <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
+              <Clock className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800 dark:text-orange-200">
+                Timer expired — <span className="font-bold">proceed to checkout now</span> to complete your purchase
               </AlertDescription>
             </Alert>
           )}
@@ -338,10 +355,18 @@ export function QuestionForm({
       <CardContent className="space-y-4">
         {/* Reservation timer */}
         {reservation && countdown && (
-          <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-            <Clock className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800 dark:text-amber-200">
-              Tickets reserved for <span className="font-bold">{countdown}</span>
+          <Alert className={cn(
+            countdown === 'expired'
+              ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20'
+              : 'border-amber-500 bg-amber-50 dark:bg-amber-950/20'
+          )}>
+            <Clock className={cn('h-4 w-4', countdown === 'expired' ? 'text-orange-600' : 'text-amber-600')} />
+            <AlertDescription className={countdown === 'expired' ? 'text-orange-800 dark:text-orange-200' : 'text-amber-800 dark:text-amber-200'}>
+              {countdown === 'expired' ? (
+                <>Timer expired — <span className="font-bold">submit now</span> to try to keep your tickets</>
+              ) : (
+                <>Tickets reserved for <span className="font-bold">{countdown}</span></>
+              )}
             </AlertDescription>
           </Alert>
         )}

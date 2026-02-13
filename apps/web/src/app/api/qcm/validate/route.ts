@@ -10,6 +10,8 @@ import {
   markQcmPassed,
   hasPassedQcm,
   getReservation,
+  extendReservation,
+  recreateReservation,
   MAX_QCM_ATTEMPTS,
 } from '@/lib/redis';
 
@@ -17,6 +19,7 @@ const validateSchema = z.object({
   competitionId: z.string().min(1),
   answer: z.number().int().min(0).max(3),
   turnstileToken: z.string().optional(),
+  ticketNumbers: z.array(z.number().int().positive()).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -41,7 +44,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { competitionId, answer, turnstileToken } = validation.data;
+    const { competitionId, answer, turnstileToken, ticketNumbers } = validation.data;
 
     // Verify Turnstile captcha if token provided
     if (turnstileToken) {
@@ -78,10 +81,31 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // For authenticated users, verify they have a valid reservation
+    // For authenticated users, verify/manage their reservation
     // Anonymous users will create reservation at checkout
+    let newExpiresAt: number | null = null;
     if (userId) {
-      const reservation = await getReservation(competitionId, userId);
+      let reservation = await getReservation(competitionId, userId);
+
+      if (reservation) {
+        // Reservation exists - extend it to prevent expiration during checkout
+        const extendResult = await extendReservation(competitionId, userId);
+        if (extendResult.success) {
+          newExpiresAt = extendResult.expiresAt;
+        }
+      } else if (ticketNumbers && ticketNumbers.length > 0) {
+        // Reservation expired but we have ticket numbers from sessionStorage - recreate it
+        const recreateResult = await recreateReservation(competitionId, userId, ticketNumbers);
+        if (!recreateResult.success) {
+          return NextResponse.json(
+            { error: recreateResult.error || 'Failed to reserve tickets. Please select tickets again.' },
+            { status: 400 }
+          );
+        }
+        newExpiresAt = recreateResult.expiresAt;
+        reservation = await getReservation(competitionId, userId);
+      }
+
       if (!reservation) {
         return NextResponse.json(
           { error: 'No active ticket reservation found. Please select tickets again.' },
@@ -138,6 +162,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         correct: true,
         message: 'Correct! You can now proceed to checkout.',
+        // Return new expiry time so client can update the timer
+        ...(newExpiresAt && { expiresAt: newExpiresAt }),
       });
     }
 

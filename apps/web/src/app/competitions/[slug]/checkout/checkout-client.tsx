@@ -63,19 +63,15 @@ export function CheckoutClient({
 
     setQcmPassed(true);
 
-    // If we have a valid (non-expired) reservation with ticket numbers, use it
+    // If we have reservation data with ticket numbers, use it
+    // Even if it appears expired locally, we still keep the data
+    // The backend will attempt to recreate the reservation using ticket numbers
     if (stored && reservationStored) {
       const res = JSON.parse(reservationStored);
-      // Check if reservation has expired
-      if (res.expiresAt > Date.now()) {
-        setSelectedTickets(JSON.parse(stored));
-        setReservation(res);
-        setIsLoading(false);
-        return;
-      }
-      // Reservation expired, clear it
-      sessionStorage.removeItem('reservation_' + competitionId);
-      sessionStorage.removeItem('tickets_' + competitionId);
+      setSelectedTickets(JSON.parse(stored));
+      setReservation(res);
+      setIsLoading(false);
+      return;
     }
 
     // For anonymous users who just logged in: check for pending quantity
@@ -141,9 +137,9 @@ export function CheckoutClient({
     const updateCountdown = () => {
       const remaining = reservation.expiresAt - Date.now();
       if (remaining <= 0) {
-        setCountdown('0:00');
-        setError('Your ticket reservation has expired. Please select tickets again.');
-        setReservation(null);
+        // Timer expired but don't block - let them try to checkout anyway
+        // Backend will attempt to recreate reservation using ticket numbers
+        setCountdown('expired');
       } else {
         setCountdown(formatCountdown(remaining));
       }
@@ -165,7 +161,11 @@ export function CheckoutClient({
       const response = await fetch('/api/checkout/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitionId }),
+        body: JSON.stringify({
+          competitionId,
+          // Include ticket numbers so backend can recreate reservation if expired
+          ticketNumbers: selectedTickets.length > 0 ? selectedTickets : undefined,
+        }),
       });
 
       const data = await response.json();
@@ -240,11 +240,19 @@ export function CheckoutClient({
       </div>
 
       {/* Reservation Timer */}
-      {countdown && (
+      {countdown && countdown !== 'expired' && (
         <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
           <Clock className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-800 dark:text-amber-200">
             Complete checkout within <span className="font-bold text-lg">{countdown}</span>
+          </AlertDescription>
+        </Alert>
+      )}
+      {countdown === 'expired' && (
+        <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
+          <Clock className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-800 dark:text-orange-200">
+            Timer expired — <span className="font-bold">complete checkout now</span> to try to keep your tickets
           </AlertDescription>
         </Alert>
       )}
