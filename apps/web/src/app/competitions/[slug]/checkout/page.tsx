@@ -63,13 +63,18 @@ export default async function CheckoutPage({
   const { slug } = await params;
 
   // Redirect to login if not authenticated
-  if (!session?.user) {
+  if (!session?.user?.id) {
     const callbackUrl = '/competitions/' + slug + '/checkout';
     redirect('/login?callbackUrl=' + encodeURIComponent(callbackUrl));
   }
 
-  // Check if email is verified (required for payment)
-  if (!session.user.emailVerified) {
+  // Check email verification from DATABASE (session may be stale)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { emailVerified: true },
+  });
+
+  if (!user?.emailVerified) {
     redirect('/email-not-verified?callbackUrl=' + encodeURIComponent('/competitions/' + slug + '/checkout'));
   }
 
