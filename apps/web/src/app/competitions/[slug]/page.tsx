@@ -306,33 +306,39 @@ export default async function CompetitionDetailPage({
 
               {/* CTA Button */}
               {isActive && (
-                <GetTicketsButton
-                  competitionSlug={slug}
-                  className="w-full text-lg font-semibold"
-                  size="lg"
-                  style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                    color: 'black',
-                  }}
-                >
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Get Your Tickets
-                </GetTicketsButton>
+                <>
+                  <GetTicketsButton
+                    competitionSlug={slug}
+                    className="w-full text-lg font-semibold"
+                    size="lg"
+                    style={{
+                      background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                      color: 'black',
+                    }}
+                  >
+                    <Sparkles className="h-5 w-5 mr-2" />
+                    Get Your Tickets
+                  </GetTicketsButton>
+                  <FreeEntryNotice competitionTitle={competition.title} />
+                </>
               )}
 
               {isUpcoming && (
-                <Button
-                  size="lg"
-                  className="w-full text-lg"
-                  disabled
-                  style={{
-                    background: 'oklch(0.25 0.02 270)',
-                    color: 'oklch(0.6 0.02 270)',
-                  }}
-                >
-                  <Clock className="h-5 w-5 mr-2" />
-                  Coming Soon
-                </Button>
+                <>
+                  <Button
+                    size="lg"
+                    className="w-full text-lg"
+                    disabled
+                    style={{
+                      background: 'oklch(0.25 0.02 270)',
+                      color: 'oklch(0.6 0.02 270)',
+                    }}
+                  >
+                    <Clock className="h-5 w-5 mr-2" />
+                    Coming Soon
+                  </Button>
+                  <FreeEntryNotice competitionTitle={competition.title} />
+                </>
               )}
 
               {isSoldOut && (
@@ -390,11 +396,6 @@ export default async function CompetitionDetailPage({
                 </div>
               )}
             </div>
-
-            {/* Free Entry Notice */}
-            {(isActive || isUpcoming) && (
-              <FreeEntryNotice competitionTitle={competition.title} />
-            )}
           </div>
         </div>
 
