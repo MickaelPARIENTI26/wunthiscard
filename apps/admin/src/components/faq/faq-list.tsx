@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import DOMPurify from 'dompurify';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -64,6 +65,7 @@ function SafeHtml({ html, className }: { html: string; className?: string }) {
 }
 
 export function FaqList({ faqs, categories }: FaqListProps) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -135,7 +137,20 @@ export function FaqList({ faqs, categories }: FaqListProps) {
                 <AccordionItem
                   key={faq.id}
                   value={faq.id}
-                  className="border rounded-lg px-4"
+                  className="border rounded-lg px-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={(e) => {
+                    // Don't navigate if clicking on buttons, dropdown menu, or accordion chevron
+                    const target = e.target as HTMLElement;
+                    if (
+                      target.closest('button') ||
+                      target.closest('[role="menuitem"]') ||
+                      target.closest('svg') ||
+                      target.closest('[data-radix-collection-item]')
+                    ) {
+                      return;
+                    }
+                    router.push(`/dashboard/faq/${faq.id}`);
+                  }}
                 >
                   <div className="flex items-center justify-between">
                     <AccordionTrigger className="flex-1 text-left hover:no-underline">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   useReactTable,
   getCoreRowModel,
@@ -281,6 +282,7 @@ const columns: ColumnDef<Competition>[] = [
 ];
 
 export function CompetitionsTable({ data }: CompetitionsTableProps) {
+  const router = useRouter();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -372,7 +374,18 @@ export function CompetitionsTable({ data }: CompetitionsTableProps) {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={(e) => {
+                    // Don't navigate if clicking on action menu or buttons
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('[role="menuitem"]')) {
+                      return;
+                    }
+                    router.push(`/dashboard/competitions/${row.original.id}/edit`);
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

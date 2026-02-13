@@ -314,7 +314,18 @@ export function OrdersTable({ orders, competitions, currentPage, totalPages, tot
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={(e) => {
+                    // Don't navigate if clicking on action buttons or links
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a')) {
+                      return;
+                    }
+                    router.push(`/dashboard/orders/${row.original.id}`);
+                  }}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
