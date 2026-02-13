@@ -11,16 +11,16 @@ import { Skeleton } from '@/components/ui/skeleton';
 // Revalidate the home page every 60 seconds
 export const revalidate = 60;
 
-// Fetch featured competition (most recent active competition with highest prize value)
+// Fetch featured competition
+// Priority: 1. Explicitly featured competition (isFeatured = true)
+//           2. Fallback: active competition with highest prize value
 async function getFeaturedCompetition() {
-  const competition = await prisma.competition.findFirst({
+  // First, try to find an explicitly featured competition
+  let competition = await prisma.competition.findFirst({
     where: {
       status: 'ACTIVE',
+      isFeatured: true,
     },
-    orderBy: [
-      { prizeValue: 'desc' },
-      { createdAt: 'desc' },
-    ],
     select: {
       id: true,
       slug: true,
@@ -32,6 +32,29 @@ async function getFeaturedCompetition() {
       category: true,
     },
   });
+
+  // Fallback: get the active competition with highest prize value
+  if (!competition) {
+    competition = await prisma.competition.findFirst({
+      where: {
+        status: 'ACTIVE',
+      },
+      orderBy: [
+        { prizeValue: 'desc' },
+        { createdAt: 'desc' },
+      ],
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        subtitle: true,
+        mainImageUrl: true,
+        prizeValue: true,
+        drawDate: true,
+        category: true,
+      },
+    });
+  }
 
   if (!competition) return null;
 

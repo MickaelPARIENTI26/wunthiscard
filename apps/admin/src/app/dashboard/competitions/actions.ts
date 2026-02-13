@@ -583,3 +583,60 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
     refundedAmount,
   };
 }
+
+export async function setFeaturedCompetition(competitionId: string | null) {
+  const session = await auth();
+  if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+    throw new Error('Unauthorized');
+  }
+
+  // If setting a new competition as featured, validate it
+  if (competitionId) {
+    const competition = await prisma.competition.findUnique({
+      where: { id: competitionId },
+    });
+
+    if (!competition) {
+      throw new Error('Competition not found');
+    }
+
+    // Only ACTIVE competitions can be featured
+    if (competition.status !== 'ACTIVE') {
+      throw new Error('Only active competitions can be featured on the homepage');
+    }
+  }
+
+  // Use a transaction to ensure only one competition is featured at a time
+  await prisma.$transaction(async (tx) => {
+    // Un-feature all competitions first
+    await tx.competition.updateMany({
+      where: { isFeatured: true },
+      data: { isFeatured: false },
+    });
+
+    // Set the new featured competition (if provided)
+    if (competitionId) {
+      await tx.competition.update({
+        where: { id: competitionId },
+        data: { isFeatured: true },
+      });
+    }
+  });
+
+  // Log action
+  await prisma.auditLog.create({
+    data: {
+      userId: session.user.id,
+      action: competitionId ? 'COMPETITION_FEATURED' : 'COMPETITION_UNFEATURED',
+      entity: 'competition',
+      entityId: competitionId ?? undefined,
+      metadata: { competitionId },
+    },
+  });
+
+  revalidatePath('/dashboard/competitions');
+  revalidatePath('/dashboard/settings');
+  if (competitionId) {
+    revalidatePath(`/dashboard/competitions/${competitionId}`);
+  }
+}

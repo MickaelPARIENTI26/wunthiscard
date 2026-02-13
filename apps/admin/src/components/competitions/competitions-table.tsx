@@ -53,6 +53,7 @@ import {
   Eye,
   ArrowUpDown,
   Dices,
+  Star,
 } from 'lucide-react';
 import type { CompetitionCategory, CompetitionStatus } from '@winthiscard/database';
 import { deleteCompetition, duplicateCompetition, updateCompetitionStatus } from '@/app/dashboard/competitions/actions';
@@ -63,6 +64,7 @@ interface Competition {
   title: string;
   category: CompetitionCategory;
   status: CompetitionStatus;
+  isFeatured: boolean;
   prizeValue: { toString(): string };
   ticketPrice: { toString(): string };
   totalTickets: number;
@@ -102,7 +104,15 @@ const columns: ColumnDef<Competition>[] = [
     ),
     cell: ({ row }) => (
       <div>
-        <div className="font-medium">{row.original.title}</div>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">{row.original.title}</span>
+          {row.original.isFeatured && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500 text-black">
+              <Star className="h-3 w-3" fill="currentColor" />
+              FEATURED
+            </span>
+          )}
+        </div>
         <div className="text-xs text-muted-foreground">
           {COMPETITION_CATEGORIES[row.original.category]}
         </div>

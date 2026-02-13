@@ -128,6 +128,7 @@ async function main() {
       category: CompetitionCategory.POKEMON,
       subcategory: 'Base Set',
       status: CompetitionStatus.ACTIVE,
+      isFeatured: true, // Featured on homepage hero
       prizeValue: 150000,
       ticketPrice: 9.99,
       totalTickets: 5000,

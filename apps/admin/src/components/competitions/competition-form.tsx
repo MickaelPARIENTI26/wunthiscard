@@ -18,7 +18,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { COMPETITION_CATEGORIES } from '@winthiscard/shared';
 import { createCompetition, updateCompetition } from '@/app/dashboard/competitions/actions';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
-import { Loader2 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Loader2, Star } from 'lucide-react';
+import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
 import type { Competition } from '@winthiscard/database';
 
 // Serialized competition type with number instead of Decimal
@@ -34,12 +36,31 @@ interface CompetitionFormProps {
 export function CompetitionForm({ competition }: CompetitionFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTogglingFeatured, setIsTogglingFeatured] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(competition?.isFeatured ?? false);
   const [descriptionLong, setDescriptionLong] = useState(competition?.descriptionLong ?? '');
   const [questionChoices, setQuestionChoices] = useState<string[]>(
     (competition?.questionChoices as string[]) ?? ['', '', '', '']
   );
 
   const isEditing = !!competition;
+  const isActive = competition?.status === 'ACTIVE';
+
+  async function handleToggleFeatured(checked: boolean) {
+    if (!competition) return;
+
+    setIsTogglingFeatured(true);
+    try {
+      await setFeaturedCompetition(checked ? competition.id : null);
+      setIsFeatured(checked);
+    } catch (error) {
+      console.error('Failed to update featured status:', error);
+      // Revert on error
+      setIsFeatured(!checked);
+    } finally {
+      setIsTogglingFeatured(false);
+    }
+  }
 
   async function handleSubmit(formData: FormData) {
     setIsSubmitting(true);
@@ -70,6 +91,35 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
         </TabsList>
 
         <TabsContent value="basic">
+          {/* Featured Competition Toggle - only for editing active competitions */}
+          {isEditing && (
+            <Card className={`mb-6 ${isFeatured ? 'border-amber-500 bg-amber-500/5' : ''}`}>
+              <CardContent className="flex items-center justify-between py-4">
+                <div className="flex items-center gap-3">
+                  <div className={`p-2 rounded-full ${isFeatured ? 'bg-amber-500 text-black' : 'bg-muted'}`}>
+                    <Star className="h-5 w-5" fill={isFeatured ? 'currentColor' : 'none'} />
+                  </div>
+                  <div>
+                    <Label className="text-base font-semibold">Featured on Homepage</Label>
+                    <p className="text-sm text-muted-foreground">
+                      {isFeatured
+                        ? 'This competition is displayed in the homepage hero section'
+                        : isActive
+                        ? 'Display this competition in the homepage hero section'
+                        : 'Only ACTIVE competitions can be featured'}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={isFeatured}
+                  onCheckedChange={handleToggleFeatured}
+                  disabled={!isActive || isTogglingFeatured}
+                  aria-label="Toggle featured status"
+                />
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Basic Information</CardTitle>

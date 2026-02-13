@@ -4,6 +4,7 @@ import { CompanySettingsForm } from '@/components/settings/company-settings-form
 import { SocialSettingsForm } from '@/components/settings/social-settings-form';
 import { BonusTiersForm } from '@/components/settings/bonus-tiers-form';
 import { PaymentSettingsForm } from '@/components/settings/payment-settings-form';
+import { HomepageSettingsForm } from '@/components/settings/homepage-settings-form';
 
 async function getSettings(): Promise<Record<string, string>> {
   const settings = await prisma.siteSettings.findUnique({
@@ -28,8 +29,31 @@ async function getSettings(): Promise<Record<string, string>> {
   return result;
 }
 
+async function getActiveCompetitions() {
+  const competitions = await prisma.competition.findMany({
+    where: { status: 'ACTIVE' },
+    select: {
+      id: true,
+      title: true,
+      prizeValue: true,
+      isFeatured: true,
+    },
+    orderBy: { prizeValue: 'desc' },
+  });
+
+  return competitions.map(c => ({
+    ...c,
+    prizeValue: Number(c.prizeValue),
+  }));
+}
+
 export default async function SettingsPage() {
-  const settings = await getSettings();
+  const [settings, activeCompetitions] = await Promise.all([
+    getSettings(),
+    getActiveCompetitions(),
+  ]);
+
+  const currentFeaturedId = activeCompetitions.find(c => c.isFeatured)?.id ?? null;
 
   return (
     <div className="space-y-6">
@@ -40,13 +64,21 @@ export default async function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="company" className="space-y-6">
+      <Tabs defaultValue="homepage" className="space-y-6">
         <TabsList>
+          <TabsTrigger value="homepage">Homepage</TabsTrigger>
           <TabsTrigger value="company">Company</TabsTrigger>
           <TabsTrigger value="social">Social Media</TabsTrigger>
           <TabsTrigger value="bonus">Bonus Tiers</TabsTrigger>
           <TabsTrigger value="payment">Payment</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="homepage">
+          <HomepageSettingsForm
+            activeCompetitions={activeCompetitions}
+            currentFeaturedId={currentFeaturedId}
+          />
+        </TabsContent>
 
         <TabsContent value="company">
           <CompanySettingsForm settings={settings} />

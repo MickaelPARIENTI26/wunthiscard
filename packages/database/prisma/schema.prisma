@@ -128,6 +128,7 @@ model Competition {
   category         CompetitionCategory
   subcategory      String?
   status           CompetitionStatus   @default(DRAFT)
+  isFeatured       Boolean             @default(false) // Only one competition can be featured on homepage
 
   // Prize details
   prizeValue        Decimal @db.Decimal(10, 2) // £ value
@@ -174,6 +175,7 @@ model Competition {
   @@index([status])
   @@index([category])
   @@index([drawDate])
+  @@index([isFeatured])
 }
 
 enum CompetitionCategory {
