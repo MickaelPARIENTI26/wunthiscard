@@ -341,74 +341,97 @@ export function TicketSelector({
           )}
 
           {/* Bonus Tiers Section */}
-          <Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 dark:border-green-900 dark:from-green-950/30 dark:to-emerald-950/30">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg text-green-700 dark:text-green-400">
-                <Gift className="h-5 w-5" />
-                Buy more, get free tickets!
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3">
-                {BONUS_TIERS.map((tier) => {
-                  const isAchieved = quantity >= tier.min;
-                  const isNext = nextTier?.min === tier.min;
+          <div
+            className="rounded-2xl p-5"
+            style={{
+              background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+              border: '1px solid oklch(0.25 0.02 270)',
+            }}
+          >
+            <h3
+              className="flex items-center gap-2 text-lg font-semibold mb-4"
+              style={{ color: 'oklch(0.82 0.165 85)' }}
+            >
+              <Gift className="h-5 w-5" />
+              Buy more, get free tickets!
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {BONUS_TIERS.map((tier) => {
+                const isAchieved = quantity >= tier.min;
+                const isNext = nextTier?.min === tier.min;
 
-                  return (
-                    <div
-                      key={tier.min}
-                      className={cn(
-                        'flex items-center justify-between rounded-lg px-4 py-3 transition-all',
-                        isAchieved
-                          ? 'bg-green-200 dark:bg-green-800/50 ring-2 ring-green-500'
-                          : isNext
-                            ? 'bg-white dark:bg-green-900/30 ring-2 ring-green-400 ring-dashed'
-                            : 'bg-white/60 dark:bg-green-900/20'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            'flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold',
-                            isAchieved
-                              ? 'bg-green-500 text-white'
-                              : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-                          )}
-                        >
-                          {isAchieved ? <Check className="h-4 w-4" /> : tier.min}
-                        </div>
-                        <span
-                          className={cn(
-                            'font-medium',
-                            isAchieved && 'text-green-800 dark:text-green-300'
-                          )}
-                        >
-                          {tier.min} tickets
-                        </span>
-                      </div>
-                      <Badge
-                        className={cn(
-                          isAchieved
-                            ? 'bg-green-600 text-white'
-                            : 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                        )}
+                return (
+                  <div
+                    key={tier.min}
+                    className="flex items-center justify-between rounded-xl px-4 py-3 transition-all"
+                    style={{
+                      background: isAchieved
+                        ? 'linear-gradient(135deg, oklch(0.35 0.12 145) 0%, oklch(0.25 0.1 145) 100%)'
+                        : 'oklch(0.18 0.02 270)',
+                      border: isAchieved
+                        ? '2px solid oklch(0.55 0.18 145)'
+                        : isNext
+                          ? '2px dashed oklch(0.45 0.12 145)'
+                          : '1px solid oklch(0.25 0.02 270)',
+                      boxShadow: isAchieved
+                        ? '0 0 12px oklch(0.5 0.15 145 / 0.3)'
+                        : 'none',
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold"
+                        style={{
+                          background: isAchieved
+                            ? 'oklch(0.55 0.18 145)'
+                            : 'oklch(0.25 0.02 270)',
+                          color: isAchieved ? 'white' : 'oklch(0.6 0.02 270)',
+                        }}
                       >
-                        +{tier.bonus} FREE
-                      </Badge>
+                        {isAchieved ? <Check className="h-4 w-4" /> : tier.min}
+                      </div>
+                      <span
+                        className="font-medium"
+                        style={{
+                          color: isAchieved
+                            ? 'white'
+                            : isNext
+                              ? 'oklch(0.75 0.02 270)'
+                              : 'oklch(0.55 0.02 270)',
+                        }}
+                      >
+                        {tier.min} tickets
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
+                    <span
+                      className="rounded-full px-2.5 py-1 text-xs font-bold"
+                      style={{
+                        background: isAchieved
+                          ? 'oklch(0.45 0.15 145)'
+                          : 'oklch(0.25 0.08 145)',
+                        color: isAchieved
+                          ? 'white'
+                          : 'oklch(0.65 0.12 145)',
+                      }}
+                    >
+                      +{tier.bonus} FREE
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
 
-              {nextTier && ticketsToNextTier > 0 && (
-                <p className="mt-4 text-center text-sm font-medium text-green-700 dark:text-green-400">
-                  <Sparkles className="inline h-4 w-4 mr-1" />
-                  Buy {ticketsToNextTier} more to unlock {nextTier.bonus} free
-                  ticket{nextTier.bonus > 1 ? 's' : ''}!
-                </p>
-              )}
-            </CardContent>
-          </Card>
+            {nextTier && ticketsToNextTier > 0 && (
+              <p
+                className="mt-4 text-center text-sm font-medium"
+                style={{ color: 'oklch(0.82 0.165 85)' }}
+              >
+                <Sparkles className="inline h-4 w-4 mr-1" />
+                Buy {ticketsToNextTier} more to unlock {nextTier.bonus} free
+                ticket{nextTier.bonus > 1 ? 's' : ''}!
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Right Column - 40% (2/5) - Sticky Order Summary */}
@@ -589,49 +612,87 @@ export function TicketSelector({
         </Card>
 
         {/* Bonus Tiers - Compact for mobile */}
-        <Card className="border-green-200 bg-green-50/50 dark:border-green-900 dark:bg-green-950/20">
-          <CardHeader className="pb-2 pt-3">
-            <CardTitle className="flex items-center gap-2 text-base text-green-700 dark:text-green-400">
-              <Gift className="h-4 w-4" />
-              Free ticket bonuses
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex flex-wrap gap-2">
-              {BONUS_TIERS.map((tier) => {
-                const isAchieved = quantity >= tier.min;
-                const isNext = nextTier?.min === tier.min;
+        <div
+          className="rounded-xl p-4"
+          style={{
+            background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
+            border: '1px solid oklch(0.25 0.02 270)',
+          }}
+        >
+          <h3
+            className="flex items-center gap-2 text-base font-semibold mb-3"
+            style={{ color: 'oklch(0.82 0.165 85)' }}
+          >
+            <Gift className="h-4 w-4" />
+            Free ticket bonuses
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {BONUS_TIERS.map((tier) => {
+              const isAchieved = quantity >= tier.min;
+              const isNext = nextTier?.min === tier.min;
 
-                return (
-                  <div
-                    key={tier.min}
-                    className={cn(
-                      'flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition-all',
-                      isAchieved
-                        ? 'bg-green-200 dark:bg-green-800/50 ring-1 ring-green-500'
-                        : isNext
-                          ? 'bg-white dark:bg-green-900/30 ring-1 ring-green-400 ring-dashed'
-                          : 'bg-white/60 dark:bg-green-900/20'
+              return (
+                <div
+                  key={tier.min}
+                  className="flex items-center justify-between rounded-lg px-3 py-2 text-sm transition-all"
+                  style={{
+                    background: isAchieved
+                      ? 'linear-gradient(135deg, oklch(0.35 0.12 145) 0%, oklch(0.25 0.1 145) 100%)'
+                      : 'oklch(0.18 0.02 270)',
+                    border: isAchieved
+                      ? '2px solid oklch(0.55 0.18 145)'
+                      : isNext
+                        ? '2px dashed oklch(0.45 0.12 145)'
+                        : '1px solid oklch(0.25 0.02 270)',
+                    boxShadow: isAchieved
+                      ? '0 0 8px oklch(0.5 0.15 145 / 0.3)'
+                      : 'none',
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    {isAchieved && (
+                      <Check
+                        className="h-3.5 w-3.5 flex-shrink-0"
+                        style={{ color: 'oklch(0.75 0.18 145)' }}
+                      />
                     )}
-                  >
-                    {isAchieved && <Check className="h-3 w-3 text-green-600" />}
-                    <span className={isAchieved ? 'font-medium' : ''}>
-                      {tier.min}
-                    </span>
-                    <span className="text-green-600 dark:text-green-400 font-medium">
-                      +{tier.bonus}
+                    <span
+                      className="font-medium"
+                      style={{
+                        color: isAchieved
+                          ? 'white'
+                          : isNext
+                            ? 'oklch(0.75 0.02 270)'
+                            : 'oklch(0.55 0.02 270)',
+                      }}
+                    >
+                      {tier.min} tickets
                     </span>
                   </div>
-                );
-              })}
-            </div>
-            {nextTier && ticketsToNextTier > 0 && ticketsToNextTier <= 10 && (
-              <p className="mt-2 text-xs font-medium text-green-700 dark:text-green-400">
-                {ticketsToNextTier} more for +{nextTier.bonus} free!
-              </p>
-            )}
-          </CardContent>
-        </Card>
+                  <span
+                    className="font-bold text-xs"
+                    style={{
+                      color: isAchieved
+                        ? 'oklch(0.85 0.18 145)'
+                        : 'oklch(0.55 0.12 145)',
+                    }}
+                  >
+                    +{tier.bonus} FREE
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          {nextTier && ticketsToNextTier > 0 && ticketsToNextTier <= 10 && (
+            <p
+              className="mt-3 text-xs font-medium text-center"
+              style={{ color: 'oklch(0.82 0.165 85)' }}
+            >
+              <Sparkles className="inline h-3 w-3 mr-1" />
+              {ticketsToNextTier} more for +{nextTier.bonus} free!
+            </p>
+          )}
+        </div>
 
         {/* Alerts */}
         {reservation && countdown && (
