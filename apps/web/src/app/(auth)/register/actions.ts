@@ -86,10 +86,12 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
     const verificationToken = await generateVerificationToken();
     const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
+    // TODO: Remove auto-verify in production — email verification should be required
+    const isProduction = process.env.NODE_ENV === 'production';
+
     // Create the user in a transaction
     await prisma.$transaction(async (tx) => {
       // Create user
-      // TODO: In production, set emailVerified to null and require email verification
       const user = await tx.user.create({
         data: {
           email: email.toLowerCase(),
@@ -97,7 +99,9 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
           firstName,
           lastName,
           dateOfBirth,
-          emailVerified: new Date(), // Auto-verify for development (remove in production)
+          // In development: auto-verify emails to skip verification flow
+          // In production: require email verification (set to null)
+          emailVerified: isProduction ? null : new Date(),
         },
       });
 
