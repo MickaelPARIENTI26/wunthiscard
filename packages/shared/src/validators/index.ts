@@ -22,8 +22,28 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
   firstName: z.string().min(1, 'First name is required').max(50).trim(),
   lastName: z.string().min(1, 'Last name is required').max(50).trim(),
+  dateOfBirth: z.coerce.date({
+    required_error: 'Date of birth is required',
+    invalid_type_error: 'Invalid date',
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+}).refine((data) => {
+  const today = new Date();
+  const birthDate = new Date(data.dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 18;
+}, {
+  message: 'You must be at least 18 years old to register',
+  path: ['dateOfBirth'],
 });
 
 export const forgotPasswordSchema = z.object({

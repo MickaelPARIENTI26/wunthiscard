@@ -65,7 +65,7 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
       };
     }
 
-    const { email, password, firstName, lastName } = validationResult.data;
+    const { email, password, firstName, lastName, dateOfBirth } = validationResult.data;
 
     // Check if email already exists
     const existingUser = await prisma.user.findUnique({
@@ -96,6 +96,7 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
           passwordHash,
           firstName,
           lastName,
+          dateOfBirth,
           emailVerified: new Date(), // Auto-verify for development (remove in production)
         },
       });

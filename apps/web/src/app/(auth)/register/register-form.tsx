@@ -20,11 +20,37 @@ import { registerUser } from './actions';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
-// Extended schema with terms acceptance
-const registerFormSchema = registerSchema.extend({
+// Full register form schema (registerSchema has refinements so we can't use .extend())
+const registerFormSchema = z.object({
+  email: z.string().email('Invalid email address').toLowerCase().trim(),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character'
+    ),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  firstName: z.string().min(1, 'First name is required').max(50).trim(),
+  lastName: z.string().min(1, 'Last name is required').max(50).trim(),
+  dateOfBirth: z.string().min(1, 'Date of birth is required'),
   acceptTerms: z.literal(true, {
     errorMap: () => ({ message: 'You must accept the terms and conditions' }),
   }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
+}).refine((data) => {
+  const today = new Date();
+  const birthDate = new Date(data.dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 18;
+}, {
+  message: 'You must be at least 18 years old to register',
+  path: ['dateOfBirth'],
 });
 
 type RegisterFormInput = z.infer<typeof registerFormSchema>;
@@ -92,6 +118,8 @@ export function RegisterForm() {
       lastName: '',
       email: '',
       password: '',
+      confirmPassword: '',
+      dateOfBirth: '',
       acceptTerms: undefined,
     },
   });
@@ -113,6 +141,8 @@ export function RegisterForm() {
         lastName: data.lastName,
         email: data.email,
         password: data.password,
+        confirmPassword: data.confirmPassword,
+        dateOfBirth: new Date(data.dateOfBirth),
         turnstileToken: turnstileToken ?? undefined,
       });
 
@@ -271,6 +301,37 @@ export function RegisterForm() {
 
           {errors.password && (
             <p className="text-sm text-destructive">{errors.password.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Confirm your password"
+            autoComplete="new-password"
+            disabled={isLoading || isGoogleLoading}
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="dateOfBirth">Date of Birth</Label>
+          <Input
+            id="dateOfBirth"
+            type="date"
+            autoComplete="bday"
+            disabled={isLoading || isGoogleLoading}
+            max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+            {...register('dateOfBirth')}
+          />
+          <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
+          {errors.dateOfBirth && (
+            <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
           )}
         </div>
 
