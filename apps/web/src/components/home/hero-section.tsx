@@ -120,18 +120,18 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
       {/* Dark Background with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-card/50 to-background" />
 
-      {/* Background Image with heavy overlay */}
-      <div className="absolute inset-0">
+      {/* Background Image with heavy overlay - only on desktop */}
+      <div className="absolute inset-0 hidden lg:block">
         <Image
           src={featuredCompetition.mainImageUrl}
-          alt={featuredCompetition.title}
+          alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-30"
+          className="object-cover opacity-20"
         />
         {/* Dark overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-background/70" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/95 to-background/80" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
       </div>
 
@@ -151,29 +151,68 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
       {/* Content */}
       <div className="container mx-auto px-4 py-12 md:py-16 relative z-10">
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-          {/* Text Content */}
+          {/* Featured Card Image - MOBILE: shows first (top), DESKTOP: shows second (right) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
+            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="order-first lg:order-last"
+          >
+            <div className="relative max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
+              {/* Glow effect behind card */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-purple-500/30 to-blue-500/30 blur-3xl scale-125" />
+
+              {/* Card container with 3D effect */}
+              <div className="relative card-3d">
+                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-primary/50 shadow-2xl shadow-primary/20 holo-shimmer">
+                  <Image
+                    src={featuredCompetition.mainImageUrl}
+                    alt={featuredCompetition.title}
+                    fill
+                    priority
+                    sizes="(max-width: 640px) 280px, (max-width: 1024px) 360px, 400px"
+                    className="object-cover"
+                  />
+
+                  {/* Holographic overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-purple-500/10 pointer-events-none" />
+
+                  {/* Bottom gradient overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-gradient-to-t from-black/70 to-transparent" />
+                </div>
+
+                {/* Floating glow accents */}
+                <div className="absolute -top-2 -right-2 w-20 h-20 bg-primary/30 rounded-full blur-2xl" />
+                <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-purple-500/30 rounded-full blur-xl" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Text Content - MOBILE: shows second (bottom), DESKTOP: shows first (left) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-center lg:text-left"
+            className="text-center lg:text-left order-last lg:order-first"
           >
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Badge className="mb-4 bg-primary/20 border border-primary/30 text-primary hover:bg-primary/30">
-                <Sparkles className="w-3 h-3 mr-1" />
+              {/* Featured Competition badge - gold background, black text for maximum readability */}
+              <span className="inline-flex items-center gap-1.5 mb-4 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/30">
+                <Sparkles className="w-4 h-4" />
                 Featured Competition
-              </Badge>
+              </span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 font-[family-name:var(--font-display)]"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-white font-[family-name:var(--font-display)]"
             >
               {featuredCompetition.title}
             </motion.h1>
@@ -252,39 +291,6 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 <Link href="/competitions">View All Competitions</Link>
               </Button>
             </motion.div>
-          </motion.div>
-
-          {/* Featured Card Image with holographic effect */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="hidden lg:block"
-          >
-            <div className="relative max-w-md mx-auto">
-              {/* Glow effect behind card */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-purple-500/20 to-blue-500/20 blur-3xl scale-110" />
-
-              {/* Card container with 3D effect */}
-              <div className="relative card-3d">
-                <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-primary/30 glow-gold holo-shimmer">
-                  <Image
-                    src={featuredCompetition.mainImageUrl}
-                    alt={featuredCompetition.title}
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 0vw, 400px"
-                    className="object-cover"
-                  />
-
-                  {/* Holographic overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-transparent pointer-events-none" />
-
-                  {/* Bottom gradient overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/60 to-transparent" />
-                </div>
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
