@@ -487,6 +487,8 @@ async function main() {
     data: {
       id: 'global',
       data: {
+        heroTitle: 'Win Amazing Collectibles',
+        heroCta: 'Browse Competitions',
         companyName: 'WinThisCard Ltd',
         companyAddress: '123 Collection Street, London, EC1A 1BB, United Kingdom',
         companyEmail: 'hello@winthiscard.com',
