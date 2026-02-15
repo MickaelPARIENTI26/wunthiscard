@@ -1,7 +1,7 @@
 'use server';
 
 import { randomBytes } from 'crypto';
-import { prisma } from '@winthiscard/database';
+import { prisma } from '@winucard/database';
 
 interface VerifyEmailResult {
   success: boolean;

@@ -14,11 +14,11 @@ import { Card, CardContent } from '@/components/ui/card';
 export const metadata: Metadata = {
   title: 'How It Works',
   description:
-    'Learn how WinThisCard prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
+    'Learn how WinUCard prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
   openGraph: {
-    title: 'How It Works | WinThisCard',
+    title: 'How It Works | WinUCard',
     description:
-      'Learn how WinThisCard prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
+      'Learn how WinUCard prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
   },
 };
 
@@ -232,7 +232,7 @@ export default function HowItWorksPage() {
             <div className="mt-4 rounded-md border p-4">
               <p className="text-sm font-medium" style={{ color: '#f5f5f5' }}>Postal Address:</p>
               <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                WinThisCard Ltd
+                WinUCard Ltd
                 <br />
                 Competition Entry
                 <br />

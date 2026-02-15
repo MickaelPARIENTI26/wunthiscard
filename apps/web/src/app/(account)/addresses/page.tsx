@@ -5,7 +5,7 @@ import { AddressList } from './address-list';
 import { AddressForm } from './address-form';
 
 export const metadata = {
-  title: 'Addresses | WinThisCard',
+  title: 'Addresses | WinUCard',
   description: 'Manage your delivery addresses',
 };
 

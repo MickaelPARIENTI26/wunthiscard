@@ -97,12 +97,18 @@ describe('Login Schema Validation', () => {
 });
 
 describe('Register Schema Validation', () => {
+  // Helper to create a valid date of birth (25 years ago)
+  const validDateOfBirth = new Date();
+  validDateOfBirth.setFullYear(validDateOfBirth.getFullYear() - 25);
+
   it('should accept valid registration data', () => {
     const validRegister = {
       email: 'newuser@example.com',
       password: 'SecureP@ss1',
+      confirmPassword: 'SecureP@ss1',
       firstName: 'John',
       lastName: 'Doe',
+      dateOfBirth: validDateOfBirth,
     };
     expect(() => registerSchema.parse(validRegister)).not.toThrow();
   });
@@ -139,8 +145,10 @@ describe('Register Schema Validation', () => {
     const register = {
       email: 'user@example.com',
       password: 'SecureP@ss1',
+      confirmPassword: 'SecureP@ss1',
       firstName: '  John  ',
       lastName: '  Doe  ',
+      dateOfBirth: validDateOfBirth,
     };
     const result = registerSchema.parse(register);
     expect(result.firstName).toBe('John');

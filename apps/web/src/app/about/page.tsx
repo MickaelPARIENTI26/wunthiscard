@@ -7,11 +7,11 @@ import { SafeHtml } from '@/components/common/safe-html';
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about WinThisCard, the UK-based prize competition platform for collectible cards and memorabilia. Our mission, values, and commitment to fair competitions.',
+    'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia. Our mission, values, and commitment to fair competitions.',
   openGraph: {
-    title: 'About Us | WinThisCard',
+    title: 'About Us | WinUCard',
     description:
-      'Learn about WinThisCard, the UK-based prize competition platform for collectible cards and memorabilia.',
+      'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia.',
   },
 };
 
@@ -66,7 +66,7 @@ export default async function AboutPage() {
             <Building2 className="h-12 w-12 text-primary" />
           </div>
           <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
-            <span className="text-gradient-gold">About WinThisCard</span>
+            <span className="text-gradient-gold">About WinUCard</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Your trusted destination for premium collectible card and
@@ -81,7 +81,7 @@ export default async function AboutPage() {
           <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
             <h2 className="mb-4 text-2xl font-bold font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>Our Mission</h2>
             <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              At WinThisCard, we believe that everyone should have the
+              At WinUCard, we believe that everyone should have the
               opportunity to own their dream collectibles. Whether it is a PSA
               10 Charizard, a signed sports jersey, or a rare One Piece TCG
               card, we make it possible through fair, transparent, and exciting
@@ -170,7 +170,7 @@ export default async function AboutPage() {
               UK Compliance & Regulation
             </h2>
             <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              WinThisCard operates as a prize competition platform in full
+              WinUCard operates as a prize competition platform in full
               compliance with the UK Gambling Act 2005. Our competitions include
               a skill-based question requirement and a free postal entry route,
               ensuring we meet all regulatory standards.
@@ -194,7 +194,7 @@ export default async function AboutPage() {
             <span className="text-gradient-gold">Get in Touch</span>
           </h2>
           <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Have questions about WinThisCard? We would love to hear from you.
+            Have questions about WinUCard? We would love to hear from you.
           </p>
           <Link
             href="/contact"

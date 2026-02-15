@@ -40,8 +40,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatPrice, formatDate, calculateProgress } from '@winthiscard/shared';
-import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winthiscard/shared';
+import { formatPrice, formatDate, calculateProgress } from '@winucard/shared';
+import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winucard/shared';
 import {
   ChevronLeft,
   ChevronRight,
@@ -56,7 +56,7 @@ import {
   Dices,
   Star,
 } from 'lucide-react';
-import type { CompetitionCategory, CompetitionStatus } from '@winthiscard/database';
+import type { CompetitionCategory, CompetitionStatus } from '@winucard/database';
 import { deleteCompetition, duplicateCompetition, updateCompetitionStatus } from '@/app/dashboard/competitions/actions';
 
 interface Competition {

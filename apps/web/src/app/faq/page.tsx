@@ -8,11 +8,11 @@ import { FaqSearch } from './faq-search';
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
   description:
-    'Find answers to common questions about WinThisCard prize competitions, tickets, payments, draws, delivery, and more.',
+    'Find answers to common questions about WinUCard prize competitions, tickets, payments, draws, delivery, and more.',
   openGraph: {
-    title: 'FAQ | WinThisCard',
+    title: 'FAQ | WinUCard',
     description:
-      'Find answers to common questions about WinThisCard prize competitions, tickets, payments, draws, delivery, and more.',
+      'Find answers to common questions about WinUCard prize competitions, tickets, payments, draws, delivery, and more.',
   },
 };
 

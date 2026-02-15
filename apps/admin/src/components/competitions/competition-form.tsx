@@ -15,13 +15,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { COMPETITION_CATEGORIES } from '@winthiscard/shared';
+import { COMPETITION_CATEGORIES } from '@winucard/shared';
 import { createCompetition, updateCompetition } from '@/app/dashboard/competitions/actions';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Star } from 'lucide-react';
 import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
-import type { Competition } from '@winthiscard/database';
+import type { Competition } from '@winucard/database';
 
 // Serialized competition type with number instead of Decimal
 type SerializedCompetition = Omit<Competition, 'prizeValue' | 'ticketPrice'> & {

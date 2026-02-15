@@ -1,14 +1,14 @@
 import { ImageResponse } from 'next/og';
 
 /**
- * Dynamic Twitter card image generation for WinThisCard
+ * Dynamic Twitter card image generation for WinUCard
  * Uses the same design as OG image but optimized for Twitter
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#twitter-image
  */
 
 export const runtime = 'edge';
 
-export const alt = 'WinThisCard - Win Collectible Cards & Memorabilia';
+export const alt = 'WinUCard - Win Collectible Cards & Memorabilia';
 export const size = {
   width: 1200,
   height: 600, // Twitter uses 2:1 ratio for summary_large_image
@@ -109,7 +109,7 @@ export default async function Image() {
               lineHeight: 1.1,
             }}
           >
-            WinThisCard
+            WinUCard
           </div>
 
           {/* Tagline */}
@@ -178,7 +178,7 @@ export default async function Image() {
               letterSpacing: 1,
             }}
           >
-            winthiscard.com
+            winucard.com
           </span>
           <span
             style={{

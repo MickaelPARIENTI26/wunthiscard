@@ -5,7 +5,7 @@ import { PrintButton } from '@/components/common/print-button';
 export const metadata: Metadata = {
   title: 'Cookie Policy',
   description:
-    'Cookie policy for WinThisCard. Learn about the cookies we use and how to manage your preferences.',
+    'Cookie policy for WinUCard. Learn about the cookies we use and how to manage your preferences.',
 };
 
 interface TableOfContentsItem {
@@ -34,25 +34,25 @@ interface CookieInfo {
 const essentialCookies: CookieInfo[] = [
   {
     name: 'next-auth.session-token',
-    provider: 'WinThisCard',
+    provider: 'WinUCard',
     purpose: 'Maintains your logged-in session securely',
     expiry: '24 hours',
   },
   {
     name: 'next-auth.csrf-token',
-    provider: 'WinThisCard',
+    provider: 'WinUCard',
     purpose: 'Protects against cross-site request forgery attacks',
     expiry: 'Session',
   },
   {
     name: 'next-auth.callback-url',
-    provider: 'WinThisCard',
+    provider: 'WinUCard',
     purpose: 'Stores the URL to redirect to after authentication',
     expiry: 'Session',
   },
   {
     name: 'cookie-consent',
-    provider: 'WinThisCard',
+    provider: 'WinUCard',
     purpose: 'Remembers your cookie preferences',
     expiry: '1 year',
   },
@@ -160,7 +160,7 @@ export default function CookiesPage() {
           {/* Content */}
           <article className="prose prose-gray max-w-none dark:prose-invert print:max-w-full">
             <p className="lead">
-              This Cookie Policy explains how WinThisCard Ltd uses cookies and
+              This Cookie Policy explains how WinUCard Ltd uses cookies and
               similar technologies when you visit our website. By using our
               website, you consent to the use of cookies as described in this
               policy.
@@ -447,13 +447,13 @@ export default function CookiesPage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:privacy@winthiscard.com"
+                    href="mailto:privacy@winucard.com"
                     className="text-primary"
                   >
-                    privacy@winthiscard.com
+                    privacy@winucard.com
                   </a>
                 </li>
-                <li>Post: WinThisCard Ltd, [Company Address], United Kingdom</li>
+                <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
               </ul>
               <p>
                 For more information about how we handle your personal data,

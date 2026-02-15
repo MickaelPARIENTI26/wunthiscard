@@ -1,4 +1,4 @@
-# WinThisCard — Security Rules
+# WinUCard — Security Rules
 
 > Version 1.0 — February 2026
 > Document de référence pour toutes les mesures de sécurité à implémenter.

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { generateCSV } from '@/lib/export';
-import { formatDateTime, formatPrice } from '@winthiscard/shared';
+import { formatDateTime, formatPrice } from '@winucard/shared';
 
 export async function GET(request: NextRequest) {
   try {

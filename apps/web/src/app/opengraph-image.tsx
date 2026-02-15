@@ -1,14 +1,14 @@
 import { ImageResponse } from 'next/og';
 
 /**
- * Dynamic Open Graph image generation for WinThisCard
+ * Dynamic Open Graph image generation for WinUCard
  * Used as fallback for pages without custom OG images
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
  */
 
 export const runtime = 'edge';
 
-export const alt = 'WinThisCard - Win Collectible Cards & Memorabilia';
+export const alt = 'WinUCard - Win Collectible Cards & Memorabilia';
 export const size = {
   width: 1200,
   height: 630,
@@ -109,7 +109,7 @@ export default async function Image() {
               lineHeight: 1.1,
             }}
           >
-            WinThisCard
+            WinUCard
           </div>
 
           {/* Tagline */}
@@ -200,7 +200,7 @@ export default async function Image() {
               letterSpacing: 1,
             }}
           >
-            winthiscard.com
+            winucard.com
           </span>
         </div>
       </div>

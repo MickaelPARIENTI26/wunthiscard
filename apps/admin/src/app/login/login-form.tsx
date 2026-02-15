@@ -57,7 +57,7 @@ export function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">WinThisCard Admin</CardTitle>
+          <CardTitle className="text-2xl font-bold">WinUCard Admin</CardTitle>
           <CardDescription>Sign in to access the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
@@ -79,7 +79,7 @@ export function LoginForm() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@winthiscard.com"
+                placeholder="admin@winucard.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

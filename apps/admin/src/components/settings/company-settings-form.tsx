@@ -38,7 +38,7 @@ export function CompanySettingsForm({ settings }: CompanySettingsFormProps) {
               <Input
                 id="companyName"
                 name="companyName"
-                defaultValue={settings.companyName ?? 'WinThisCard'}
+                defaultValue={settings.companyName ?? 'WinUCard'}
               />
             </div>
             <div className="space-y-2">
@@ -48,7 +48,7 @@ export function CompanySettingsForm({ settings }: CompanySettingsFormProps) {
                 name="companyEmail"
                 type="email"
                 defaultValue={settings.companyEmail ?? ''}
-                placeholder="support@winthiscard.com"
+                placeholder="support@winucard.com"
               />
             </div>
           </div>

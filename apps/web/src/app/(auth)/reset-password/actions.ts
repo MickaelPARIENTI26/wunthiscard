@@ -2,8 +2,8 @@
 
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
-import { prisma } from '@winthiscard/database';
-import { resetPasswordSchema, type ResetPasswordInput } from '@winthiscard/shared/validators';
+import { prisma } from '@winucard/database';
+import { resetPasswordSchema, type ResetPasswordInput } from '@winucard/shared/validators';
 
 const scryptAsync = promisify(scrypt);
 

@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/db';
 
-const BASE_URL = 'https://winthiscard.com';
+const BASE_URL = 'https://winucard.com';
 
 /**
- * Dynamic sitemap generation for WinThisCard
+ * Dynamic sitemap generation for WinUCard
  * Includes all public pages and competition detail pages
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */

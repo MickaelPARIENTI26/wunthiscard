@@ -27,10 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { formatPrice, formatDateTime } from '@winthiscard/shared';
+import { formatPrice, formatDateTime } from '@winucard/shared';
 import { Search, ChevronLeft, ChevronRight, Eye, Download, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-import type { PaymentStatus } from '@winthiscard/database';
+import type { PaymentStatus } from '@winucard/database';
 
 interface OrderWithRelations {
   id: string;

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { updateBonusTiers } from '@/app/dashboard/settings/actions';
 import { Loader2, Save, Plus, Trash2 } from 'lucide-react';
-import { BONUS_TIERS } from '@winthiscard/shared';
+import { BONUS_TIERS } from '@winucard/shared';
 
 interface BonusTiersFormProps {
   settings: Record<string, string>;

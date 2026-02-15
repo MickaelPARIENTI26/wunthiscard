@@ -8,7 +8,7 @@ import { ChevronLeft, Clock, CreditCard, Gift, Loader2, AlertCircle, Lock } from
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { formatPrice, calculateBonusTickets } from '@winthiscard/shared/utils';
+import { formatPrice, calculateBonusTickets } from '@winucard/shared/utils';
 
 interface CheckoutClientProps {
   competitionId: string;

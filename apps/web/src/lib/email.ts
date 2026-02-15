@@ -6,7 +6,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@winthiscard.com';
+const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@winucard.com';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -24,7 +24,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `WinThisCard <${FROM_EMAIL}>`,
+      from: `WinUCard <${FROM_EMAIL}>`,
       to,
       subject,
       html,
@@ -56,13 +56,13 @@ function emailWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinThisCard</title>
+  <title>WinUCard</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <!-- Header -->
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinThisCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
     </div>
 
     <!-- Content -->
@@ -73,7 +73,7 @@ function emailWrapper(content: string): string {
     <!-- Footer -->
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        WinThisCard Ltd. | Registered in England & Wales
+        WinUCard Ltd. | Registered in England & Wales
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
@@ -94,7 +94,7 @@ export async function sendVerificationEmail(email: string, token: string, firstN
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Welcome, ${firstName}!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Thanks for signing up for WinThisCard. Please verify your email address to start entering competitions.
+      Thanks for signing up for WinUCard. Please verify your email address to start entering competitions.
     </p>
     <div style="text-align: center; margin: 32px 0;">
       <a href="${verifyUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
@@ -111,7 +111,7 @@ export async function sendVerificationEmail(email: string, token: string, firstN
 
   return sendEmail({
     to: email,
-    subject: 'Verify your WinThisCard account',
+    subject: 'Verify your WinUCard account',
     html,
   });
 }
@@ -140,7 +140,7 @@ export async function sendPasswordResetEmail(email: string, token: string, first
 
   return sendEmail({
     to: email,
-    subject: 'Reset your WinThisCard password',
+    subject: 'Reset your WinUCard password',
     html,
   });
 }
@@ -290,7 +290,7 @@ export async function sendContactFormConfirmationEmail(data: ContactFormData) {
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">We've Received Your Message</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Hi ${data.name}, thank you for contacting WinThisCard. We've received your message and will get back to you as soon as possible.
+      Hi ${data.name}, thank you for contacting WinUCard. We've received your message and will get back to you as soon as possible.
     </p>
 
     <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0;">
@@ -435,7 +435,7 @@ export async function sendWinnerNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      If you have any questions, please contact us at support@winthiscard.com
+      If you have any questions, please contact us at support@winucard.com
     </p>
   `);
 

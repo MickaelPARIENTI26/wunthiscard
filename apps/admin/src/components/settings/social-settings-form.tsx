@@ -41,7 +41,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialInstagram"
               type="url"
               defaultValue={settings.socialInstagram ?? ''}
-              placeholder="https://instagram.com/winthiscard"
+              placeholder="https://instagram.com/winucard"
             />
           </div>
 
@@ -55,7 +55,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialTwitter"
               type="url"
               defaultValue={settings.socialTwitter ?? ''}
-              placeholder="https://twitter.com/winthiscard"
+              placeholder="https://twitter.com/winucard"
             />
           </div>
 
@@ -69,7 +69,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialYoutube"
               type="url"
               defaultValue={settings.socialYoutube ?? ''}
-              placeholder="https://youtube.com/@winthiscard"
+              placeholder="https://youtube.com/@winucard"
             />
           </div>
 
@@ -80,7 +80,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialTiktok"
               type="url"
               defaultValue={settings.socialTiktok ?? ''}
-              placeholder="https://tiktok.com/@winthiscard"
+              placeholder="https://tiktok.com/@winucard"
             />
           </div>
 
@@ -91,7 +91,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialDiscord"
               type="url"
               defaultValue={settings.socialDiscord ?? ''}
-              placeholder="https://discord.gg/winthiscard"
+              placeholder="https://discord.gg/winucard"
             />
           </div>
 

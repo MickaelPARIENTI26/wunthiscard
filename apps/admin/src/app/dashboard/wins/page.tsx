@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatPrice, formatDate } from '@winthiscard/shared';
+import { formatPrice, formatDate } from '@winucard/shared';
 import { Trophy, Package, Truck, CheckCircle2, Clock, ChevronRight } from 'lucide-react';
 
 type DeliveryStatus = 'PENDING' | 'CLAIMED' | 'SHIPPED' | 'DELIVERED';

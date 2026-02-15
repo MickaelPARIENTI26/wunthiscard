@@ -5,8 +5,8 @@ import { prisma } from '@/lib/db';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatPrice, formatDateTime } from '@winthiscard/shared';
-import type { PaymentStatus } from '@winthiscard/database';
+import { formatPrice, formatDateTime } from '@winucard/shared';
+import type { PaymentStatus } from '@winucard/database';
 
 interface PageParams {
   id: string;

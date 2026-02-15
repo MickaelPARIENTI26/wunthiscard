@@ -6,7 +6,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winthiscard.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winucard.com';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -24,7 +24,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `WinThisCard <${FROM_EMAIL}>`,
+      from: `WinUCard <${FROM_EMAIL}>`,
       to,
       subject,
       html,
@@ -54,13 +54,13 @@ function emailWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinThisCard</title>
+  <title>WinUCard</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <!-- Header -->
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinThisCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
     </div>
 
     <!-- Content -->
@@ -71,7 +71,7 @@ function emailWrapper(content: string): string {
     <!-- Footer -->
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        WinThisCard Ltd. | Registered in England & Wales
+        WinUCard Ltd. | Registered in England & Wales
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
@@ -142,7 +142,7 @@ export async function sendWinnerNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      If you have any questions, please contact us at support@winthiscard.com
+      If you have any questions, please contact us at support@winucard.com
     </p>
   `);
 
@@ -254,7 +254,7 @@ export async function sendCancellationNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      Questions? Contact us at support@winthiscard.com
+      Questions? Contact us at support@winucard.com
     </p>
   `);
 

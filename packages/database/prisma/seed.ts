@@ -40,7 +40,7 @@ async function main() {
 
   const superAdmin = await prisma.user.create({
     data: {
-      email: 'admin@winthiscard.com',
+      email: 'admin@winucard.com',
       passwordHash: adminPassword,
       firstName: 'Super',
       lastName: 'Admin',
@@ -52,7 +52,7 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      email: 'moderator@winthiscard.com',
+      email: 'moderator@winucard.com',
       passwordHash: adminPassword,
       firstName: 'Mod',
       lastName: 'Admin',
@@ -146,7 +146,7 @@ async function main() {
       questionText: 'In what year was the first Pokémon TCG Base Set released in Japan?',
       questionChoices: ['1996', '1997', '1998', '1999'],
       questionAnswer: 0,
-      metaTitle: 'Win a Charizard PSA 10 1st Edition Base Set | WinThisCard',
+      metaTitle: 'Win a Charizard PSA 10 1st Edition Base Set | WinUCard',
       metaDescription:
         'Enter for a chance to win the most iconic Pokémon card - a PSA 10 graded 1st Edition Charizard worth £150,000!',
     },
@@ -179,7 +179,7 @@ async function main() {
       questionText: 'How many Pikachu Illustrator cards are known to exist?',
       questionChoices: ['20', '39', '50', '100'],
       questionAnswer: 1,
-      metaTitle: 'Win a Pikachu Illustrator Card | WinThisCard',
+      metaTitle: 'Win a Pikachu Illustrator Card | WinUCard',
       metaDescription: 'The rarest Pokémon card in the world could be yours!',
     },
   });
@@ -492,15 +492,15 @@ async function main() {
       data: {
         heroTitle: 'Win Amazing Collectibles',
         heroCta: 'Browse Competitions',
-        companyName: 'WinThisCard Ltd',
+        companyName: 'WinUCard Ltd',
         companyAddress: '123 Collection Street, London, EC1A 1BB, United Kingdom',
-        companyEmail: 'hello@winthiscard.com',
+        companyEmail: 'hello@winucard.com',
         socialLinks: {
-          instagram: 'https://instagram.com/winthiscard',
-          twitter: 'https://twitter.com/winthiscard',
-          tiktok: 'https://tiktok.com/@winthiscard',
-          facebook: 'https://facebook.com/winthiscard',
-          discord: 'https://discord.gg/winthiscard',
+          instagram: 'https://instagram.com/winucard',
+          twitter: 'https://twitter.com/winucard',
+          tiktok: 'https://tiktok.com/@winucard',
+          facebook: 'https://facebook.com/winucard',
+          discord: 'https://discord.gg/winucard',
         },
         socialFollowers: {
           instagram: 15000,
@@ -515,7 +515,7 @@ async function main() {
           { ticketsBought: 20, bonusTickets: 3 },
           { ticketsBought: 50, bonusTickets: 5 },
         ],
-        freeEntryAddress: 'WinThisCard Ltd, Free Entry Department, PO Box 123, London EC1A 1BB',
+        freeEntryAddress: 'WinUCard Ltd, Free Entry Department, PO Box 123, London EC1A 1BB',
       },
     },
   });
@@ -582,15 +582,15 @@ async function main() {
     },
     {
       category: 'Legal',
-      question: 'Is WinThisCard legal in the UK?',
+      question: 'Is WinUCard legal in the UK?',
       answer:
-        'Yes! WinThisCard operates as a prize competition (not a lottery) under the UK Gambling Act 2005. All entries require answering a skill-based question, and a free entry route is always available.',
+        'Yes! WinUCard operates as a prize competition (not a lottery) under the UK Gambling Act 2005. All entries require answering a skill-based question, and a free entry route is always available.',
       sortOrder: 1,
     },
     {
       category: 'Legal',
       question: 'What is the minimum age to participate?',
-      answer: 'You must be 18 years or older to participate in any WinThisCard competition.',
+      answer: 'You must be 18 years or older to participate in any WinUCard competition.',
       sortOrder: 2,
     },
   ];
@@ -605,10 +605,10 @@ async function main() {
       slug: 'about-us',
       title: 'About Us',
       content: `
-        <h1>About WinThisCard</h1>
-        <p>WinThisCard is the UK's premier prize competition platform for collectible cards and memorabilia.</p>
+        <h1>About WinUCard</h1>
+        <p>WinUCard is the UK's premier prize competition platform for collectible cards and memorabilia.</p>
         <h2>Our Mission</h2>
-        <p>We're passionate collectors who believe everyone should have the chance to own grail-tier collectibles. That's why we created WinThisCard - to give you the opportunity to win cards and memorabilia that would otherwise be out of reach.</p>
+        <p>We're passionate collectors who believe everyone should have the chance to own grail-tier collectibles. That's why we created WinUCard - to give you the opportunity to win cards and memorabilia that would otherwise be out of reach.</p>
         <h2>Why Choose Us?</h2>
         <ul>
           <li>100% authentic, verified items</li>
@@ -644,7 +644,7 @@ async function main() {
     data: {
       slug: 'terms-and-conditions',
       title: 'Terms & Conditions',
-      content: '<h1>Terms & Conditions</h1><p>Please read these terms carefully before using WinThisCard...</p>',
+      content: '<h1>Terms & Conditions</h1><p>Please read these terms carefully before using WinUCard...</p>',
     },
   });
 
@@ -670,8 +670,8 @@ async function main() {
   console.log('🎉 Database seeded successfully!');
   console.log('');
   console.log('Test accounts:');
-  console.log('  Super Admin: admin@winthiscard.com / Admin123!');
-  console.log('  Admin: moderator@winthiscard.com / Admin123!');
+  console.log('  Super Admin: admin@winucard.com / Admin123!');
+  console.log('  Admin: moderator@winucard.com / Admin123!');
   console.log('  User: john@example.com / User123!');
   console.log('  User: jane@example.com / User123!');
 }

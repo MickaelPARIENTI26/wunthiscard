@@ -5,7 +5,7 @@ import { LoginForm } from './login-form';
 
 export const metadata: Metadata = {
   title: 'Login',
-  description: 'Sign in to your WinThisCard account to enter competitions and win prizes.',
+  description: 'Sign in to your WinUCard account to enter competitions and win prizes.',
 };
 
 export default function LoginPage() {

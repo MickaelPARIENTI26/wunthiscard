@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { formatDateTime } from '@winthiscard/shared';
+import { formatDateTime } from '@winucard/shared';
 import { Pencil, FileText } from 'lucide-react';
 
 const STATIC_PAGES = [

@@ -1,13 +1,13 @@
 import { MetadataRoute } from 'next';
 
 /**
- * Web App Manifest for WinThisCard
+ * Web App Manifest for WinUCard
  * Enables PWA features and defines app appearance
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/manifest
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    name: 'WinUCard - Win Collectible Cards & Memorabilia',
     short_name: 'WTC',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
@@ -81,14 +81,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '1280x720',
         type: 'image/png',
         form_factor: 'wide',
-        label: 'WinThisCard Homepage',
+        label: 'WinUCard Homepage',
       },
       {
         src: '/screenshots/home-narrow.png',
         sizes: '750x1334',
         type: 'image/png',
         form_factor: 'narrow',
-        label: 'WinThisCard Mobile Homepage',
+        label: 'WinUCard Mobile Homepage',
       },
     ],
     shortcuts: [

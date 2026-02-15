@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
-import { formatPrice } from '@winthiscard/shared';
-import type { PaymentStatus } from '@winthiscard/database';
+import { formatPrice } from '@winucard/shared';
+import type { PaymentStatus } from '@winucard/database';
 
 interface Order {
   id: string;

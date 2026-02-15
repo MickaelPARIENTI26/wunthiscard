@@ -1,4 +1,4 @@
-# WinThisCard — Business Rules
+# WinUCard — Business Rules
 
 > Version 1.0 — February 2026
 > Plateforme de compétitions en ligne (prize competitions) pour cartes à collectionner et objets de collection.
@@ -8,7 +8,7 @@
 ## 1. Modèle Économique
 
 ### 1.1 Concept
-WinThisCard est une plateforme de **prize competitions** (et non une loterie) au sens du UK Gambling Act 2005. Les utilisateurs achètent des tickets pour participer à une compétition dont le prix est une carte à collectionner ou un objet de collection. Pour se conformer à la législation britannique, chaque achat de ticket inclut une **question de skill/knowledge** (QCM) que le participant doit répondre correctement. Une **free entry route** (voie d'entrée gratuite par courrier postal) doit également être proposée.
+WinUCard est une plateforme de **prize competitions** (et non une loterie) au sens du UK Gambling Act 2005. Les utilisateurs achètent des tickets pour participer à une compétition dont le prix est une carte à collectionner ou un objet de collection. Pour se conformer à la législation britannique, chaque achat de ticket inclut une **question de skill/knowledge** (QCM) que le participant doit répondre correctement. Une **free entry route** (voie d'entrée gratuite par courrier postal) doit également être proposée.
 
 ### 1.2 Catégories de Produits
 - **Cartes Pokémon** (PSA graded, raw, booster boxes)

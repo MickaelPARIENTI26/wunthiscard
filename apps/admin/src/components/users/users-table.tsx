@@ -34,7 +34,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatDate } from '@winthiscard/shared';
+import { formatDate } from '@winucard/shared';
 import { Search, MoreHorizontal, Eye, Ban, ShieldCheck, ChevronLeft, ChevronRight, Download, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { banUser, unbanUser } from '@/app/dashboard/users/actions';

@@ -19,7 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { XCircle, Loader2, AlertTriangle } from 'lucide-react';
 import { cancelCompetition } from '../actions';
-import { formatPrice } from '@winthiscard/shared';
+import { formatPrice } from '@winucard/shared';
 
 interface CancelCompetitionDialogProps {
   competitionId: string;

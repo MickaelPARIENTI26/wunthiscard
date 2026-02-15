@@ -4,8 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
-import { generateSlug } from '@winthiscard/shared';
-import type { CompetitionStatus } from '@winthiscard/database';
+import { generateSlug } from '@winucard/shared';
+import type { CompetitionStatus } from '@winucard/database';
 import Stripe from 'stripe';
 import { sendCancellationNotificationEmail } from '@/lib/email';
 

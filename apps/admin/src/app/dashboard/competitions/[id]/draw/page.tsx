@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { formatPrice, formatDate } from '@winthiscard/shared';
-import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winthiscard/shared';
+import { formatPrice, formatDate } from '@winucard/shared';
+import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winucard/shared';
 import { ArrowLeft, AlertTriangle, Trophy, Users, Ticket, PoundSterling } from 'lucide-react';
-import type { CompetitionStatus } from '@winthiscard/database';
+import type { CompetitionStatus } from '@winucard/database';
 import { DrawClient } from './draw-client';
 
 interface DrawPageProps {

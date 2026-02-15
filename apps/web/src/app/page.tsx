@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { prisma } from '@winthiscard/database';
+import { prisma } from '@winucard/database';
 import { HeroSection } from '@/components/home/hero-section';
 import { LiveCompetitions } from '@/components/home/live-competitions';
 import { ComingSoon } from '@/components/home/coming-soon';

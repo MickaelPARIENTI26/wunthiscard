@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     'Browse all active prize competitions. Win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based competitions with free entry route available.',
   openGraph: {
-    title: 'Competitions | WinThisCard',
+    title: 'Competitions | WinUCard',
     description:
       'Browse all active prize competitions. Win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
   },

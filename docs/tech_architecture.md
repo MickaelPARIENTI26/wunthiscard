@@ -1,4 +1,4 @@
-# WinThisCard — Technical Architecture
+# WinUCard — Technical Architecture
 
 > Version 1.0 — February 2026
 
@@ -452,7 +452,7 @@ model AuditLog {
 ### 4.1 Structure du Projet (Monorepo)
 
 ```
-winthiscard/
+winucard/
 ├── apps/
 │   ├── web/                    # Site public (user-facing)
 │   │   ├── app/
@@ -549,8 +549,8 @@ winthiscard/
 
 ### 4.2 Routing Strategy
 
-**Site Public** : `winthiscard.com`
-**Admin Panel** : `admin.winthiscard.com` (sous-domaine séparé)
+**Site Public** : `winucard.com`
+**Admin Panel** : `admin.winucard.com` (sous-domaine séparé)
 
 Les deux apps partagent la même base de données et les mêmes packages via le monorepo Turborepo.
 
@@ -696,8 +696,8 @@ PUT    /api/admin/messages/:id/read
 | Env | URL | DB | Usage |
 |-----|-----|-----|-------|
 | **Local** | `localhost:3000` / `localhost:3001` | Docker PostgreSQL + Redis | Dev |
-| **Staging** | `staging.winthiscard.com` | Neon branch | Testing |
-| **Production** | `winthiscard.com` | Neon main | Live |
+| **Staging** | `staging.winucard.com` | Neon branch | Testing |
+| **Production** | `winucard.com` | Neon main | Live |
 
 ---
 

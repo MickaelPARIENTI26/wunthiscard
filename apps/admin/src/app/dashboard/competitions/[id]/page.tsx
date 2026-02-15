@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { formatPrice, formatDate, formatDateTime, calculateProgress } from '@winthiscard/shared';
-import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winthiscard/shared';
+import { formatPrice, formatDate, formatDateTime, calculateProgress } from '@winucard/shared';
+import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winucard/shared';
 import { Pencil, ArrowLeft, Dices } from 'lucide-react';
 import { auth } from '@/lib/auth';
-import type { CompetitionStatus } from '@winthiscard/database';
+import type { CompetitionStatus } from '@winucard/database';
 import { CancelCompetitionDialog } from './cancel-competition-dialog';
 
 interface CompetitionPageProps {

@@ -12,8 +12,8 @@ import { CompetitionInfo } from '@/components/competition/competition-info';
 import { FreeEntryNotice } from '@/components/competition/free-entry-notice';
 import { GetTicketsButton } from '@/components/competition/get-tickets-button';
 import { SafeHtml } from '@/components/common/safe-html';
-import type { CompetitionCategory } from '@winthiscard/shared/types';
-import { formatPrice } from '@winthiscard/shared/utils';
+import type { CompetitionCategory } from '@winucard/shared/types';
+import { formatPrice } from '@winucard/shared/utils';
 
 const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
   POKEMON: 'Pokemon',
@@ -131,13 +131,13 @@ export async function generateMetadata({
     title,
     description,
     openGraph: {
-      title: `${title} | WinThisCard`,
+      title: `${title} | WinUCard`,
       description,
       images: [{ url: competition.mainImageUrl }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | WinThisCard`,
+      title: `${title} | WinUCard`,
       description,
       images: [competition.mainImageUrl],
     },

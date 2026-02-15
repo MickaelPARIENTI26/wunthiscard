@@ -11,10 +11,10 @@ import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatPrice } from '@winthiscard/shared/utils';
+import { formatPrice } from '@winucard/shared/utils';
 
 export const metadata: Metadata = {
-  title: 'Purchase Successful - WinThisCard',
+  title: 'Purchase Successful - WinUCard',
   description: 'Your ticket purchase was successful',
 };
 

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from '@/components/common/countdown-timer';
 import { cn } from '@/lib/utils';
-import type { CompetitionCategory } from '@winthiscard/shared/types';
+import type { CompetitionCategory } from '@winucard/shared/types';
 
 interface UpcomingCompetition {
   id: string;

@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://winthiscard.com';
+const BASE_URL = 'https://winucard.com';
 
 /**
- * Robots.txt configuration for WinThisCard
+ * Robots.txt configuration for WinUCard
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots
  */
 export default function robots(): MetadataRoute.Robots {

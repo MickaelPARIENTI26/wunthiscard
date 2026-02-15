@@ -63,7 +63,7 @@ export function Sidebar() {
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-bold">WinThisCard</span>
+            <span className="text-xl font-bold">WinUCard</span>
           </Link>
         )}
         <Button

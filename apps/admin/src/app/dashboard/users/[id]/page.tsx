@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatPrice, formatDate, formatDateTime } from '@winthiscard/shared';
+import { formatPrice, formatDate, formatDateTime } from '@winucard/shared';
 import { ArrowLeft, Calendar, Trophy, Ticket, ShoppingCart } from 'lucide-react';
 import { UserActions } from '@/components/users/user-actions';
 

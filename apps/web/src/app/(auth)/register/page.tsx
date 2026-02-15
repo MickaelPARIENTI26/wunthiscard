@@ -7,7 +7,7 @@ import { RegisterForm } from './register-form';
 export const metadata: Metadata = {
   title: 'Register',
   description:
-    'Create a WinThisCard account to enter competitions and win rare collectible cards and memorabilia.',
+    'Create a WinUCard account to enter competitions and win rare collectible cards and memorabilia.',
 };
 
 function RegisterFormSkeleton() {

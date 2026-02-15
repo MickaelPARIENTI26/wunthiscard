@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatDateTime } from '@winthiscard/shared';
+import { formatDateTime } from '@winucard/shared';
 import { Shield, FileText, User, Activity } from 'lucide-react';
 
 export const metadata = {

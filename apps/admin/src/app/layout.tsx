@@ -11,10 +11,10 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Admin Panel | WinThisCard',
-    template: '%s | WinThisCard Admin',
+    default: 'Admin Panel | WinUCard',
+    template: '%s | WinUCard Admin',
   },
-  description: 'WinThisCard Administration Panel',
+  description: 'WinUCard Administration Panel',
   robots: {
     index: false,
     follow: false,

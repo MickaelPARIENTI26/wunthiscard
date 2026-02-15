@@ -12,11 +12,11 @@ import { ContactForm } from './contact-form';
 export const metadata: Metadata = {
   title: 'Contact Us',
   description:
-    'Get in touch with WinThisCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
+    'Get in touch with WinUCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
   openGraph: {
-    title: 'Contact Us | WinThisCard',
+    title: 'Contact Us | WinUCard',
     description:
-      'Get in touch with WinThisCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
+      'Get in touch with WinUCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
   },
 };
 
@@ -24,20 +24,20 @@ const socialLinks = [
   {
     name: 'Instagram',
     icon: Instagram,
-    href: 'https://instagram.com/winthiscard',
-    handle: '@winthiscard',
+    href: 'https://instagram.com/winucard',
+    handle: '@winucard',
   },
   {
     name: 'Twitter',
     icon: Twitter,
-    href: 'https://twitter.com/winthiscard',
-    handle: '@winthiscard',
+    href: 'https://twitter.com/winucard',
+    handle: '@winucard',
   },
   {
     name: 'Facebook',
     icon: Facebook,
-    href: 'https://facebook.com/winthiscard',
-    handle: 'WinThisCard',
+    href: 'https://facebook.com/winucard',
+    handle: 'WinUCard',
   },
 ];
 
@@ -83,11 +83,11 @@ export default function ContactPage() {
                   <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Email</h3>
                 </div>
                 <a
-                  href="mailto:hello@winthiscard.com"
+                  href="mailto:hello@winucard.com"
                   className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   style={{ color: '#a0a0a0' }}
                 >
-                  hello@winthiscard.com
+                  hello@winucard.com
                 </a>
               </div>
 
@@ -100,7 +100,7 @@ export default function ContactPage() {
                   <h3 className="font-semibold" style={{ color: '#f5f5f5' }}>Address</h3>
                 </div>
                 <address className="text-sm not-italic text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                  WinThisCard Ltd
+                  WinUCard Ltd
                   <br />
                   [Address Line 1]
                   <br />

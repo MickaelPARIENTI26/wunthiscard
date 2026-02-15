@@ -6,7 +6,7 @@ import { DollarSign, ShoppingCart, Users, Trophy } from 'lucide-react';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { RecentOrders } from '@/components/dashboard/recent-orders';
 import { ActiveCompetitions } from '@/components/dashboard/active-competitions';
-import { formatPrice } from '@winthiscard/shared';
+import { formatPrice } from '@winucard/shared';
 
 async function getStats() {
   const now = new Date();
@@ -269,7 +269,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">
-          Welcome to the WinThisCard admin panel
+          Welcome to the WinUCard admin panel
         </p>
       </div>
 

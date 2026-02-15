@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { formatPrice, formatDate, calculateProgress } from '@winthiscard/shared';
+import { formatPrice, formatDate, calculateProgress } from '@winucard/shared';
 import { ExternalLink } from 'lucide-react';
-import type { CompetitionStatus } from '@winthiscard/database';
+import type { CompetitionStatus } from '@winucard/database';
 
 interface Competition {
   id: string;

@@ -1,6 +1,6 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { prisma } from '@winthiscard/database';
+import { prisma } from '@winucard/database';
 import { ProfileContent } from './profile-content';
 
 export const metadata = {

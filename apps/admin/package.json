@@ -1,5 +1,5 @@
 {
-  "name": "@winthiscard/admin",
+  "name": "@winucard/admin",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -35,8 +35,8 @@
     "@tiptap/starter-kit": "^2.10.0",
     "@upstash/ratelimit": "^2.0.0",
     "@upstash/redis": "^1.34.0",
-    "@winthiscard/database": "*",
-    "@winthiscard/shared": "*",
+    "@winucard/database": "*",
+    "@winucard/shared": "*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "date-fns": "^4.1.0",

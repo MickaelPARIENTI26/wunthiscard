@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: winthiscard-db
+    container_name: winucard-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: winthiscard
+      POSTGRES_DB: winucard
     ports:
       - "5435:5432"
     volumes:
@@ -14,7 +14,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: winthiscard-redis
+    container_name: winucard-redis
     restart: unless-stopped
     ports:
       - "6379:6379"

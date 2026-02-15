@@ -5,7 +5,7 @@ export default function AdminHomePage() {
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold tracking-tight">
-          WinThisCard <span className="text-primary">Admin</span>
+          WinUCard <span className="text-primary">Admin</span>
         </h1>
         <p className="mb-8 max-w-md text-lg text-muted-foreground">
           Administration panel for managing competitions, users, and orders.
@@ -52,7 +52,7 @@ export default function AdminHomePage() {
       </div>
 
       <footer className="mt-16 text-center text-sm text-muted-foreground">
-        <p>WinThisCard Admin Panel v1.0.0</p>
+        <p>WinUCard Admin Panel v1.0.0</p>
       </footer>
     </main>
   );

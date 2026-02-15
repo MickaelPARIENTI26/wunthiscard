@@ -1,6 +1,6 @@
 # E2E Manual Test Plan
 
-This document outlines comprehensive end-to-end manual test scenarios for WinThisCard before production launch.
+This document outlines comprehensive end-to-end manual test scenarios for WinUCard before production launch.
 
 ---
 

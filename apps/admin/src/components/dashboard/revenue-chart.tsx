@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from 'recharts';
-import { formatPrice } from '@winthiscard/shared';
+import { formatPrice } from '@winucard/shared';
 
 interface RevenueChartProps {
   data: Array<{ date: string; revenue: number }>;

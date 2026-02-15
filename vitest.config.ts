@@ -6,7 +6,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['**/*.test.ts', '**/*.spec.ts'],
-    exclude: ['node_modules', '.next', 'dist'],
+    exclude: ['node_modules', '.next', 'dist', '**/e2e/**'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: ['node_modules', '.next', 'dist', '**/*.d.ts', '**/*.test.ts', '**/*.spec.ts'],
@@ -14,8 +14,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@winthiscard/shared': path.resolve(__dirname, './packages/shared/src'),
-      '@winthiscard/database': path.resolve(__dirname, './packages/database'),
+      '@winucard/shared': path.resolve(__dirname, './packages/shared/src'),
+      '@winucard/database': path.resolve(__dirname, './packages/database'),
     },
   },
 });

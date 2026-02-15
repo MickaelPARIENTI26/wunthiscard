@@ -6,16 +6,16 @@ import { prisma } from '@/lib/db';
 import { Card, CardContent } from '@/components/ui/card';
 import { WinnersFilter } from './winners-filter';
 import { WinnersPagination } from './winners-pagination';
-import { formatDate, formatPrice } from '@winthiscard/shared/utils';
+import { formatDate, formatPrice } from '@winucard/shared/utils';
 
 export const metadata: Metadata = {
   title: 'Winners',
   description:
-    'See all the lucky winners of WinThisCard prize competitions. Real prizes, real winners. You could be next!',
+    'See all the lucky winners of WinUCard prize competitions. Real prizes, real winners. You could be next!',
   openGraph: {
-    title: 'Winners | WinThisCard',
+    title: 'Winners | WinUCard',
     description:
-      'See all the lucky winners of WinThisCard prize competitions. Real prizes, real winners. You could be next!',
+      'See all the lucky winners of WinUCard prize competitions. Real prizes, real winners. You could be next!',
   },
 };
 
@@ -122,7 +122,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
             Real prizes, real winners. Check out the lucky collectors who have
-            won amazing cards and memorabilia through WinThisCard.
+            won amazing cards and memorabilia through WinUCard.
           </p>
         </div>
       </section>

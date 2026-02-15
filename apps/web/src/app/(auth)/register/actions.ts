@@ -3,8 +3,8 @@
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { headers } from 'next/headers';
-import { prisma } from '@winthiscard/database';
-import { registerSchema, type RegisterInput } from '@winthiscard/shared/validators';
+import { prisma } from '@winucard/database';
+import { registerSchema, type RegisterInput } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 

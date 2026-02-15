@@ -51,7 +51,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@winthiscard/shared', '@winthiscard/database'],
+  transpilePackages: ['@winucard/shared', '@winucard/database'],
   async headers() {
     return [
       {

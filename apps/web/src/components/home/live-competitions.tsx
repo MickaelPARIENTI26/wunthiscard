@@ -6,7 +6,7 @@ import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CompetitionCard } from '@/components/competition/competition-card';
 import { cn } from '@/lib/utils';
-import type { CompetitionCategory, CompetitionStatus } from '@winthiscard/shared/types';
+import type { CompetitionCategory, CompetitionStatus } from '@winucard/shared/types';
 
 interface Competition {
   id: string;

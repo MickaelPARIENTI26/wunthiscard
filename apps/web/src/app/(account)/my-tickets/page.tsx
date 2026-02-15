@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Ticket, Calendar, ArrowRight, Trophy } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Tickets | WinThisCard',
+  title: 'My Tickets | WinUCard',
   description: 'View all your competition entries and ticket numbers',
 };
 

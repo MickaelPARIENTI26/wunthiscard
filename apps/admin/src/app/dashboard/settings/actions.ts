@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { createAuditLog } from '@/lib/audit';
 import { auth } from '@/lib/auth';
-import type { Prisma } from '@winthiscard/database';
+import type { Prisma } from '@winucard/database';
 
 function requireAdmin(session: { user?: { id?: string; role?: string } } | null): string {
   if (!session?.user?.id) {

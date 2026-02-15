@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { Trophy, ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { anonymizeWinnerName } from '@winthiscard/shared/utils';
+import { anonymizeWinnerName } from '@winucard/shared/utils';
 
 interface Winner {
   id: string;

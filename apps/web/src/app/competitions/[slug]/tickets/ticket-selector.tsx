@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { cn } from '@/lib/utils';
-import { formatPrice, calculateBonusTickets } from '@winthiscard/shared/utils';
+import { formatPrice, calculateBonusTickets } from '@winucard/shared/utils';
 
 interface TicketSelectorProps {
   competitionId: string;

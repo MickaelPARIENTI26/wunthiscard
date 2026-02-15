@@ -1,4 +1,4 @@
-# WinThisCard — Development Roadmap
+# WinUCard — Development Roadmap
 
 > Version 1.0 — February 2026
 
@@ -51,7 +51,7 @@ Avoir un monorepo fonctionnel avec auth, database, et les deux apps qui tournent
 - [ ] Logique de verrouillage de compte (5 tentatives)
 
 #### 0.4 — Authentification (Admin)
-- [ ] Login admin séparé (`admin.winthiscard.com/login`)
+- [ ] Login admin séparé (`admin.winucard.com/login`)
 - [ ] Vérification du rôle `ADMIN` ou `SUPER_ADMIN`
 - [ ] Middleware admin qui bloque les non-admins
 - [ ] Pas d'inscription publique pour l'admin (comptes créés manuellement en DB ou via seed)
@@ -344,7 +344,7 @@ Un utilisateur peut acheter des tickets, répondre au QCM, et payer via Stripe.
 - [ ] Beta testing
 
 #### 6.3 — Préparation Production
-- [ ] Domaines `winthiscard.com` + `admin.winthiscard.com`
+- [ ] Domaines `winucard.com` + `admin.winucard.com`
 - [ ] DNS Cloudflare + SSL
 - [ ] Env vars production (Stripe live keys)
 - [ ] Vérification pages légales avec juriste UK
@@ -398,8 +398,8 @@ Un utilisateur peut acheter des tickets, répondre au QCM, et payer via Stripe.
 
 ```bash
 # Setup initial
-npx create-turbo@latest winthiscard
-cd winthiscard
+npx create-turbo@latest winucard
+cd winucard
 
 # Créer les apps Next.js
 npx create-next-app@latest apps/web --typescript --tailwind --app --src-dir=false

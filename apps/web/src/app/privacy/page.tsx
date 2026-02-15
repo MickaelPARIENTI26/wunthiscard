@@ -7,7 +7,7 @@ import { SafeHtml } from '@/components/common/safe-html';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'Privacy policy for WinThisCard. Learn how we collect, use, and protect your personal data in compliance with UK GDPR.',
+    'Privacy policy for WinUCard. Learn how we collect, use, and protect your personal data in compliance with UK GDPR.',
 };
 
 interface TableOfContentsItem {
@@ -136,7 +136,7 @@ function PlaceholderPrivacyContent() {
   return (
     <>
       <p className="lead">
-        This Privacy Policy explains how WinThisCard Ltd (&quot;we&quot;,
+        This Privacy Policy explains how WinUCard Ltd (&quot;we&quot;,
         &quot;us&quot;, or &quot;our&quot;) collects, uses, shares, and protects
         your personal data when you use our website and services. We are
         committed to protecting your privacy in compliance with the UK General
@@ -146,7 +146,7 @@ function PlaceholderPrivacyContent() {
       <section id="introduction">
         <h2>1. Introduction</h2>
         <p>
-          WinThisCard operates a prize competition platform for collectible
+          WinUCard operates a prize competition platform for collectible
           cards and memorabilia. This policy applies to all personal data we
           collect through our website, mobile applications, and related
           services.
@@ -160,14 +160,14 @@ function PlaceholderPrivacyContent() {
 
       <section id="data-controller">
         <h2>2. Data Controller</h2>
-        <p>WinThisCard Ltd is the data controller for your personal data.</p>
+        <p>WinUCard Ltd is the data controller for your personal data.</p>
         <ul>
-          <li>Company Name: WinThisCard Ltd</li>
+          <li>Company Name: WinUCard Ltd</li>
           <li>Registered in: England and Wales</li>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winthiscard.com" className="text-primary">
-              privacy@winthiscard.com
+            <a href="mailto:privacy@winucard.com" className="text-primary">
+              privacy@winucard.com
             </a>
           </li>
           <li>Address: [Company Address], United Kingdom</li>
@@ -378,8 +378,8 @@ function PlaceholderPrivacyContent() {
         </ul>
         <p>
           To exercise your rights, please contact us at{' '}
-          <a href="mailto:privacy@winthiscard.com" className="text-primary">
-            privacy@winthiscard.com
+          <a href="mailto:privacy@winucard.com" className="text-primary">
+            privacy@winucard.com
           </a>
           . We will respond within one month.
         </p>
@@ -475,11 +475,11 @@ function PlaceholderPrivacyContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winthiscard.com" className="text-primary">
-              privacy@winthiscard.com
+            <a href="mailto:privacy@winucard.com" className="text-primary">
+              privacy@winucard.com
             </a>
           </li>
-          <li>Post: WinThisCard Ltd, [Company Address], United Kingdom</li>
+          <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
         </ul>
       </section>
     </>

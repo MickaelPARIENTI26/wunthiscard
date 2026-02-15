@@ -94,31 +94,31 @@ function StripeIcon({ className }: { className?: string }) {
 
 const socialLinks = [
   {
-    href: 'https://instagram.com/winthiscard',
+    href: 'https://instagram.com/winucard',
     label: 'Instagram',
     icon: Instagram,
     followers: '12.5K',
   },
   {
-    href: 'https://twitter.com/winthiscard',
+    href: 'https://twitter.com/winucard',
     label: 'Twitter',
     icon: Twitter,
     followers: '8.2K',
   },
   {
-    href: 'https://tiktok.com/@winthiscard',
+    href: 'https://tiktok.com/@winucard',
     label: 'TikTok',
     icon: TikTokIcon,
     followers: '25.1K',
   },
   {
-    href: 'https://facebook.com/winthiscard',
+    href: 'https://facebook.com/winucard',
     label: 'Facebook',
     icon: Facebook,
     followers: '5.8K',
   },
   {
-    href: 'https://discord.gg/winthiscard',
+    href: 'https://discord.gg/winucard',
     label: 'Discord',
     icon: DiscordIcon,
     followers: '3.2K',
@@ -181,7 +181,7 @@ export function Footer() {
                 </div>
                 <div>
                   <span className="text-xl font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
-                    WinThisCard
+                    WinUCard
                   </span>
                   <span className="block text-xs text-muted-foreground">Premium Collectibles</span>
                 </div>
@@ -351,7 +351,7 @@ export function Footer() {
 
             {/* Right side: Copyright */}
             <div className="text-xs text-muted-foreground">
-              <p>&copy; {currentYear} WinThisCard Ltd. All rights reserved.</p>
+              <p>&copy; {currentYear} WinUCard Ltd. All rights reserved.</p>
               <p className="mt-1 opacity-70">Registered in England & Wales.</p>
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { siteConfig } from './seo';
 
-const BASE_URL = 'https://winthiscard.com';
+const BASE_URL = 'https://winucard.com';
 
 /**
  * Schema.org JSON-LD generators for structured data
@@ -17,7 +17,7 @@ export function generateOrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${BASE_URL}/#organization`,
-    name: 'WinThisCard',
+    name: 'WinUCard',
     alternateName: 'WTC',
     url: BASE_URL,
     logo: {
@@ -41,7 +41,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'support@winthiscard.com',
+      email: 'support@winucard.com',
       url: `${BASE_URL}/contact`,
       availableLanguage: 'English',
     },
@@ -62,7 +62,7 @@ export function generateWebsiteSchema() {
     '@type': 'WebSite',
     '@id': `${BASE_URL}/#website`,
     url: BASE_URL,
-    name: 'WinThisCard',
+    name: 'WinUCard',
     description: siteConfig.description,
     publisher: {
       '@id': `${BASE_URL}/#organization`,
@@ -139,7 +139,7 @@ export function generateProductSchema(props: ProductSchemaProps) {
     },
     brand: {
       '@type': 'Brand',
-      name: 'WinThisCard',
+      name: 'WinUCard',
     },
   };
 }
@@ -170,7 +170,7 @@ export function generateCompetitionSchema(props: CompetitionSchemaProps) {
     endDate,
     ticketPrice,
     prizeValue: _prizeValue,
-    organizer = 'WinThisCard',
+    organizer = 'WinUCard',
   } = props;
 
   return {
@@ -261,7 +261,7 @@ export function generateLocalBusinessSchema() {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${BASE_URL}/#localbusiness`,
-    name: 'WinThisCard',
+    name: 'WinUCard',
     image: `${BASE_URL}/images/logo.png`,
     url: BASE_URL,
     priceRange: '££',

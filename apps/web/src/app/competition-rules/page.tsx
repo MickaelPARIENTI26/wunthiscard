@@ -7,7 +7,7 @@ import { SafeHtml } from '@/components/common/safe-html';
 export const metadata: Metadata = {
   title: 'Competition Rules',
   description:
-    'Official competition rules for WinThisCard prize competitions. Learn about eligibility, entry methods, draw process, and prize claiming.',
+    'Official competition rules for WinUCard prize competitions. Learn about eligibility, entry methods, draw process, and prize claiming.',
 };
 
 interface TableOfContentsItem {
@@ -146,7 +146,7 @@ function PlaceholderCompetitionRulesContent() {
   return (
     <>
       <p className="lead">
-        These rules apply to all prize competitions operated by WinThisCard Ltd.
+        These rules apply to all prize competitions operated by WinUCard Ltd.
         By entering any competition, you agree to be bound by these rules and
         our{' '}
         <Link href="/terms" className="text-primary hover:underline">
@@ -158,7 +158,7 @@ function PlaceholderCompetitionRulesContent() {
       <section id="overview">
         <h2>1. Overview</h2>
         <p>
-          WinThisCard operates prize competitions for collectible cards,
+          WinUCard operates prize competitions for collectible cards,
           memorabilia, and other valuable items. Our competitions are compliant
           with the UK Gambling Act 2005 as prize competitions (not lotteries),
           which require:
@@ -178,7 +178,7 @@ function PlaceholderCompetitionRulesContent() {
       <section id="eligibility">
         <h2>2. Eligibility</h2>
         <p>
-          To enter any WinThisCard competition, you must meet ALL of the
+          To enter any WinUCard competition, you must meet ALL of the
           following requirements:
         </p>
         <ul>
@@ -191,7 +191,7 @@ function PlaceholderCompetitionRulesContent() {
             Kingdom
           </li>
           <li>
-            <strong>Account:</strong> You must have a valid WinThisCard account
+            <strong>Account:</strong> You must have a valid WinUCard account
             with a verified email address
           </li>
           <li>
@@ -201,7 +201,7 @@ function PlaceholderCompetitionRulesContent() {
         </ul>
         <p>The following persons are NOT eligible to enter:</p>
         <ul>
-          <li>Employees of WinThisCard Ltd and their immediate family members</li>
+          <li>Employees of WinUCard Ltd and their immediate family members</li>
           <li>
             Anyone directly involved in the operation of the competitions
           </li>
@@ -222,7 +222,7 @@ function PlaceholderCompetitionRulesContent() {
 
         <h3>3.1 Online Entry (Paid)</h3>
         <ol>
-          <li>Create an account or log in at winthiscard.com</li>
+          <li>Create an account or log in at winucard.com</li>
           <li>Browse available competitions and select one to enter</li>
           <li>Choose your ticket number(s) manually or use random selection</li>
           <li>Select the number of tickets you wish to purchase</li>
@@ -267,7 +267,7 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Place in an envelope and post to:
             <br />
-            <strong>WinThisCard Free Entry</strong>
+            <strong>WinUCard Free Entry</strong>
             <br />
             [Company Address]
             <br />
@@ -316,7 +316,7 @@ function PlaceholderCompetitionRulesContent() {
             minutes
           </li>
           <li>
-            The correct answer is determined by WinThisCard and is final
+            The correct answer is determined by WinUCard and is final
           </li>
         </ul>
       </section>
@@ -567,10 +567,10 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Disputes should be submitted in writing to{' '}
             <a
-              href="mailto:disputes@winthiscard.com"
+              href="mailto:disputes@winucard.com"
               className="text-primary"
             >
-              disputes@winthiscard.com
+              disputes@winucard.com
             </a>
           </li>
           <li>
@@ -623,20 +623,20 @@ function PlaceholderCompetitionRulesContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:support@winthiscard.com" className="text-primary">
-              support@winthiscard.com
+            <a href="mailto:support@winucard.com" className="text-primary">
+              support@winucard.com
             </a>
           </li>
           <li>
             Disputes:{' '}
             <a
-              href="mailto:disputes@winthiscard.com"
+              href="mailto:disputes@winucard.com"
               className="text-primary"
             >
-              disputes@winthiscard.com
+              disputes@winucard.com
             </a>
           </li>
-          <li>Post: WinThisCard Ltd, [Company Address], United Kingdom</li>
+          <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
         </ul>
         <p>
           For full terms of use, please refer to our{' '}

@@ -6,7 +6,7 @@ import { NotificationPreferences } from './notification-preferences';
 import { DeleteAccountSection } from './delete-account-section';
 
 export const metadata = {
-  title: 'Settings | WinThisCard',
+  title: 'Settings | WinUCard',
   description: 'Manage your account settings and security options',
 };
 

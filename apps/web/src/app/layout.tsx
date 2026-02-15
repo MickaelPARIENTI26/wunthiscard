@@ -34,10 +34,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://winthiscard.com'),
+  metadataBase: new URL('https://winucard.com'),
   title: {
-    default: 'WinThisCard - Win Collectible Cards & Memorabilia',
-    template: '%s | WinThisCard',
+    default: 'WinUCard - Win Collectible Cards & Memorabilia',
+    template: '%s | WinUCard',
   },
   description:
     'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
@@ -53,9 +53,9 @@ export const metadata: Metadata = {
     'signed memorabilia',
     'skill competition',
   ],
-  authors: [{ name: 'WinThisCard' }],
-  creator: 'WinThisCard',
-  publisher: 'WinThisCard',
+  authors: [{ name: 'WinUCard' }],
+  creator: 'WinUCard',
+  publisher: 'WinUCard',
   formatDetection: {
     email: false,
     address: false,
@@ -64,9 +64,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://winthiscard.com',
-    siteName: 'WinThisCard',
-    title: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    url: 'https://winucard.com',
+    siteName: 'WinUCard',
+    title: 'WinUCard - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
     images: [
@@ -74,17 +74,17 @@ export const metadata: Metadata = {
         url: '/images/og-default.jpg',
         width: 1200,
         height: 630,
-        alt: 'WinThisCard - Win Collectible Cards & Memorabilia',
+        alt: 'WinUCard - Win Collectible Cards & Memorabilia',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WinThisCard - Win Collectible Cards & Memorabilia',
+    title: 'WinUCard - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
-    site: '@winthiscard',
-    creator: '@winthiscard',
+    site: '@winucard',
+    creator: '@winucard',
     images: ['/images/og-default.jpg'],
   },
   robots: {
@@ -117,7 +117,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   alternates: {
-    canonical: 'https://winthiscard.com',
+    canonical: 'https://winucard.com',
   },
   category: 'entertainment',
   classification: 'Prize Competitions',

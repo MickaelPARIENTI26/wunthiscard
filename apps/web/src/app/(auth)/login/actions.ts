@@ -2,7 +2,7 @@
 
 import { headers } from 'next/headers';
 import { rateLimits } from '@/lib/redis';
-import { prisma } from '@winthiscard/database';
+import { prisma } from '@winucard/database';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 
 interface RateLimitCheckResult {

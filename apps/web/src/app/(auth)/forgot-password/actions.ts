@@ -2,8 +2,8 @@
 
 import { randomBytes } from 'crypto';
 import { headers } from 'next/headers';
-import { prisma } from '@winthiscard/database';
-import { forgotPasswordSchema, type ForgotPasswordInput } from '@winthiscard/shared/validators';
+import { prisma } from '@winucard/database';
+import { forgotPasswordSchema, type ForgotPasswordInput } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
 
 interface ForgotPasswordResult {

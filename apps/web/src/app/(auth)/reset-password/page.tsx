@@ -6,7 +6,7 @@ import { ResetPasswordContent } from './reset-password-content';
 
 export const metadata: Metadata = {
   title: 'Reset Password',
-  description: 'Reset your WinThisCard password',
+  description: 'Reset your WinUCard password',
 };
 
 function ResetPasswordLoading() {

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Trophy, Package, Truck, CheckCircle, ExternalLink } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Wins | WinThisCard',
+  title: 'My Wins | WinUCard',
   description: 'View all your competition wins and delivery status',
 };
 

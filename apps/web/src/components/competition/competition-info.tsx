@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { formatDate } from '@winthiscard/shared/utils';
+import { formatDate } from '@winucard/shared/utils';
 
 interface CompetitionInfoProps {
   // Authentication details

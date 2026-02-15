@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { prisma } from '@winthiscard/database';
+import { prisma } from '@winucard/database';
 import { scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { authConfig } from './auth.config';

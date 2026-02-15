@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
-const BASE_URL = 'https://winthiscard.com';
-const SITE_NAME = 'WinThisCard';
+const BASE_URL = 'https://winucard.com';
+const SITE_NAME = 'WinUCard';
 const DEFAULT_DESCRIPTION =
   'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.';
 const DEFAULT_IMAGE = `${BASE_URL}/images/og-default.jpg`;
@@ -108,8 +108,8 @@ export function generateSeoMetadata(config: SeoConfig): Metadata {
       title,
       description,
       images: [image],
-      creator: '@winthiscard',
-      site: '@winthiscard',
+      creator: '@winucard',
+      site: '@winucard',
     },
     robots: noIndex
       ? {
@@ -190,9 +190,9 @@ export const siteConfig = {
   url: BASE_URL,
   ogImage: DEFAULT_IMAGE,
   links: {
-    twitter: 'https://twitter.com/winthiscard',
-    instagram: 'https://instagram.com/winthiscard',
-    facebook: 'https://facebook.com/winthiscard',
+    twitter: 'https://twitter.com/winucard',
+    instagram: 'https://instagram.com/winucard',
+    facebook: 'https://facebook.com/winucard',
   },
   locale: 'en_GB',
   currency: 'GBP',
@@ -219,28 +219,28 @@ export const staticPagesMeta: Record<string, SeoConfig> = {
   howItWorks: {
     title: 'How It Works',
     description:
-      'Learn how to enter WinThisCard competitions. Simple entry process, skill-based competitions, and free postal entry route available.',
+      'Learn how to enter WinUCard competitions. Simple entry process, skill-based competitions, and free postal entry route available.',
     path: '/how-it-works',
     keywords: ['how to enter', 'competition rules', 'free entry'],
   },
   faq: {
     title: 'Frequently Asked Questions',
     description:
-      'Find answers to common questions about WinThisCard competitions, payments, shipping, and more.',
+      'Find answers to common questions about WinUCard competitions, payments, shipping, and more.',
     path: '/faq',
     keywords: ['faq', 'help', 'questions', 'support'],
   },
   about: {
     title: 'About Us',
     description:
-      'Learn about WinThisCard, the UK-based prize competition platform for collectible cards and memorabilia enthusiasts.',
+      'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia enthusiasts.',
     path: '/about',
-    keywords: ['about winthiscard', 'uk company'],
+    keywords: ['about winucard', 'uk company'],
   },
   contact: {
     title: 'Contact Us',
     description:
-      'Get in touch with the WinThisCard team. We are here to help with any questions about our competitions.',
+      'Get in touch with the WinUCard team. We are here to help with any questions about our competitions.',
     path: '/contact',
     keywords: ['contact', 'support', 'help', 'email'],
   },
@@ -254,25 +254,25 @@ export const staticPagesMeta: Record<string, SeoConfig> = {
   terms: {
     title: 'Terms and Conditions',
     description:
-      'Read the terms and conditions for using WinThisCard and entering our prize competitions.',
+      'Read the terms and conditions for using WinUCard and entering our prize competitions.',
     path: '/terms',
   },
   privacy: {
     title: 'Privacy Policy',
     description:
-      'Learn how WinThisCard collects, uses, and protects your personal data.',
+      'Learn how WinUCard collects, uses, and protects your personal data.',
     path: '/privacy',
   },
   cookies: {
     title: 'Cookie Policy',
     description:
-      'Information about how WinThisCard uses cookies and similar technologies.',
+      'Information about how WinUCard uses cookies and similar technologies.',
     path: '/cookies',
   },
   competitionRules: {
     title: 'Competition Rules',
     description:
-      'Official rules for WinThisCard prize competitions. Skill-based entry requirements and free postal entry route.',
+      'Official rules for WinUCard prize competitions. Skill-based entry requirements and free postal entry route.',
     path: '/competition-rules',
     keywords: ['competition rules', 'terms', 'eligibility', 'free entry'],
   },

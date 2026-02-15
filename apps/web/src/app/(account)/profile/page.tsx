@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db';
 import { ProfileForm } from './profile-form';
 
 export const metadata = {
-  title: 'Profile | WinThisCard',
+  title: 'Profile | WinUCard',
   description: 'Manage your personal information and profile settings',
 };
 

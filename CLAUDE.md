@@ -1,7 +1,7 @@
-# WinThisCard — Claude Code Instructions
+# WinUCard — Claude Code Instructions
 
 ## Project Overview
-WinThisCard is a UK-based prize competition platform for collectible cards (Pokémon, One Piece, Sports) and memorabilia (signed jerseys, etc.). Users buy tickets to win prizes. This is NOT a lottery — it's a skill-based prize competition compliant with the UK Gambling Act 2005 (requires a skill question + free postal entry route).
+WinUCard is a UK-based prize competition platform for collectible cards (Pokémon, One Piece, Sports) and memorabilia (signed jerseys, etc.). Users buy tickets to win prizes. This is NOT a lottery — it's a skill-based prize competition compliant with the UK Gambling Act 2005 (requires a skill question + free postal entry route).
 
 ## Documentation
 READ THESE FILES BEFORE ANY WORK:

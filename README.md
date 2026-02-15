@@ -1,4 +1,4 @@
-# WinThisCard
+# WinUCard
 
 UK-based prize competition platform for collectible cards (Pokemon, One Piece, Sports) and memorabilia. Users purchase tickets for a chance to win high-value prizes through skill-based competitions compliant with UK Gambling Act 2005.
 
@@ -18,7 +18,7 @@ UK-based prize competition platform for collectible cards (Pokemon, One Piece, S
 ## Project Structure
 
 ```
-winthiscard/
+winucard/
 ├── apps/
 │   ├── web/          # Public user-facing site (port 3000)
 │   └── admin/        # Admin CMS panel (port 3001)

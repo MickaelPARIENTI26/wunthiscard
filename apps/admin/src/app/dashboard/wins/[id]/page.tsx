@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { formatPrice, formatDateTime } from '@winthiscard/shared';
+import { formatPrice, formatDateTime } from '@winucard/shared';
 import {
   ArrowLeft,
   Trophy,

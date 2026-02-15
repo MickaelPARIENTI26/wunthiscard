@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { generateCSV } from '@/lib/export';
-import { formatDateTime } from '@winthiscard/shared';
-import type { UserRole } from '@winthiscard/database';
+import { formatDateTime } from '@winucard/shared';
+import type { UserRole } from '@winucard/database';
 
 export async function GET(request: NextRequest) {
   try {

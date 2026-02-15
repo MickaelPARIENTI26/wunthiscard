@@ -69,31 +69,31 @@ function DiscordIcon({ className }: { className?: string }) {
 
 const socialLinks = [
   {
-    href: 'https://instagram.com/winthiscard',
+    href: 'https://instagram.com/winucard',
     label: 'Instagram',
     icon: Instagram,
     followers: '12.5K',
   },
   {
-    href: 'https://twitter.com/winthiscard',
+    href: 'https://twitter.com/winucard',
     label: 'Twitter',
     icon: Twitter,
     followers: '8.2K',
   },
   {
-    href: 'https://tiktok.com/@winthiscard',
+    href: 'https://tiktok.com/@winucard',
     label: 'TikTok',
     icon: TikTokIcon,
     followers: '25.1K',
   },
   {
-    href: 'https://facebook.com/winthiscard',
+    href: 'https://facebook.com/winucard',
     label: 'Facebook',
     icon: Facebook,
     followers: '5.8K',
   },
   {
-    href: 'https://discord.gg/winthiscard',
+    href: 'https://discord.gg/winucard',
     label: 'Discord',
     icon: DiscordIcon,
     followers: '3.2K',
@@ -148,7 +148,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
-                  WinThisCard
+                  WinUCard
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5">
                   Premium Collectibles

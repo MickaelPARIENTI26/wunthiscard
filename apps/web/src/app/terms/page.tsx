@@ -7,7 +7,7 @@ import { SafeHtml } from '@/components/common/safe-html';
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
-    'Terms and conditions for using WinThisCard prize competition platform. Read our full terms of service.',
+    'Terms and conditions for using WinUCard prize competition platform. Read our full terms of service.',
 };
 
 interface TableOfContentsItem {
@@ -138,7 +138,7 @@ function PlaceholderTermsContent() {
   return (
     <>
       <p className="lead">
-        Welcome to WinThisCard. These Terms and Conditions govern your use of
+        Welcome to WinUCard. These Terms and Conditions govern your use of
         our website and participation in our prize competitions. By using our
         services, you agree to be bound by these terms.
       </p>
@@ -148,9 +148,9 @@ function PlaceholderTermsContent() {
         <p>In these Terms and Conditions:</p>
         <ul>
           <li>
-            <strong>&quot;WinThisCard&quot;</strong>,{' '}
+            <strong>&quot;WinUCard&quot;</strong>,{' '}
             <strong>&quot;we&quot;</strong>, <strong>&quot;us&quot;</strong>, or{' '}
-            <strong>&quot;our&quot;</strong> refers to WinThisCard Ltd, a
+            <strong>&quot;our&quot;</strong> refers to WinUCard Ltd, a
             company registered in England.
           </li>
           <li>
@@ -180,7 +180,7 @@ function PlaceholderTermsContent() {
           <li>Be at least 18 years of age</li>
           <li>Be a resident of the United Kingdom</li>
           <li>Have a valid email address</li>
-          <li>Not be an employee or immediate family member of WinThisCard</li>
+          <li>Not be an employee or immediate family member of WinUCard</li>
         </ul>
         <p>
           We reserve the right to verify your eligibility at any time. If you
@@ -267,7 +267,7 @@ function PlaceholderTermsContent() {
             a postcard or piece of paper
           </li>
           <li>
-            Post it to: WinThisCard Free Entry, [Company Address], United
+            Post it to: WinUCard Free Entry, [Company Address], United
             Kingdom
           </li>
           <li>
@@ -333,7 +333,7 @@ function PlaceholderTermsContent() {
         <h2>11. Intellectual Property</h2>
         <p>
           All content on our website, including but not limited to text,
-          graphics, logos, images, and software, is the property of WinThisCard
+          graphics, logos, images, and software, is the property of WinUCard
           or its licensors and is protected by copyright and other intellectual
           property laws.
         </p>
@@ -398,12 +398,12 @@ function PlaceholderTermsContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:legal@winthiscard.com" className="text-primary">
-              legal@winthiscard.com
+            <a href="mailto:legal@winucard.com" className="text-primary">
+              legal@winucard.com
             </a>
           </li>
           <li>
-            Post: WinThisCard Ltd, [Company Address], United Kingdom
+            Post: WinUCard Ltd, [Company Address], United Kingdom
           </li>
         </ul>
       </section>

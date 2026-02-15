@@ -99,7 +99,7 @@ export function Header({ user = null }: HeaderProps) {
           </div>
           <div className="flex flex-col">
             <span className="hidden text-lg font-bold tracking-tight sm:inline-block font-[family-name:var(--font-display)] text-gradient-gold">
-              WinThisCard
+              WinUCard
             </span>
             <span className="hidden text-[10px] text-muted-foreground sm:inline-block -mt-0.5">
               Premium Collectibles

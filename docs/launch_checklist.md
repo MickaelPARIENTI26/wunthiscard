@@ -1,4 +1,4 @@
-# WinThisCard Launch Checklist
+# WinUCard Launch Checklist
 
 ## Pre-Launch Verification
 
@@ -45,8 +45,8 @@ Copy from `.env.example` and fill in production values:
 
 ```
 # App URLs (update for production)
-NEXT_PUBLIC_APP_URL=https://winthiscard.com
-NEXT_PUBLIC_ADMIN_URL=https://admin.winthiscard.com
+NEXT_PUBLIC_APP_URL=https://winucard.com
+NEXT_PUBLIC_ADMIN_URL=https://admin.winucard.com
 
 # Database (Neon or production PostgreSQL)
 DATABASE_URL=postgresql://...
@@ -58,7 +58,7 @@ UPSTASH_REDIS_REST_TOKEN=...
 
 # Auth
 NEXTAUTH_SECRET=<generate-new-secret>
-NEXTAUTH_URL=https://winthiscard.com
+NEXTAUTH_URL=https://winucard.com
 
 # Google OAuth (optional)
 GOOGLE_CLIENT_ID=...
@@ -72,13 +72,13 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Email (Resend)
 RESEND_API_KEY=re_...
-EMAIL_FROM=noreply@winthiscard.com
+EMAIL_FROM=noreply@winucard.com
 
 # Storage (Cloudflare R2)
 R2_ACCOUNT_ID=...
 R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...
-R2_BUCKET_NAME=winthiscard-images
+R2_BUCKET_NAME=winucard-images
 R2_PUBLIC_URL=...
 
 # Monitoring
@@ -99,7 +99,7 @@ NODE_ENV=production
 
 - [ ] Activate Stripe account (complete verification)
 - [ ] Switch to live API keys
-- [ ] Configure webhook endpoint: `https://winthiscard.com/api/webhooks/stripe`
+- [ ] Configure webhook endpoint: `https://winucard.com/api/webhooks/stripe`
 - [ ] Add webhook events:
   - `checkout.session.completed`
   - `payment_intent.succeeded`
@@ -109,10 +109,10 @@ NODE_ENV=production
 
 ### DNS & Domain
 
-- [ ] Register domain (winthiscard.com)
+- [ ] Register domain (winucard.com)
 - [ ] Configure DNS for Vercel
 - [ ] Add custom domain in Vercel project
-- [ ] Setup subdomain for admin (admin.winthiscard.com)
+- [ ] Setup subdomain for admin (admin.winucard.com)
 - [ ] Verify SSL certificates are issued
 
 ### Email Setup

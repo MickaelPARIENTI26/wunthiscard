@@ -79,7 +79,7 @@ export function FreeEntryNotice({ competitionTitle, className }: FreeEntryNotice
             </div>
 
             <p style={{ color: 'oklch(0.75 0.02 270)' }} className="text-sm">
-              Post to: <span style={{ color: 'oklch(0.85 0.02 270)' }}>WinThisCard Ltd, PO Box 1234, London, UK</span>
+              Post to: <span style={{ color: 'oklch(0.85 0.02 270)' }}>WinUCard Ltd, PO Box 1234, London, UK</span>
             </p>
 
             <p style={{ color: 'oklch(0.65 0.02 270)' }} className="text-xs">
