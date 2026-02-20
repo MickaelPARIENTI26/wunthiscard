@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 // Configure allowed tags and attributes for rich text content
 const DEFAULT_CONFIG = {

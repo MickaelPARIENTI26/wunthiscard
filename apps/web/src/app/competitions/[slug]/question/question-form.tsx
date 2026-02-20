@@ -37,7 +37,7 @@ export function QuestionForm({
     blockUntil?: number;
   } | null>(null);
   const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
-  const [pendingQuantity, setPendingQuantity] = useState<number>(0);
+  const [_pendingQuantity, setPendingQuantity] = useState<number>(0);
   const [reservation, setReservation] = useState<{ expiresAt: number } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);

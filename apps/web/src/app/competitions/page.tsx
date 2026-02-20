@@ -150,7 +150,7 @@ async function getCompetitions(searchParams: SearchParams) {
   });
 
   // Sort competitions: first by status priority (ACTIVE > SOLD_OUT > UPCOMING), then by user's sort preference
-  let sortedCompetitions = [...competitions].sort((a, b) => {
+  const sortedCompetitions = [...competitions].sort((a, b) => {
     // First, sort by status priority
     const statusA = STATUS_PRIORITY[a.status] ?? 99;
     const statusB = STATUS_PRIORITY[b.status] ?? 99;

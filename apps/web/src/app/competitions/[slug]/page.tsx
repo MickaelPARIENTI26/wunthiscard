@@ -143,9 +143,7 @@ export async function generateMetadata({
   const competition = await getCompetition(slug);
 
   if (!competition) {
-    return {
-      title: 'Competition Not Found',
-    };
+    return notFound();
   }
 
   const title = competition.metaTitle || competition.title;
