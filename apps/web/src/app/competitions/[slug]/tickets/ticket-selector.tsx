@@ -254,6 +254,7 @@ export function TicketSelector({
                   className="h-14 w-14 rounded-full text-lg"
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
+                  aria-label="Decrease quantity"
                 >
                   <Minus className="h-6 w-6" />
                 </Button>
@@ -269,6 +270,7 @@ export function TicketSelector({
                   className="h-14 w-14 rounded-full text-lg"
                   onClick={incrementQuantity}
                   disabled={quantity >= maxQuantity}
+                  aria-label="Increase quantity"
                 >
                   <Plus className="h-6 w-6" />
                 </Button>
@@ -556,6 +558,7 @@ export function TicketSelector({
                 className="h-12 w-12 rounded-full"
                 onClick={decrementQuantity}
                 disabled={quantity <= 1}
+                aria-label="Decrease quantity"
               >
                 <Minus className="h-5 w-5" />
               </Button>
@@ -571,6 +574,7 @@ export function TicketSelector({
                 className="h-12 w-12 rounded-full"
                 onClick={incrementQuantity}
                 disabled={quantity >= maxQuantity}
+                aria-label="Increase quantity"
               >
                 <Plus className="h-5 w-5" />
               </Button>

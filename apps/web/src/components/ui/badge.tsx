@@ -39,7 +39,7 @@ const variantStyles: Record<string, React.CSSProperties> = {
 };
 
 function Badge({ className, variant, style, ...props }: BadgeProps) {
-  const inlineStyle = { ...variantStyles[variant || 'default'], ...style };
+  const inlineStyle = { ...variantStyles[variant ?? 'default'], ...style };
   return <div className={cn(badgeVariants({ variant }), className)} style={inlineStyle} {...props} />;
 }
 

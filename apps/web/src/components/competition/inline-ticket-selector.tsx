@@ -66,8 +66,8 @@ export function InlineTicketSelector({
   const totalPrice = quantity * ticketPrice;
 
   // Find current and next tier
-  const currentTier = BONUS_TIERS.filter((t) => quantity >= t.min).pop() || null;
-  const nextTier = BONUS_TIERS.find((t) => quantity < t.min) || null;
+  const currentTier = BONUS_TIERS.filter((t) => quantity >= t.min).pop() ?? null;
+  const nextTier = BONUS_TIERS.find((t) => quantity < t.min) ?? null;
   const ticketsToNextTier = nextTier ? nextTier.min - quantity : 0;
 
   // Format countdown timer

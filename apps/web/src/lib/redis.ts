@@ -535,7 +535,7 @@ export async function getLockedTickets(competitionId: string): Promise<number[]>
 
     for (const key of keys) {
       const match = key.match(/ticket-lock:[^:]+:(\d+)/);
-      if (match && match[1]) {
+      if (match?.[1]) {
         lockedNumbers.push(parseInt(match[1], 10));
       }
     }

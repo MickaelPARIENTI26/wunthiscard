@@ -330,7 +330,7 @@ export function EmailTemplateEditor({ template }: EmailTemplateEditorProps) {
       </div>
 
       {/* Main Editor */}
-      <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 min-h-0 overflow-auto">
         {/* Left Column - Editor */}
         <div className="flex flex-col gap-4 overflow-hidden">
           {/* Subject */}

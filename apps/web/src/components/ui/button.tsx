@@ -17,10 +17,10 @@ const buttonVariants = cva(
         link: 'underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-9 px-4 py-2',
-        sm: 'h-8 rounded-md px-3 text-xs',
-        lg: 'h-10 rounded-md px-8',
-        icon: 'h-9 w-9',
+        default: 'h-11 px-4 py-2',
+        sm: 'h-9 rounded-md px-3 text-xs',
+        lg: 'h-12 rounded-md px-8',
+        icon: 'h-11 w-11',
       },
     },
     defaultVariants: {
@@ -49,7 +49,7 @@ const variantStyles: Record<string, React.CSSProperties> = {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', size, asChild = false, style, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
-    const inlineStyle = { ...variantStyles[variant || 'default'], ...style };
+    const inlineStyle = { ...variantStyles[variant ?? 'default'], ...style };
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
