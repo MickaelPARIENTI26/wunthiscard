@@ -1,7 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
-import DOMPurify from 'dompurify';
+import { useMemo, useState, useEffect } from 'react';
 
 // Configure allowed tags and attributes for rich text content
 const DEFAULT_CONFIG = {
@@ -37,12 +36,33 @@ interface SafeHtmlProps {
 /**
  * Safely render HTML content with XSS protection
  * Uses DOMPurify to sanitize HTML before rendering
+ * DOMPurify is loaded client-side only since it requires DOM
  */
 export function SafeHtml({ html, className, as: Component = 'div' }: SafeHtmlProps) {
-  const sanitizedHtml = useMemo(() => {
-    if (!html) return '';
-    return DOMPurify.sanitize(html, DEFAULT_CONFIG);
-  }, [html]);
+  const [sanitizedHtml, setSanitizedHtml] = useState('');
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient || !html) {
+      setSanitizedHtml('');
+      return;
+    }
+
+    // Dynamically import DOMPurify only on the client
+    import('dompurify').then((DOMPurify) => {
+      const purify = DOMPurify.default || DOMPurify;
+      setSanitizedHtml(purify.sanitize(html, DEFAULT_CONFIG));
+    });
+  }, [html, isClient]);
+
+  // Show nothing during SSR to prevent hydration mismatch
+  if (!isClient) {
+    return <Component className={className} />;
+  }
 
   return (
     <Component

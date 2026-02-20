@@ -326,7 +326,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
                         <Badge
                           key={ticket.ticketNumber}
                           variant="outline"
-                          className="border-green-500 text-green-700"
+                          className="border-green-500 text-green-700 dark:text-green-400 dark:border-green-600"
                         >
                           #{ticket.ticketNumber}
                         </Badge>
