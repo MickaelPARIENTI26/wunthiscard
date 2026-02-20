@@ -26,7 +26,7 @@ interface UserActionsProps {
   user: {
     id: string;
     email: string;
-    role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+    role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'DRAW_MASTER';
     isBanned: boolean;
   };
 }

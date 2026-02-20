@@ -44,7 +44,7 @@ interface UserWithCounts {
   email: string;
   firstName: string;
   lastName: string;
-  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+  role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'DRAW_MASTER';
   isBanned: boolean;
   emailVerified: Date | null;
   createdAt: Date;

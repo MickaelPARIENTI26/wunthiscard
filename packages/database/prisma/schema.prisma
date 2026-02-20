@@ -34,13 +34,14 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  addresses Address[]
-  orders    Order[]
-  tickets   Ticket[]
-  wins      Win[]
-  auditLogs AuditLog[]
+  accounts           Account[]
+  sessions           Session[]
+  addresses          Address[]
+  orders             Order[]
+  tickets            Ticket[]
+  wins               Win[]
+  auditLogs          AuditLog[]
+  drawnCompetitions  Competition[] @relation("DrawnCompetitions")
 
   @@index([email])
   @@index([role])
@@ -165,13 +166,16 @@ model Competition {
   // Draw result
   winningTicketNumber Int?
   drawProofUrl        String? // Link to video/proof
+  drawnById           String? // Admin who executed the draw
+  winnerNotified      Boolean @default(false) // Email sent to winner
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets Ticket[]
-  orders  Order[]
-  wins    Win[]
+  tickets  Ticket[]
+  orders   Order[]
+  wins     Win[]
+  drawnBy  User?    @relation("DrawnCompetitions", fields: [drawnById], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([category])
