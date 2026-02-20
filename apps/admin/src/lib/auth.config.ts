@@ -74,11 +74,26 @@ export const authConfig = {
       const pathname = nextUrl.pathname;
       const isOnDashboard = pathname.startsWith('/dashboard');
       const isOnDrawLogin = pathname === '/draw/login';
+      const isOnDrawSection = pathname.startsWith('/draw') && pathname !== '/draw/login';
       const isDrawPage = /^\/dashboard\/competitions\/[^/]+\/draw/.test(pathname);
 
       // Draw login page is always accessible
       if (isOnDrawLogin) {
         return true;
+      }
+
+      // Draw section pages (/draw, /draw/[id]) - protected for DRAW_MASTER and SUPER_ADMIN
+      if (isOnDrawSection) {
+        if (!isLoggedIn) {
+          return Response.redirect(new URL('/draw/login', nextUrl));
+        }
+
+        const role = auth?.user?.role;
+        if (role === 'SUPER_ADMIN' || role === 'DRAW_MASTER') {
+          return true;
+        }
+
+        return Response.redirect(new URL('/draw/login?error=AccessDenied', nextUrl));
       }
 
       if (isOnDashboard) {

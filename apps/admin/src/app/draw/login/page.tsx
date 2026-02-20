@@ -34,8 +34,8 @@ export default function DrawLoginPage() {
           setLoginError('Invalid email or password');
         }
       } else {
-        // Successful login - redirect to competitions list (they'll navigate to draw from there)
-        router.push('/dashboard/competitions');
+        // Successful login - redirect to draw dashboard
+        router.push('/draw');
         router.refresh();
       }
     } catch {
