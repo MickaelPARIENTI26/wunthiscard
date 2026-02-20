@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Gift, Ticket, Sparkles, Trophy, Clock } from 'lucide-react';
+import { ChevronLeft, Gift, Trophy, Clock } from 'lucide-react';
 import { prisma } from '@/lib/db';
+import { auth } from '@/lib/auth';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from '@/components/common/countdown-timer';
@@ -10,7 +11,7 @@ import { ProgressBar } from '@/components/common/progress-bar';
 import { ImageGallery } from '@/components/competition/image-gallery';
 import { CompetitionInfo } from '@/components/competition/competition-info';
 import { FreeEntryNotice } from '@/components/competition/free-entry-notice';
-import { GetTicketsButton } from '@/components/competition/get-tickets-button';
+import { InlineTicketSelector } from '@/components/competition/inline-ticket-selector';
 import { SafeHtml } from '@/components/common/safe-html';
 import type { CompetitionCategory } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
@@ -38,14 +39,6 @@ const CATEGORY_GRADIENTS: Record<CompetitionCategory, string> = {
   MTG: 'linear-gradient(135deg, oklch(0.4 0.1 270) 0%, oklch(0.3 0.08 270) 100%)',
   OTHER: 'linear-gradient(135deg, oklch(0.45 0.05 270) 0%, oklch(0.35 0.04 270) 100%)',
 };
-
-function getBonusTicketsMessage(quantity: number): string | null {
-  if (quantity >= 50) return 'Buy 50 tickets, get 5 FREE!';
-  if (quantity >= 20) return 'Buy 20 tickets, get 3 FREE!';
-  if (quantity >= 15) return 'Buy 15 tickets, get 2 FREE!';
-  if (quantity >= 10) return 'Buy 10 tickets, get 1 FREE!';
-  return null;
-}
 
 interface PageParams {
   slug: string;
@@ -108,6 +101,39 @@ async function getCompetition(slug: string) {
   };
 }
 
+async function getUserTicketCount(competitionId: string, userId: string | undefined) {
+  if (!userId) return 0;
+
+  const count = await prisma.ticket.count({
+    where: {
+      competitionId,
+      userId,
+      status: 'SOLD',
+    },
+  });
+
+  return count;
+}
+
+async function getAvailableTicketCount(competitionId: string) {
+  const now = new Date();
+
+  const count = await prisma.ticket.count({
+    where: {
+      competitionId,
+      OR: [
+        { status: 'AVAILABLE' },
+        {
+          status: 'RESERVED',
+          reservedUntil: { lte: now }, // Expired reservations count as available
+        },
+      ],
+    },
+  });
+
+  return count;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -150,7 +176,10 @@ export default async function CompetitionDetailPage({
   params: Promise<PageParams>;
 }) {
   const { slug } = await params;
-  const competition = await getCompetition(slug);
+  const [competition, session] = await Promise.all([
+    getCompetition(slug),
+    auth(),
+  ]);
 
   if (!competition) {
     notFound();
@@ -162,14 +191,18 @@ export default async function CompetitionDetailPage({
   const isSoldOut = competition.status === 'SOLD_OUT';
   const isCancelled = competition.status === 'CANCELLED';
 
-  const _progressPercent = Math.round(
-    (competition.soldTickets / competition.totalTickets) * 100
-  );
+  // Get ticket counts for active competitions
+  const [userTicketCount, availableTicketCount] = isActive
+    ? await Promise.all([
+        getUserTicketCount(competition.id, session?.user?.id),
+        getAvailableTicketCount(competition.id),
+      ])
+    : [0, 0];
 
   const allImages = [competition.mainImageUrl, ...competition.galleryUrls];
 
   return (
-    <main className="min-h-screen pb-24 sm:pb-8 overflow-x-hidden">
+    <main className="min-h-screen pb-8 overflow-x-hidden">
       <div className="container mx-auto px-4 py-4 sm:py-6 max-w-full overflow-hidden">
         {/* Back Navigation */}
         <Link
@@ -187,7 +220,7 @@ export default async function CompetitionDetailPage({
           </div>
 
           {/* Right Column - Competition Details */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             {/* Header */}
             <div>
               {/* Category Badge */}
@@ -215,9 +248,28 @@ export default async function CompetitionDetailPage({
               )}
             </div>
 
+            {/* Countdown Timer - MOVED ABOVE Prize Value */}
+            {(isActive || isUpcoming) && (
+              <div
+                className="rounded-2xl p-4"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+                  border: '1px solid oklch(0.22 0.02 270)',
+                }}
+              >
+                <p className="mb-2 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {isActive ? 'Competition ends in' : 'Sale starts in'}
+                </p>
+                <div className="flex justify-center">
+                  <CountdownTimer targetDate={competition.drawDate} size="md" />
+                </div>
+              </div>
+            )}
+
             {/* Prize Value Card */}
             <div
-              className="rounded-2xl p-5"
+              className="rounded-2xl p-4"
               style={{
                 background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
                 border: '1px solid oklch(0.25 0.02 270)',
@@ -225,40 +277,21 @@ export default async function CompetitionDetailPage({
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-14 w-14 items-center justify-center rounded-xl"
+                  className="flex h-12 w-12 items-center justify-center rounded-xl"
                   style={{
                     background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
                   }}
                 >
-                  <Gift className="h-7 w-7 text-black" />
+                  <Gift className="h-6 w-6 text-black" />
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Prize Value</p>
-                  <p className="text-3xl font-bold text-gradient-gold sm:text-4xl font-[family-name:var(--font-display)]">
+                  <p className="text-xs text-muted-foreground">Prize Value</p>
+                  <p className="text-2xl font-bold text-gradient-gold sm:text-3xl font-[family-name:var(--font-display)]">
                     {formatPrice(competition.prizeValue)}
                   </p>
                 </div>
               </div>
             </div>
-
-            {/* Countdown Timer - for active/upcoming competitions */}
-            {(isActive || isUpcoming) && (
-              <div
-                className="rounded-2xl p-5"
-                style={{
-                  background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
-                  border: '1px solid oklch(0.22 0.02 270)',
-                }}
-              >
-                <p className="mb-3 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {isActive ? 'Competition ends in' : 'Sale starts in'}
-                </p>
-                <div className="flex justify-center">
-                  <CountdownTimer targetDate={competition.drawDate} size="lg" />
-                </div>
-              </div>
-            )}
 
             {/* Progress Bar */}
             {!isCompleted && (
@@ -271,131 +304,97 @@ export default async function CompetitionDetailPage({
               </div>
             )}
 
-            {/* Ticket Price and CTA */}
-            <div className="space-y-4">
-              <div
-                className="flex items-center justify-between rounded-xl p-4"
-                style={{
-                  background: 'oklch(0.12 0.02 270)',
-                  border: '1px solid oklch(0.22 0.02 270)',
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  <Ticket className="h-5 w-5 text-primary/70" />
-                  <span className="text-muted-foreground">Ticket Price</span>
-                </div>
-                <span className="text-2xl font-bold font-[family-name:var(--font-display)]">
-                  {formatPrice(competition.ticketPrice)}
-                </span>
+            {/* Active Competition - Inline Ticket Selector */}
+            {isActive && (
+              <div className="space-y-4">
+                <InlineTicketSelector
+                  competitionId={competition.id}
+                  competitionSlug={slug}
+                  ticketPrice={competition.ticketPrice}
+                  maxTicketsPerUser={competition.maxTicketsPerUser}
+                  availableTicketCount={availableTicketCount}
+                  userTicketCount={userTicketCount}
+                />
+                <FreeEntryNotice competitionTitle={competition.title} />
               </div>
+            )}
 
-              {/* Bonus Tickets Notice */}
-              {isActive && (
-                <div
-                  className="rounded-xl p-3 text-center text-sm font-medium"
-                  style={{
-                    background: 'linear-gradient(135deg, oklch(0.2 0.08 145) 0%, oklch(0.15 0.06 145) 100%)',
-                    border: '1px solid oklch(0.35 0.1 145)',
-                    color: 'oklch(0.8 0.15 145)',
-                  }}
-                >
-                  <span className="mr-2">🎁</span>
-                  {getBonusTicketsMessage(10)}
-                </div>
-              )}
-
-              {/* CTA Button */}
-              {isActive && (
-                <>
-                  <GetTicketsButton
-                    competitionSlug={slug}
-                    className="w-full text-lg font-semibold"
-                    size="lg"
-                    style={{
-                      background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                      color: 'black',
-                    }}
-                  >
-                    <Sparkles className="h-5 w-5 mr-2" />
-                    Get Your Tickets
-                  </GetTicketsButton>
-                  <FreeEntryNotice competitionTitle={competition.title} />
-                </>
-              )}
-
-              {isUpcoming && (
-                <>
-                  <Button
-                    size="lg"
-                    className="w-full text-lg"
-                    disabled
-                    style={{
-                      background: 'oklch(0.25 0.02 270)',
-                      color: 'oklch(0.6 0.02 270)',
-                    }}
-                  >
-                    <Clock className="h-5 w-5 mr-2" />
-                    Coming Soon
-                  </Button>
-                  <FreeEntryNotice competitionTitle={competition.title} />
-                </>
-              )}
-
-              {isSoldOut && (
+            {/* Upcoming Competition */}
+            {isUpcoming && (
+              <div className="space-y-4">
                 <Button
                   size="lg"
                   className="w-full text-lg"
-                  variant="secondary"
                   disabled
                   style={{
-                    background: 'oklch(0.2 0.02 270)',
+                    background: 'oklch(0.25 0.02 270)',
                     color: 'oklch(0.6 0.02 270)',
                   }}
                 >
-                  Sold Out - Draw Pending
+                  <Clock className="h-5 w-5 mr-2" />
+                  Coming Soon
                 </Button>
-              )}
+                <FreeEntryNotice competitionTitle={competition.title} />
+              </div>
+            )}
 
-              {isCompleted && (
-                <div
-                  className="rounded-2xl p-5 text-center"
-                  style={{
-                    background: 'linear-gradient(135deg, oklch(0.15 0.05 85) 0%, oklch(0.12 0.04 85) 100%)',
-                    border: '1px solid oklch(0.3 0.08 85)',
-                  }}
-                >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Trophy className="h-6 w-6 text-primary" />
-                    <p className="text-lg font-semibold text-gradient-gold">Competition Completed</p>
-                  </div>
-                  <p className="text-muted-foreground">
-                    Winning ticket: <span className="font-mono font-bold text-primary">#{competition.winningTicketNumber}</span>
-                  </p>
-                  {competition.winnerDisplayName && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Winner: {competition.winnerDisplayName}
-                    </p>
-                  )}
-                </div>
-              )}
+            {/* Sold Out */}
+            {isSoldOut && (
+              <Button
+                size="lg"
+                className="w-full text-lg"
+                variant="secondary"
+                disabled
+                style={{
+                  background: 'oklch(0.2 0.02 270)',
+                  color: 'oklch(0.6 0.02 270)',
+                }}
+              >
+                Sold Out - Draw Pending
+              </Button>
+            )}
 
-              {isCancelled && (
-                <div
-                  className="rounded-2xl p-5 text-center"
-                  style={{
-                    background: 'linear-gradient(135deg, oklch(0.2 0.12 25) 0%, oklch(0.15 0.1 25) 100%)',
-                    border: '2px solid oklch(0.45 0.18 25)',
-                  }}
-                >
-                  <p className="text-lg font-semibold" style={{ color: 'oklch(0.7 0.18 25)' }}>
-                    This competition was cancelled
-                  </p>
-                  <p className="text-muted-foreground">
-                    All participants have been fully refunded.
-                  </p>
+            {/* Completed */}
+            {isCompleted && (
+              <div
+                className="rounded-2xl p-5 text-center"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.15 0.05 85) 0%, oklch(0.12 0.04 85) 100%)',
+                  border: '1px solid oklch(0.3 0.08 85)',
+                }}
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Trophy className="h-6 w-6 text-primary" />
+                  <p className="text-lg font-semibold text-gradient-gold">Competition Completed</p>
                 </div>
-              )}
-            </div>
+                <p className="text-muted-foreground">
+                  Winning ticket: <span className="font-mono font-bold text-primary">#{competition.winningTicketNumber}</span>
+                </p>
+                {competition.winnerDisplayName && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Winner: {competition.winnerDisplayName}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Cancelled */}
+            {isCancelled && (
+              <div
+                className="rounded-2xl p-5 text-center"
+                style={{
+                  background: 'linear-gradient(135deg, oklch(0.2 0.12 25) 0%, oklch(0.15 0.1 25) 100%)',
+                  border: '2px solid oklch(0.45 0.18 25)',
+                }}
+              >
+                <p className="text-lg font-semibold" style={{ color: 'oklch(0.7 0.18 25)' }}>
+                  This competition was cancelled
+                </p>
+                <p className="text-muted-foreground">
+                  All participants have been fully refunded.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -433,38 +432,6 @@ export default async function CompetitionDetailPage({
           />
         </div>
       </div>
-
-      {/* Fixed Bottom CTA - Mobile Only */}
-      {isActive && (
-        <div
-          className="fixed bottom-0 left-0 right-0 p-4 backdrop-blur-xl sm:hidden"
-          style={{
-            background: 'linear-gradient(180deg, oklch(0.08 0.02 270 / 0.95) 0%, oklch(0.06 0.02 270 / 0.98) 100%)',
-            borderTop: '1px solid oklch(0.25 0.02 270)',
-          }}
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs text-muted-foreground">Ticket Price</p>
-              <p className="text-xl font-bold font-[family-name:var(--font-display)]">
-                {formatPrice(competition.ticketPrice)}
-              </p>
-            </div>
-            <GetTicketsButton
-              competitionSlug={slug}
-              size="lg"
-              className="font-semibold"
-              style={{
-                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                color: 'black',
-              }}
-            >
-              <Sparkles className="h-4 w-4 mr-1" />
-              Get Tickets
-            </GetTicketsButton>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

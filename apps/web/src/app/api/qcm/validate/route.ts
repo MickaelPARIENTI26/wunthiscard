@@ -12,6 +12,7 @@ import {
   getReservation,
   extendReservation,
   recreateReservation,
+  releaseTicketsFromRedis,
   MAX_QCM_ATTEMPTS,
 } from '@/lib/redis';
 
@@ -102,6 +103,42 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
+
+        // Also update database tickets to RESERVED (Redis-only recreation doesn't update DB)
+        const now = new Date();
+        const updateResult = await prisma.ticket.updateMany({
+          where: {
+            competitionId,
+            ticketNumber: { in: ticketNumbers },
+            OR: [
+              { status: 'AVAILABLE' },
+              {
+                status: 'RESERVED',
+                reservedUntil: { lte: now }, // Expired reservation
+              },
+              {
+                status: 'RESERVED',
+                userId, // User's own existing reservation
+              },
+            ],
+          },
+          data: {
+            status: 'RESERVED',
+            userId,
+            reservedUntil: new Date(recreateResult.expiresAt),
+          },
+        });
+
+        // Verify all tickets were successfully reserved in the database
+        if (updateResult.count !== ticketNumbers.length) {
+          // Some tickets couldn't be reserved - release the Redis locks
+          await releaseTicketsFromRedis(competitionId, userId);
+          return NextResponse.json(
+            { error: 'Some tickets are no longer available. Please select tickets again.' },
+            { status: 409 }
+          );
+        }
+
         newExpiresAt = recreateResult.expiresAt;
         reservation = await getReservation(competitionId, userId);
       }

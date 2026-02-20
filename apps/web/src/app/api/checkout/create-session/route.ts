@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
-import { getReservation, extendReservation, recreateReservation, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
+import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
@@ -86,6 +86,42 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
+
+      // Also update database tickets to RESERVED (Redis-only recreation doesn't update DB)
+      const now = new Date();
+      const updateResult = await prisma.ticket.updateMany({
+        where: {
+          competitionId,
+          ticketNumber: { in: providedTicketNumbers },
+          OR: [
+            { status: 'AVAILABLE' },
+            {
+              status: 'RESERVED',
+              reservedUntil: { lte: now }, // Expired reservation
+            },
+            {
+              status: 'RESERVED',
+              userId, // User's own existing reservation
+            },
+          ],
+        },
+        data: {
+          status: 'RESERVED',
+          userId,
+          reservedUntil: new Date(recreateResult.expiresAt),
+        },
+      });
+
+      // Verify all tickets were successfully reserved in the database
+      if (updateResult.count !== providedTicketNumbers.length) {
+        // Some tickets couldn't be reserved - release the Redis locks
+        await releaseTicketsFromRedis(competitionId, userId);
+        return NextResponse.json(
+          { error: 'Some tickets are no longer available. Please select tickets again.' },
+          { status: 409 }
+        );
+      }
+
       reservation = await getReservation(competitionId, userId);
     }
 

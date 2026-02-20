@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { AlertCircle, CheckCircle, XCircle, HelpCircle, Clock, Loader2, LogIn } from 'lucide-react';
+import { AlertCircle, XCircle, HelpCircle, Clock, Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,8 +27,6 @@ export function QuestionForm({
   questionChoices,
 }: QuestionFormProps) {
   const router = useRouter();
-  const { data: session } = useSession();
-  const isAuthenticated = !!session?.user;
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [result, setResult] = useState<{
@@ -127,10 +124,11 @@ export function QuestionForm({
       if (response.ok) {
         const data = await response.json();
         if (data.passed) {
-          setResult({
-            correct: true,
-            message: 'You have already answered correctly.',
-          });
+          // Store that they passed in sessionStorage before redirecting
+          sessionStorage.setItem(`qcm_passed_${competitionId}`, 'true');
+          // Already passed - redirect directly to checkout
+          router.push(`/competitions/${competitionSlug}/checkout`);
+          return;
         } else if (data.blocked) {
           setResult({
             correct: false,
@@ -193,10 +191,12 @@ export function QuestionForm({
             const parsed = JSON.parse(reservationData);
             parsed.expiresAt = data.expiresAt;
             sessionStorage.setItem(`reservation_${competitionId}`, JSON.stringify(parsed));
-            // Update local state so timer shows correct time
-            setReservation({ ...reservation, expiresAt: data.expiresAt } as { expiresAt: number });
           }
         }
+
+        // Redirect directly to checkout - no intermediate success page
+        router.push(`/competitions/${competitionSlug}/checkout`);
+        return;
       }
     } catch {
       setError('Network error. Please try again.');
@@ -211,10 +211,6 @@ export function QuestionForm({
     setError(null);
     turnstileRef.current?.reset();
     setTurnstileToken(null);
-  };
-
-  const handleProceed = () => {
-    router.push(`/competitions/${competitionSlug}/checkout`);
   };
 
   const handleBackToTickets = () => {
@@ -275,68 +271,6 @@ export function QuestionForm({
     );
   }
 
-  // Show success state
-  if (result?.correct) {
-    return (
-      <Card className="border-green-500">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
-            <CheckCircle className="h-6 w-6 text-green-600" />
-          </div>
-          <CardTitle className="text-green-600">Correct Answer!</CardTitle>
-          <CardDescription>
-            Well done! You can now proceed to checkout.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Reservation timer for authenticated users */}
-          {reservation && countdown && countdown !== 'expired' && (
-            <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-              <Clock className="h-4 w-4 text-amber-600" />
-              <AlertDescription className="text-amber-800 dark:text-amber-200">
-                Complete checkout within <span className="font-bold">{countdown}</span>
-              </AlertDescription>
-            </Alert>
-          )}
-          {reservation && countdown === 'expired' && (
-            <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
-              <Clock className="h-4 w-4 text-orange-600" />
-              <AlertDescription className="text-orange-800 dark:text-orange-200">
-                Timer expired — <span className="font-bold">proceed to checkout now</span> to complete your purchase
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Notice for anonymous users */}
-          {!isAuthenticated && (
-            <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950/20">
-              <LogIn className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800 dark:text-blue-200">
-                You&apos;ll need to sign in or create an account to complete your purchase.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="rounded-lg bg-muted p-4">
-            <p className="text-sm text-muted-foreground">Selected Tickets</p>
-            {selectedTickets.length > 0 ? (
-              <p className="font-medium">
-                {selectedTickets.length} ticket{selectedTickets.length > 1 ? 's' : ''}: #
-                {selectedTickets.sort((a, b) => a - b).join(', #')}
-              </p>
-            ) : (
-              <p className="font-medium">
-                {pendingQuantity} ticket{pendingQuantity > 1 ? 's' : ''} (numbers assigned at checkout)
-              </p>
-            )}
-          </div>
-          <Button size="lg" className="w-full" onClick={handleProceed}>
-            Proceed to Checkout
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card>
