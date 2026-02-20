@@ -62,6 +62,19 @@ async function main() {
     },
   });
 
+  const drawMasterPassword = await hashPassword(process.env.DRAW_MASTER_PASSWORD || 'DrawMaster123!');
+  const drawMaster = await prisma.user.create({
+    data: {
+      email: 'draw@winthiscard.co.uk',
+      passwordHash: drawMasterPassword,
+      firstName: 'Draw',
+      lastName: 'Master',
+      displayName: 'DrawMaster',
+      role: UserRole.DRAW_MASTER,
+      emailVerified: new Date(),
+    },
+  });
+
   const user1 = await prisma.user.create({
     data: {
       email: 'john@example.com',
@@ -1253,6 +1266,7 @@ async function main() {
   console.log('Test accounts:');
   console.log('  Super Admin: admin@winucard.com / Admin123!');
   console.log('  Admin: moderator@winucard.com / Admin123!');
+  console.log('  Draw Master: draw@winthiscard.co.uk / DrawMaster123!');
   console.log('  User: john@example.com / User123!');
   console.log('  User: jane@example.com / User123!');
 }

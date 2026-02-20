@@ -5,7 +5,9 @@ import type { NextAuthConfig } from 'next-auth';
  *
  * SECURITY NOTES:
  * - Uses separate cookie names from public site (wtc-admin.*)
- * - Only ADMIN and SUPER_ADMIN roles can access
+ * - SUPER_ADMIN: Full access to all admin features
+ * - ADMIN: Full access except draw execution
+ * - DRAW_MASTER: Access ONLY to draw pages (/dashboard/competitions/[id]/draw)
  * - Session expires after 8 hours for security
  * - AUTH_SECRET must be a strong random string
  */
@@ -69,13 +71,35 @@ export const authConfig = {
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+      const pathname = nextUrl.pathname;
+      const isOnDashboard = pathname.startsWith('/dashboard');
+      const isOnDrawLogin = pathname === '/draw/login';
+      const isDrawPage = /^\/dashboard\/competitions\/[^/]+\/draw/.test(pathname);
+
+      // Draw login page is always accessible
+      if (isOnDrawLogin) {
+        return true;
+      }
 
       if (isOnDashboard) {
         if (!isLoggedIn) return false;
+
         const role = auth?.user?.role;
-        if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') return false;
-        return true;
+
+        // SUPER_ADMIN has full access
+        if (role === 'SUPER_ADMIN') return true;
+
+        // ADMIN has access to everything except draw pages (optional: remove this line to allow)
+        if (role === 'ADMIN') return true;
+
+        // DRAW_MASTER can ONLY access draw pages
+        if (role === 'DRAW_MASTER') {
+          if (isDrawPage) return true;
+          // Redirect to draw login if trying to access other pages
+          return Response.redirect(new URL('/draw/login?error=AccessDenied', nextUrl));
+        }
+
+        return false;
       }
 
       return true;

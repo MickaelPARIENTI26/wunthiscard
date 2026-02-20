@@ -40,8 +40,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        // Check if user is admin
-        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+        // Check if user has admin access (ADMIN, SUPER_ADMIN, or DRAW_MASTER)
+        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN' && user.role !== 'DRAW_MASTER') {
           throw new Error('AccessDenied');
         }
 

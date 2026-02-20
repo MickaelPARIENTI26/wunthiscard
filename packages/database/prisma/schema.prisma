@@ -50,6 +50,7 @@ enum UserRole {
   USER
   ADMIN
   SUPER_ADMIN
+  DRAW_MASTER
 }
 
 model Account {
