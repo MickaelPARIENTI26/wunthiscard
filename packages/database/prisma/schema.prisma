@@ -42,6 +42,7 @@ model User {
   wins               Win[]
   auditLogs          AuditLog[]
   drawnCompetitions  Competition[] @relation("DrawnCompetitions")
+  drawLogs           DrawLog[]     @relation("DrawnByUser")
 
   @@index([email])
   @@index([role])
@@ -172,10 +173,11 @@ model Competition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets  Ticket[]
-  orders   Order[]
-  wins     Win[]
-  drawnBy  User?    @relation("DrawnCompetitions", fields: [drawnById], references: [id], onDelete: SetNull)
+  tickets   Ticket[]
+  orders    Order[]
+  wins      Win[]
+  drawLogs  DrawLog[]
+  drawnBy   User?     @relation("DrawnCompetitions", fields: [drawnById], references: [id], onDelete: SetNull)
 
   @@index([status])
   @@index([category])
@@ -394,5 +396,36 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([userId])
   @@index([action])
+  @@index([createdAt])
+}
+
+// ==========================================
+// DRAW AUDIT LOG
+// ==========================================
+
+model DrawLog {
+  id                   String    @id @default(cuid())
+  competitionId        String
+  competitionTitle     String
+  totalTickets         Int
+  ticketsSold          Int
+  winningTicketNumber  Int
+  winnerUserId         String?
+  winnerName           String
+  winnerEmail          String
+  drawnById            String
+  drawnByRole          String // "DRAW_MASTER" or "SUPER_ADMIN"
+  drawMethod           String    @default("crypto.randomInt")
+  ipAddress            String?
+  userAgent            String?
+  emailSentAt          DateTime?
+  confirmedAt          DateTime?
+  createdAt            DateTime  @default(now())
+
+  competition Competition @relation(fields: [competitionId], references: [id])
+  drawnBy     User        @relation("DrawnByUser", fields: [drawnById], references: [id])
+
+  @@index([competitionId])
+  @@index([drawnById])
   @@index([createdAt])
 }

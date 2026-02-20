@@ -140,10 +140,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const confirmedAt = new Date();
+
     // Update competition to mark winner as notified
     await prisma.competition.update({
       where: { id: competition_id },
       data: { winnerNotified: true },
+    });
+
+    // Update DrawLog with confirmation and email timestamps
+    await prisma.drawLog.updateMany({
+      where: { competitionId: competition_id },
+      data: {
+        confirmedAt,
+        emailSentAt: emailSent ? confirmedAt : null,
+      },
     });
 
     // Create audit log
@@ -158,6 +169,7 @@ export async function POST(request: NextRequest) {
           winnerEmail: winner.email,
           emailSent,
           emailError,
+          confirmedAt: confirmedAt.toISOString(),
         },
       },
     });
