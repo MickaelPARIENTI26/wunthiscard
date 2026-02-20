@@ -47,6 +47,100 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+/**
+ * Replace all {{variable}} placeholders in a template string with values from data object
+ */
+export function replaceVariables(
+  template: string,
+  data: Record<string, string | number | undefined>
+): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
+    const value = data[key];
+    return value !== undefined ? String(value) : match;
+  });
+}
+
+/**
+ * Get test data for email template preview/testing
+ */
+export function getTestData(): Record<string, string> {
+  return {
+    // User data
+    user_firstname: 'John',
+    user_lastname: 'Smith',
+    user_email: 'john@example.com',
+
+    // Competition data
+    competition_title: 'Charizard Base Set PSA 10',
+    competition_card_name: 'Charizard Holo PSA 10',
+    competition_card_image:
+      'https://placehold.co/400x560/0a0a0f/FFD700?text=Charizard+PSA+10',
+    competition_card_value: '£1,000',
+    competition_ticket_price: '£30',
+    competition_total_tickets: '134',
+    competition_tickets_sold: '98',
+    competition_tickets_remaining: '36',
+    competition_end_date: 'March 15, 2026',
+    competition_draw_date: 'March 16, 2026 at 8:00 PM GMT',
+    competition_url: 'https://winucard.co.uk/competitions/charizard-psa10',
+    competition_category: 'Pokémon',
+
+    // Order data
+    order_id: 'WUC-20260301-0042',
+    order_total: '£90',
+    order_tickets_count: '3',
+    order_ticket_numbers: '#0042, #0043, #0044',
+    order_date: 'March 1, 2026',
+
+    // Draw data
+    draw_winner_name: 'John Smith',
+    draw_winning_ticket: '#0042',
+    draw_video_url: 'https://youtube.com/live/example',
+    draw_date: 'March 16, 2026',
+    draw_time: '8:00 PM GMT',
+
+    // Site data
+    site_url: 'https://winucard.co.uk',
+    site_name: 'WinUCard',
+    site_logo_url: 'https://winucard.co.uk/logo-email.png',
+    current_year: new Date().getFullYear().toString(),
+
+    // Action URLs
+    unsubscribe_url: 'https://winucard.co.uk/unsubscribe?token=test',
+    verification_url: 'https://winucard.co.uk/verify?token=test',
+    cart_url: 'https://winucard.co.uk/cart?recover=test',
+  };
+}
+
+/**
+ * Send email using a template from the database
+ */
+export async function sendTemplateEmail(
+  templateSlug: string,
+  to: string,
+  data: Record<string, string | number | undefined>
+): Promise<{ success: boolean; error?: unknown; data?: unknown; mock?: boolean }> {
+  // Dynamic import to avoid circular dependencies
+  const { prisma } = await import('@/lib/db');
+
+  const template = await prisma.emailTemplate.findUnique({
+    where: { slug: templateSlug },
+  });
+
+  if (!template) {
+    return { success: false, error: `Template '${templateSlug}' not found` };
+  }
+
+  if (!template.isActive) {
+    return { success: false, error: `Template '${templateSlug}' is disabled` };
+  }
+
+  const subject = replaceVariables(template.subject, data);
+  const html = replaceVariables(template.htmlContent, data);
+
+  return sendEmail({ to, subject, html });
+}
+
 // Email Templates
 
 function emailWrapper(content: string): string {

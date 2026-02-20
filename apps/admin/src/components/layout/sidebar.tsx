@@ -16,6 +16,7 @@ import {
   Gift,
   Award,
   Shield,
+  Mail,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -30,6 +31,7 @@ const navigation = [
   { name: 'Free Entries', href: '/dashboard/free-entries', icon: Gift },
   { name: 'Pages', href: '/dashboard/pages', icon: FileText },
   { name: 'FAQ', href: '/dashboard/faq', icon: HelpCircle },
+  { name: 'Email Templates', href: '/dashboard/email-templates', icon: Mail },
   { name: 'Audit Log', href: '/dashboard/audit', icon: Shield },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ];

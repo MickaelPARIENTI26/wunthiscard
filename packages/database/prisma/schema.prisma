@@ -344,6 +344,34 @@ model ContactMessage {
 }
 
 // ==========================================
+// EMAIL TEMPLATES
+// ==========================================
+
+model EmailTemplate {
+  id                 String       @id @default(cuid())
+  slug               String       @unique // ex: "email_verification"
+  name               String // ex: "Email Verification"
+  subject            String // Subject line with {{variables}}
+  htmlContent        String       @db.Text // HTML content
+  isActive           Boolean      @default(true)
+  trigger            EmailTrigger @default(AUTO)
+  triggerDescription String? // Human-readable description
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([trigger])
+  @@index([isActive])
+}
+
+enum EmailTrigger {
+  AUTO // Sent automatically on event
+  MANUAL // Sent manually by admin
+  CRON // Sent by scheduled job
+}
+
+// ==========================================
 // AUDIT LOG
 // ==========================================
 

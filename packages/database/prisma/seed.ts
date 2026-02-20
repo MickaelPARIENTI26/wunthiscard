@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, CompetitionStatus, CompetitionCategory, TicketStatus, PaymentStatus } from '@prisma/client';
+import { PrismaClient, UserRole, CompetitionStatus, CompetitionCategory, TicketStatus, PaymentStatus, EmailTrigger } from '@prisma/client';
 import { randomBytes, scrypt } from 'crypto';
 import { promisify } from 'util';
 
@@ -665,6 +665,587 @@ async function main() {
   });
 
   console.log('✅ Created static pages');
+
+  // Email template HTML helpers
+  const emailHeader = `
+    <tr>
+      <td align="center" style="padding: 30px 20px; border-bottom: 1px solid #222;">
+        <img src="{{site_logo_url}}" alt="WinUCard" width="144" height="80" style="display: block; max-width: 144px; height: auto;" />
+      </td>
+    </tr>`;
+
+  const emailFooter = `
+    <tr>
+      <td style="padding: 30px 40px; border-top: 1px solid #222;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td align="center" style="padding-bottom: 20px;">
+              <a href="https://tiktok.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
+              <a href="https://instagram.com/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
+              <a href="https://youtube.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
+              <a href="https://discord.gg/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="color: #888; font-size: 12px; line-height: 18px;">
+              <p style="margin: 0 0 10px;">WinUCard Ltd | Registered in England & Wales</p>
+              <p style="margin: 0 0 10px;">123 Collection Street, London, EC1A 1BB</p>
+              <p style="margin: 0;">
+                <a href="{{site_url}}/terms" style="color: #888; text-decoration: underline;">Terms</a> &nbsp;|&nbsp;
+                <a href="{{site_url}}/privacy" style="color: #888; text-decoration: underline;">Privacy</a> &nbsp;|&nbsp;
+                <a href="{{unsubscribe_url}}" style="color: #888; text-decoration: underline;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>`;
+
+  const wrapEmail = (content: string) => `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>WinUCard</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0a0a0f;">
+    <tr>
+      <td align="center" style="padding: 20px 10px;">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="max-width: 600px; width: 100%; background-color: #0a0a0f; border: 1px solid #222; border-radius: 8px;">
+          ${emailHeader}
+          ${content}
+          ${emailFooter}
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  const ctaButton = (text: string, url: string) => `
+    <a href="${url}" style="display: inline-block; background: linear-gradient(135deg, #FFD700, #FFA500); color: #0a0a0f; font-weight: bold; padding: 16px 32px; border-radius: 8px; text-decoration: none; font-size: 16px;">${text}</a>`;
+
+  // Create email templates (upsert to not overwrite existing content)
+  const emailTemplates = [
+    {
+      slug: 'email_verification',
+      name: 'Email Verification',
+      subject: 'Verify your email — WinUCard',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent when user signs up',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">Verify Your Email</h1>
+              <p style="margin: 0 0 20px; font-size: 16px; line-height: 24px; color: #ffffff;">
+                Hi {{user_firstname}},
+              </p>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc;">
+                Thanks for signing up for WinUCard! Please verify your email address to activate your account and start entering competitions.
+              </p>
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Verify My Email', '{{verification_url}}')}
+                  </td>
+                </tr>
+              </table>
+              <p style="margin: 30px 0 0; font-size: 14px; color: #888; text-align: center;">
+                This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'welcome',
+      name: 'Welcome',
+      subject: 'Welcome to WinUCard! 🎉',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent after email verified',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">Welcome to WinUCard!</h1>
+              <p style="margin: 0 0 20px; font-size: 16px; line-height: 24px; color: #ffffff;">
+                Hi {{user_firstname}},
+              </p>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc;">
+                Your account is now active! You're ready to start winning amazing collectibles.
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0;">
+                <tr>
+                  <td align="center" style="padding: 20px; background-color: #111; border-radius: 8px;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" style="padding: 15px;">
+                          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 50%; line-height: 50px; font-size: 24px; font-weight: bold; color: #0a0a0f;">1</div>
+                          <p style="margin: 10px 0 0; color: #ffffff; font-weight: bold;">Browse</p>
+                          <p style="margin: 5px 0 0; color: #888; font-size: 12px;">Find your grail</p>
+                        </td>
+                        <td align="center" style="padding: 15px;">
+                          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 50%; line-height: 50px; font-size: 24px; font-weight: bold; color: #0a0a0f;">2</div>
+                          <p style="margin: 10px 0 0; color: #ffffff; font-weight: bold;">Buy</p>
+                          <p style="margin: 5px 0 0; color: #888; font-size: 12px;">Get your tickets</p>
+                        </td>
+                        <td align="center" style="padding: 15px;">
+                          <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 50%; line-height: 50px; font-size: 24px; font-weight: bold; color: #0a0a0f;">3</div>
+                          <p style="margin: 10px 0 0; color: #ffffff; font-weight: bold;">Win</p>
+                          <p style="margin: 5px 0 0; color: #888; font-size: 12px;">Claim your prize</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Browse Competitions', '{{site_url}}/competitions')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 30px 0 0; font-size: 14px; color: #888; text-align: center; padding: 15px; background-color: #111; border-radius: 8px;">
+                💡 <strong style="color: #FFD700;">Did you know?</strong> You can enter any competition for FREE via postal entry. See each competition page for details.
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'ticket_purchase',
+      name: 'Ticket Purchase Confirmation',
+      subject: 'Your tickets are confirmed! 🎟️ Order #{{order_id}}',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent after payment',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">Your Tickets Are Confirmed!</h1>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc;">
+                Hi {{user_firstname}}, great news! Your entry is locked in. Good luck!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 0;" width="200">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="200" style="display: block; max-width: 200px; height: auto;" />
+                  </td>
+                  <td style="padding: 20px; vertical-align: top;">
+                    <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Competition</p>
+                    <p style="margin: 0 0 15px; font-size: 18px; font-weight: bold; color: #ffffff;">{{competition_card_name}}</p>
+
+                    <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Your Tickets</p>
+                    <p style="margin: 0 0 15px; font-size: 16px; color: #FFD700; font-weight: bold;">{{order_ticket_numbers}}</p>
+
+                    <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Total Paid</p>
+                    <p style="margin: 0 0 15px; font-size: 20px; color: #ffffff; font-weight: bold;">{{order_total}}</p>
+
+                    <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Draw Date</p>
+                    <p style="margin: 0; font-size: 14px; color: #cccccc;">{{competition_draw_date}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('View Competition', '{{competition_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center;">
+                Order #{{order_id}} | {{order_date}}
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'abandoned_cart',
+      name: 'Abandoned Cart',
+      subject: 'You left something behind... 👀',
+      trigger: EmailTrigger.CRON,
+      triggerDescription: 'Sent 1h after cart abandoned',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">You Left Something Behind...</h1>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc;">
+                Hi {{user_firstname}}, we noticed you didn't complete your entry. Your tickets are still waiting!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
+                <tr>
+                  <td align="center">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="300" style="display: block; max-width: 300px; height: auto; border-radius: 8px;" />
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td align="center" style="padding: 20px;">
+                    <p style="margin: 0 0 10px; font-size: 18px; font-weight: bold; color: #ffffff;">{{competition_card_name}}</p>
+                    <p style="margin: 0; font-size: 16px; color: #FF6B6B; font-weight: bold;">
+                      ⚡ Only {{competition_tickets_remaining}} tickets left!
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Complete My Entry', '{{cart_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center;">
+                Don't miss your chance to win!
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'competition_announcement',
+      name: 'Competition Announcement',
+      subject: '🔥 Coming Soon: {{competition_card_name}}!',
+      trigger: EmailTrigger.MANUAL,
+      triggerDescription: 'Sent manually before launch',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 10px; font-size: 28px; color: #FFD700; text-align: center;">Something BIG Is Coming!</h1>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc; text-align: center;">
+                Hi {{user_firstname}}, get ready for our biggest competition yet...
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
+                <tr>
+                  <td align="center">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="350" style="display: block; max-width: 350px; height: auto; border-radius: 8px; border: 2px solid #FFD700;" />
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td align="center" style="padding: 25px;">
+                    <p style="margin: 0 0 10px; font-size: 24px; font-weight: bold; color: #ffffff;">{{competition_card_name}}</p>
+                    <p style="margin: 0; font-size: 32px; color: #FFD700; font-weight: bold;">{{competition_card_value}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0 0 30px; font-size: 18px; color: #ffffff; text-align: center; font-weight: bold;">
+                🔔 Be the first to enter!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Follow Us for Updates', '{{site_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center;">
+                Stay tuned — launching soon!
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'competition_live',
+      name: 'Competition Live',
+      subject: '🚀 NOW LIVE: Win a {{competition_card_name}}!',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent when competition goes live',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 10px; font-size: 32px; color: #FFD700; text-align: center;">It's HERE! 🎉</h1>
+              <p style="margin: 0 0 30px; font-size: 18px; line-height: 24px; color: #cccccc; text-align: center;">
+                Hi {{user_firstname}}, the competition you've been waiting for is LIVE!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
+                <tr>
+                  <td align="center">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="400" style="display: block; max-width: 400px; width: 100%; height: auto; border-radius: 8px; border: 3px solid #FFD700;" />
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="50%" style="padding: 10px; text-align: center; border-right: 1px solid #333;">
+                          <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Prize Value</p>
+                          <p style="margin: 0; font-size: 24px; color: #FFD700; font-weight: bold;">{{competition_card_value}}</p>
+                        </td>
+                        <td width="50%" style="padding: 10px; text-align: center;">
+                          <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Ticket Price</p>
+                          <p style="margin: 0; font-size: 24px; color: #ffffff; font-weight: bold;">{{competition_ticket_price}}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td width="50%" style="padding: 10px; text-align: center; border-right: 1px solid #333;">
+                          <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Total Tickets</p>
+                          <p style="margin: 0; font-size: 18px; color: #ffffff;">{{competition_total_tickets}}</p>
+                        </td>
+                        <td width="50%" style="padding: 10px; text-align: center;">
+                          <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase;">Draw Date</p>
+                          <p style="margin: 0; font-size: 14px; color: #ffffff;">{{competition_draw_date}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 25px 0;">
+                    ${ctaButton('🎟️ Enter Now', '{{competition_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center; padding: 15px; background-color: #111; border-radius: 8px;">
+                💡 Free postal entry available — see competition page for details.
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'competition_ending',
+      name: 'Competition Ending Soon',
+      subject: '⏰ LAST CHANCE: {{competition_card_name}}',
+      trigger: EmailTrigger.CRON,
+      triggerDescription: 'Sent 24h before end',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 10px; font-size: 28px; color: #FF6B6B; text-align: center;">⏰ Time Is Running Out!</h1>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc; text-align: center;">
+                Hi {{user_firstname}}, this competition ends in less than 24 hours!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
+                <tr>
+                  <td align="center">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="300" style="display: block; max-width: 300px; height: auto; border-radius: 8px;" />
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td align="center" style="padding: 25px;">
+                    <p style="margin: 0 0 15px; font-size: 20px; font-weight: bold; color: #ffffff;">{{competition_card_name}}</p>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 300px; margin: 0 auto;">
+                      <tr>
+                        <td style="padding: 10px; background-color: #0a0a0f; border-radius: 8px;">
+                          <p style="margin: 0 0 5px; font-size: 12px; color: #888; text-transform: uppercase; text-align: center;">Tickets Sold</p>
+                          <p style="margin: 0; font-size: 24px; color: #FFD700; font-weight: bold; text-align: center;">{{competition_tickets_sold}} / {{competition_total_tickets}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Get Your Tickets Now', '{{competition_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #FF6B6B; text-align: center; font-weight: bold;">
+                Don't miss your last chance to win!
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'draw_announcement',
+      name: 'Draw Announcement',
+      subject: '🎬 LIVE DRAW Tonight: {{competition_title}}',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent day of draw',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 10px; font-size: 28px; color: #FFD700; text-align: center;">The Moment You've Been Waiting For!</h1>
+              <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc; text-align: center;">
+                Hi {{user_firstname}}, the draw for <strong style="color: #ffffff;">{{competition_title}}</strong> is happening TODAY!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td align="center" style="padding: 25px;">
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase;">Your Tickets</p>
+                    <p style="margin: 0 0 20px; font-size: 24px; color: #FFD700; font-weight: bold;">{{order_ticket_numbers}}</p>
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase;">Draw Time</p>
+                    <p style="margin: 0; font-size: 20px; color: #ffffff; font-weight: bold;">{{draw_time}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0; font-size: 18px; color: #ffffff; text-align: center;">
+                📺 Watch live on <strong style="color: #FFD700;">YouTube</strong>!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('🔴 Watch Live', '{{draw_video_url}}')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center;">
+                Good luck! 🍀
+              </p>
+            </td>
+          </tr>`),
+    },
+    {
+      slug: 'winner_notification',
+      name: 'Winner Notification',
+      subject: '🏆 YOU WON {{user_firstname}}!',
+      trigger: EmailTrigger.AUTO,
+      triggerDescription: 'Sent to winner after draw',
+      htmlContent: wrapEmail(`
+          <tr>
+            <td style="padding: 30px 40px; color: #ffffff;">
+              <h1 style="margin: 0 0 10px; font-size: 48px; color: #FFD700; text-align: center;">🏆 YOU WON!</h1>
+              <p style="margin: 0 0 30px; font-size: 24px; line-height: 32px; color: #ffffff; text-align: center;">
+                Congratulations {{user_firstname}}!
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0; background-color: #111; border-radius: 8px; border: 2px solid #FFD700;">
+                <tr>
+                  <td align="center" style="padding: 25px;">
+                    <p style="margin: 0 0 10px; font-size: 14px; color: #888; text-transform: uppercase;">Winning Ticket</p>
+                    <p style="margin: 0 0 20px; font-size: 48px; color: #FFD700; font-weight: bold;">#{{draw_winning_ticket}}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 20px 0;">
+                <tr>
+                  <td align="center">
+                    <img src="{{competition_card_image}}" alt="{{competition_card_name}}" width="300" style="display: block; max-width: 300px; height: auto; border-radius: 8px; border: 2px solid #FFD700;" />
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0; font-size: 18px; color: #ffffff; text-align: center; font-weight: bold;">
+                {{competition_card_name}}
+              </p>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 30px 0; background-color: #111; border-radius: 8px;">
+                <tr>
+                  <td style="padding: 25px;">
+                    <p style="margin: 0 0 15px; font-size: 16px; color: #FFD700; font-weight: bold; text-align: center;">What happens next?</p>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding: 10px 0;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="width: 30px; vertical-align: top;">
+                                <span style="color: #FFD700; font-weight: bold;">1.</span>
+                              </td>
+                              <td style="color: #cccccc; font-size: 14px;">
+                                Reply to this email to confirm your delivery address
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="width: 30px; vertical-align: top;">
+                                <span style="color: #FFD700; font-weight: bold;">2.</span>
+                              </td>
+                              <td style="color: #cccccc; font-size: 14px;">
+                                Your prize will be shipped within 3-5 business days
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px 0;">
+                          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td style="width: 30px; vertical-align: top;">
+                                <span style="color: #FFD700; font-weight: bold;">3.</span>
+                              </td>
+                              <td style="color: #cccccc; font-size: 14px;">
+                                Share your win on social media and tag us @WinUCard!
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    ${ctaButton('Confirm My Address', 'mailto:support@winucard.com?subject=Winner%20Address%20Confirmation')}
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 20px 0 0; font-size: 14px; color: #888; text-align: center;">
+                Please respond within 14 days to claim your prize.
+              </p>
+            </td>
+          </tr>`),
+    },
+  ];
+
+  for (const template of emailTemplates) {
+    await prisma.emailTemplate.upsert({
+      where: { slug: template.slug },
+      update: {
+        name: template.name,
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+        trigger: template.trigger,
+        triggerDescription: template.triggerDescription,
+      },
+      create: {
+        slug: template.slug,
+        name: template.name,
+        subject: template.subject,
+        htmlContent: template.htmlContent,
+        trigger: template.trigger,
+        triggerDescription: template.triggerDescription,
+        isActive: true,
+      },
+    });
+  }
+
+  console.log('✅ Created email templates');
 
   console.log('');
   console.log('🎉 Database seeded successfully!');
