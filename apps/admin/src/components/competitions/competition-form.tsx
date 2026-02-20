@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +26,34 @@ import { Loader2, Star } from 'lucide-react';
 import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
 import type { Competition } from '@winucard/database';
 
+// Zod validation schema for competition form
+const competitionFormSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
+  subtitle: z.string().max(300, 'Subtitle must be less than 300 characters').optional(),
+  descriptionShort: z.string().min(1, 'Short description is required').max(500, 'Short description must be less than 500 characters'),
+  category: z.string().min(1, 'Category is required'),
+  subcategory: z.string().max(100).optional(),
+  prizeValue: z.coerce.number().positive('Prize value must be positive'),
+  ticketPrice: z.coerce.number().min(1, 'Ticket price must be at least £1'),
+  totalTickets: z.coerce.number().int().min(1, 'Must have at least 1 ticket').max(100000, 'Maximum 100,000 tickets'),
+  maxTicketsPerUser: z.coerce.number().int().min(1, 'Minimum 1 ticket per user').max(100, 'Maximum 100 tickets per user').optional(),
+  saleStartDate: z.string().optional(),
+  drawDate: z.string().min(1, 'Draw date is required'),
+  mainImageUrl: z.string().url('Please enter a valid URL'),
+  galleryUrls: z.string().optional(),
+  videoUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  certificationNumber: z.string().max(50).optional(),
+  grade: z.string().max(20).optional(),
+  condition: z.string().max(100).optional(),
+  provenance: z.string().optional(),
+  questionText: z.string().min(1, 'Skill question is required'),
+  questionAnswer: z.string().min(1, 'Please select the correct answer'),
+  metaTitle: z.string().max(70, 'Meta title must be less than 70 characters').optional(),
+  metaDescription: z.string().max(160, 'Meta description must be less than 160 characters').optional(),
+});
+
+type CompetitionFormData = z.infer<typeof competitionFormSchema>;
+
 // Serialized competition type with number instead of Decimal
 type SerializedCompetition = Omit<Competition, 'prizeValue' | 'ticketPrice'> & {
   prizeValue: number;
@@ -36,6 +67,7 @@ interface CompetitionFormProps {
 export function CompetitionForm({ competition }: CompetitionFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
   const [isTogglingFeatured, setIsTogglingFeatured] = useState(false);
   const [isFeatured, setIsFeatured] = useState(competition?.isFeatured ?? false);
   const [descriptionLong, setDescriptionLong] = useState(competition?.descriptionLong ?? '');
@@ -46,6 +78,46 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
   const isEditing = !!competition;
   const isActive = competition?.status === 'ACTIVE';
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CompetitionFormData>({
+    resolver: zodResolver(competitionFormSchema),
+    defaultValues: {
+      title: competition?.title ?? '',
+      subtitle: competition?.subtitle ?? '',
+      descriptionShort: competition?.descriptionShort ?? '',
+      category: competition?.category ?? 'POKEMON',
+      subcategory: competition?.subcategory ?? '',
+      prizeValue: competition?.prizeValue ?? undefined,
+      ticketPrice: competition?.ticketPrice ?? undefined,
+      totalTickets: competition?.totalTickets ?? undefined,
+      maxTicketsPerUser: competition?.maxTicketsPerUser ?? 50,
+      saleStartDate: competition?.saleStartDate
+        ? new Date(competition.saleStartDate).toISOString().slice(0, 16)
+        : '',
+      drawDate: competition?.drawDate
+        ? new Date(competition.drawDate).toISOString().slice(0, 16)
+        : '',
+      mainImageUrl: competition?.mainImageUrl ?? '',
+      galleryUrls: competition?.galleryUrls?.join(', ') ?? '',
+      videoUrl: competition?.videoUrl ?? '',
+      certificationNumber: competition?.certificationNumber ?? '',
+      grade: competition?.grade ?? '',
+      condition: competition?.condition ?? '',
+      provenance: competition?.provenance ?? '',
+      questionText: competition?.questionText ?? '',
+      questionAnswer: competition?.questionAnswer?.toString() ?? '0',
+      metaTitle: competition?.metaTitle ?? '',
+      metaDescription: competition?.metaDescription ?? '',
+    },
+  });
+
+  const selectedCategory = watch('category');
+
   async function handleToggleFeatured(checked: boolean) {
     if (!competition) return;
 
@@ -55,15 +127,35 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       setIsFeatured(checked);
     } catch (error) {
       console.error('Failed to update featured status:', error);
-      // Revert on error
       setIsFeatured(!checked);
     } finally {
       setIsTogglingFeatured(false);
     }
   }
 
-  async function handleSubmit(formData: FormData) {
+  async function onSubmit(data: CompetitionFormData) {
+    // Validate question choices
+    const validChoices = questionChoices.filter(c => c && c.trim().length > 0);
+    if (validChoices.length !== 4) {
+      setServerError('Please fill in all 4 answer choices');
+      return;
+    }
+
+    // Validate description long
+    if (!descriptionLong || descriptionLong.trim().length === 0) {
+      setServerError('Long description is required');
+      return;
+    }
+
     setIsSubmitting(true);
+    setServerError(null);
+
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        formData.set(key, String(value));
+      }
+    });
     formData.set('descriptionLong', descriptionLong);
     formData.set('questionChoices', JSON.stringify(questionChoices));
 
@@ -75,12 +167,19 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       }
     } catch (error) {
       console.error('Failed to save competition:', error);
+      setServerError(error instanceof Error ? error.message : 'Failed to save competition');
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form action={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {serverError && (
+        <div className="mb-6 p-4 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+          {serverError}
+        </div>
+      )}
+
       <Tabs defaultValue="basic" className="space-y-6">
         <TabsList>
           <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -130,28 +229,36 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   <Label htmlFor="title">Title *</Label>
                   <Input
                     id="title"
-                    name="title"
                     placeholder="Charizard PSA 10 Base Set"
-                    defaultValue={competition?.title}
-                    required
+                    {...register('title')}
+                    aria-invalid={!!errors.title}
                   />
+                  {errors.title && (
+                    <p className="text-sm text-destructive">{errors.title.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subtitle">Subtitle</Label>
                   <Input
                     id="subtitle"
-                    name="subtitle"
                     placeholder="The Holy Grail of Pokémon Cards"
-                    defaultValue={competition?.subtitle ?? ''}
+                    {...register('subtitle')}
+                    aria-invalid={!!errors.subtitle}
                   />
+                  {errors.subtitle && (
+                    <p className="text-sm text-destructive">{errors.subtitle.message}</p>
+                  )}
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="category">Category *</Label>
-                  <Select name="category" defaultValue={competition?.category ?? 'POKEMON'}>
-                    <SelectTrigger>
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={(value) => setValue('category', value)}
+                  >
+                    <SelectTrigger aria-invalid={!!errors.category}>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -162,14 +269,16 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.category && (
+                    <p className="text-sm text-destructive">{errors.category.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subcategory">Subcategory</Label>
                   <Input
                     id="subcategory"
-                    name="subcategory"
                     placeholder="Base Set, Sports Memorabilia, etc."
-                    defaultValue={competition?.subcategory ?? ''}
+                    {...register('subcategory')}
                   />
                 </div>
               </div>
@@ -178,12 +287,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="descriptionShort">Short Description *</Label>
                 <Textarea
                   id="descriptionShort"
-                  name="descriptionShort"
                   placeholder="A brief description for cards and listings..."
-                  defaultValue={competition?.descriptionShort}
-                  required
                   rows={3}
+                  {...register('descriptionShort')}
+                  aria-invalid={!!errors.descriptionShort}
                 />
+                {errors.descriptionShort && (
+                  <p className="text-sm text-destructive">{errors.descriptionShort.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -199,40 +310,46 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   <Label htmlFor="prizeValue">Prize Value (£) *</Label>
                   <Input
                     id="prizeValue"
-                    name="prizeValue"
                     type="number"
                     step="0.01"
                     min="0"
                     placeholder="1000.00"
-                    defaultValue={competition?.prizeValue?.toString()}
-                    required
+                    {...register('prizeValue')}
+                    aria-invalid={!!errors.prizeValue}
                   />
+                  {errors.prizeValue && (
+                    <p className="text-sm text-destructive">{errors.prizeValue.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ticketPrice">Ticket Price (£) *</Label>
                   <Input
                     id="ticketPrice"
-                    name="ticketPrice"
                     type="number"
                     step="0.01"
                     min="1"
                     placeholder="2.99"
-                    defaultValue={competition?.ticketPrice?.toString()}
-                    required
+                    {...register('ticketPrice')}
+                    aria-invalid={!!errors.ticketPrice}
                   />
+                  {errors.ticketPrice && (
+                    <p className="text-sm text-destructive">{errors.ticketPrice.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="totalTickets">Total Tickets *</Label>
                   <Input
                     id="totalTickets"
-                    name="totalTickets"
                     type="number"
                     min="1"
                     max="100000"
                     placeholder="1000"
-                    defaultValue={competition?.totalTickets?.toString()}
-                    required
+                    {...register('totalTickets')}
+                    aria-invalid={!!errors.totalTickets}
                   />
+                  {errors.totalTickets && (
+                    <p className="text-sm text-destructive">{errors.totalTickets.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -241,40 +358,36 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   <Label htmlFor="maxTicketsPerUser">Max Tickets Per User</Label>
                   <Input
                     id="maxTicketsPerUser"
-                    name="maxTicketsPerUser"
                     type="number"
                     min="1"
                     max="100"
                     placeholder="50"
-                    defaultValue={competition?.maxTicketsPerUser?.toString() ?? '50'}
+                    {...register('maxTicketsPerUser')}
+                    aria-invalid={!!errors.maxTicketsPerUser}
                   />
+                  {errors.maxTicketsPerUser && (
+                    <p className="text-sm text-destructive">{errors.maxTicketsPerUser.message}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="saleStartDate">Sale Start Date</Label>
                   <Input
                     id="saleStartDate"
-                    name="saleStartDate"
                     type="datetime-local"
-                    defaultValue={
-                      competition?.saleStartDate
-                        ? new Date(competition.saleStartDate).toISOString().slice(0, 16)
-                        : ''
-                    }
+                    {...register('saleStartDate')}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="drawDate">Draw Date *</Label>
                   <Input
                     id="drawDate"
-                    name="drawDate"
                     type="datetime-local"
-                    defaultValue={
-                      competition?.drawDate
-                        ? new Date(competition.drawDate).toISOString().slice(0, 16)
-                        : ''
-                    }
-                    required
+                    {...register('drawDate')}
+                    aria-invalid={!!errors.drawDate}
                   />
+                  {errors.drawDate && (
+                    <p className="text-sm text-destructive">{errors.drawDate.message}</p>
+                  )}
                 </div>
               </div>
             </CardContent>
@@ -291,12 +404,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="mainImageUrl">Main Image URL *</Label>
                 <Input
                   id="mainImageUrl"
-                  name="mainImageUrl"
                   type="url"
                   placeholder="https://example.com/image.jpg"
-                  defaultValue={competition?.mainImageUrl}
-                  required
+                  {...register('mainImageUrl')}
+                  aria-invalid={!!errors.mainImageUrl}
                 />
+                {errors.mainImageUrl && (
+                  <p className="text-sm text-destructive">{errors.mainImageUrl.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Enter the URL of the main competition image
                 </p>
@@ -306,10 +421,9 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="galleryUrls">Gallery Images</Label>
                 <Textarea
                   id="galleryUrls"
-                  name="galleryUrls"
                   placeholder="Enter image URLs separated by commas..."
-                  defaultValue={competition?.galleryUrls?.join(', ')}
                   rows={3}
+                  {...register('galleryUrls')}
                 />
                 <p className="text-xs text-muted-foreground">
                   Enter image URLs separated by commas (max 10 images)
@@ -320,11 +434,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="videoUrl">Video URL</Label>
                 <Input
                   id="videoUrl"
-                  name="videoUrl"
                   type="url"
                   placeholder="https://youtube.com/watch?v=..."
-                  defaultValue={competition?.videoUrl ?? ''}
+                  {...register('videoUrl')}
+                  aria-invalid={!!errors.videoUrl}
                 />
+                {errors.videoUrl && (
+                  <p className="text-sm text-destructive">{errors.videoUrl.message}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -341,18 +458,16 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   <Label htmlFor="certificationNumber">Certification Number</Label>
                   <Input
                     id="certificationNumber"
-                    name="certificationNumber"
                     placeholder="PSA # or BGS #"
-                    defaultValue={competition?.certificationNumber ?? ''}
+                    {...register('certificationNumber')}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="grade">Grade</Label>
                   <Input
                     id="grade"
-                    name="grade"
                     placeholder="PSA 10, BGS 9.5, etc."
-                    defaultValue={competition?.grade ?? ''}
+                    {...register('grade')}
                   />
                 </div>
               </div>
@@ -361,9 +476,8 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="condition">Condition</Label>
                 <Input
                   id="condition"
-                  name="condition"
                   placeholder="Gem Mint, Near Mint, etc."
-                  defaultValue={competition?.condition ?? ''}
+                  {...register('condition')}
                 />
               </div>
 
@@ -371,10 +485,9 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="provenance">Provenance</Label>
                 <Textarea
                   id="provenance"
-                  name="provenance"
                   placeholder="History or origin of the item..."
-                  defaultValue={competition?.provenance ?? ''}
                   rows={3}
+                  {...register('provenance')}
                 />
               </div>
             </CardContent>
@@ -395,12 +508,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="questionText">Question *</Label>
                 <Textarea
                   id="questionText"
-                  name="questionText"
                   placeholder="In what year was the first Pokémon TCG base set released in Japan?"
-                  defaultValue={competition?.questionText}
-                  required
                   rows={2}
+                  {...register('questionText')}
+                  aria-invalid={!!errors.questionText}
                 />
+                {errors.questionText && (
+                  <p className="text-sm text-destructive">{errors.questionText.message}</p>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -416,28 +531,35 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                         setQuestionChoices(newChoices);
                       }}
                       placeholder={`Choice ${String.fromCharCode(65 + index)}`}
-                      required
                     />
                   </div>
                 ))}
+                {questionChoices.filter(c => c.trim()).length < 4 && (
+                  <p className="text-sm text-muted-foreground">
+                    All 4 answer choices are required
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="questionAnswer">Correct Answer *</Label>
                 <Select
-                  name="questionAnswer"
-                  defaultValue={competition?.questionAnswer?.toString() ?? '0'}
+                  value={watch('questionAnswer')}
+                  onValueChange={(value) => setValue('questionAnswer', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.questionAnswer}>
                     <SelectValue placeholder="Select correct answer" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">A. {questionChoices[0] || 'Choice A'}</SelectItem>
-                    <SelectItem value="1">B. {questionChoices[1] || 'Choice B'}</SelectItem>
-                    <SelectItem value="2">C. {questionChoices[2] || 'Choice C'}</SelectItem>
-                    <SelectItem value="3">D. {questionChoices[3] || 'Choice D'}</SelectItem>
+                    <SelectItem value="0">A. {questionChoices[0] ?? 'Choice A'}</SelectItem>
+                    <SelectItem value="1">B. {questionChoices[1] ?? 'Choice B'}</SelectItem>
+                    <SelectItem value="2">C. {questionChoices[2] ?? 'Choice C'}</SelectItem>
+                    <SelectItem value="3">D. {questionChoices[3] ?? 'Choice D'}</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.questionAnswer && (
+                  <p className="text-sm text-destructive">{errors.questionAnswer.message}</p>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -453,11 +575,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="metaTitle">Meta Title</Label>
                 <Input
                   id="metaTitle"
-                  name="metaTitle"
                   placeholder="SEO title (defaults to competition title)"
-                  defaultValue={competition?.metaTitle ?? ''}
                   maxLength={70}
+                  {...register('metaTitle')}
+                  aria-invalid={!!errors.metaTitle}
                 />
+                {errors.metaTitle && (
+                  <p className="text-sm text-destructive">{errors.metaTitle.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Max 70 characters. Leave empty to use competition title.
                 </p>
@@ -467,12 +592,15 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 <Label htmlFor="metaDescription">Meta Description</Label>
                 <Textarea
                   id="metaDescription"
-                  name="metaDescription"
                   placeholder="SEO description (defaults to short description)"
-                  defaultValue={competition?.metaDescription ?? ''}
                   maxLength={160}
                   rows={3}
+                  {...register('metaDescription')}
+                  aria-invalid={!!errors.metaDescription}
                 />
+                {errors.metaDescription && (
+                  <p className="text-sm text-destructive">{errors.metaDescription.message}</p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   Max 160 characters. Leave empty to use short description.
                 </p>

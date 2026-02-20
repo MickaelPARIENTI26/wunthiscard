@@ -51,6 +51,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@winucard/shared', '@winucard/database'],
+  eslint: {
+    // Warnings are checked in CI via npm run lint
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {
