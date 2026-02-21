@@ -4,6 +4,7 @@ import { prisma } from '@winucard/database';
 import { z } from 'zod';
 import { passwordSchema } from '@winucard/shared/validators';
 import { verifyPassword, hashPassword } from '@/lib/password';
+import { rateLimits } from '@/lib/redis';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -18,6 +19,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
+      );
+    }
+
+    // Rate limit by user ID to prevent brute force
+    const { success: rateLimitOk } = await rateLimits.passwordReset.limit(session.user.id);
+    if (!rateLimitOk) {
+      return NextResponse.json(
+        { error: 'Too many password change attempts. Please try again later.' },
+        { status: 429 }
       );
     }
 

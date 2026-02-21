@@ -90,6 +90,22 @@ export async function GET(request: NextRequest) {
 
     const filename = `orders-export-${new Date().toISOString().split('T')[0]}.csv`;
 
+    // Log the data export to audit trail
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: 'DATA_EXPORT_ORDERS',
+        entity: 'order',
+        entityId: 'bulk',
+        metadata: {
+          exportedCount: orders.length,
+          filters: { status: status || 'all', competitionId: competitionId || null },
+          filename,
+        },
+        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+      },
+    });
+
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv',

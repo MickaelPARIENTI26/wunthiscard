@@ -158,11 +158,6 @@ export async function POST(request: NextRequest) {
       return newUser;
     });
 
-    // Log verification token in development
-    if (!isProduction) {
-      console.log(`[DEV] Verification token for ${data.email}: ${verificationToken}`);
-    }
-
     return NextResponse.json({
       success: true,
       userId: user.id,

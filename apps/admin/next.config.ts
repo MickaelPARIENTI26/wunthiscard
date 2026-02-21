@@ -18,8 +18,9 @@ const securityHeaders = [
     value: 'DENY',
   },
   {
+    // X-XSS-Protection is deprecated - CSP provides better XSS protection
     key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    value: '0',
   },
   {
     key: 'Referrer-Policy',
@@ -36,7 +37,7 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https: http:",
+      "img-src 'self' data: blob: https://images.pokemontcg.io https://*.cloudflare.com https://*.r2.cloudflarestorage.com https://picsum.photos",
       "font-src 'self' https://fonts.gstatic.com",
       "connect-src 'self' https://*.upstash.io",
       "object-src 'none'",

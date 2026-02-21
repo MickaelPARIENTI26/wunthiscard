@@ -19,7 +19,7 @@ export const authConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days - reasonable for user convenience
+    maxAge: 24 * 60 * 60, // 24 hours - per security_rules.md
   },
   cookies: {
     sessionToken: {

@@ -39,8 +39,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validation = validateSchema.safeParse(body);
     if (!validation.success) {
+      // Log validation errors server-side only, don't expose to client
+      console.error('Validation error:', validation.error.errors);
       return NextResponse.json(
-        { error: 'Invalid request', details: validation.error.errors },
+        { error: 'Invalid request data' },
         { status: 400 }
       );
     }

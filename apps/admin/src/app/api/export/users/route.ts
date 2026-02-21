@@ -77,6 +77,22 @@ export async function GET(request: NextRequest) {
 
     const filename = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
 
+    // Log the data export to audit trail
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: 'DATA_EXPORT_USERS',
+        entity: 'user',
+        entityId: 'bulk',
+        metadata: {
+          exportedCount: users.length,
+          filters: { status: status || 'all' },
+          filename,
+        },
+        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+      },
+    });
+
     return new NextResponse(csv, {
       headers: {
         'Content-Type': 'text/csv',

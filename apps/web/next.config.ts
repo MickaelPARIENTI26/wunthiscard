@@ -18,8 +18,9 @@ const securityHeaders = [
     value: 'DENY',
   },
   {
+    // X-XSS-Protection is deprecated - CSP provides better XSS protection
     key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    value: '0',
   },
   {
     key: 'Referrer-Policy',
@@ -36,9 +37,9 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://*.googletagmanager.com https://challenges.cloudflare.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "img-src 'self' data: blob: https: http:",
+      "img-src 'self' data: blob: https://images.pokemontcg.io https://*.cloudflare.com https://*.r2.cloudflarestorage.com https://*.stripe.com https://picsum.photos",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://api.stripe.com https://*.upstash.io https://*.google-analytics.com https://challenges.cloudflare.com wss:",
+      "connect-src 'self' https://api.stripe.com https://*.upstash.io https://*.google-analytics.com https://challenges.cloudflare.com",
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
       "object-src 'none'",
       "base-uri 'self'",

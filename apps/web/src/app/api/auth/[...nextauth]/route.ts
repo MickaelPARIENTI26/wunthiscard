@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     const email = formData.get('email')?.toString()?.toLowerCase() || '';
 
     // Also rate limit by IP as fallback
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                request.headers.get('x-real-ip') ||
                'anonymous';
 

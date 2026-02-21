@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { sendVerificationEmail } from '@/lib/email';
+import { rateLimits } from '@/lib/redis';
 import { randomBytes } from 'crypto';
 
 export async function POST(request: NextRequest) {
@@ -12,6 +13,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
+      );
+    }
+
+    // Rate limit by email to prevent email spam
+    const emailLower = email.toLowerCase();
+    const { success: rateLimitOk } = await rateLimits.passwordReset.limit(emailLower);
+    if (!rateLimitOk) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
       );
     }
 
