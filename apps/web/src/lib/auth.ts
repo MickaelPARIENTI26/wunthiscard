@@ -3,23 +3,8 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import type { Provider } from 'next-auth/providers';
 import { prisma } from '@winucard/database';
-import { scrypt, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
 import { authConfig } from './auth.config';
-
-const scryptAsync = promisify(scrypt);
-
-/**
- * Verify a password against a stored hash using scrypt
- * Hash format: salt:derivedKey (both hex encoded)
- */
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':');
-  if (!salt || !key) return false;
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return timingSafeEqual(keyBuffer, derivedKey);
-}
+import { verifyPassword, hashPassword } from './password';
 
 // Check if Google OAuth is configured (not just empty strings)
 const isGoogleConfigured =
@@ -74,8 +59,8 @@ const providers: Provider[] = [
         throw new Error('AccountLocked');
       }
 
-      // Verify password using scrypt
-      const isValid = await verifyPassword(password, user.passwordHash);
+      // Verify password using bcrypt (with scrypt fallback for migration)
+      const { isValid, needsRehash } = await verifyPassword(password, user.passwordHash);
 
       if (!isValid) {
         // Increment failed login attempts
@@ -93,12 +78,19 @@ const providers: Provider[] = [
       }
 
       // Reset failed login attempts on successful login
+      // Also rehash password from scrypt to bcrypt if needed (transparent migration)
+      const updateData: { failedLoginAttempts: number; lockedUntil: null; passwordHash?: string } = {
+        failedLoginAttempts: 0,
+        lockedUntil: null,
+      };
+
+      if (needsRehash) {
+        updateData.passwordHash = await hashPassword(password);
+      }
+
       await prisma.user.update({
         where: { id: user.id },
-        data: {
-          failedLoginAttempts: 0,
-          lockedUntil: null,
-        },
+        data: updateData,
       });
 
       return {

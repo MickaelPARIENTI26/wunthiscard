@@ -2,34 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
 import { auth, signOut } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-
-const scryptAsync = promisify(scrypt);
-
-/**
- * Hash a password using scrypt
- * Returns format: salt:derivedKey (both hex encoded)
- */
-async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
-}
-
-/**
- * Verify a password against a stored hash using scrypt
- * Hash format: salt:derivedKey (both hex encoded)
- */
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':');
-  if (!salt || !key) return false;
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return timingSafeEqual(keyBuffer, derivedKey);
-}
+import { hashPassword, verifyPassword } from '@/lib/password';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -77,7 +52,7 @@ export async function changePassword(
 
     // If user has an existing password, verify it
     if (user.passwordHash) {
-      const isValid = await verifyPassword(currentPassword, user.passwordHash);
+      const { isValid } = await verifyPassword(currentPassword, user.passwordHash);
       if (!isValid) {
         return { success: false, error: 'Current password is incorrect' };
       }

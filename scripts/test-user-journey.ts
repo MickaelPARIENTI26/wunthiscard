@@ -14,11 +14,12 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
-const scryptAsync = promisify(scrypt);
+
+// Bcrypt cost factor (12 as per security_rules.md)
+const BCRYPT_COST = 12;
 
 // Test configuration
 const TEST_USER = {
@@ -48,19 +49,13 @@ function log(step: string, status: 'PASS' | 'FAIL' | 'WARN', message: string, de
   results.push({ step, status, message, details });
 }
 
-// Password hashing (same as production)
+// Password hashing (same as production - bcrypt cost 12)
 async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
+  return bcrypt.hash(password, BCRYPT_COST);
 }
 
 async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':');
-  if (!salt || !key) return false;
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return timingSafeEqual(keyBuffer, derivedKey);
+  return bcrypt.compare(password, hash);
 }
 
 // ============================================================================

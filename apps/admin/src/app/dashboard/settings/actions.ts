@@ -16,6 +16,8 @@ function requireAdmin(session: { user?: { id?: string; role?: string } } | null)
   return session.user.id;
 }
 
+// Sensitive keys (Stripe) must be configured via environment variables only
+// Never store API keys in the database for security
 interface SiteSettingsData {
   companyName?: string;
   companyEmail?: string;
@@ -28,12 +30,6 @@ interface SiteSettingsData {
   socialYoutube?: string;
   socialTiktok?: string;
   socialDiscord?: string;
-  stripeMode?: string;
-  stripePublishableKey?: string;
-  stripeSecretKey?: string;
-  stripeWebhookSecret?: string;
-  currency?: string;
-  currencySymbol?: string;
   bonusTiers?: Array<{ minTickets: number; bonusPercent: number }>;
 }
 
@@ -52,6 +48,16 @@ async function saveSettings(data: SiteSettingsData) {
   });
 }
 
+// Keys that must never be stored in database (security)
+const BLOCKED_KEYS = [
+  'stripePublishableKey',
+  'stripeSecretKey',
+  'stripeWebhookSecret',
+  'stripeMode',
+  'currency',
+  'currencySymbol',
+];
+
 export async function updateSettings(formData: FormData) {
   const session = await auth();
   const adminId = requireAdmin(session);
@@ -60,7 +66,8 @@ export async function updateSettings(formData: FormData) {
   const updates: Record<string, string> = {};
 
   formData.forEach((value, key) => {
-    if (typeof value === 'string') {
+    // Filter out sensitive/blocked keys
+    if (typeof value === 'string' && !BLOCKED_KEYS.includes(key)) {
       updates[key] = value;
     }
   });

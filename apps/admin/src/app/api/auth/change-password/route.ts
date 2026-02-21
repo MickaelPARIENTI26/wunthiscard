@@ -1,25 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@winucard/database';
-import { scrypt, randomBytes, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
 import { z } from 'zod';
-
-const scryptAsync = promisify(scrypt);
-
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':');
-  if (!salt || !key) return false;
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return timingSafeEqual(keyBuffer, derivedKey);
-}
-
-async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
-}
+import { verifyPassword, hashPassword } from '@/lib/password';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -63,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify current password
-    const isValid = await verifyPassword(currentPassword, user.passwordHash);
+    const { isValid } = await verifyPassword(currentPassword, user.passwordHash);
 
     if (!isValid) {
       return NextResponse.json(

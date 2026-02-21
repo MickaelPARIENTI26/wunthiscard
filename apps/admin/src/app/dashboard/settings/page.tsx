@@ -93,7 +93,7 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="payment">
-          <PaymentSettingsForm settings={settings} />
+          <PaymentSettingsForm />
         </TabsContent>
       </Tabs>
     </div>

@@ -17,7 +17,8 @@ Ce projet implique des **paiements en ligne** et des **gains de valeur significa
 
 ### 2.1 Mots de Passe
 
-- **Hashing** : bcrypt avec un cost factor de 12 (via NextAuth)
+- **Hashing** : bcrypt avec un cost factor de 12 (via bcryptjs)
+- **Migration** : Legacy scrypt hashes are automatically migrated to bcrypt on successful login (transparent migration)
 - **Politique de complexité** :
   - Minimum 8 caractères
   - Au moins 1 majuscule, 1 minuscule, 1 chiffre, 1 caractère spécial

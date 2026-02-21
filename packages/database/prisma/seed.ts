@@ -1,14 +1,13 @@
 import { PrismaClient, UserRole, CompetitionStatus, CompetitionCategory, TicketStatus, PaymentStatus, EmailTrigger } from '@prisma/client';
-import { randomBytes, scrypt } from 'crypto';
-import { promisify } from 'util';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
-const scryptAsync = promisify(scrypt);
+
+// Bcrypt cost factor (12 as per security_rules.md)
+const BCRYPT_COST = 12;
 
 async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
+  return bcrypt.hash(password, BCRYPT_COST);
 }
 
 async function main() {

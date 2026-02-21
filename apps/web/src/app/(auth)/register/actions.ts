@@ -1,14 +1,12 @@
 'use server';
 
-import { scrypt, randomBytes } from 'crypto';
-import { promisify } from 'util';
+import { randomBytes } from 'crypto';
 import { headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { registerSchema, type RegisterInput } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
-
-const scryptAsync = promisify(scrypt);
+import { hashPassword } from '@/lib/password';
 
 interface RegisterResult {
   success: boolean;
@@ -17,12 +15,6 @@ interface RegisterResult {
 
 interface RegisterInputWithCaptcha extends RegisterInput {
   turnstileToken?: string;
-}
-
-async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
 }
 
 async function generateVerificationToken(): Promise<string> {
@@ -79,7 +71,7 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
       };
     }
 
-    // Hash the password using scrypt
+    // Hash the password using bcrypt (cost 12)
     const passwordHash = await hashPassword(password);
 
     // Generate email verification token

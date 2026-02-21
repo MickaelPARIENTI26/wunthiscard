@@ -1,19 +1,8 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { prisma } from '@winucard/database';
-import { scrypt, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
 import { authConfig } from './auth.config';
-
-const scryptAsync = promisify(scrypt);
-
-async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const [salt, key] = hash.split(':');
-  if (!salt || !key) return false;
-  const keyBuffer = Buffer.from(key, 'hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return timingSafeEqual(keyBuffer, derivedKey);
-}
+import { verifyPassword, hashPassword } from './password';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -55,8 +44,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           throw new Error('AccountLocked');
         }
 
-        // Verify password
-        const isValid = await verifyPassword(password, user.passwordHash);
+        // Verify password using bcrypt (with scrypt fallback for migration)
+        const { isValid, needsRehash } = await verifyPassword(password, user.passwordHash);
 
         if (!isValid) {
           // Increment failed login attempts
@@ -74,12 +63,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Reset failed login attempts on successful login
+        // Also rehash password from scrypt to bcrypt if needed (transparent migration)
+        const updateData: { failedLoginAttempts: number; lockedUntil: null; passwordHash?: string } = {
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+        };
+
+        if (needsRehash) {
+          updateData.passwordHash = await hashPassword(password);
+        }
+
         await prisma.user.update({
           where: { id: user.id },
-          data: {
-            failedLoginAttempts: 0,
-            lockedUntil: null,
-          },
+          data: updateData,
         });
 
         return {

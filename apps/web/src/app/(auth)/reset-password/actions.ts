@@ -1,11 +1,8 @@
 'use server';
 
-import { scrypt, randomBytes } from 'crypto';
-import { promisify } from 'util';
 import { prisma } from '@winucard/database';
 import { resetPasswordSchema, type ResetPasswordInput } from '@winucard/shared/validators';
-
-const scryptAsync = promisify(scrypt);
+import { hashPassword } from '@/lib/password';
 
 interface ResetPasswordResult {
   success: boolean;
@@ -14,12 +11,6 @@ interface ResetPasswordResult {
 
 interface ValidateTokenResult {
   valid: boolean;
-}
-
-async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('hex');
-  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${salt}:${derivedKey.toString('hex')}`;
 }
 
 export async function validateResetToken(token: string): Promise<ValidateTokenResult> {
