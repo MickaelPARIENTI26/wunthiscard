@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@winucard/database';
 import { z } from 'zod';
+import { passwordSchema } from '@winucard/shared/validators';
 import { verifyPassword, hashPassword } from '@/lib/password';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  newPassword: passwordSchema,
 });
 
 export async function POST(request: NextRequest) {

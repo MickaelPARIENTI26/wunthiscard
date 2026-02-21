@@ -5,16 +5,11 @@ import { z } from 'zod';
 import { auth, signOut } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { hashPassword, verifyPassword } from '@/lib/password';
+import { passwordSchema } from '@winucard/shared/validators';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/\d/, 'Password must contain at least one number')
-    .regex(/[@$!%*?&]/, 'Password must contain at least one special character'),
+  newPassword: passwordSchema,
 });
 
 type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
