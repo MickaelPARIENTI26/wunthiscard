@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
+import { Outfit } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
@@ -12,16 +12,11 @@ import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Toaster } from '@/components/ui/toaster';
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-display',
+  variable: '--font-outfit',
+  weight: ['300', '400', '500', '600', '700', '800'],
 });
 
 /**
@@ -32,7 +27,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#0a0a14',
+  themeColor: '#12151e',
   colorScheme: 'dark',
 };
 
@@ -140,12 +135,12 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang={locale} className={outfit.variable}>
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
       </head>
-      <body className="min-h-screen antialiased flex flex-col font-sans">
+      <body className="min-h-screen antialiased flex flex-col" style={{ fontFamily: 'var(--font-outfit), system-ui, sans-serif' }}>
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
             <AuthHeader />

@@ -63,16 +63,41 @@ const categoryIcons: Record<string, React.ReactNode> = {
   OTHER: <HelpCircle className="w-3 h-3" />,
 };
 
+// Deep Navy category colors
 const categoryColors: Record<string, string> = {
-  POKEMON: 'bg-yellow-500/90 text-black border-yellow-400/50',
-  ONE_PIECE: 'bg-red-500/90 text-white border-red-400/50',
-  SPORTS_BASKETBALL: 'bg-orange-500/90 text-white border-orange-400/50',
-  SPORTS_FOOTBALL: 'bg-green-500/90 text-white border-green-400/50',
-  SPORTS_OTHER: 'bg-blue-500/90 text-white border-blue-400/50',
-  MEMORABILIA: 'bg-purple-500/90 text-white border-purple-400/50',
-  YUGIOH: 'bg-indigo-500/90 text-white border-indigo-400/50',
-  MTG: 'bg-slate-500/90 text-white border-slate-400/50',
-  OTHER: 'bg-gray-500/90 text-white border-gray-400/50',
+  POKEMON: 'text-[#12151e] border-[#F0B90B]/50',
+  ONE_PIECE: 'text-white border-[#E05555]/50',
+  SPORTS_BASKETBALL: 'text-white border-[#4A90E2]/50',
+  SPORTS_FOOTBALL: 'text-white border-[#34C772]/50',
+  SPORTS_OTHER: 'text-white border-[#4A90E2]/50',
+  MEMORABILIA: 'text-white border-[#9B59B6]/50',
+  YUGIOH: 'text-white border-[#8B5CF6]/50',
+  MTG: 'text-white border-[#64748B]/50',
+  OTHER: 'text-white border-[#5a5e70]/50',
+};
+
+const categoryBgColors: Record<string, string> = {
+  POKEMON: '#F0B90B',
+  ONE_PIECE: '#E05555',
+  SPORTS_BASKETBALL: '#4A90E2',
+  SPORTS_FOOTBALL: '#34C772',
+  SPORTS_OTHER: '#4A90E2',
+  MEMORABILIA: '#9B59B6',
+  YUGIOH: '#8B5CF6',
+  MTG: '#64748B',
+  OTHER: '#5a5e70',
+};
+
+const categoryHoverClasses: Record<string, string> = {
+  POKEMON: 'card-hover-category-pokemon',
+  ONE_PIECE: 'card-hover-category-one-piece',
+  SPORTS_BASKETBALL: 'card-hover-category-basketball',
+  SPORTS_FOOTBALL: 'card-hover-category-football',
+  SPORTS_OTHER: 'card-hover-category-basketball',
+  MEMORABILIA: 'card-hover-gold',
+  YUGIOH: 'card-hover-gold',
+  MTG: 'card-hover-gold',
+  OTHER: 'card-hover-gold',
 };
 
 export function CompetitionCard({
@@ -110,12 +135,18 @@ export function CompetitionCard({
       className={cn('group', className)}
     >
       <Link href={`/competitions/${slug}`} className="block h-full">
-        <Card className={cn(
-          'overflow-hidden h-full flex flex-col cursor-pointer transition-all duration-300',
-          'bg-card border-border/50 hover:border-primary/50',
-          'hover:shadow-xl hover:shadow-primary/10',
-          isActive && !isSoldOut && 'holo-shimmer'
-        )}>
+        <Card
+          className={cn(
+            'overflow-hidden h-full flex flex-col cursor-pointer transition-all duration-300',
+            'border hover:shadow-xl',
+            categoryHoverClasses[category] || 'card-hover-gold',
+            isActive && !isSoldOut && 'holo-shimmer'
+          )}
+          style={{
+            background: 'rgba(255, 255, 255, 0.025)',
+            borderColor: 'rgba(255, 255, 255, 0.08)',
+          }}
+        >
           {/* Image Container */}
           <div className="relative aspect-square overflow-hidden bg-muted">
             <Image
@@ -136,6 +167,9 @@ export function CompetitionCard({
                 'absolute top-3 left-3 border gap-1',
                 categoryColors[category]
               )}
+              style={{
+                backgroundColor: categoryBgColors[category] || '#5a5e70',
+              }}
             >
               {categoryIcons[category]}
               {categoryLabels[category]}
@@ -186,7 +220,7 @@ export function CompetitionCard({
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 pt-12">
               <div>
                 <p className="text-xs uppercase tracking-wider text-white/70 mb-1">{t('prizeValue')}</p>
-                <p className="text-2xl md:text-3xl font-bold text-gradient-gold tabular-nums font-[family-name:var(--font-display)]">
+                <p className="text-2xl md:text-3xl font-bold text-gradient-gold tabular-nums font-[family-name:var(--font-outfit)]">
                   {new Intl.NumberFormat('en-GB', {
                     style: 'currency',
                     currency: 'GBP',
@@ -198,25 +232,25 @@ export function CompetitionCard({
             </div>
           </div>
 
-          <CardContent className="flex-1 p-4 flex flex-col" style={{ color: '#f5f5f5' }}>
+          <CardContent className="flex-1 p-4 flex flex-col" style={{ color: '#ffffff' }}>
             {/* Title */}
             <h3
-              className="font-semibold text-lg line-clamp-2 mb-3 min-h-[3.5rem] group-hover:text-primary transition-colors font-[family-name:var(--font-display)]"
-              style={{ color: '#f5f5f5' }}
+              className="font-semibold text-lg line-clamp-2 mb-3 min-h-[3.5rem] group-hover:text-primary transition-colors font-[family-name:var(--font-outfit)]"
+              style={{ color: '#ffffff' }}
             >
               {title}
             </h3>
 
             {/* Ticket Price */}
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-2xl font-bold tabular-nums" style={{ color: '#FFD700' }}>
+              <span className="text-2xl font-bold tabular-nums" style={{ color: '#F0B90B' }}>
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
                   minimumFractionDigits: 2,
                 }).format(ticketPrice)}
               </span>
-              <span className="text-sm" style={{ color: '#a0a0a0' }}>{t('perTicket')}</span>
+              <span className="text-sm" style={{ color: '#7a7e90' }}>{t('perTicket')}</span>
             </div>
 
             {/* Progress Bar */}
@@ -230,7 +264,7 @@ export function CompetitionCard({
             {/* Countdown */}
             {(isActive || isUpcoming) && (
               <div className="mt-auto">
-                <p className="text-xs mb-2" style={{ color: '#a0a0a0' }}>
+                <p className="text-xs mb-2" style={{ color: '#7a7e90' }}>
                   {isActive ? t('drawEndsIn') : t('saleStartsIn')}
                 </p>
                 <CountdownTimer
@@ -242,14 +276,14 @@ export function CompetitionCard({
             )}
 
             {/* CTA Button */}
-            <div className="mt-4 pt-3 border-t" style={{ borderColor: '#2a2a4a' }}>
+            <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
               <span
                 className={cn(
                   'block w-full text-center py-2.5 rounded-lg font-semibold transition-all duration-300'
                 )}
                 style={{
-                  backgroundColor: isActive ? '#FFD700' : isSoldOut ? '#1f1f35' : '#1f1f35',
-                  color: isActive ? '#0f0f1a' : '#a0a0a0',
+                  background: isActive ? 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)' : '#1a1e2e',
+                  color: isActive ? '#12151e' : '#7a7e90',
                 }}
               >
                 {isActive ? t('enterNow') : isUpcoming ? t('viewDetails') : isSoldOut ? t('soldOut') : t('viewDetails')}

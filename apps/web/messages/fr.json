@@ -553,5 +553,12 @@
     "label": "Langue",
     "english": "English",
     "french": "Français"
+  },
+  "categoriesHero": {
+    "badge": "BIEN PLUS QUE POKÉMON",
+    "titlePart1": "Gagnez La Carte De Vos",
+    "titleHighlight": "Rêves",
+    "description": "Des cartes Pokémon rares aux One Piece TCG, des légendes du football aux icônes du basketball. Explorez nos compétitions de cartes de collection premium et gagnez la carte dont vous avez toujours rêvé.",
+    "cta": "Parcourir Toutes Les Compétitions"
   }
 }

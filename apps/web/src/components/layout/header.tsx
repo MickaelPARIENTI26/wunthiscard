@@ -72,8 +72,10 @@ export function Header({ user = null }: HeaderProps) {
           : 'bg-transparent'
       )}
       style={isScrolled ? {
-        background: 'linear-gradient(180deg, oklch(0.08 0.02 270 / 0.95) 0%, oklch(0.06 0.02 270 / 0.9) 100%)',
-        borderColor: 'oklch(0.25 0.02 270)',
+        background: 'rgba(18, 21, 30, 0.85)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderColor: 'rgba(255, 255, 255, 0.05)',
       } : undefined}
     >
       {/* Subtle gold line at top when scrolled */}
@@ -81,7 +83,7 @@ export function Header({ user = null }: HeaderProps) {
         <div
           className="absolute inset-x-0 top-0 h-px"
           style={{
-            background: 'linear-gradient(90deg, transparent 0%, oklch(0.65 0.18 85 / 0.3) 50%, transparent 100%)',
+            background: 'linear-gradient(90deg, transparent 0%, rgba(240, 185, 11, 0.3) 50%, transparent 100%)',
           }}
         />
       )}
@@ -92,7 +94,7 @@ export function Header({ user = null }: HeaderProps) {
           <div
             className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden transition-transform duration-300 group-hover:scale-105"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
             }}
           >
             {/* Shine effect */}
@@ -100,7 +102,7 @@ export function Header({ user = null }: HeaderProps) {
             <Trophy className="h-5 w-5 text-black relative z-10" />
           </div>
           <div className="flex flex-col">
-            <span className="hidden text-lg font-bold tracking-tight sm:inline-block font-[family-name:var(--font-display)] text-gradient-gold">
+            <span className="hidden text-lg font-bold tracking-tight sm:inline-block font-[family-name:var(--font-outfit)] text-gradient-gold">
               WinUCard
             </span>
             <span className="hidden text-[10px] text-muted-foreground sm:inline-block -mt-0.5">
@@ -122,14 +124,14 @@ export function Header({ user = null }: HeaderProps) {
               <span
                 className="absolute inset-x-4 -bottom-0.5 h-0.5 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"
                 style={{
-                  background: 'linear-gradient(90deg, oklch(0.82 0.165 85), oklch(0.65 0.18 85))',
+                  background: 'linear-gradient(90deg, #F0B90B, #C9990A)',
                 }}
               />
               {/* Hover background */}
               <span
                 className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85 / 0.1) 0%, transparent 100%)',
+                  background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.1) 0%, transparent 100%)',
                 }}
               />
             </Link>
@@ -155,8 +157,8 @@ export function Header({ user = null }: HeaderProps) {
                       <AvatarFallback
                         className="font-semibold"
                         style={{
-                          background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                          color: 'black',
+                          background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                          color: '#12151e',
                         }}
                       >
                         {getInitials(user.name)}
@@ -169,8 +171,8 @@ export function Header({ user = null }: HeaderProps) {
                   align="end"
                   forceMount
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
-                    border: '1px solid oklch(0.25 0.02 270)',
+                    background: 'linear-gradient(135deg, #161a28 0%, #12151e 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
                   }}
                 >
                   <DropdownMenuLabel className="font-normal">
@@ -228,10 +230,17 @@ export function Header({ user = null }: HeaderProps) {
                 </Button>
                 <Button
                   asChild
-                  className="relative overflow-hidden font-semibold transition-all duration-300 hover:scale-105"
+                  className="relative overflow-hidden font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                    color: 'black',
+                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                    color: '#12151e',
+                    boxShadow: '0 0 0 rgba(240, 185, 11, 0)',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.target as HTMLElement).style.boxShadow = '0 4px 20px rgba(240, 185, 11, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.target as HTMLElement).style.boxShadow = '0 0 0 rgba(240, 185, 11, 0)';
                   }}
                 >
                   <Link href="/register" className="flex items-center gap-2">

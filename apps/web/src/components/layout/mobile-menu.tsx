@@ -133,8 +133,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         side="right"
         className="flex w-full flex-col sm:max-w-sm border-l"
         style={{
-          background: 'linear-gradient(180deg, oklch(0.08 0.02 270) 0%, oklch(0.05 0.02 270) 100%)',
-          borderColor: 'oklch(0.2 0.02 270)',
+          background: 'linear-gradient(180deg, #161a28 0%, #12151e 100%)',
+          borderColor: 'rgba(255, 255, 255, 0.05)',
         }}
       >
         <SheetHeader className="text-left">
@@ -143,14 +143,14 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
               <div
                 className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                  background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                <Trophy className="h-5 w-5 text-black relative z-10" />
+                <Trophy className="h-5 w-5 relative z-10" style={{ color: '#12151e' }} />
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
+                <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-outfit)] text-gradient-gold">
                   WinUCard
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5">
@@ -167,8 +167,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             <div
               className="flex items-center gap-3 rounded-xl p-4"
               style={{
-                background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
-                border: '1px solid oklch(0.25 0.02 270)',
+                background: 'linear-gradient(135deg, #1a1e2e 0%, #161a28 100%)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
               <Avatar className="h-12 w-12 ring-2 ring-primary/30">
@@ -176,8 +176,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 <AvatarFallback
                   className="font-semibold"
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                    color: 'black',
+                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                    color: '#12151e',
                   }}
                 >
                   {getInitials(user.name)}
@@ -215,7 +215,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 <span
                   className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full scale-y-0 transition-transform group-hover:scale-y-100"
                   style={{
-                    background: 'linear-gradient(180deg, oklch(0.82 0.165 85), oklch(0.65 0.18 85))',
+                    background: 'linear-gradient(180deg, #F0B90B, #C9990A)',
                   }}
                 />
               </Link>
@@ -250,8 +250,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 size="lg"
                 className="w-full font-semibold"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                  color: 'black',
+                  background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                  color: '#12151e',
                 }}
               >
                 <Link href="/register" onClick={onClose} className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 className="w-full"
                 style={{
                   background: 'transparent',
-                  borderColor: 'oklch(0.3 0.02 270)',
+                  borderColor: 'rgba(255, 255, 255, 0.12)',
                 }}
               >
                 <Link href="/login" onClick={onClose}>
@@ -283,7 +283,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           <div
             className="pt-6"
             style={{
-              borderTop: '1px solid oklch(0.2 0.02 270)',
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
             }}
           >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
@@ -298,8 +298,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   rel="noopener noreferrer"
                   className="group flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
-                    border: '1px solid oklch(0.25 0.02 270)',
+                    background: 'linear-gradient(135deg, #1a1e2e 0%, #161a28 100%)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
                   }}
                   aria-label={`Follow us on ${social.label}`}
                 >

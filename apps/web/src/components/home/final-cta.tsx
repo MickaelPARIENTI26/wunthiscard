@@ -16,22 +16,17 @@ export function FinalCTA({ className }: FinalCTAProps) {
 
   return (
     <section className={cn('py-20 md:py-28 relative overflow-hidden', className)}>
-      {/* Background with gold gradient accents */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: 'linear-gradient(180deg, oklch(0.08 0.02 270) 0%, oklch(0.10 0.02 270) 50%, oklch(0.08 0.02 270) 100%)',
-        }}
-      />
+      {/* CTA gradient background */}
+      <div className="absolute inset-0 cta-gradient" />
 
       {/* Gold glow decorations */}
       <div
         className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none"
-        style={{ background: 'oklch(0.82 0.165 85 / 0.08)' }}
+        style={{ background: 'rgba(240, 185, 11, 0.08)' }}
       />
       <div
         className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: 'oklch(0.82 0.165 85 / 0.05)' }}
+        style={{ background: 'rgba(240, 185, 11, 0.05)' }}
       />
 
       {/* Floating particles */}
@@ -41,7 +36,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             key={i}
             className="absolute w-1.5 h-1.5 rounded-full"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
               left: `${15 + i * 15}%`,
               top: `${20 + (i % 3) * 25}%`,
             }}
@@ -75,24 +70,24 @@ export function FinalCTA({ className }: FinalCTAProps) {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl mx-auto mb-8 flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
             }}
           >
             {/* Shine effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent rounded-2xl" />
-            <Trophy className="w-10 h-10 md:w-12 md:h-12 text-black relative z-10" />
+            <Trophy className="w-10 h-10 md:w-12 md:h-12 relative z-10" style={{ color: '#12151e' }} />
 
             {/* Sparkle decorations */}
             <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-primary animate-pulse" />
           </motion.div>
 
           {/* Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-outfit)]" style={{ color: '#ffffff' }}>
             {t('cta.title')}
           </h2>
 
           {/* Description */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#a0a0a0' }}>
+          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#7a7e90' }}>
             {t('cta.subtitle')}
           </p>
 
@@ -101,11 +96,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             <Button
               asChild
               size="lg"
-              className="text-lg px-8 font-semibold group relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                color: 'black',
-              }}
+              className="text-lg px-8 font-semibold group relative overflow-hidden btn-primary-gold"
             >
               <Link href="/competitions" className="flex items-center gap-2">
                 <span className="relative z-10 flex items-center gap-2">
@@ -118,11 +109,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
               asChild
               variant="outline"
               size="lg"
-              className="text-lg px-8 group"
-              style={{
-                background: 'transparent',
-                borderColor: 'oklch(0.4 0.02 270)',
-              }}
+              className="text-lg px-8 group btn-secondary-dark"
             >
               <Link href="/register" className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
@@ -138,7 +125,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
             className="mt-10 text-sm text-muted-foreground"
-            style={{ color: '#a0a0a0' }}
+            style={{ color: '#7a7e90' }}
           >
             {t('cta.disclaimer')}{' '}
             <Link
@@ -156,7 +143,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
       <div
         className="absolute bottom-0 inset-x-0 h-px"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, oklch(0.65 0.18 85 / 0.3) 50%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, rgba(240, 185, 11, 0.3) 50%, transparent 100%)',
         }}
       />
     </section>

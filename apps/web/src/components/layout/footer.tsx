@@ -156,7 +156,7 @@ export function Footer() {
       <div
         className="absolute inset-x-0 top-0 h-px"
         style={{
-          background: 'linear-gradient(90deg, transparent 0%, oklch(0.65 0.18 85) 20%, oklch(0.82 0.165 85) 50%, oklch(0.65 0.18 85) 80%, transparent 100%)',
+          background: 'linear-gradient(90deg, transparent 0%, #C9990A 20%, #F0B90B 50%, #C9990A 80%, transparent 100%)',
         }}
       />
 
@@ -164,7 +164,7 @@ export function Footer() {
       <div
         className="pt-12 pb-8"
         style={{
-          background: 'linear-gradient(180deg, oklch(0.06 0.02 270) 0%, oklch(0.04 0.02 270) 100%)',
+          background: 'linear-gradient(180deg, #0c0e16 0%, #080a10 100%)',
         }}
       >
         <div className="container mx-auto px-4">
@@ -175,15 +175,15 @@ export function Footer() {
                 <div
                   className="relative flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden"
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
                   }}
                 >
                   {/* Shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                  <Trophy className="h-6 w-6 text-black relative z-10" />
+                  <Trophy className="h-6 w-6 relative z-10" style={{ color: '#12151e' }} />
                 </div>
                 <div>
-                  <span className="text-xl font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
+                  <span className="text-xl font-bold tracking-tight font-[family-name:var(--font-outfit)] text-gradient-gold">
                     WinUCard
                   </span>
                   <span className="block text-xs text-muted-foreground">{t('meta.premiumCollectibles')}</span>
@@ -218,8 +218,8 @@ export function Footer() {
                       rel="noopener noreferrer"
                       className="group/social flex items-center gap-1.5 rounded-full px-3 py-2 text-sm transition-all duration-300 hover:scale-105"
                       style={{
-                        background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
-                        border: '1px solid oklch(0.25 0.02 270)',
+                        background: 'linear-gradient(135deg, #1a1e2e 0%, #161a28 100%)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
                       }}
                       aria-label={`Follow us on ${social.label}`}
                     >
@@ -235,7 +235,7 @@ export function Footer() {
 
             {/* Column 2: Quick Links */}
             <div>
-              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-outfit)]">
                 {t('footer.quickLinks')}
               </h3>
               <ul className="space-y-3">
@@ -255,7 +255,7 @@ export function Footer() {
 
             {/* Column 3: Support */}
             <div>
-              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-outfit)]">
                 {t('footer.support')}
               </h3>
               <ul className="space-y-3">
@@ -275,7 +275,7 @@ export function Footer() {
 
             {/* Column 4: Legal */}
             <div>
-              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
+              <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-outfit)]">
                 {t('footer.legal')}
               </h3>
               <ul className="space-y-3">
@@ -300,8 +300,8 @@ export function Footer() {
       <div
         className="py-6"
         style={{
-          background: 'oklch(0.04 0.02 270)',
-          borderTop: '1px solid oklch(0.15 0.02 270)',
+          background: '#080a10',
+          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
         }}
       >
         <div className="container mx-auto px-4">
@@ -323,22 +323,22 @@ export function Footer() {
               <div
                 className="flex items-center gap-2 rounded-lg px-3 py-1.5"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.25 0.15 25) 0%, oklch(0.18 0.12 25) 100%)',
-                  border: '1px solid oklch(0.4 0.15 25)',
+                  background: 'linear-gradient(135deg, rgba(224, 85, 85, 0.2) 0%, rgba(224, 85, 85, 0.1) 100%)',
+                  border: '1px solid rgba(224, 85, 85, 0.3)',
                 }}
               >
                 <div
                   className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
                   style={{
-                    border: '2px solid oklch(0.65 0.2 25)',
-                    color: 'oklch(0.75 0.2 25)',
+                    border: '2px solid #E05555',
+                    color: '#E05555',
                   }}
                 >
                   18+
                 </div>
                 <span
                   className="text-xs font-medium"
-                  style={{ color: 'oklch(0.75 0.2 25)' }}
+                  style={{ color: '#E05555' }}
                 >
                   {t('footer.over18Only')}
                 </span>

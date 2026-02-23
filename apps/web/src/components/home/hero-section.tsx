@@ -30,8 +30,14 @@ interface HeroSectionProps {
 function FloatingParticle({ delay, size, x, y }: { delay: number; size: number; x: number; y: number }) {
   return (
     <motion.div
-      className="absolute rounded-full bg-gradient-to-br from-primary/40 to-primary/10"
-      style={{ width: size, height: size, left: `${x}%`, top: `${y}%` }}
+      className="absolute rounded-full"
+      style={{
+        width: size,
+        height: size,
+        left: `${x}%`,
+        top: `${y}%`,
+        background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.4) 0%, rgba(240, 185, 11, 0.1) 100%)',
+      }}
       animate={{
         y: [0, -30, 0],
         opacity: [0.3, 0.8, 0.3],
@@ -53,8 +59,8 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
   if (!featuredCompetition) {
     return (
       <section className={cn('relative min-h-[80vh] flex items-center overflow-hidden', className)}>
-        {/* Dark gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-card to-background" />
+        {/* Hero gradient background */}
+        <div className="absolute inset-0 hero-gradient" />
 
         {/* Floating particles */}
         <div className="absolute inset-0 overflow-hidden">
@@ -88,24 +94,33 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
             </motion.div>
 
             <h1
-              className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-display)]"
-              style={{ color: '#f5f5f5' }}
+              className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-outfit)]"
+              style={{ color: '#ffffff' }}
             >
               {t('hero.title')}
             </h1>
 
-            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
+            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto" style={{ color: '#7a7e90' }}>
               {t('hero.subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8 bg-primary hover:bg-primary/90 glow-gold-sm font-semibold">
+              <Button
+                asChild
+                size="lg"
+                className="text-lg px-8 font-semibold btn-primary-gold"
+              >
                 <Link href="/competitions">
                   <Zap className="w-5 h-5 mr-2" />
                   {t('hero.cta')}
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 btn-secondary-dark"
+              >
                 <Link href="/how-it-works">{t('hero.secondaryCta')}</Link>
               </Button>
             </div>
@@ -117,8 +132,8 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
 
   return (
     <section className={cn('relative min-h-[90vh] md:min-h-[85vh] flex items-center overflow-hidden', className)}>
-      {/* Dark Background with subtle gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-card/50 to-background" />
+      {/* Hero gradient background */}
+      <div className="absolute inset-0 hero-gradient" />
 
       {/* Background Image with heavy overlay - only on desktop */}
       <div className="absolute inset-0 hidden lg:block">
@@ -160,7 +175,12 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
           >
             <div className="relative max-w-xs sm:max-w-sm lg:max-w-md mx-auto">
               {/* Glow effect behind card */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-purple-500/30 to-blue-500/30 blur-3xl scale-125" />
+              <div
+                className="absolute inset-0 blur-3xl scale-125"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.4) 0%, rgba(155, 89, 182, 0.3) 50%, rgba(74, 144, 226, 0.3) 100%)',
+                }}
+              />
 
               {/* Card container with 3D effect */}
               <div className="relative card-3d">
@@ -183,8 +203,8 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 </div>
 
                 {/* Floating glow accents */}
-                <div className="absolute -top-2 -right-2 w-20 h-20 bg-primary/30 rounded-full blur-2xl" />
-                <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-purple-500/30 rounded-full blur-xl" />
+                <div className="absolute -top-2 -right-2 w-20 h-20 rounded-full blur-2xl" style={{ background: 'rgba(240, 185, 11, 0.3)' }} />
+                <div className="absolute -bottom-2 -left-2 w-16 h-16 rounded-full blur-xl" style={{ background: 'rgba(155, 89, 182, 0.3)' }} />
               </div>
             </div>
           </motion.div>
@@ -201,8 +221,15 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              {/* Featured Competition badge - gold background, black text for maximum readability */}
-              <span className="inline-flex items-center gap-1.5 mb-4 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/30">
+              {/* Featured Competition badge - gold background */}
+              <span
+                className="inline-flex items-center gap-1.5 mb-4 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg"
+                style={{
+                  background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                  color: '#12151e',
+                  boxShadow: '0 4px 20px rgba(240, 185, 11, 0.3)',
+                }}
+              >
                 <Sparkles className="w-4 h-4" />
                 {t('hero.featuredBadge')}
               </span>
@@ -212,7 +239,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-white font-[family-name:var(--font-display)]"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-white font-[family-name:var(--font-outfit)]"
             >
               {featuredCompetition.title}
             </motion.h1>
@@ -238,7 +265,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               <p className="text-sm uppercase tracking-wider text-muted-foreground mb-2">
                 {t('hero.prizeValue')}
               </p>
-              <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold glow-gold-text tabular-nums font-[family-name:var(--font-display)]">
+              <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold glow-gold-text tabular-nums font-[family-name:var(--font-outfit)]">
                 {new Intl.NumberFormat('en-GB', {
                   style: 'currency',
                   currency: 'GBP',
@@ -275,7 +302,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               <Button
                 asChild
                 size="lg"
-                className="text-lg px-8 bg-primary hover:bg-primary/90 glow-gold-sm font-semibold"
+                className="text-lg px-8 font-semibold btn-primary-gold"
               >
                 <Link href={`/competitions/${featuredCompetition.slug}`}>
                   <Zap className="w-5 h-5 mr-2" />
@@ -286,7 +313,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5"
+                className="text-lg px-8 btn-secondary-dark"
               >
                 <Link href="/competitions">{t('common.viewCompetitions')}</Link>
               </Button>

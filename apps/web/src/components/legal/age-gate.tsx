@@ -96,9 +96,9 @@ export function AgeGate() {
           isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
         style={{
-          backgroundColor: '#111118',
-          border: '1px solid rgba(255, 215, 0, 0.2)',
-          boxShadow: '0 0 60px rgba(255, 215, 0, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          backgroundColor: '#161a28',
+          border: '1px solid rgba(240, 185, 11, 0.2)',
+          boxShadow: '0 0 60px rgba(240, 185, 11, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.5)',
         }}
       >
         {/* Logo */}
@@ -107,16 +107,16 @@ export function AgeGate() {
             <div
               className="relative flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden"
               style={{
-                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-              <Trophy className="h-6 w-6 text-black relative z-10" />
+              <Trophy className="h-6 w-6 relative z-10" style={{ color: '#12151e' }} />
             </div>
             <span
-              className="text-2xl font-bold tracking-tight font-[family-name:var(--font-display)]"
+              className="text-2xl font-bold tracking-tight font-[family-name:var(--font-outfit)]"
               style={{
-                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -132,20 +132,20 @@ export function AgeGate() {
           <div
             className="flex h-16 w-16 items-center justify-center rounded-full"
             style={{
-              background: 'linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.1) 100%)',
-              border: '1px solid rgba(255, 215, 0, 0.3)',
+              background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.15) 0%, rgba(240, 185, 11, 0.08) 100%)',
+              border: '1px solid rgba(240, 185, 11, 0.3)',
             }}
           >
-            <AlertTriangle className="h-8 w-8" style={{ color: '#FFD700' }} />
+            <AlertTriangle className="h-8 w-8" style={{ color: '#F0B90B' }} />
           </div>
         </div>
 
         {/* Title */}
         <h1
           id="age-gate-title"
-          className="text-2xl sm:text-3xl font-bold text-center mb-4 font-[family-name:var(--font-display)]"
+          className="text-2xl sm:text-3xl font-bold text-center mb-4 font-[family-name:var(--font-outfit)]"
           style={{
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
+            background: 'linear-gradient(135deg, #F0B90B 0%, #FFD000 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -155,7 +155,7 @@ export function AgeGate() {
         </h1>
 
         {/* Description */}
-        <p className="text-center text-sm sm:text-base mb-8" style={{ color: '#a0a0a0' }}>
+        <p className="text-center text-sm sm:text-base mb-8" style={{ color: '#7a7e90' }}>
           {t('message')}
         </p>
 
@@ -166,9 +166,9 @@ export function AgeGate() {
             onClick={handleConfirmAge}
             className="w-full py-4 px-6 rounded-lg text-base sm:text-lg font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             style={{
-              background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-              color: 'black',
-              boxShadow: '0 4px 20px rgba(255, 215, 0, 0.3)',
+              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+              color: '#12151e',
+              boxShadow: '0 4px 20px rgba(240, 185, 11, 0.3)',
             }}
           >
             {t('confirm')}
@@ -180,8 +180,8 @@ export function AgeGate() {
             className="w-full py-3 px-6 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/5"
             style={{
               background: 'transparent',
-              border: '1px solid rgba(160, 160, 160, 0.3)',
-              color: '#808080',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              color: '#7a7e90',
             }}
           >
             {t('deny')}
@@ -189,7 +189,7 @@ export function AgeGate() {
         </div>
 
         {/* Legal Text */}
-        <p className="text-center text-xs mt-6" style={{ color: '#666666' }}>
+        <p className="text-center text-xs mt-6" style={{ color: '#5a5e70' }}>
           {t('legal')}
         </p>
       </div>

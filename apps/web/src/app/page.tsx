@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { prisma } from '@winucard/database';
-import { HeroSection } from '@/components/home/hero-section';
+import { CardCategoriesHero } from '@/components/home/card-categories-hero';
 import { LiveCompetitions } from '@/components/home/live-competitions';
 import { ComingSoon as _ComingSoon } from '@/components/home/coming-soon';
 import { RecentWinners as _RecentWinners } from '@/components/home/recent-winners';
@@ -10,59 +10,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 // Revalidate the home page every 60 seconds
 export const revalidate = 60;
-
-// Fetch featured competition
-// Priority: 1. Explicitly featured competition (isFeatured = true)
-//           2. Fallback: active competition with highest prize value
-async function getFeaturedCompetition() {
-  // First, try to find an explicitly featured competition
-  let competition = await prisma.competition.findFirst({
-    where: {
-      status: 'ACTIVE',
-      isFeatured: true,
-    },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      subtitle: true,
-      mainImageUrl: true,
-      prizeValue: true,
-      drawDate: true,
-      category: true,
-    },
-  });
-
-  // Fallback: get the active competition with highest prize value
-  if (!competition) {
-    competition = await prisma.competition.findFirst({
-      where: {
-        status: 'ACTIVE',
-      },
-      orderBy: [
-        { prizeValue: 'desc' },
-        { createdAt: 'desc' },
-      ],
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        subtitle: true,
-        mainImageUrl: true,
-        prizeValue: true,
-        drawDate: true,
-        category: true,
-      },
-    });
-  }
-
-  if (!competition) return null;
-
-  return {
-    ...competition,
-    prizeValue: Number(competition.prizeValue),
-  };
-}
 
 // Fetch live competitions (ACTIVE status)
 async function getLiveCompetitions() {
@@ -186,25 +133,6 @@ async function getRecentWinners() {
 }
 
 // Loading skeleton components
-function HeroSkeleton() {
-  return (
-    <div className="min-h-[70vh] flex items-center bg-muted/30">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl">
-          <Skeleton className="h-8 w-32 mb-4" />
-          <Skeleton className="h-16 w-full mb-4" />
-          <Skeleton className="h-16 w-3/4 mb-6" />
-          <Skeleton className="h-24 w-48 mb-8" />
-          <div className="flex gap-4">
-            <Skeleton className="h-12 w-32" />
-            <Skeleton className="h-12 w-40" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function CompetitionsSkeleton() {
   return (
     <div className="py-12 md:py-16">
@@ -228,12 +156,6 @@ function CompetitionsSkeleton() {
   );
 }
 
-// Server Component for Hero
-async function HeroSectionServer() {
-  const featuredCompetition = await getFeaturedCompetition();
-  return <HeroSection featuredCompetition={featuredCompetition} />;
-}
-
 // Server Component for Live Competitions
 async function LiveCompetitionsServer() {
   const competitions = await getLiveCompetitions();
@@ -255,10 +177,8 @@ async function _RecentWinnersServer() {
 export default function HomePage() {
   return (
     <main className="min-h-screen">
-      {/* Hero Section */}
-      <Suspense fallback={<HeroSkeleton />}>
-        <HeroSectionServer />
-      </Suspense>
+      {/* Hero Section - Card Categories */}
+      <CardCategoriesHero />
 
       {/* Live Competitions */}
       <Suspense fallback={<CompetitionsSkeleton />}>

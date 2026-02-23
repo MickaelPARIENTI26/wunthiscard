@@ -77,14 +77,14 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
     <section
       className={cn('py-16 md:py-20 lg:py-24 relative', className)}
       style={{
-        background: 'linear-gradient(180deg, oklch(0.06 0.02 270) 0%, oklch(0.08 0.02 270) 50%, oklch(0.06 0.02 270) 100%)',
+        background: 'linear-gradient(180deg, #12151e 0%, #161a28 50%, #12151e 100%)',
       }}
     >
       {/* Subtle pattern overlay */}
       <div
         className="absolute inset-0 opacity-30 pointer-events-none"
         style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, oklch(0.25 0.02 270) 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.1) 1px, transparent 0)`,
           backgroundSize: '32px 32px',
         }}
       />
@@ -98,10 +98,10 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
           transition={{ duration: 0.5 }}
           className="text-center mb-14 md:mb-18"
         >
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-outfit)]">
             <span className="text-gradient-gold">{t('title')}</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ color: '#7a7e90' }}>
             {t('subtitle')}
           </p>
         </motion.div>
@@ -127,12 +127,12 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
                   <div
                     className="hidden lg:block absolute top-14 left-[60%] w-[80%] h-px"
                     style={{
-                      background: 'linear-gradient(90deg, oklch(0.3 0.02 270) 0%, oklch(0.2 0.02 270) 100%)',
+                      background: 'linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
                     }}
                   >
                     <div
                       className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
-                      style={{ background: 'oklch(0.3 0.02 270)' }}
+                      style={{ background: 'rgba(255, 255, 255, 0.15)' }}
                     />
                   </div>
                 )}
@@ -141,8 +141,8 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
                 <div
                   className="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center z-10"
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                    color: 'black',
+                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                    color: '#12151e',
                   }}
                 >
                   {index + 1}
@@ -155,19 +155,19 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
                     `bg-gradient-to-br ${step.gradient}`
                   )}
                   style={{
-                    border: '1px solid oklch(0.25 0.02 270)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
                   }}
                 >
                   <Icon className={cn('w-12 h-12', step.iconColor)} />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-semibold mb-3 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
+                <h3 className="text-xl font-semibold mb-3 font-[family-name:var(--font-outfit)]" style={{ color: '#ffffff' }}>
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-muted-foreground text-sm leading-relaxed" style={{ color: '#a0a0a0' }}>
+                <p className="text-muted-foreground text-sm leading-relaxed" style={{ color: '#7a7e90' }}>
                   {step.description}
                 </p>
               </motion.div>
@@ -186,11 +186,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
           <Button
             asChild
             size="lg"
-            className="font-semibold group"
-            style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-              color: 'black',
-            }}
+            className="font-semibold group btn-primary-gold"
           >
             <Link href="/how-it-works" className="flex items-center gap-2">
               {tCommon('learnMore')}
@@ -207,19 +203,19 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-16 md:mt-20 pt-8"
           style={{
-            borderTop: '1px solid oklch(0.2 0.02 270)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-center text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
+          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-center text-sm text-muted-foreground" style={{ color: '#7a7e90' }}>
             <div className="flex items-center gap-2.5">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.15 0.05 140) 0%, oklch(0.12 0.04 140) 100%)',
-                  border: '1px solid oklch(0.25 0.05 140)',
+                  background: 'linear-gradient(135deg, rgba(52, 199, 114, 0.15) 0%, rgba(52, 199, 114, 0.08) 100%)',
+                  border: '1px solid rgba(52, 199, 114, 0.2)',
                 }}
               >
-                <Shield className="w-5 h-5 text-emerald-400" />
+                <Shield className="w-5 h-5" style={{ color: '#34C772' }} />
               </div>
               <span>{t('trustBadges.ukBased')}</span>
             </div>
@@ -227,11 +223,11 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.15 0.05 250) 0%, oklch(0.12 0.04 250) 100%)',
-                  border: '1px solid oklch(0.25 0.05 250)',
+                  background: 'linear-gradient(135deg, rgba(74, 144, 226, 0.15) 0%, rgba(74, 144, 226, 0.08) 100%)',
+                  border: '1px solid rgba(74, 144, 226, 0.2)',
                 }}
               >
-                <Sparkles className="w-5 h-5 text-blue-400" />
+                <Sparkles className="w-5 h-5" style={{ color: '#4A90E2' }} />
               </div>
               <span>{t('trustBadges.certifiedRng')}</span>
             </div>
@@ -239,11 +235,11 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.15 0.05 300) 0%, oklch(0.12 0.04 300) 100%)',
-                  border: '1px solid oklch(0.25 0.05 300)',
+                  background: 'linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(155, 89, 182, 0.08) 100%)',
+                  border: '1px solid rgba(155, 89, 182, 0.2)',
                 }}
               >
-                <Mail className="w-5 h-5 text-purple-400" />
+                <Mail className="w-5 h-5" style={{ color: '#9B59B6' }} />
               </div>
               <span>{t('trustBadges.freePostalEntry')}</span>
             </div>
@@ -251,11 +247,11 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.15 0.05 85) 0%, oklch(0.12 0.04 85) 100%)',
-                  border: '1px solid oklch(0.25 0.05 85)',
+                  background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.15) 0%, rgba(240, 185, 11, 0.08) 100%)',
+                  border: '1px solid rgba(240, 185, 11, 0.2)',
                 }}
               >
-                <Lock className="w-5 h-5 text-primary" />
+                <Lock className="w-5 h-5" style={{ color: '#F0B90B' }} />
               </div>
               <span>{t('trustBadges.securePayments')}</span>
             </div>

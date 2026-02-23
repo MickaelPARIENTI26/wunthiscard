@@ -10,20 +10,20 @@ export function LegalLanguageBanner() {
     <div
       className="mb-6 rounded-lg border p-4"
       style={{
-        backgroundColor: 'rgba(255, 165, 0, 0.1)',
-        borderColor: 'rgba(255, 165, 0, 0.3)',
+        backgroundColor: 'rgba(240, 185, 11, 0.08)',
+        borderColor: 'rgba(240, 185, 11, 0.2)',
       }}
     >
       <div className="flex items-start gap-3">
         <AlertTriangle
           className="mt-0.5 h-5 w-5 flex-shrink-0"
-          style={{ color: '#FFA500' }}
+          style={{ color: '#F0B90B' }}
         />
         <div className="text-sm">
-          <p className="font-medium" style={{ color: '#f5f5f5' }}>
+          <p className="font-medium" style={{ color: '#ffffff' }}>
             {t('documentInEnglish')}
           </p>
-          <p className="mt-1" style={{ color: '#a0a0a0' }}>
+          <p className="mt-1" style={{ color: '#7a7e90' }}>
             {t('documentInEnglishNote')}
           </p>
         </div>

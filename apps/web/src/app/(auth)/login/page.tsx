@@ -12,7 +12,7 @@ export default function LoginPage() {
   return (
     <Card>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold font-[family-name:var(--font-display)] text-gradient-gold">Welcome back</CardTitle>
+        <CardTitle className="text-2xl font-bold font-[family-name:var(--font-outfit)] text-gradient-gold">Welcome back</CardTitle>
         <CardDescription>Sign in to your account to continue</CardDescription>
       </CardHeader>
       <CardContent>

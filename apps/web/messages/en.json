@@ -553,5 +553,12 @@
     "label": "Language",
     "english": "English",
     "french": "Français"
+  },
+  "categoriesHero": {
+    "badge": "MORE THAN JUST POKÉMON",
+    "titlePart1": "Win The Card Of Your",
+    "titleHighlight": "Dreams",
+    "description": "From rare Pokémon cards to One Piece TCG, from football legends to basketball icons. Explore our premium collectible card competitions and win the card you've always dreamed of.",
+    "cta": "Browse All Competitions"
   }
 }
