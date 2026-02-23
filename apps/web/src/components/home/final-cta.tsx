@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Sparkles, ArrowRight, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -11,6 +12,8 @@ interface FinalCTAProps {
 }
 
 export function FinalCTA({ className }: FinalCTAProps) {
+  const t = useTranslations();
+
   return (
     <section className={cn('py-20 md:py-28 relative overflow-hidden', className)}>
       {/* Background with gold gradient accents */}
@@ -85,13 +88,12 @@ export function FinalCTA({ className }: FinalCTAProps) {
 
           {/* Title */}
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
-            Ready to{' '}
-            <span className="text-gradient-gold">Win</span>?
+            {t('cta.title')}
           </h2>
 
           {/* Description */}
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#a0a0a0' }}>
-            Browse our live competitions and enter for your chance to win incredible collectible cards and memorabilia. Your next big win could be just one ticket away!
+            {t('cta.subtitle')}
           </p>
 
           {/* CTA Buttons */}
@@ -107,7 +109,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             >
               <Link href="/competitions" className="flex items-center gap-2">
                 <span className="relative z-10 flex items-center gap-2">
-                  View Competitions
+                  {t('common.viewCompetitions')}
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
@@ -124,7 +126,7 @@ export function FinalCTA({ className }: FinalCTAProps) {
             >
               <Link href="/register" className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-primary" />
-                Create Free Account
+                {t('common.createFreeAccount')}
               </Link>
             </Button>
           </div>
@@ -138,12 +140,12 @@ export function FinalCTA({ className }: FinalCTAProps) {
             className="mt-10 text-sm text-muted-foreground"
             style={{ color: '#a0a0a0' }}
           >
-            18+ Only. Free postal entry available on all competitions.{' '}
+            {t('cta.disclaimer')}{' '}
             <Link
               href="/terms"
               className="text-primary/80 hover:text-primary underline-offset-2 hover:underline transition-colors"
             >
-              Terms apply
+              {t('cta.termsApply')}
             </Link>
             .
           </motion.p>

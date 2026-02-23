@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Menu, User, Ticket, Trophy, Settings, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -16,17 +17,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MobileMenu } from './mobile-menu';
-
-const navLinks = [
-  { href: '/competitions', label: 'Competitions' },
-  { href: '/how-it-works', label: 'How It Works' },
-  { href: '/faq', label: 'FAQ' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-];
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 interface HeaderProps {
-  /** Mock user state for demo - replace with actual auth */
   user?: {
     name: string;
     email: string;
@@ -36,8 +29,17 @@ interface HeaderProps {
 
 export function Header({ user = null }: HeaderProps) {
   const router = useRouter();
+  const t = useTranslations();
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
+  const navLinks = [
+    { href: '/competitions', label: t('nav.competitions') },
+    { href: '/how-it-works', label: t('nav.howItWorks') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   const handleLogout = () => {
     router.push('/logout');
@@ -102,7 +104,7 @@ export function Header({ user = null }: HeaderProps) {
               WinUCard
             </span>
             <span className="hidden text-[10px] text-muted-foreground sm:inline-block -mt-0.5">
-              Premium Collectibles
+              {t('meta.premiumCollectibles')}
             </span>
           </div>
         </Link>
@@ -135,7 +137,10 @@ export function Header({ user = null }: HeaderProps) {
         </nav>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          {/* Language Switcher */}
+          <LanguageSwitcher className="hidden sm:flex" />
+
           {/* Desktop: User menu or Login/Register */}
           <div className="hidden lg:flex lg:items-center lg:gap-3">
             {user ? (
@@ -182,25 +187,25 @@ export function Header({ user = null }: HeaderProps) {
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t('common.profile')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-tickets" className="cursor-pointer">
                       <Ticket className="mr-2 h-4 w-4" />
-                      My Tickets
+                      {t('common.myTickets')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-wins" className="cursor-pointer">
                       <Trophy className="mr-2 h-4 w-4 text-primary" />
-                      My Wins
+                      {t('common.myWins')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
-                      Settings
+                      {t('common.settings')}
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator className="bg-border/50" />
@@ -208,7 +213,7 @@ export function Header({ user = null }: HeaderProps) {
                     className="cursor-pointer text-destructive focus:text-destructive"
                     onClick={handleLogout}
                   >
-                    Log out
+                    {t('common.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -219,7 +224,7 @@ export function Header({ user = null }: HeaderProps) {
                   asChild
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  <Link href="/login">Login</Link>
+                  <Link href="/login">{t('common.login')}</Link>
                 </Button>
                 <Button
                   asChild
@@ -231,7 +236,7 @@ export function Header({ user = null }: HeaderProps) {
                 >
                   <Link href="/register" className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4" />
-                    Register
+                    {t('common.register')}
                   </Link>
                 </Button>
               </>

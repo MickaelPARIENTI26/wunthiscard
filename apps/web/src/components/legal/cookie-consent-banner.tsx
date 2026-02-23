@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 
 const COOKIE_CONSENT_KEY = 'cookie-consent';
@@ -14,6 +15,7 @@ interface CookieConsent {
 }
 
 export function CookieConsentBanner() {
+  const t = useTranslations('cookies');
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -69,17 +71,15 @@ export function CookieConsentBanner() {
             {/* Text Content */}
             <div className="flex-1">
               <h2 className="text-base font-semibold text-foreground">
-                We use cookies
+                {t('bannerTitle')}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                We use cookies to enhance your browsing experience, analyse site
-                traffic, and personalise content. By clicking &quot;Accept&quot;,
-                you consent to our use of cookies.{' '}
+                {t('bannerMessage')}{' '}
                 <Link
                   href="/cookies"
                   className="text-primary underline underline-offset-2 hover:text-primary/80"
                 >
-                  Learn more
+                  {t('learnMore')}
                 </Link>
               </p>
             </div>
@@ -92,14 +92,14 @@ export function CookieConsentBanner() {
                 onClick={() => handleConsent(false)}
                 className="w-full sm:w-auto"
               >
-                Decline
+                {t('decline')}
               </Button>
               <Button
                 size="sm"
                 onClick={() => handleConsent(true)}
                 className="w-full sm:w-auto"
               >
-                Accept
+                {t('accept')}
               </Button>
             </div>
           </div>

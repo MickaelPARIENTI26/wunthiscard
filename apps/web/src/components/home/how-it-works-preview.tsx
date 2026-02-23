@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Search, Ticket, HelpCircle, Trophy, ArrowRight, Shield, Sparkles, Mail, Lock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Search, Ticket, HelpCircle, Trophy, ArrowRight, Shield, Sparkles, Mail, Lock, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -10,36 +11,13 @@ interface HowItWorksPreviewProps {
   className?: string;
 }
 
-const steps = [
-  {
-    icon: Search,
-    title: 'Choose Competition',
-    description: 'Browse our selection of premium collectible cards and memorabilia competitions.',
-    gradient: 'from-blue-500/20 to-cyan-500/20',
-    iconColor: 'text-blue-400',
-  },
-  {
-    icon: Ticket,
-    title: 'Select Tickets',
-    description: 'Pick your lucky numbers or let us choose randomly. Buy more for bonus tickets!',
-    gradient: 'from-emerald-500/20 to-green-500/20',
-    iconColor: 'text-emerald-400',
-  },
-  {
-    icon: HelpCircle,
-    title: 'Answer Question',
-    description: 'Answer a simple skill question to validate your entry. It is easy!',
-    gradient: 'from-purple-500/20 to-violet-500/20',
-    iconColor: 'text-purple-400',
-  },
-  {
-    icon: Trophy,
-    title: 'Win Amazing Prizes',
-    description: 'Wait for the draw and you could win incredible collectibles worth thousands!',
-    gradient: 'from-amber-500/20 to-yellow-500/20',
-    iconColor: 'text-primary',
-  },
-];
+interface Step {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  gradient: string;
+  iconColor: string;
+}
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -61,6 +39,40 @@ const itemVariants = {
 };
 
 export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
+  const t = useTranslations('howItWorks');
+  const tCommon = useTranslations('common');
+
+  const steps: Step[] = [
+    {
+      icon: Search,
+      title: t('step1Title'),
+      description: t('step1Desc'),
+      gradient: 'from-blue-500/20 to-cyan-500/20',
+      iconColor: 'text-blue-400',
+    },
+    {
+      icon: Ticket,
+      title: t('step2Title'),
+      description: t('step2Desc'),
+      gradient: 'from-emerald-500/20 to-green-500/20',
+      iconColor: 'text-emerald-400',
+    },
+    {
+      icon: HelpCircle,
+      title: t('step3Title'),
+      description: t('step3Desc'),
+      gradient: 'from-purple-500/20 to-violet-500/20',
+      iconColor: 'text-purple-400',
+    },
+    {
+      icon: Trophy,
+      title: t('step4Title'),
+      description: t('step4Desc'),
+      gradient: 'from-amber-500/20 to-yellow-500/20',
+      iconColor: 'text-primary',
+    },
+  ];
+
   return (
     <section
       className={cn('py-16 md:py-20 lg:py-24 relative', className)}
@@ -87,10 +99,10 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
           className="text-center mb-14 md:mb-18"
         >
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
-            <span className="text-gradient-gold">How It Works</span>
+            <span className="text-gradient-gold">{t('title')}</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
-            Enter our prize competitions in 4 simple steps and win amazing collectibles
+            {t('subtitle')}
           </p>
         </motion.div>
 
@@ -181,7 +193,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
             }}
           >
             <Link href="/how-it-works" className="flex items-center gap-2">
-              Learn More
+              {tCommon('learnMore')}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -209,7 +221,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               >
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
-              <span>UK Based</span>
+              <span>{t('trustBadges.ukBased')}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <div
@@ -221,7 +233,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               >
                 <Sparkles className="w-5 h-5 text-blue-400" />
               </div>
-              <span>Certified RNG</span>
+              <span>{t('trustBadges.certifiedRng')}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <div
@@ -233,7 +245,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               >
                 <Mail className="w-5 h-5 text-purple-400" />
               </div>
-              <span>Free Postal Entry</span>
+              <span>{t('trustBadges.freePostalEntry')}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <div
@@ -245,7 +257,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
               >
                 <Lock className="w-5 h-5 text-primary" />
               </div>
-              <span>Secure Payments</span>
+              <span>{t('trustBadges.securePayments')}</span>
             </div>
           </div>
         </motion.div>

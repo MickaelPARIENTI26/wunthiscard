@@ -1,8 +1,9 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { PrintButton } from '@/components/common/print-button';
 import { SafeHtml } from '@/components/common/safe-html';
+import { LegalLanguageBanner } from '@/components/legal/legal-language-banner';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
@@ -25,13 +26,14 @@ const tableOfContents: TableOfContentsItem[] = [
   { id: 'free-entry', title: '7. Free Entry Route' },
   { id: 'draw', title: '8. Draw Process' },
   { id: 'prizes', title: '9. Prizes' },
-  { id: 'refunds', title: '10. Refunds & Cancellations' },
-  { id: 'intellectual-property', title: '11. Intellectual Property' },
-  { id: 'liability', title: '12. Limitation of Liability' },
-  { id: 'privacy', title: '13. Privacy' },
-  { id: 'changes', title: '14. Changes to Terms' },
-  { id: 'governing-law', title: '15. Governing Law' },
-  { id: 'contact', title: '16. Contact Us' },
+  { id: 'winner-publicity', title: '10. Winner Publicity and Photo Requirement' },
+  { id: 'refunds', title: '11. Refunds & Cancellations' },
+  { id: 'intellectual-property', title: '12. Intellectual Property' },
+  { id: 'liability', title: '13. Limitation of Liability' },
+  { id: 'privacy', title: '14. Privacy' },
+  { id: 'changes', title: '15. Changes to Terms' },
+  { id: 'governing-law', title: '16. Governing Law' },
+  { id: 'contact', title: '17. Contact Us' },
 ];
 
 async function getTermsContent() {
@@ -73,6 +75,9 @@ export default async function TermsPage() {
             Last updated: {lastUpdated}
           </p>
         </div>
+
+        {/* Language banner for non-English users */}
+        <LegalLanguageBanner />
 
         <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
           {/* Table of Contents - Desktop Sidebar */}
@@ -313,8 +318,59 @@ function PlaceholderTermsContent() {
         </p>
       </section>
 
+      <section id="winner-publicity">
+        <h2>10. Winner Publicity and Photo Requirement</h2>
+        <p>
+          By entering any WinUCard competition, you agree to the following
+          conditions upon winning:
+        </p>
+        <ol>
+          <li>
+            <strong>Photo Requirement:</strong> Upon receiving your prize, you
+            are required to provide at least one photograph of yourself with
+            the prize item within 7 days of delivery. This photograph must
+            clearly show both the winner and the prize received.
+          </li>
+          <li>
+            <strong>Usage Rights:</strong> By submitting your photograph, you
+            grant WinUCard a non-exclusive, royalty-free, worldwide licence to
+            use, reproduce, and publish your photograph and first name (and
+            last initial) across our marketing channels, including but not
+            limited to: our website, social media accounts (TikTok, Instagram,
+            YouTube, Facebook), email newsletters, and promotional materials.
+          </li>
+          <li>
+            <strong>Purpose:</strong> These photographs are used to demonstrate
+            the legitimacy and transparency of our competitions to current and
+            future participants.
+          </li>
+          <li>
+            <strong>Privacy:</strong> We will only publish your first name and
+            last initial (e.g., &quot;John S.&quot;) alongside your photograph.
+            Your full name, address, email, and other personal details will
+            never be published without your explicit written consent.
+          </li>
+          <li>
+            <strong>Opt-Out:</strong> If you wish to opt out of the photo
+            requirement, you must notify us in writing at{' '}
+            <a href="mailto:winners@winucard.co.uk" className="text-primary">
+              winners@winucard.co.uk
+            </a>{' '}
+            within 48 hours of being notified as a winner. Please note that
+            opting out of the photo requirement does not affect your right to
+            receive your prize.
+          </li>
+          <li>
+            <strong>Failure to Provide Photo:</strong> If no photograph is
+            provided within 14 days of confirmed delivery, WinUCard reserves
+            the right to follow up with the winner. This does not affect the
+            winner&apos;s right to their prize.
+          </li>
+        </ol>
+      </section>
+
       <section id="refunds">
-        <h2>10. Refunds & Cancellations</h2>
+        <h2>11. Refunds & Cancellations</h2>
         <p>
           Tickets are generally non-refundable once purchased. However, refunds
           will be issued in the following circumstances:
@@ -330,7 +386,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="intellectual-property">
-        <h2>11. Intellectual Property</h2>
+        <h2>12. Intellectual Property</h2>
         <p>
           All content on our website, including but not limited to text,
           graphics, logos, images, and software, is the property of WinUCard
@@ -340,7 +396,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="liability">
-        <h2>12. Limitation of Liability</h2>
+        <h2>13. Limitation of Liability</h2>
         <p>To the fullest extent permitted by law:</p>
         <ul>
           <li>
@@ -359,7 +415,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="privacy">
-        <h2>13. Privacy</h2>
+        <h2>14. Privacy</h2>
         <p>
           Your privacy is important to us. Please review our{' '}
           <Link href="/privacy" className="text-primary hover:underline">
@@ -371,7 +427,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="changes">
-        <h2>14. Changes to Terms</h2>
+        <h2>15. Changes to Terms</h2>
         <p>
           We may update these Terms and Conditions from time to time. Any
           changes will be posted on this page with an updated &quot;Last
@@ -381,7 +437,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="governing-law">
-        <h2>15. Governing Law</h2>
+        <h2>16. Governing Law</h2>
         <p>
           These Terms and Conditions are governed by the laws of England and
           Wales. Any disputes shall be subject to the exclusive jurisdiction of
@@ -390,7 +446,7 @@ function PlaceholderTermsContent() {
       </section>
 
       <section id="contact">
-        <h2>16. Contact Us</h2>
+        <h2>17. Contact Us</h2>
         <p>
           If you have any questions about these Terms and Conditions, please
           contact us:

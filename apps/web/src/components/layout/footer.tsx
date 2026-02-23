@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { Instagram, Twitter, Facebook, Trophy, Shield, Sparkles } from 'lucide-react';
 
 // TikTok icon (not in lucide-react)
@@ -125,27 +126,29 @@ const socialLinks = [
   },
 ];
 
-const quickLinks = [
-  { href: '/competitions', label: 'Competitions' },
-  { href: '/how-it-works', label: 'How It Works' },
-  { href: '/winners', label: 'Winners' },
-  { href: '/faq', label: 'FAQ' },
-];
-
-const supportLinks = [
-  { href: '/contact', label: 'Contact Us' },
-  { href: '/about', label: 'About Us' },
-];
-
-const legalLinks = [
-  { href: '/terms', label: 'Terms & Conditions' },
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/cookies', label: 'Cookie Policy' },
-  { href: '/competition-rules', label: 'Competition Rules' },
-];
 
 export function Footer() {
+  const t = useTranslations();
   const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { href: '/competitions', label: t('nav.competitions') },
+    { href: '/how-it-works', label: t('nav.howItWorks') },
+    { href: '/winners', label: t('nav.winners') },
+    { href: '/faq', label: t('nav.faq') },
+  ];
+
+  const supportLinks = [
+    { href: '/contact', label: t('nav.contact') },
+    { href: '/about', label: t('nav.about') },
+  ];
+
+  const legalLinks = [
+    { href: '/terms', label: t('footer.terms') },
+    { href: '/privacy', label: t('footer.privacy') },
+    { href: '/cookies', label: t('footer.cookies') },
+    { href: '/competition-rules', label: t('footer.competitionRules') },
+  ];
 
   return (
     <footer className="relative">
@@ -183,30 +186,29 @@ export function Footer() {
                   <span className="text-xl font-bold tracking-tight font-[family-name:var(--font-display)] text-gradient-gold">
                     WinUCard
                   </span>
-                  <span className="block text-xs text-muted-foreground">Premium Collectibles</span>
+                  <span className="block text-xs text-muted-foreground">{t('meta.premiumCollectibles')}</span>
                 </div>
               </Link>
 
               <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-                Win rare collectible cards and memorabilia. UK-based prize competitions
-                with transparent draws and guaranteed authenticity.
+                {t('footer.tagline')}
               </p>
 
               {/* Trust badges */}
               <div className="mt-6 flex items-center gap-4">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Shield className="h-4 w-4 text-primary/70" />
-                  <span>SSL Secured</span>
+                  <span>{t('footer.sslSecured')}</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Sparkles className="h-4 w-4 text-primary/70" />
-                  <span>Verified Draws</span>
+                  <span>{t('footer.verifiedDraws')}</span>
                 </div>
               </div>
 
               {/* Social links with hover glow */}
               <div className="mt-6">
-                <p className="mb-3 text-sm font-semibold text-foreground/80">Follow us</p>
+                <p className="mb-3 text-sm font-semibold text-foreground/80">{t('footer.followUs')}</p>
                 <div className="flex flex-wrap gap-2">
                   {socialLinks.map((social) => (
                     <a
@@ -234,7 +236,7 @@ export function Footer() {
             {/* Column 2: Quick Links */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
-                Quick Links
+                {t('footer.quickLinks')}
               </h3>
               <ul className="space-y-3">
                 {quickLinks.map((link) => (
@@ -254,7 +256,7 @@ export function Footer() {
             {/* Column 3: Support */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
-                Support
+                {t('footer.support')}
               </h3>
               <ul className="space-y-3">
                 {supportLinks.map((link) => (
@@ -274,7 +276,7 @@ export function Footer() {
             {/* Column 4: Legal */}
             <div>
               <h3 className="mb-4 text-sm font-semibold text-foreground font-[family-name:var(--font-display)]">
-                Legal
+                {t('footer.legal')}
               </h3>
               <ul className="space-y-3">
                 {legalLinks.map((link) => (
@@ -306,7 +308,7 @@ export function Footer() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             {/* Left side: Payment methods */}
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-xs text-muted-foreground">Secure payments:</span>
+              <span className="text-xs text-muted-foreground">{t('footer.securePayments')}</span>
               <div className="flex items-center gap-2 text-muted-foreground/60">
                 <VisaIcon className="h-7 w-auto" />
                 <MastercardIcon className="h-7 w-auto" />
@@ -338,21 +340,18 @@ export function Footer() {
                   className="text-xs font-medium"
                   style={{ color: 'oklch(0.75 0.2 25)' }}
                 >
-                  Over 18s only
+                  {t('footer.over18Only')}
                 </span>
               </div>
               <span className="text-xs text-muted-foreground">
-                Free postal entry available.{' '}
-                <Link href="/competition-rules" className="text-primary/80 hover:text-primary underline-offset-2 hover:underline">
-                  See rules
-                </Link>
+                {t('footer.freePostalEntry')}
               </span>
             </div>
 
             {/* Right side: Copyright */}
             <div className="text-xs text-muted-foreground">
-              <p>&copy; {currentYear} WinUCard Ltd. All rights reserved.</p>
-              <p className="mt-1 opacity-70">Registered in England & Wales.</p>
+              <p>{t('footer.copyright', { year: currentYear })}</p>
+              <p className="mt-1 opacity-70">{t('footer.registered')}</p>
             </div>
           </div>
         </div>

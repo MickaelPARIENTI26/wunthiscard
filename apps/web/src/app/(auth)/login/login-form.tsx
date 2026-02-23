@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
@@ -25,6 +26,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const error = searchParams.get('error');
+  const t = useTranslations('auth');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -52,7 +54,7 @@ export function LoginForm() {
       // Check rate limit first
       const rateLimitCheck = await checkLoginRateLimit();
       if (!rateLimitCheck.allowed) {
-        setServerError(rateLimitCheck.error || 'Too many login attempts. Please try again later.');
+        setServerError(t('tooManyAttempts'));
         return;
       }
 
@@ -60,7 +62,7 @@ export function LoginForm() {
       if (TURNSTILE_SITE_KEY && turnstileToken) {
         const captchaResult = await verifyLoginCaptcha(turnstileToken);
         if (!captchaResult.success) {
-          setServerError(captchaResult.error || 'Captcha verification failed. Please try again.');
+          setServerError(t('captchaFailed'));
           turnstileRef.current?.reset();
           setTurnstileToken(null);
           return;
@@ -83,15 +85,15 @@ export function LoginForm() {
 
         // Map custom errors from auth.ts
         if (result.error.includes('AccountBanned')) {
-          setServerError('Your account has been suspended. Please contact support.');
+          setServerError(t('accountBanned'));
         } else if (result.error.includes('AccountLocked')) {
-          setServerError('Your account has been temporarily locked. Please try again later.');
+          setServerError(t('accountLocked'));
         } else if (result.error.includes('OAuthAccountOnly')) {
-          setServerError('This account uses Google Sign-In. Please click "Sign in with Google" below.');
+          setServerError(t('oauthAccountOnly'));
         } else if (result.error.includes('TooManyRequests')) {
-          setServerError('Too many login attempts. Please try again later.');
+          setServerError(t('tooManyAttempts'));
         } else if (result.error === 'CredentialsSignin') {
-          setServerError('Invalid email or password. Please try again.');
+          setServerError(t('invalidCredentials'));
         } else {
           setServerError(result.error);
         }
@@ -104,7 +106,7 @@ export function LoginForm() {
       router.push(callbackUrl);
       router.refresh();
     } catch {
-      setServerError('An unexpected error occurred. Please try again.');
+      setServerError(t('unexpectedError'));
     } finally {
       setIsLoading(false);
     }
@@ -115,7 +117,7 @@ export function LoginForm() {
     try {
       await signIn('google', { callbackUrl });
     } catch {
-      setServerError('Failed to sign in with Google. Please try again.');
+      setServerError(t('googleSignInError'));
       setIsGoogleLoading(false);
     }
   };
@@ -124,19 +126,19 @@ export function LoginForm() {
     if (!errorCode) return null;
     switch (errorCode) {
       case 'OAuthAccountNotLinked':
-        return 'This email is already associated with another sign-in method.';
+        return t('oauthAccountNotLinked');
       case 'OAuthAccountOnly':
-        return 'This account uses Google Sign-In. Please click "Sign in with Google" below.';
+        return t('oauthAccountOnly');
       case 'EmailNotVerified':
-        return 'Please verify your email before signing in.';
+        return t('emailNotVerifiedMessage');
       case 'AccountLocked':
-        return 'Your account has been temporarily locked. Please try again later.';
+        return t('accountLocked');
       case 'AccountBanned':
-        return 'Your account has been suspended. Please contact support.';
+        return t('accountBanned');
       case 'TooManyRequests':
-        return 'Too many login attempts. Please try again later.';
+        return t('tooManyAttempts');
       default:
-        return 'An error occurred during sign in. Please try again.';
+        return t('signInError');
     }
   };
 
@@ -152,11 +154,11 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t('email')}</Label>
           <Input
             id="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder={t('emailPlaceholder')}
             autoComplete="email"
             disabled={isLoading || isGoogleLoading}
             {...register('email')}
@@ -168,18 +170,18 @@ export function LoginForm() {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('password')}</Label>
             <Link
               href="/forgot-password"
               className="text-sm text-primary hover:text-primary/80 transition-colors"
             >
-              Forgot password?
+              {t('forgotPassword')}
             </Link>
           </div>
           <Input
             id="password"
             type="password"
-            placeholder="Enter your password"
+            placeholder={t('passwordPlaceholder')}
             autoComplete="current-password"
             disabled={isLoading || isGoogleLoading}
             {...register('password')}
@@ -208,10 +210,10 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Signing in...
+              {t('signingIn')}
             </>
           ) : (
-            'Sign in'
+            t('signIn')
           )}
         </Button>
       </form>
@@ -223,7 +225,7 @@ export function LoginForm() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
             </div>
           </div>
 
@@ -237,7 +239,7 @@ export function LoginForm() {
             {isGoogleLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Connecting...
+                {t('connecting')}
               </>
             ) : (
               <>
@@ -259,7 +261,7 @@ export function LoginForm() {
                     fill="#EA4335"
                   />
                 </svg>
-                Sign in with Google
+                {t('signInWithGoogle')}
               </>
             )}
           </Button>
@@ -267,12 +269,12 @@ export function LoginForm() {
       )}
 
       <p className="text-center text-sm text-muted-foreground">
-        Don&apos;t have an account?{' '}
+        {t('noAccount')}{' '}
         <Link
           href={callbackUrl !== '/' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/register'}
           className="font-medium text-primary hover:text-primary/80 transition-colors"
         >
-          Register
+          {t('register')}
         </Link>
       </p>
     </div>

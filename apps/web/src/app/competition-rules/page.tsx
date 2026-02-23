@@ -1,8 +1,9 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { PrintButton } from '@/components/common/print-button';
 import { SafeHtml } from '@/components/common/safe-html';
+import { LegalLanguageBanner } from '@/components/legal/legal-language-banner';
 
 export const metadata: Metadata = {
   title: 'Competition Rules',
@@ -72,6 +73,9 @@ export default async function CompetitionRulesPage() {
             Last updated: {lastUpdated}
           </p>
         </div>
+
+        {/* Language banner for non-English users */}
+        <LegalLanguageBanner />
 
         {/* Important Notice */}
         <div className="mb-8 rounded-lg border border-primary/20 bg-primary/5 p-4">

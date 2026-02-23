@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CountdownTimer } from '@/components/common/countdown-timer';
@@ -47,6 +48,8 @@ function FloatingParticle({ delay, size, x, y }: { delay: number; size: number; 
 }
 
 export function HeroSection({ featuredCompetition, className }: HeroSectionProps) {
+  const t = useTranslations();
+
   if (!featuredCompetition) {
     return (
       <section className={cn('relative min-h-[80vh] flex items-center overflow-hidden', className)}>
@@ -80,7 +83,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
             >
               <Badge className="mb-6 bg-primary/20 border border-primary/30 text-primary hover:bg-primary/30">
                 <Sparkles className="w-3 h-3 mr-1" />
-                Premium Collectibles
+                {t('hero.badge')}
               </Badge>
             </motion.div>
 
@@ -88,25 +91,22 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 font-[family-name:var(--font-display)]"
               style={{ color: '#f5f5f5' }}
             >
-              Win{' '}
-              <span className="text-gradient-gold">Rare</span>{' '}
-              <br className="hidden sm:block" />
-              Collectibles
+              {t('hero.title')}
             </h1>
 
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto" style={{ color: '#a0a0a0' }}>
-              Enter prize competitions to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based with free postal entry available.
+              {t('hero.subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="text-lg px-8 bg-primary hover:bg-primary/90 glow-gold-sm font-semibold">
                 <Link href="/competitions">
                   <Zap className="w-5 h-5 mr-2" />
-                  View Competitions
+                  {t('hero.cta')}
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5">
-                <Link href="/how-it-works">How It Works</Link>
+                <Link href="/how-it-works">{t('hero.secondaryCta')}</Link>
               </Button>
             </div>
           </motion.div>
@@ -204,7 +204,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               {/* Featured Competition badge - gold background, black text for maximum readability */}
               <span className="inline-flex items-center gap-1.5 mb-4 px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/30">
                 <Sparkles className="w-4 h-4" />
-                Featured Competition
+                {t('hero.featuredBadge')}
               </span>
             </motion.div>
 
@@ -236,7 +236,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               className="mb-8"
             >
               <p className="text-sm uppercase tracking-wider text-muted-foreground mb-2">
-                Prize Value
+                {t('hero.prizeValue')}
               </p>
               <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold glow-gold-text tabular-nums font-[family-name:var(--font-display)]">
                 {new Intl.NumberFormat('en-GB', {
@@ -256,7 +256,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               className="mb-8"
             >
               <p className="text-sm uppercase tracking-wider text-muted-foreground mb-3">
-                Draw Ends In
+                {t('hero.endsIn')}
               </p>
               <CountdownTimer
                 targetDate={new Date(featuredCompetition.drawDate)}
@@ -279,7 +279,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
               >
                 <Link href={`/competitions/${featuredCompetition.slug}`}>
                   <Zap className="w-5 h-5 mr-2" />
-                  Enter Now
+                  {t('competitions.enterNow')}
                 </Link>
               </Button>
               <Button
@@ -288,7 +288,7 @@ export function HeroSection({ featuredCompetition, className }: HeroSectionProps
                 size="lg"
                 className="text-lg px-8 border-border hover:border-primary/50 hover:bg-primary/5"
               >
-                <Link href="/competitions">View All Competitions</Link>
+                <Link href="/competitions">{t('common.viewCompetitions')}</Link>
               </Button>
             </motion.div>
           </motion.div>

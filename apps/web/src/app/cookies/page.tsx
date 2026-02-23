@@ -1,6 +1,7 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { PrintButton } from '@/components/common/print-button';
+import { LegalLanguageBanner } from '@/components/legal/legal-language-banner';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy',
@@ -115,6 +116,9 @@ export default function CookiesPage() {
             Last updated: {lastUpdated}
           </p>
         </div>
+
+        {/* Language banner for non-English users */}
+        <LegalLanguageBanner />
 
         <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
           {/* Table of Contents - Desktop Sidebar */}

@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateHomePageSchema } from '@/lib/structured-data';
 import { CookieConsentBanner } from '@/components/legal/cookie-consent-banner';
+import { AgeGate } from '@/components/legal/age-gate';
 import { AuthHeader } from '@/components/layout/auth-header';
 import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
@@ -128,25 +131,31 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
       </head>
       <body className="min-h-screen antialiased flex flex-col font-sans">
-        <SessionProvider>
-          <AuthHeader />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CookieConsentBanner />
-          <Toaster />
-        </SessionProvider>
+        <NextIntlClientProvider messages={messages}>
+          <SessionProvider>
+            <AuthHeader />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <CookieConsentBanner />
+            <Toaster />
+            <AgeGate />
+          </SessionProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

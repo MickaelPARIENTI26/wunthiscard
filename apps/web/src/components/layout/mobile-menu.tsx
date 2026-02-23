@@ -3,6 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   User,
   LogOut,
@@ -22,6 +23,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 interface NavLink {
   href: string;
@@ -100,15 +102,16 @@ const socialLinks = [
   },
 ];
 
-const accountLinks = [
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/my-tickets', label: 'My Tickets', icon: Ticket },
-  { href: '/my-wins', label: 'My Wins', icon: Trophy },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
-
 export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps) {
   const router = useRouter();
+  const t = useTranslations();
+
+  const accountLinks = [
+    { href: '/profile', label: t('common.profile'), icon: User },
+    { href: '/my-tickets', label: t('common.myTickets'), icon: Ticket },
+    { href: '/my-wins', label: t('common.myWins'), icon: Trophy },
+    { href: '/settings', label: t('common.settings'), icon: Settings },
+  ];
 
   const handleLogout = () => {
     onClose();
@@ -151,7 +154,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   WinUCard
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5">
-                  Premium Collectibles
+                  {t('meta.premiumCollectibles')}
                 </span>
               </div>
             </Link>
@@ -187,10 +190,18 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             </div>
           )}
 
+          {/* Language Switcher */}
+          <div className="pb-2">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+              {t('common.language')}
+            </p>
+            <LanguageSwitcher variant="mobile" />
+          </div>
+
           {/* Main navigation */}
           <nav className="flex flex-col gap-1">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
-              Menu
+              {t('common.menu')}
             </p>
             {navLinks.map((link) => (
               <Link
@@ -215,7 +226,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {user && (
             <nav className="flex flex-col gap-1">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
-                Account
+                {t('common.account')}
               </p>
               {accountLinks.map((link) => (
                 <Link
@@ -245,7 +256,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
               >
                 <Link href="/register" onClick={onClose} className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
-                  Register
+                  {t('common.register')}
                 </Link>
               </Button>
               <Button
@@ -259,7 +270,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 }}
               >
                 <Link href="/login" onClick={onClose}>
-                  Login
+                  {t('common.login')}
                 </Link>
               </Button>
             </div>
@@ -276,7 +287,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             }}
           >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
-              Follow us
+              {t('common.followUs')}
             </p>
             <div className="flex flex-wrap gap-2">
               {socialLinks.map((social) => (
@@ -309,7 +320,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
               onClick={handleLogout}
             >
               <LogOut className="mr-2 h-5 w-5" />
-              Log out
+              {t('common.logout')}
             </Button>
           )}
         </div>

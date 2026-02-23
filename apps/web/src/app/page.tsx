@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 import { prisma } from '@winucard/database';
 import { HeroSection } from '@/components/home/hero-section';
 import { LiveCompetitions } from '@/components/home/live-competitions';
-import { ComingSoon } from '@/components/home/coming-soon';
-import { RecentWinners } from '@/components/home/recent-winners';
+import { ComingSoon as _ComingSoon } from '@/components/home/coming-soon';
+import { RecentWinners as _RecentWinners } from '@/components/home/recent-winners';
 import { HowItWorksPreview } from '@/components/home/how-it-works-preview';
 import { FinalCTA } from '@/components/home/final-cta';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -240,16 +240,16 @@ async function LiveCompetitionsServer() {
   return <LiveCompetitions competitions={competitions} />;
 }
 
-// Server Component for Coming Soon
-async function ComingSoonServer() {
+// Server Component for Coming Soon (hidden, kept for future use)
+async function _ComingSoonServer() {
   const competitions = await getUpcomingCompetitions();
-  return <ComingSoon competitions={competitions} />;
+  return <_ComingSoon competitions={competitions} />;
 }
 
-// Server Component for Recent Winners
-async function RecentWinnersServer() {
+// Server Component for Recent Winners (hidden, kept for future use)
+async function _RecentWinnersServer() {
   const winners = await getRecentWinners();
-  return <RecentWinners winners={winners} />;
+  return <_RecentWinners winners={winners} />;
 }
 
 export default function HomePage() {
@@ -263,16 +263,6 @@ export default function HomePage() {
       {/* Live Competitions */}
       <Suspense fallback={<CompetitionsSkeleton />}>
         <LiveCompetitionsServer />
-      </Suspense>
-
-      {/* Coming Soon */}
-      <Suspense fallback={null}>
-        <ComingSoonServer />
-      </Suspense>
-
-      {/* Recent Winners */}
-      <Suspense fallback={null}>
-        <RecentWinnersServer />
       </Suspense>
 
       {/* How It Works */}

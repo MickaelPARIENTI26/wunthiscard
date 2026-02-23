@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { CountdownTimer } from '@/components/common/countdown-timer';
@@ -88,6 +89,7 @@ export function CompetitionCard({
   createdAt,
   className,
 }: CompetitionCardProps) {
+  const t = useTranslations('competitions');
   const isActive = status === 'ACTIVE';
   const isUpcoming = status === 'UPCOMING';
   const isSoldOut = status === 'SOLD_OUT';
@@ -143,30 +145,30 @@ export function CompetitionCard({
             <div className="absolute top-3 right-3 flex flex-col gap-2">
               {isSoldOut && (
                 <Badge variant="destructive" className="bg-red-600 border-red-500">
-                  SOLD OUT
+                  {t('soldOut')}
                 </Badge>
               )}
               {isUpcoming && (
                 <Badge variant="secondary" className="bg-secondary border-border">
-                  Coming Soon
+                  {t('comingSoon')}
                 </Badge>
               )}
               {isNew && !isSoldOut && (
                 <Badge className="bg-accent text-accent-foreground border-accent/50">
                   <Sparkles className="w-3 h-3 mr-1" />
-                  NEW
+                  {t('new')}
                 </Badge>
               )}
               {isHot && !isSoldOut && (
                 <Badge className="bg-orange-500 text-white border-orange-400 urgency-pulse">
                   <Flame className="w-3 h-3 mr-1" />
-                  HOT
+                  {t('hot')}
                 </Badge>
               )}
               {isAlmostGone && !isSoldOut && (
                 <Badge className="bg-red-500 text-white border-red-400 urgency-pulse">
                   <Zap className="w-3 h-3 mr-1" />
-                  ALMOST GONE
+                  {t('almostGone')}
                 </Badge>
               )}
             </div>
@@ -175,7 +177,7 @@ export function CompetitionCard({
             {isSoldOut && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                 <div className="bg-red-600 text-white px-6 py-2 text-xl font-bold -rotate-12 shadow-lg">
-                  SOLD OUT
+                  {t('soldOut')}
                 </div>
               </div>
             )}
@@ -183,7 +185,7 @@ export function CompetitionCard({
             {/* Prize Value Overlay */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 pt-12">
               <div>
-                <p className="text-xs uppercase tracking-wider text-white/70 mb-1">Prize Value</p>
+                <p className="text-xs uppercase tracking-wider text-white/70 mb-1">{t('prizeValue')}</p>
                 <p className="text-2xl md:text-3xl font-bold text-gradient-gold tabular-nums font-[family-name:var(--font-display)]">
                   {new Intl.NumberFormat('en-GB', {
                     style: 'currency',
@@ -214,7 +216,7 @@ export function CompetitionCard({
                   minimumFractionDigits: 2,
                 }).format(ticketPrice)}
               </span>
-              <span className="text-sm" style={{ color: '#a0a0a0' }}>per ticket</span>
+              <span className="text-sm" style={{ color: '#a0a0a0' }}>{t('perTicket')}</span>
             </div>
 
             {/* Progress Bar */}
@@ -229,7 +231,7 @@ export function CompetitionCard({
             {(isActive || isUpcoming) && (
               <div className="mt-auto">
                 <p className="text-xs mb-2" style={{ color: '#a0a0a0' }}>
-                  {isActive ? 'Draw ends in:' : 'Sale starts in:'}
+                  {isActive ? t('drawEndsIn') : t('saleStartsIn')}
                 </p>
                 <CountdownTimer
                   targetDate={drawDate}
@@ -250,7 +252,7 @@ export function CompetitionCard({
                   color: isActive ? '#0f0f1a' : '#a0a0a0',
                 }}
               >
-                {isActive ? 'Enter Now' : isUpcoming ? 'View Details' : isSoldOut ? 'Sold Out' : 'View Details'}
+                {isActive ? t('enterNow') : isUpcoming ? t('viewDetails') : isSoldOut ? t('soldOut') : t('viewDetails')}
               </span>
             </div>
           </CardContent>

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { ArrowRight, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CompetitionCard } from '@/components/competition/competition-card';
@@ -47,16 +48,18 @@ const itemVariants = {
 };
 
 export function LiveCompetitions({ competitions, className }: LiveCompetitionsProps) {
+  const t = useTranslations();
+
   if (competitions.length === 0) {
     return (
       <section className={cn('py-16 md:py-20 lg:py-24', className)}>
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
-              <span className="text-gradient-gold">Live Competitions</span>
+              <span className="text-gradient-gold">{t('competitions.liveCompetitions')}</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8" style={{ color: '#a0a0a0' }}>
-              No live competitions at the moment. Check back soon!
+              {t('competitions.noLiveCompetitions')}
             </p>
             <Button
               asChild
@@ -66,7 +69,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
                 borderColor: 'oklch(0.3 0.02 270)',
               }}
             >
-              <Link href="/competitions">View All Competitions</Link>
+              <Link href="/competitions">{t('common.viewCompetitions')}</Link>
             </Button>
           </div>
         </div>
@@ -101,10 +104,10 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
               >
                 <Zap className="h-5 w-5 text-white" />
               </div>
-              <span className="text-gradient-gold">Live Competitions</span>
+              <span className="text-gradient-gold">{t('competitions.liveCompetitions')}</span>
             </h2>
             <p className="text-muted-foreground mt-2" style={{ color: '#a0a0a0' }}>
-              Enter now for your chance to win amazing prizes
+              {t('competitions.liveCompetitionsSubtitle')}
             </p>
           </div>
           <Button
@@ -117,7 +120,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
             }}
           >
             <Link href="/competitions" className="flex items-center gap-2">
-              View All
+              {t('common.viewAll')}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           </Button>
@@ -168,7 +171,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
             >
               <Link href="/competitions" className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4" />
-                View All Competitions
+                {t('common.viewCompetitions')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>

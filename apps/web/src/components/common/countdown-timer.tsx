@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface TimeLeft {
@@ -115,6 +116,7 @@ export function CountdownTimer({
   className,
   showLabels = true,
 }: CountdownTimerProps) {
+  const t = useTranslations('hero');
   // Initialize with zeros to avoid hydration mismatch
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isComplete, setIsComplete] = useState(false);
@@ -153,19 +155,19 @@ export function CountdownTimer({
 
   return (
     <div className={cn('flex items-center justify-center lg:justify-start', classes.container, className)}>
-      <TimeUnit value={timeLeft.days} label="Days" size={size} showLabel={showLabels} />
+      <TimeUnit value={timeLeft.days} label={t('days')} size={size} showLabel={showLabels} />
       <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
-      <TimeUnit value={timeLeft.hours} label="Hours" size={size} showLabel={showLabels} />
+      <TimeUnit value={timeLeft.hours} label={t('hours')} size={size} showLabel={showLabels} />
       <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
-      <TimeUnit value={timeLeft.minutes} label="Mins" size={size} showLabel={showLabels} />
+      <TimeUnit value={timeLeft.minutes} label={t('minutes')} size={size} showLabel={showLabels} />
       <span className={cn('font-bold self-start mt-2 sm:mt-3', classes.separator)} style={{ color: 'rgba(255, 215, 0, 0.5)' }}>
         :
       </span>
-      <TimeUnit value={timeLeft.seconds} label="Secs" size={size} showLabel={showLabels} />
+      <TimeUnit value={timeLeft.seconds} label={t('seconds')} size={size} showLabel={showLabels} />
     </div>
   );
 }
