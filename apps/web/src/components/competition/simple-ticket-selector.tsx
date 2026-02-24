@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, Loader2, Mail, Clock, X, ChevronRight } from 'lucide-react';
+import { ArrowRight, Loader2, Clock, X } from 'lucide-react';
 import { formatPrice } from '@winucard/shared/utils';
 
 // TODO: Rendre les paliers de bonus configurables depuis l'admin
@@ -61,7 +61,6 @@ export function SimpleTicketSelector({
     expiresAt: number;
   } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
-  const [freeEntryOpen, setFreeEntryOpen] = useState(false);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const otherInputRef = useRef<HTMLInputElement>(null);
 
@@ -537,107 +536,6 @@ export function SimpleTicketSelector({
       <p style={{ fontSize: '12px', color: '#9a9eb0', textAlign: 'center' }}>
         {availableTicketCount.toLocaleString('en-GB')} tickets available · Max {maxTicketsPerUser} per person
       </p>
-
-      {/* Free Entry Route Accordion */}
-      <div>
-        {/* Trigger */}
-        <button
-          onClick={() => setFreeEntryOpen(!freeEntryOpen)}
-          className="free-entry-trigger w-full flex items-center justify-center gap-2"
-          style={{
-            padding: '8px 0',
-            background: 'transparent',
-            border: 'none',
-            color: freeEntryOpen ? '#F0B90B' : '#6b7088',
-            fontSize: '13px',
-            fontWeight: 500,
-            cursor: 'pointer',
-            transition: 'color 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#F0B90B';
-            const chevron = e.currentTarget.querySelector('.chevron-icon') as HTMLElement;
-            if (chevron && !freeEntryOpen) {
-              chevron.style.transform = 'translateX(3px)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!freeEntryOpen) {
-              e.currentTarget.style.color = '#6b7088';
-            }
-            const chevron = e.currentTarget.querySelector('.chevron-icon') as HTMLElement;
-            if (chevron && !freeEntryOpen) {
-              chevron.style.transform = 'translateX(0)';
-            }
-          }}
-        >
-          <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Mail style={{ width: '14px', height: '14px' }} />
-            Free Entry Route
-          </span>
-          <ChevronRight
-            className="chevron-icon"
-            style={{
-              width: '14px',
-              height: '14px',
-              transition: 'transform 0.2s',
-              transform: freeEntryOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-            }}
-          />
-        </button>
-
-        {/* Accordion Content */}
-        <div
-          style={{
-            maxHeight: freeEntryOpen ? '400px' : '0',
-            overflow: 'hidden',
-            transition: 'max-height 0.3s ease-in-out',
-          }}
-        >
-          <div
-            style={{
-              marginTop: '10px',
-              padding: '16px 20px',
-              background: '#F7F7FA',
-              borderRadius: '12px',
-              border: '1px solid rgba(0, 0, 0, 0.06)',
-            }}
-          >
-            {/* Title */}
-            <p style={{ fontSize: '14px', fontWeight: 700, color: '#1a1a2e', marginBottom: '8px' }}>
-              Free Postal Entry
-            </p>
-
-            {/* Description */}
-            <p style={{ fontSize: '13px', color: '#6b7088', lineHeight: 1.6, marginBottom: '12px' }}>
-              You can enter this competition for free by post. Send a handwritten postcard or letter with your full name, email address, and the competition name to:
-            </p>
-
-            {/* Address Box */}
-            <div
-              style={{
-                padding: '12px 16px',
-                background: '#ffffff',
-                borderRadius: '8px',
-                border: '1px solid rgba(0, 0, 0, 0.06)',
-                marginBottom: '12px',
-              }}
-            >
-              <p style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a2e', lineHeight: 1.5, margin: 0 }}>
-                WinUCard Ltd<br />
-                123 Competition Street<br />
-                London, EC1A 1BB<br />
-                United Kingdom
-              </p>
-            </div>
-
-            {/* Additional Info */}
-            <p style={{ fontSize: '12px', color: '#9a9eb0', fontStyle: 'italic', margin: 0 }}>
-              One entry per postcard. Must be received before the draw date. Full details in our Terms & Conditions.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

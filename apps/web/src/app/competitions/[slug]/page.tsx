@@ -1,17 +1,12 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Gift, Trophy, Clock } from 'lucide-react';
+import Image from 'next/image';
+import { ChevronLeft, Trophy, Calendar, Award, Play } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { CountdownTimer } from '@/components/common/countdown-timer';
-import { ProgressBar } from '@/components/common/progress-bar';
-import { ImageGallery } from '@/components/competition/image-gallery';
-import { CompetitionInfo } from '@/components/competition/competition-info';
-import { FreeEntryNotice } from '@/components/competition/free-entry-notice';
-import { InlineTicketSelector } from '@/components/competition/inline-ticket-selector';
+import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
+import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
 import { SafeHtml } from '@/components/common/safe-html';
 import type { CompetitionCategory } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
@@ -28,16 +23,28 @@ const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
   OTHER: 'Other',
 };
 
-const CATEGORY_GRADIENTS: Record<CompetitionCategory, string> = {
-  POKEMON: 'linear-gradient(135deg, oklch(0.75 0.18 85) 0%, oklch(0.65 0.15 85) 100%)',
-  ONE_PIECE: 'linear-gradient(135deg, oklch(0.55 0.2 25) 0%, oklch(0.45 0.18 25) 100%)',
-  SPORTS_BASKETBALL: 'linear-gradient(135deg, oklch(0.65 0.18 45) 0%, oklch(0.55 0.16 45) 100%)',
-  SPORTS_FOOTBALL: 'linear-gradient(135deg, oklch(0.55 0.18 145) 0%, oklch(0.45 0.15 145) 100%)',
-  SPORTS_OTHER: 'linear-gradient(135deg, oklch(0.55 0.18 250) 0%, oklch(0.45 0.15 250) 100%)',
-  MEMORABILIA: 'linear-gradient(135deg, oklch(0.55 0.18 300) 0%, oklch(0.45 0.15 300) 100%)',
-  YUGIOH: 'linear-gradient(135deg, oklch(0.5 0.18 280) 0%, oklch(0.4 0.15 280) 100%)',
-  MTG: 'linear-gradient(135deg, oklch(0.4 0.1 270) 0%, oklch(0.3 0.08 270) 100%)',
-  OTHER: 'linear-gradient(135deg, oklch(0.45 0.05 270) 0%, oklch(0.35 0.04 270) 100%)',
+const CATEGORY_COLORS: Record<CompetitionCategory, string> = {
+  POKEMON: '#F0B90B',
+  ONE_PIECE: '#DC2626',
+  SPORTS_BASKETBALL: '#F97316',
+  SPORTS_FOOTBALL: '#22C55E',
+  SPORTS_OTHER: '#3B82F6',
+  MEMORABILIA: '#8B5CF6',
+  YUGIOH: '#6366F1',
+  MTG: '#1a1a2e',
+  OTHER: '#6b7088',
+};
+
+const CATEGORY_EMOJIS: Record<CompetitionCategory, string> = {
+  POKEMON: '🔥',
+  ONE_PIECE: '🏴‍☠️',
+  SPORTS_BASKETBALL: '🏀',
+  SPORTS_FOOTBALL: '⚽',
+  SPORTS_OTHER: '🏆',
+  MEMORABILIA: '🏆',
+  YUGIOH: '🎴',
+  MTG: '🃏',
+  OTHER: '🎴',
 };
 
 interface PageParams {
@@ -52,9 +59,7 @@ async function getCompetition(slug: string) {
         select: {
           tickets: {
             where: {
-              status: {
-                in: ['SOLD', 'FREE_ENTRY'],
-              },
+              status: { in: ['SOLD', 'FREE_ENTRY'] },
             },
           },
         },
@@ -63,28 +68,22 @@ async function getCompetition(slug: string) {
         select: {
           ticketNumber: true,
           user: {
-            select: {
-              firstName: true,
-              lastName: true,
-            },
+            select: { firstName: true, lastName: true },
           },
         },
       },
     },
   });
 
-  if (!competition) return null;
-
-  // Don't show draft competitions
-  if (competition.status === 'DRAFT') {
-    return null;
-  }
+  if (!competition || competition.status === 'DRAFT') return null;
 
   const soldTicketsCount = competition._count.tickets;
   const winner = competition.wins[0];
-  const winnerDisplayName = winner && winner.user
+  const winnerDisplayName = winner?.user
     ? `${winner.user.firstName} ${winner.user.lastName?.charAt(0) ?? ''}.`
-    : winner ? 'Lucky Winner' : null;
+    : winner
+      ? 'Lucky Winner'
+      : null;
 
   return {
     ...competition,
@@ -103,48 +102,29 @@ async function getCompetition(slug: string) {
 
 async function getUserTicketCount(competitionId: string, userId: string | undefined) {
   if (!userId) return 0;
-
-  const count = await prisma.ticket.count({
-    where: {
-      competitionId,
-      userId,
-      status: 'SOLD',
-    },
+  return prisma.ticket.count({
+    where: { competitionId, userId, status: 'SOLD' },
   });
-
-  return count;
 }
 
 async function getAvailableTicketCount(competitionId: string) {
   const now = new Date();
-
-  const count = await prisma.ticket.count({
+  return prisma.ticket.count({
     where: {
       competitionId,
       OR: [
         { status: 'AVAILABLE' },
-        {
-          status: 'RESERVED',
-          reservedUntil: { lte: now }, // Expired reservations count as available
-        },
+        { status: 'RESERVED', reservedUntil: { lte: now } },
       ],
     },
   });
-
-  return count;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<PageParams>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
   const { slug } = await params;
   const competition = await getCompetition(slug);
 
-  if (!competition) {
-    return notFound();
-  }
+  if (!competition) return notFound();
 
   const title = competition.metaTitle || competition.title;
   const description =
@@ -168,20 +148,57 @@ export async function generateMetadata({
   };
 }
 
-export default async function CompetitionDetailPage({
-  params,
-}: {
-  params: Promise<PageParams>;
-}) {
-  const { slug } = await params;
-  const [competition, session] = await Promise.all([
-    getCompetition(slug),
-    auth(),
-  ]);
+// Countdown component (server-rendered initial state)
+function CountdownBlock({ targetDate }: { targetDate: Date }) {
+  const now = new Date();
+  const diff = targetDate.getTime() - now.getTime();
 
-  if (!competition) {
-    notFound();
-  }
+  if (diff <= 0) return null;
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+  const blocks = [
+    { value: days, label: 'DAYS' },
+    { value: hours, label: 'HOURS' },
+    { value: mins, label: 'MINS' },
+    { value: secs, label: 'SECS' },
+  ];
+
+  return (
+    <div className="flex gap-2">
+      {blocks.map((block) => (
+        <div key={block.label} className="text-center">
+          <div
+            style={{
+              width: '52px',
+              height: '52px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#F7F7FA',
+              borderRadius: '10px',
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            {block.value.toString().padStart(2, '0')}
+          </div>
+          <p style={{ fontSize: '10px', color: '#9a9eb0', marginTop: '4px' }}>{block.label}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default async function CompetitionDetailPage({ params }: { params: Promise<PageParams> }) {
+  const { slug } = await params;
+  const [competition, session] = await Promise.all([getCompetition(slug), auth()]);
+
+  if (!competition) notFound();
 
   const isActive = competition.status === 'ACTIVE';
   const isCompleted = competition.status === 'COMPLETED';
@@ -189,7 +206,6 @@ export default async function CompetitionDetailPage({
   const isSoldOut = competition.status === 'SOLD_OUT';
   const isCancelled = competition.status === 'CANCELLED';
 
-  // Get ticket counts for active competitions
   const [userTicketCount, availableTicketCount] = isActive
     ? await Promise.all([
         getUserTicketCount(competition.id, session?.user?.id),
@@ -197,179 +213,315 @@ export default async function CompetitionDetailPage({
       ])
     : [0, 0];
 
-  const allImages = [competition.mainImageUrl, ...competition.galleryUrls];
+  const category = competition.category as CompetitionCategory;
+  const categoryColor = CATEGORY_COLORS[category];
+  const soldPercentage = Math.round((competition.soldTickets / competition.totalTickets) * 100);
+  const ticketsRemaining = competition.totalTickets - competition.soldTickets;
+
+  // Format prize value without decimals
+  const formattedPrizeValue = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(competition.prizeValue);
 
   return (
-    <main className="min-h-screen pb-8 overflow-x-hidden">
-      <div className="container mx-auto px-4 py-4 sm:py-6 max-w-full overflow-hidden">
-        {/* Back Navigation */}
-        <Link
-          href="/competitions"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to Competitions
-        </Link>
-
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
-          {/* Left Column - Image Gallery */}
-          <div>
-            <ImageGallery images={allImages} alt={competition.title} />
-          </div>
-
-          {/* Right Column - Competition Details */}
-          <div className="space-y-5">
-            {/* Header */}
-            <div>
-              {/* Category Badge */}
-              <Badge
-                className="mb-3 font-semibold"
-                style={{
-                  background: CATEGORY_GRADIENTS[competition.category as CompetitionCategory],
-                  color: 'white',
-                  border: 'none',
-                }}
-              >
-                {CATEGORY_LABELS[competition.category as CompetitionCategory]}
-              </Badge>
-
-              {/* Title */}
-              <h1 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
-                {competition.title}
-              </h1>
-
-              {/* Subtitle */}
-              {competition.subtitle && (
-                <p className="mt-2 text-base text-muted-foreground sm:text-lg">
-                  {competition.subtitle}
-                </p>
+    <main className="min-h-screen" style={{ background: '#ffffff', paddingTop: '100px' }}>
+      <div className="container mx-auto px-4" style={{ maxWidth: '1100px' }}>
+        {/* Main Content - 2 Column Layout */}
+        <div className="flex flex-col lg:flex-row gap-10">
+          {/* Left Column - Image (45%) */}
+          <div className="lg:w-[45%]">
+            {/* Image Container */}
+            <div
+              className="relative overflow-hidden"
+              style={{
+                aspectRatio: '3/4',
+                borderRadius: '20px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                background: `linear-gradient(135deg, ${categoryColor}15 0%, ${categoryColor}05 100%)`,
+              }}
+            >
+              {competition.mainImageUrl ? (
+                <Image
+                  src={competition.mainImageUrl}
+                  alt={competition.title}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span style={{ fontSize: '80px' }}>{CATEGORY_EMOJIS[category]}</span>
+                </div>
               )}
             </div>
 
-            {/* Countdown Timer - MOVED ABOVE Prize Value */}
-            {(isActive || isUpcoming) && (
-              <div
-                className="rounded-2xl p-4"
+            {/* Back Link */}
+            <Link
+              href="/competitions"
+              className="mt-4 inline-flex items-center gap-1 transition-colors hover:text-[#1a1a2e]"
+              style={{ fontSize: '14px', color: '#6b7088' }}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back to Competitions
+            </Link>
+          </div>
+
+          {/* Right Column - Details (55%) */}
+          <div className="lg:w-[55%] space-y-5">
+            {/* Badges */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* Category Badge */}
+              <span
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
-                  border: '1px solid oklch(0.22 0.02 270)',
+                  padding: '5px 14px',
+                  borderRadius: '8px',
+                  background: categoryColor,
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
                 }}
               >
-                <p className="mb-2 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  {isActive ? 'Competition ends in' : 'Sale starts in'}
-                </p>
-                <div className="flex justify-center">
-                  <CountdownTimer targetDate={competition.drawDate} size="md" />
+                {CATEGORY_LABELS[category]}
+              </span>
+
+              {/* Status Badge */}
+              {isActive && (
+                <span
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '8px',
+                    background: 'rgba(22, 163, 74, 0.1)',
+                    color: '#16A34A',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                  }}
+                >
+                  Live
+                </span>
+              )}
+              {isUpcoming && (
+                <span
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '8px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    color: '#3B82F6',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                  }}
+                >
+                  Coming Soon
+                </span>
+              )}
+              {isSoldOut && (
+                <span
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '8px',
+                    background: 'rgba(249, 115, 22, 0.1)',
+                    color: '#F97316',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                  }}
+                >
+                  Sold Out
+                </span>
+              )}
+            </div>
+
+            {/* Title */}
+            <h1
+              className="font-[family-name:var(--font-outfit)]"
+              style={{ fontSize: '26px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}
+            >
+              {competition.title}
+            </h1>
+
+            {/* Prize Value */}
+            <p
+              className="font-[family-name:var(--font-outfit)]"
+              style={{ fontSize: '36px', fontWeight: 800, color: '#1a1a2e' }}
+            >
+              {formattedPrizeValue}
+            </p>
+
+            {/* Progress Bar */}
+            {!isCompleted && !isCancelled && (
+              <div>
+                <div className="flex justify-between mb-2">
+                  <span style={{ fontSize: '13px', color: '#6b7088' }}>
+                    {ticketsRemaining} tickets remaining
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#6b7088' }}>{soldPercentage}% sold</span>
+                </div>
+                <div
+                  style={{
+                    height: '8px',
+                    background: '#f0f0f4',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      height: '100%',
+                      width: `${soldPercentage}%`,
+                      background: categoryColor,
+                      borderRadius: '4px',
+                      transition: 'width 0.3s',
+                    }}
+                  />
                 </div>
               </div>
             )}
 
-            {/* Prize Value Card */}
+            {/* Info Grid */}
             <div
-              className="rounded-2xl p-4"
+              className="grid grid-cols-3 gap-4"
               style={{
-                background: 'linear-gradient(135deg, oklch(0.14 0.02 270) 0%, oklch(0.10 0.02 270) 100%)',
-                border: '1px solid oklch(0.25 0.02 270)',
+                background: '#F7F7FA',
+                borderRadius: '16px',
+                padding: '16px 20px',
               }}
             >
-              <div className="flex items-center gap-4">
-                <div
-                  className="flex h-12 w-12 items-center justify-center rounded-xl"
+              <div>
+                <p
                   style={{
-                    background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
+                    fontSize: '11px',
+                    color: '#9a9eb0',
+                    textTransform: 'uppercase',
+                    marginBottom: '4px',
                   }}
                 >
-                  <Gift className="h-6 w-6 text-black" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Prize Value</p>
-                  <p className="text-2xl font-bold text-gradient-gold sm:text-3xl font-[family-name:var(--font-display)]">
-                    {formatPrice(competition.prizeValue)}
-                  </p>
-                </div>
+                  Ticket Price
+                </p>
+                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
+                  {formatPrice(competition.ticketPrice)}
+                </p>
+              </div>
+              <div>
+                <p
+                  style={{
+                    fontSize: '11px',
+                    color: '#9a9eb0',
+                    textTransform: 'uppercase',
+                    marginBottom: '4px',
+                  }}
+                >
+                  Tickets Left
+                </p>
+                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
+                  {ticketsRemaining}/{competition.totalTickets}
+                </p>
+              </div>
+              <div>
+                <p
+                  style={{
+                    fontSize: '11px',
+                    color: '#9a9eb0',
+                    textTransform: 'uppercase',
+                    marginBottom: '4px',
+                  }}
+                >
+                  Draw Date
+                </p>
+                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
+                  {new Date(competition.drawDate).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </p>
               </div>
             </div>
 
-            {/* Progress Bar */}
-            {!isCompleted && (
-              <div>
-                <ProgressBar
-                  sold={competition.soldTickets}
-                  total={competition.totalTickets}
-                  showPercentage
-                />
-              </div>
+            {/* Countdown */}
+            {(isActive || isUpcoming) && (
+              <CountdownBlock targetDate={new Date(competition.drawDate)} />
             )}
 
-            {/* Active Competition - Inline Ticket Selector */}
+            {/* Active Competition - Ticket Selector */}
             {isActive && (
-              <div className="space-y-4">
-                <InlineTicketSelector
-                  competitionId={competition.id}
-                  competitionSlug={slug}
-                  ticketPrice={competition.ticketPrice}
-                  maxTicketsPerUser={competition.maxTicketsPerUser}
-                  availableTicketCount={availableTicketCount}
-                  userTicketCount={userTicketCount}
-                />
-                <FreeEntryNotice competitionTitle={competition.title} />
-              </div>
+              <SimpleTicketSelector
+                competitionId={competition.id}
+                competitionSlug={slug}
+                ticketPrice={competition.ticketPrice}
+                maxTicketsPerUser={competition.maxTicketsPerUser}
+                availableTicketCount={availableTicketCount}
+                userTicketCount={userTicketCount}
+                categoryColor={categoryColor}
+              />
             )}
 
-            {/* Upcoming Competition */}
+            {/* Upcoming */}
             {isUpcoming && (
-              <div className="space-y-4">
-                <Button
-                  size="lg"
-                  className="w-full text-lg"
+              <div className="space-y-3">
+                <button
                   disabled
+                  className="w-full flex items-center justify-center gap-2"
                   style={{
-                    background: 'oklch(0.25 0.02 270)',
-                    color: 'oklch(0.6 0.02 270)',
+                    padding: '16px',
+                    borderRadius: '14px',
+                    background: '#F7F7FA',
+                    color: '#6b7088',
+                    fontSize: '16px',
+                    fontWeight: 600,
+                    cursor: 'not-allowed',
                   }}
                 >
-                  <Clock className="h-5 w-5 mr-2" />
                   Coming Soon
-                </Button>
-                <FreeEntryNotice competitionTitle={competition.title} />
+                </button>
               </div>
             )}
 
             {/* Sold Out */}
             {isSoldOut && (
-              <Button
-                size="lg"
-                className="w-full text-lg"
-                variant="secondary"
+              <button
                 disabled
+                className="w-full flex items-center justify-center gap-2"
                 style={{
-                  background: 'oklch(0.2 0.02 270)',
-                  color: 'oklch(0.6 0.02 270)',
+                  padding: '16px',
+                  borderRadius: '14px',
+                  background: '#F7F7FA',
+                  color: '#6b7088',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: 'not-allowed',
                 }}
               >
                 Sold Out - Draw Pending
-              </Button>
+              </button>
             )}
 
             {/* Completed */}
             {isCompleted && (
               <div
-                className="rounded-2xl p-5 text-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.15 0.05 85) 0%, oklch(0.12 0.04 85) 100%)',
-                  border: '1px solid oklch(0.3 0.08 85)',
+                  background: '#F7F7FA',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textAlign: 'center',
                 }}
               >
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <Trophy className="h-6 w-6 text-primary" />
-                  <p className="text-lg font-semibold text-gradient-gold">Competition Completed</p>
+                  <Trophy style={{ width: '24px', height: '24px', color: categoryColor }} />
+                  <p style={{ fontSize: '18px', fontWeight: 700, color: '#1a1a2e' }}>
+                    Competition Completed
+                  </p>
                 </div>
-                <p className="text-muted-foreground">
-                  Winning ticket: <span className="font-mono font-bold text-primary">#{competition.winningTicketNumber}</span>
+                <p style={{ fontSize: '14px', color: '#6b7088' }}>
+                  Winning ticket:{' '}
+                  <span style={{ fontWeight: 700, color: categoryColor }}>
+                    #{competition.winningTicketNumber}
+                  </span>
                 </p>
                 {competition.winnerDisplayName && (
-                  <p className="mt-1 text-sm text-muted-foreground">
+                  <p style={{ fontSize: '14px', color: '#9a9eb0', marginTop: '4px' }}>
                     Winner: {competition.winnerDisplayName}
                   </p>
                 )}
@@ -379,16 +531,18 @@ export default async function CompetitionDetailPage({
             {/* Cancelled */}
             {isCancelled && (
               <div
-                className="rounded-2xl p-5 text-center"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.2 0.12 25) 0%, oklch(0.15 0.1 25) 100%)',
-                  border: '2px solid oklch(0.45 0.18 25)',
+                  background: 'rgba(220, 38, 38, 0.08)',
+                  border: '1px solid rgba(220, 38, 38, 0.2)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textAlign: 'center',
                 }}
               >
-                <p className="text-lg font-semibold" style={{ color: 'oklch(0.7 0.18 25)' }}>
+                <p style={{ fontSize: '18px', fontWeight: 700, color: '#DC2626' }}>
                   This competition was cancelled
                 </p>
-                <p className="text-muted-foreground">
+                <p style={{ fontSize: '14px', color: '#6b7088', marginTop: '4px' }}>
                   All participants have been fully refunded.
                 </p>
               </div>
@@ -396,38 +550,170 @@ export default async function CompetitionDetailPage({
           </div>
         </div>
 
-        {/* Additional Information Sections */}
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          {/* Description */}
+        {/* Below the Fold - Additional Info */}
+        <div className="grid gap-6 lg:grid-cols-2 mt-12 pb-16">
+          {/* About This Card */}
           <div
-            className="rounded-2xl p-6"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.12 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
-              border: '1px solid oklch(0.22 0.02 270)',
+              background: '#ffffff',
+              border: '1px solid rgba(0, 0, 0, 0.06)',
+              borderRadius: '20px',
+              padding: '32px',
             }}
           >
-            <h2 className="mb-4 text-xl font-semibold font-[family-name:var(--font-display)] text-gradient-gold">
-              About This Prize
+            <h2
+              className="font-[family-name:var(--font-outfit)] mb-4"
+              style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
+            >
+              About This Card
             </h2>
-            <SafeHtml
-              html={competition.descriptionLong}
-              className="prose prose-sm max-w-none dark:prose-invert prose-p:text-muted-foreground prose-headings:text-foreground"
-            />
+
+            {competition.descriptionLong ? (
+              <SafeHtml
+                html={competition.descriptionLong}
+                className="prose prose-sm max-w-none"
+                style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}
+              />
+            ) : (
+              <p style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}>
+                {competition.descriptionShort || 'No description available.'}
+              </p>
+            )}
+
+            {/* Card Details */}
+            <div className="mt-6 space-y-3">
+              {competition.certificationNumber && (
+                <div className="flex justify-between">
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
+                    Certification
+                  </span>
+                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>
+                    {competition.certificationNumber}
+                  </span>
+                </div>
+              )}
+              {competition.grade && (
+                <div className="flex justify-between">
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
+                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.grade}</span>
+                </div>
+              )}
+              {competition.condition && (
+                <div className="flex justify-between">
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
+                    Condition
+                  </span>
+                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.condition}</span>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Authentication & Draw Info */}
-          <CompetitionInfo
-            certificationNumber={competition.certificationNumber}
-            grade={competition.grade}
-            condition={competition.condition}
-            provenance={competition.provenance}
-            drawDate={competition.drawDate}
-            actualDrawDate={competition.actualDrawDate}
-            drawProofUrl={competition.drawProofUrl}
-            winningTicketNumber={competition.winningTicketNumber}
-            winnerDisplayName={competition.winnerDisplayName}
-            status={competition.status}
-          />
+          {/* Draw Details */}
+          <div
+            style={{
+              background: '#ffffff',
+              border: '1px solid rgba(0, 0, 0, 0.06)',
+              borderRadius: '20px',
+              padding: '32px',
+            }}
+          >
+            <h2
+              className="font-[family-name:var(--font-outfit)] mb-4"
+              style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
+            >
+              Draw Details
+            </h2>
+
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Calendar style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Draw Date</p>
+                  <p style={{ fontSize: '14px', color: '#1a1a2e' }}>
+                    {new Date(competition.drawDate).toLocaleDateString('en-GB', {
+                      weekday: 'long',
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {competition.certificationNumber && (
+                <div className="flex items-start gap-3">
+                  <Award style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
+                  <div>
+                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Certification</p>
+                    <p style={{ fontSize: '14px', color: '#1a1a2e' }}>
+                      {competition.certificationNumber}
+                      {competition.grade && (
+                        <span
+                          style={{
+                            marginLeft: '8px',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            background: categoryColor,
+                            color: '#ffffff',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                          }}
+                        >
+                          {competition.grade}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex items-start gap-3">
+                <Play style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Status</p>
+                  <span
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: '4px',
+                      background: isActive
+                        ? 'rgba(22, 163, 74, 0.1)'
+                        : isCompleted
+                          ? 'rgba(107, 112, 136, 0.1)'
+                          : 'rgba(59, 130, 246, 0.1)',
+                      color: isActive ? '#16A34A' : isCompleted ? '#6b7088' : '#3B82F6',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {isActive ? 'Live' : isCompleted ? 'Completed' : isUpcoming ? 'Upcoming' : 'Pending'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* RNG Disclaimer */}
+            <div
+              style={{
+                marginTop: '20px',
+                padding: '16px',
+                background: '#F7F7FA',
+                borderRadius: '12px',
+              }}
+            >
+              <p style={{ fontSize: '13px', color: '#6b7088', lineHeight: 1.6 }}>
+                The winning ticket will be selected using a certified Random Number Generator (RNG).
+                The draw will be livestreamed on TikTok for full transparency.
+              </p>
+            </div>
+
+            {/* Free Entry - Subtle Accordion */}
+            <div style={{ marginTop: '16px' }}>
+              <FreeEntryAccordion />
+            </div>
+          </div>
         </div>
       </div>
     </main>
