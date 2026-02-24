@@ -708,12 +708,12 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 The draw will be livestreamed on TikTok for full transparency.
               </p>
             </div>
-
-            {/* Free Entry - Subtle Accordion */}
-            <div style={{ marginTop: '16px' }}>
-              <FreeEntryAccordion />
-            </div>
           </div>
+        </div>
+
+        {/* Free Entry Section - Subtle Accordion */}
+        <div style={{ marginBottom: '48px' }}>
+          <FreeEntryAccordion />
         </div>
       </div>
     </main>
