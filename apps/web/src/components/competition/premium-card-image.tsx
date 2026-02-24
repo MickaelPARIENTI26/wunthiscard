@@ -112,10 +112,6 @@ export function PremiumCardImage({ src, alt, categoryColor, categoryEmoji }: Pre
             className="object-contain"
             sizes="(max-width: 1024px) 100vw, 45vw"
             priority
-            style={{
-              position: 'relative',
-              zIndex: 1,
-            }}
           />
         ) : (
           <div
