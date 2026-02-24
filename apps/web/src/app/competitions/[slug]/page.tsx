@@ -1,12 +1,14 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ChevronLeft, Trophy, Calendar, Award, Play } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
 import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
+import { PremiumCardImage } from '@/components/competition/premium-card-image';
+import { LiveCountdown } from '@/components/competition/live-countdown';
+import { UrgencyProgressBar } from '@/components/competition/urgency-progress-bar';
 import { SafeHtml } from '@/components/common/safe-html';
 import type { CompetitionCategory } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
@@ -148,51 +150,6 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
   };
 }
 
-// Countdown component (server-rendered initial state)
-function CountdownBlock({ targetDate }: { targetDate: Date }) {
-  const now = new Date();
-  const diff = targetDate.getTime() - now.getTime();
-
-  if (diff <= 0) return null;
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const secs = Math.floor((diff % (1000 * 60)) / 1000);
-
-  const blocks = [
-    { value: days, label: 'DAYS' },
-    { value: hours, label: 'HOURS' },
-    { value: mins, label: 'MINS' },
-    { value: secs, label: 'SECS' },
-  ];
-
-  return (
-    <div className="flex gap-2">
-      {blocks.map((block) => (
-        <div key={block.label} className="text-center">
-          <div
-            style={{
-              width: '52px',
-              height: '52px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: '#F7F7FA',
-              borderRadius: '10px',
-              fontSize: '20px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            {block.value.toString().padStart(2, '0')}
-          </div>
-          <p style={{ fontSize: '10px', color: '#9a9eb0', marginTop: '4px' }}>{block.label}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default async function CompetitionDetailPage({ params }: { params: Promise<PageParams> }) {
   const { slug } = await params;
@@ -227,37 +184,49 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   }).format(competition.prizeValue);
 
   return (
-    <main className="min-h-screen" style={{ background: '#ffffff', paddingTop: '100px' }}>
-      <div className="container mx-auto px-4" style={{ maxWidth: '1100px' }}>
+    <main className="min-h-screen relative overflow-hidden" style={{ background: '#ffffff', paddingTop: '100px' }}>
+      {/* Background ambiance blobs */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '5%',
+          right: '-5%',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: `${categoryColor}08`,
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '-10%',
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: 'rgba(139, 92, 246, 0.04)',
+          filter: 'blur(80px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      <div className="container mx-auto px-4 relative z-10" style={{ maxWidth: '1100px' }}>
         {/* Main Content - 2 Column Layout */}
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Left Column - Image (45%) */}
           <div className="lg:w-[45%]">
-            {/* Image Container */}
-            <div
-              className="relative overflow-hidden"
-              style={{
-                aspectRatio: '3/4',
-                borderRadius: '20px',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
-                background: `linear-gradient(135deg, ${categoryColor}15 0%, ${categoryColor}05 100%)`,
-              }}
-            >
-              {competition.mainImageUrl ? (
-                <Image
-                  src={competition.mainImageUrl}
-                  alt={competition.title}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span style={{ fontSize: '80px' }}>{CATEGORY_EMOJIS[category]}</span>
-                </div>
-              )}
-            </div>
+            {/* Premium Card Image with 3D tilt */}
+            <PremiumCardImage
+              src={competition.mainImageUrl}
+              alt={competition.title}
+              categoryColor={categoryColor}
+              categoryEmoji={CATEGORY_EMOJIS[category]}
+            />
 
             {/* Back Link */}
             <Link
@@ -342,42 +311,34 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               {competition.title}
             </h1>
 
-            {/* Prize Value */}
-            <p
-              className="font-[family-name:var(--font-outfit)]"
-              style={{ fontSize: '36px', fontWeight: 800, color: '#1a1a2e' }}
-            >
-              {formattedPrizeValue}
-            </p>
+            {/* Prize Value - More impactful */}
+            <div>
+              <p
+                className="font-[family-name:var(--font-outfit)]"
+                style={{ fontSize: '42px', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.1 }}
+              >
+                {formattedPrizeValue}
+              </p>
+              <p
+                style={{
+                  fontSize: '11px',
+                  color: '#9a9eb0',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  marginTop: '4px',
+                }}
+              >
+                Card Value
+              </p>
+            </div>
 
-            {/* Progress Bar */}
+            {/* Progress Bar with Urgency */}
             {!isCompleted && !isCancelled && (
-              <div>
-                <div className="flex justify-between mb-2">
-                  <span style={{ fontSize: '13px', color: '#6b7088' }}>
-                    {ticketsRemaining} tickets remaining
-                  </span>
-                  <span style={{ fontSize: '13px', color: '#6b7088' }}>{soldPercentage}% sold</span>
-                </div>
-                <div
-                  style={{
-                    height: '8px',
-                    background: '#f0f0f4',
-                    borderRadius: '4px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    style={{
-                      height: '100%',
-                      width: `${soldPercentage}%`,
-                      background: categoryColor,
-                      borderRadius: '4px',
-                      transition: 'width 0.3s',
-                    }}
-                  />
-                </div>
-              </div>
+              <UrgencyProgressBar
+                soldPercentage={soldPercentage}
+                ticketsRemaining={ticketsRemaining}
+                categoryColor={categoryColor}
+              />
             )}
 
             {/* Info Grid */}
@@ -440,9 +401,9 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </div>
             </div>
 
-            {/* Countdown */}
+            {/* Countdown - Live with animations */}
             {(isActive || isUpcoming) && (
-              <CountdownBlock targetDate={new Date(competition.drawDate)} />
+              <LiveCountdown targetDate={new Date(competition.drawDate)} />
             )}
 
             {/* Active Competition - Ticket Selector */}
@@ -557,14 +518,16 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             style={{
               background: '#ffffff',
               border: '1px solid rgba(0, 0, 0, 0.06)',
+              borderLeft: `3px solid ${categoryColor}`,
               borderRadius: '20px',
               padding: '32px',
             }}
           >
             <h2
-              className="font-[family-name:var(--font-outfit)] mb-4"
+              className="font-[family-name:var(--font-outfit)] mb-4 flex items-center gap-2"
               style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
             >
+              <span style={{ fontSize: '20px' }}>{CATEGORY_EMOJIS[category]}</span>
               About This Card
             </h2>
 
@@ -593,9 +556,20 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 </div>
               )}
               {competition.grade && (
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                   <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
-                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.grade}</span>
+                  <span
+                    style={{
+                      padding: '3px 10px',
+                      borderRadius: '6px',
+                      background: '#F0B90B',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {competition.grade}
+                  </span>
                 </div>
               )}
               {competition.condition && (
@@ -614,6 +588,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             style={{
               background: '#ffffff',
               border: '1px solid rgba(0, 0, 0, 0.06)',
+              borderLeft: `3px solid ${categoryColor}`,
               borderRadius: '20px',
               padding: '32px',
             }}
@@ -674,25 +649,59 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 <Play style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
                 <div>
                   <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Status</p>
-                  <span
-                    style={{
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      background: isActive
-                        ? 'rgba(22, 163, 74, 0.1)'
-                        : isCompleted
+                  {isActive ? (
+                    <span
+                      className="live-badge-pulse"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '3px 10px',
+                        borderRadius: '6px',
+                        background: '#16A34A',
+                        color: '#ffffff',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                      }}
+                    >
+                      <span
+                        style={{
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: '#ffffff',
+                          animation: 'livePulse 1.5s ease-in-out infinite',
+                        }}
+                      />
+                      Live
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        padding: '3px 10px',
+                        borderRadius: '6px',
+                        background: isCompleted
                           ? 'rgba(107, 112, 136, 0.1)'
                           : 'rgba(59, 130, 246, 0.1)',
-                      color: isActive ? '#16A34A' : isCompleted ? '#6b7088' : '#3B82F6',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {isActive ? 'Live' : isCompleted ? 'Completed' : isUpcoming ? 'Upcoming' : 'Pending'}
-                  </span>
+                        color: isCompleted ? '#6b7088' : '#3B82F6',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {isCompleted ? 'Completed' : isUpcoming ? 'Upcoming' : 'Pending'}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
+
+            {/* CSS for Live badge pulse */}
+            <style>{`
+              @keyframes livePulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.4; }
+              }
+            `}</style>
 
             {/* RNG Disclaimer */}
             <div
