@@ -96,7 +96,7 @@ export function UrgencyProgressBar({
             height: '100%',
             width: `${soldPercentage}%`,
             borderRadius: '5px',
-            background: `linear-gradient(90deg, ${lighterColor}, ${darkerColor})`,
+            backgroundImage: `linear-gradient(90deg, ${lighterColor}, ${darkerColor})`,
             backgroundSize: '200% 100%',
             animation: `progressShine 2.5s ease-in-out infinite${isAlmostGone ? ', subtlePulse 2s ease-in-out infinite' : ''}`,
             transition: 'width 0.3s ease-out',
@@ -111,7 +111,7 @@ export function UrgencyProgressBar({
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+              backgroundImage: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
               backgroundSize: '200% 100%',
               animation: 'progressShine 2.5s ease-in-out infinite',
             }}
