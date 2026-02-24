@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
 import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
-import { PremiumCardImage } from '@/components/competition/premium-card-image';
+import { MediaGallery, type MediaItem } from '@/components/competition/media-gallery';
 import { LiveCountdown } from '@/components/competition/live-countdown';
 import { UrgencyProgressBar } from '@/components/competition/urgency-progress-bar';
 import { SafeHtml } from '@/components/common/safe-html';
@@ -183,6 +183,38 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
     maximumFractionDigits: 0,
   }).format(competition.prizeValue);
 
+  // Build media array from galleryUrls and videoUrl
+  const mediaItems: MediaItem[] = [];
+
+  // Add main image first if it exists
+  if (competition.mainImageUrl) {
+    mediaItems.push({
+      type: 'image',
+      src: competition.mainImageUrl,
+      alt: `${competition.title} - Main image`,
+    });
+  }
+
+  // Add gallery images
+  if (competition.galleryUrls && competition.galleryUrls.length > 0) {
+    competition.galleryUrls.forEach((url, index) => {
+      mediaItems.push({
+        type: 'image',
+        src: url,
+        alt: `${competition.title} - Image ${index + 2}`,
+      });
+    });
+  }
+
+  // Add video at the end if it exists
+  if (competition.videoUrl) {
+    mediaItems.push({
+      type: 'video',
+      src: competition.videoUrl,
+      thumbnail: competition.mainImageUrl || undefined,
+    });
+  }
+
   return (
     <main className="min-h-screen relative overflow-hidden" style={{ background: '#ffffff', paddingTop: '100px' }}>
       {/* Background ambiance blobs */}
@@ -218,12 +250,13 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
       <div className="container mx-auto px-4 relative z-10" style={{ maxWidth: '1100px' }}>
         {/* Main Content - 2 Column Layout */}
         <div className="flex flex-col lg:flex-row gap-10">
-          {/* Left Column - Image (45%) */}
+          {/* Left Column - Media Gallery (45%) */}
           <div className="lg:w-[45%]">
-            {/* Premium Card Image with 3D tilt */}
-            <PremiumCardImage
-              src={competition.mainImageUrl}
-              alt={competition.title}
+            {/* Media Gallery with thumbnails */}
+            <MediaGallery
+              media={mediaItems}
+              fallbackImage={competition.mainImageUrl}
+              fallbackAlt={competition.title}
               categoryColor={categoryColor}
               categoryEmoji={CATEGORY_EMOJIS[category]}
             />
