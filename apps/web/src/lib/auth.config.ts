@@ -13,6 +13,7 @@ import type { NextAuthConfig } from 'next-auth';
  */
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
+  trustHost: true, // Required for NextAuth v5 to work in dev/production
   pages: {
     signIn: '/login',
     error: '/login',

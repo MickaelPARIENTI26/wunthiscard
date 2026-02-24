@@ -49,6 +49,19 @@ const CATEGORY_EMOJIS: Record<CompetitionCategory, string> = {
   OTHER: '🎴',
 };
 
+// Background tint colors for subtle page ambiance
+const CATEGORY_BG_COLORS: Record<CompetitionCategory, string> = {
+  POKEMON: '232,160,0',      // #E8A000 - golden
+  ONE_PIECE: '239,68,68',    // #EF4444 - red
+  SPORTS_BASKETBALL: '37,99,235',  // #2563EB - blue
+  SPORTS_FOOTBALL: '22,163,74',    // #16A34A - green
+  SPORTS_OTHER: '59,130,246',
+  MEMORABILIA: '139,92,246',
+  YUGIOH: '99,102,241',
+  MTG: '26,26,46',
+  OTHER: '107,112,136',
+};
+
 interface PageParams {
   slug: string;
 }
@@ -172,6 +185,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
   const category = competition.category as CompetitionCategory;
   const categoryColor = CATEGORY_COLORS[category];
+  const categoryBgColor = CATEGORY_BG_COLORS[category];
   const soldPercentage = Math.round((competition.soldTickets / competition.totalTickets) * 100);
   const ticketsRemaining = competition.totalTickets - competition.soldTickets;
 
@@ -216,17 +230,23 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   }
 
   return (
-    <main className="min-h-screen relative overflow-hidden" style={{ background: '#ffffff', paddingTop: '100px' }}>
-      {/* Background ambiance blobs */}
+    <main
+      className="min-h-screen relative overflow-hidden"
+      style={{
+        background: `linear-gradient(180deg, rgba(${categoryBgColor},0.04) 0%, #ffffff 40%, #ffffff 100%)`,
+        paddingTop: '100px',
+      }}
+    >
+      {/* Background ambiance blobs - ultra subtle */}
       <div
         style={{
           position: 'absolute',
-          top: '5%',
-          right: '-5%',
+          top: '-100px',
+          right: '-100px',
           width: '400px',
           height: '400px',
           borderRadius: '50%',
-          background: `${categoryColor}08`,
+          background: `rgba(${categoryBgColor},0.05)`,
           filter: 'blur(80px)',
           pointerEvents: 'none',
           zIndex: 0,
@@ -235,13 +255,13 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
       <div
         style={{
           position: 'absolute',
-          bottom: '10%',
-          left: '-10%',
-          width: '300px',
-          height: '300px',
+          bottom: '200px',
+          left: '-150px',
+          width: '350px',
+          height: '350px',
           borderRadius: '50%',
-          background: 'rgba(139, 92, 246, 0.04)',
-          filter: 'blur(80px)',
+          background: `rgba(${categoryBgColor},0.03)`,
+          filter: 'blur(100px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
