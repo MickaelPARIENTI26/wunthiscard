@@ -49,7 +49,7 @@ export function UrgencyProgressBar({
               Last {ticketsRemaining} tickets!
             </span>
           ) : (
-            `${ticketsRemaining.toLocaleString()} tickets remaining`
+            `${ticketsRemaining.toLocaleString('en-GB')} tickets remaining`
           )}
         </span>
 

@@ -410,7 +410,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   Tickets Left
                 </p>
                 <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
-                  {ticketsRemaining.toLocaleString()}/{competition.totalTickets.toLocaleString()}
+                  {ticketsRemaining.toLocaleString('en-GB')}/{competition.totalTickets.toLocaleString('en-GB')}
                 </p>
               </div>
               <div style={{ padding: '16px 20px' }}>
