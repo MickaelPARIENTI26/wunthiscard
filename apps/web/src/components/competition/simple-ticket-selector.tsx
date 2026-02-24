@@ -458,12 +458,12 @@ export function SimpleTicketSelector({
         )}
       </div>
 
-      {/* Bonus Offers - Premium Chips */}
+      {/* Bonus Offers - Compact Chips */}
       <div>
-        <p style={{ fontSize: '11px', color: '#9a9eb0', marginBottom: '8px' }}>
+        <p style={{ fontSize: '10px', color: '#9a9eb0', marginBottom: '6px' }}>
           Buy more, get free tickets:
         </p>
-        <div className="flex flex-wrap gap-2 items-center">
+        <div className="flex items-center" style={{ gap: '6px', flexWrap: 'nowrap', overflowX: 'auto' }}>
           {BONUS_TIERS.map((tier) => {
             const isActive = bonusTickets === tier.bonusTickets && quantity >= tier.minTickets;
             const isAbove = quantity < tier.minTickets;
@@ -473,39 +473,39 @@ export function SimpleTicketSelector({
                 key={tier.minTickets}
                 className="bonus-chip"
                 style={{
-                  padding: '8px 14px',
-                  borderRadius: '10px',
+                  padding: '4px 10px',
+                  borderRadius: '8px',
                   background: isActive ? 'rgba(240, 185, 11, 0.1)' : '#ffffff',
                   border: isActive
-                    ? '2px solid #F0B90B'
-                    : '1.5px solid rgba(240, 185, 11, 0.15)',
-                  boxShadow: isActive ? '0 2px 10px rgba(240, 185, 11, 0.12)' : 'none',
+                    ? '1.5px solid #F0B90B'
+                    : '1px solid rgba(240, 185, 11, 0.15)',
+                  boxShadow: isActive ? '0 2px 8px rgba(240, 185, 11, 0.12)' : 'none',
                   opacity: isAbove ? 0.5 : 1,
                   transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   cursor: 'default',
+                  flexShrink: 0,
                 }}
               >
                 <span
                   style={{
-                    fontSize: '12px',
-                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '11px',
+                    fontWeight: 400,
                     color: isActive ? '#1a1a2e' : '#6b7088',
                   }}
                 >
-                  {tier.minTickets}
+                  {tier.minTickets}→
                 </span>
-                <span style={{ fontSize: '12px', color: '#9a9eb0' }}>→</span>
                 <span
                   style={{
-                    fontSize: '13px',
-                    fontWeight: 800,
+                    fontSize: '11px',
+                    fontWeight: 700,
                     color: '#E8A000',
                   }}
                 >
-                  +{tier.bonusTickets} FREE
+                  +{tier.bonusTickets}
                 </span>
               </div>
             );
