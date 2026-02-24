@@ -243,15 +243,70 @@ export function SimpleTicketSelector({
         .ticket-other-input {
           -moz-appearance: textfield;
         }
+        .ticket-btn {
+          transition: all 0.2s ease-out !important;
+        }
         .ticket-btn:hover:not(:disabled):not(.selected) {
-          background: #EDEDF0 !important;
+          background: #F7F7FA !important;
+          border-color: ${categoryColor}4D !important;
+        }
+        .ticket-btn.selected {
+          background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 14px rgba(26, 26, 46, 0.2) !important;
+        }
+        .ticket-btn:active:not(:disabled) {
+          transform: scale(0.92);
+        }
+        .preset-btn {
+          transition: all 0.2s ease-out !important;
         }
         .preset-btn:hover:not(:disabled):not(.selected) {
-          background: #EDEDF0 !important;
+          background: #F7F7FA !important;
+          border-color: ${categoryColor}4D !important;
+        }
+        .preset-btn.selected {
+          background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
+          transform: scale(1.05);
+          box-shadow: 0 4px 14px rgba(26, 26, 46, 0.2) !important;
+        }
+        .preset-btn:active:not(:disabled) {
+          transform: scale(0.92);
         }
         .other-btn:hover {
-          background: #EDEDF0 !important;
+          background: #F7F7FA !important;
           border-style: solid !important;
+        }
+        .checkout-btn {
+          background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
+          position: relative;
+          overflow: hidden;
+        }
+        .checkout-btn::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.6s ease;
+        }
+        .checkout-btn:hover:not(:disabled)::after {
+          left: 100%;
+        }
+        .checkout-btn:hover:not(:disabled) {
+          box-shadow: 0 12px 36px rgba(26, 26, 46, 0.3) !important;
+        }
+        .checkout-btn:hover:not(:disabled) .checkout-arrow {
+          transform: translateX(4px);
+        }
+        @keyframes bonusFlash {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; text-shadow: 0 0 8px rgba(240, 185, 11, 0.5); }
+        }
+        .bonus-flash {
+          animation: bonusFlash 0.4s ease;
         }
       `}</style>
 
@@ -275,16 +330,14 @@ export function SimpleTicketSelector({
               style={{
                 width: '44px',
                 height: '44px',
-                borderRadius: '10px',
-                border: isSelected ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
-                background: isSelected ? '#1a1a2e' : '#F7F7FA',
+                borderRadius: '12px',
+                border: isSelected ? 'none' : '1.5px solid rgba(0, 0, 0, 0.08)',
+                background: isSelected ? 'linear-gradient(135deg, #1a1a2e, #2a2e4e)' : '#ffffff',
                 color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
                 fontSize: '15px',
                 fontWeight: 600,
                 cursor: isDisabled ? 'not-allowed' : 'pointer',
                 opacity: isDisabled ? 0.5 : 1,
-                transition: 'all 0.2s',
-                boxShadow: isSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
               }}
             >
               {num}
@@ -294,34 +347,46 @@ export function SimpleTicketSelector({
       </div>
 
       {/* Row 2: Presets + Other */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2 items-end">
         {PRESET_BUTTONS.map((num) => {
           const isSelected = quantity === num && isPresetSelected;
           const isDisabled = num > maxQuantity;
+          const bonusForPreset = getBonusTickets(num);
 
           return (
-            <button
-              key={num}
-              onClick={() => handlePresetSelect(num)}
-              disabled={isDisabled}
-              className={`preset-btn ${isSelected ? 'selected' : ''}`}
-              style={{
-                height: '44px',
-                padding: '0 20px',
-                borderRadius: '10px',
-                border: isSelected ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
-                background: isSelected ? '#1a1a2e' : '#F7F7FA',
-                color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
-                fontSize: '15px',
-                fontWeight: 600,
-                cursor: isDisabled ? 'not-allowed' : 'pointer',
-                opacity: isDisabled ? 0.5 : 1,
-                transition: 'all 0.2s',
-                boxShadow: isSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
-              }}
-            >
-              {num}
-            </button>
+            <div key={num} className="flex flex-col items-center">
+              <button
+                onClick={() => handlePresetSelect(num)}
+                disabled={isDisabled}
+                className={`preset-btn ${isSelected ? 'selected' : ''}`}
+                style={{
+                  height: '44px',
+                  padding: '0 20px',
+                  borderRadius: '12px',
+                  border: isSelected ? 'none' : '1.5px solid rgba(0, 0, 0, 0.08)',
+                  background: isSelected ? 'linear-gradient(135deg, #1a1a2e, #2a2e4e)' : '#ffffff',
+                  color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  opacity: isDisabled ? 0.5 : 1,
+                }}
+              >
+                {num}
+              </button>
+              {bonusForPreset > 0 && (
+                <span
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 600,
+                    color: '#F0B90B',
+                    marginTop: '3px',
+                  }}
+                >
+                  +{bonusForPreset} free
+                </span>
+              )}
+            </div>
           );
         })}
 
@@ -393,9 +458,9 @@ export function SimpleTicketSelector({
         )}
       </div>
 
-      {/* Bonus Offers - Horizontal Chips */}
+      {/* Bonus Offers - Premium Chips */}
       <div>
-        <p style={{ fontSize: '11px', color: 'var(--text-faded)', marginBottom: '8px' }}>
+        <p style={{ fontSize: '11px', color: '#9a9eb0', marginBottom: '8px' }}>
           Buy more, get free tickets:
         </p>
         <div className="flex flex-wrap gap-2 items-center">
@@ -406,35 +471,38 @@ export function SimpleTicketSelector({
             return (
               <div
                 key={tier.minTickets}
+                className="bonus-chip"
                 style={{
                   padding: '8px 14px',
                   borderRadius: '10px',
-                  background: isActive ? 'rgba(240, 185, 11, 0.08)' : '#F7F7FA',
+                  background: isActive ? 'rgba(240, 185, 11, 0.1)' : '#ffffff',
                   border: isActive
-                    ? '1.5px solid rgba(240, 185, 11, 0.25)'
-                    : '1px solid rgba(0, 0, 0, 0.06)',
+                    ? '2px solid #F0B90B'
+                    : '1.5px solid rgba(240, 185, 11, 0.15)',
+                  boxShadow: isActive ? '0 2px 10px rgba(240, 185, 11, 0.12)' : 'none',
                   opacity: isAbove ? 0.5 : 1,
                   transition: 'all 0.2s',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  cursor: 'default',
                 }}
               >
                 <span
                   style={{
                     fontSize: '12px',
-                    fontWeight: isActive ? 600 : 400,
-                    color: 'var(--text-muted)',
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? '#1a1a2e' : '#6b7088',
                   }}
                 >
                   {tier.minTickets}
                 </span>
-                <span style={{ fontSize: '12px', color: 'var(--text-faded)' }}>→</span>
+                <span style={{ fontSize: '12px', color: '#9a9eb0' }}>→</span>
                 <span
                   style={{
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    color: '#F0B90B',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    color: '#E8A000',
                   }}
                 >
                   +{tier.bonusTickets} FREE
@@ -445,17 +513,38 @@ export function SimpleTicketSelector({
         </div>
       </div>
 
-      {/* Total Price with Bonus Info */}
-      <div style={{ fontSize: '18px', fontWeight: 700, color: '#1a1a2e' }}>
-        Total: {formatPrice(totalPrice)}
-        <span style={{ fontWeight: 500, marginLeft: '8px' }}>
-          — {totalTickets} ticket{totalTickets > 1 ? 's' : ''}
-          {bonusTickets > 0 && (
-            <span style={{ color: '#F0B90B', fontWeight: 700 }}>
-              {' '}({bonusTickets} free!)
-            </span>
-          )}
+      {/* Total Price with Bonus Info - Highlighted container */}
+      <div
+        style={{
+          padding: '12px 20px',
+          borderRadius: '12px',
+          background: 'rgba(240, 185, 11, 0.04)',
+          border: '1px solid rgba(240, 185, 11, 0.12)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          flexWrap: 'wrap',
+        }}
+      >
+        <span style={{ fontSize: '14px', color: '#6b7088' }}>Total:</span>
+        <span style={{ fontSize: '22px', fontWeight: 800, color: '#1a1a2e' }}>
+          {formatPrice(totalPrice)}
         </span>
+        <span style={{ fontSize: '14px', color: '#6b7088' }}>
+          — {totalTickets} ticket{totalTickets > 1 ? 's' : ''}
+        </span>
+        {bonusTickets > 0 && (
+          <span
+            className="bonus-flash"
+            style={{
+              color: '#F0B90B',
+              fontWeight: 700,
+              fontSize: '14px',
+            }}
+          >
+            (+{bonusTickets} free!)
+          </span>
+        )}
       </div>
 
       {/* Reservation Timer */}
@@ -492,31 +581,22 @@ export function SimpleTicketSelector({
         </div>
       )}
 
-      {/* Checkout Button */}
+      {/* Checkout Button - Premium */}
       <button
         onClick={proceedToCheckout}
         disabled={quantity === 0 || isProceeding || maxQuantity === 0 || sessionStatus === 'loading'}
         className="w-full flex items-center justify-center gap-2 checkout-btn"
         style={{
-          padding: '16px',
-          borderRadius: '14px',
-          background: '#1a1a2e',
+          padding: '18px',
+          borderRadius: '16px',
+          background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
           color: '#ffffff',
           fontSize: '16px',
           fontWeight: 600,
           cursor: quantity === 0 || isProceeding || maxQuantity === 0 ? 'not-allowed' : 'pointer',
           opacity: quantity === 0 || isProceeding || maxQuantity === 0 ? 0.6 : 1,
           transition: 'all 0.3s',
-        }}
-        onMouseEnter={(e) => {
-          if (quantity > 0 && !isProceeding && maxQuantity > 0) {
-            e.currentTarget.style.background = categoryColor;
-            e.currentTarget.style.boxShadow = `0 8px 24px ${categoryColor}40`;
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = '#1a1a2e';
-          e.currentTarget.style.boxShadow = 'none';
+          boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
         }}
       >
         {isProceeding ? (
@@ -527,7 +607,7 @@ export function SimpleTicketSelector({
         ) : (
           <>
             Proceed to Checkout
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="h-5 w-5 checkout-arrow" style={{ transition: 'transform 0.2s' }} />
           </>
         )}
       </button>

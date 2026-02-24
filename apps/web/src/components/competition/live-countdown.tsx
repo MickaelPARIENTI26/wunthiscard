@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Clock } from 'lucide-react';
 
 interface LiveCountdownProps {
   targetDate: Date;
+  categoryColor?: string;
 }
 
-export function LiveCountdown({ targetDate }: LiveCountdownProps) {
+export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCountdownProps) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
   const [isUrgent, setIsUrgent] = useState(false);
   const [isCritical, setIsCritical] = useState(false);
@@ -77,37 +79,39 @@ export function LiveCountdown({ targetDate }: LiveCountdownProps) {
         }
       `}</style>
 
-      {/* Label */}
+      {/* Label with clock icon */}
       <p
+        className="flex items-center gap-1.5"
         style={{
           fontSize: '12px',
           fontWeight: 600,
-          color: isUrgent ? '#EF4444' : '#6b7088',
-          marginBottom: '8px',
+          color: isUrgent ? '#EF4444' : categoryColor,
+          marginBottom: '10px',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
         }}
       >
+        <Clock style={{ width: '14px', height: '14px' }} />
         {isUrgent ? 'Ending soon!' : 'Competition ends in'}
       </p>
 
-      {/* Countdown blocks */}
+      {/* Countdown blocks - Premium style */}
       <div className={`flex gap-2 ${isCritical ? 'countdown-critical' : ''}`}>
         {blocks.map((block) => (
           <div key={block.label} className="text-center">
             <div
               style={{
-                width: '56px',
-                height: '56px',
+                width: '60px',
+                height: '60px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: '#ffffff',
-                borderRadius: '12px',
-                border: '1px solid rgba(0, 0, 0, 0.06)',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-                fontSize: '22px',
-                fontWeight: 700,
+                background: 'linear-gradient(180deg, #ffffff, #FAFAFA)',
+                borderRadius: '14px',
+                border: '1.5px solid rgba(0, 0, 0, 0.06)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
+                fontSize: '24px',
+                fontWeight: 800,
                 color: isUrgent ? '#EF4444' : '#1a1a2e',
                 transform: block.isPulsing ? 'scale(1.08)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
@@ -120,7 +124,8 @@ export function LiveCountdown({ targetDate }: LiveCountdownProps) {
                 fontSize: '10px',
                 color: isUrgent ? '#EF4444' : '#9a9eb0',
                 marginTop: '6px',
-                fontWeight: 500,
+                fontWeight: 600,
+                letterSpacing: '0.5px',
               }}
             >
               {block.label}

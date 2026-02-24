@@ -17,6 +17,9 @@ export function UrgencyProgressBar({
   // Lighter version of category color for gradient
   const lighterColor = `${categoryColor}CC`;
 
+  // Darker version of category color for gradient
+  const darkerColor = categoryColor;
+
   return (
     <div>
       {/* CSS for animations */}
@@ -32,6 +35,10 @@ export function UrgencyProgressBar({
         .progress-pulse {
           animation: subtlePulse 2s ease-in-out infinite;
         }
+        @keyframes cursorGlow {
+          0%, 100% { box-shadow: 0 0 8px ${categoryColor}4D; }
+          50% { box-shadow: 0 0 12px ${categoryColor}66; }
+        }
       `}</style>
 
       {/* Labels */}
@@ -42,7 +49,7 @@ export function UrgencyProgressBar({
               Last {ticketsRemaining} tickets!
             </span>
           ) : (
-            `${ticketsRemaining} tickets remaining`
+            `${ticketsRemaining.toLocaleString()} tickets remaining`
           )}
         </span>
 
@@ -74,13 +81,13 @@ export function UrgencyProgressBar({
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar with cursor dot */}
       <div
         style={{
           height: '10px',
           background: '#f0f0f4',
           borderRadius: '5px',
-          overflow: 'hidden',
+          position: 'relative',
         }}
       >
         <div
@@ -89,12 +96,46 @@ export function UrgencyProgressBar({
             height: '100%',
             width: `${soldPercentage}%`,
             borderRadius: '5px',
-            background: `linear-gradient(90deg, ${categoryColor}, ${lighterColor}, ${categoryColor})`,
+            background: `linear-gradient(90deg, ${lighterColor}, ${darkerColor})`,
             backgroundSize: '200% 100%',
-            animation: `progressShine 2s ease infinite${isAlmostGone ? ', subtlePulse 2s ease-in-out infinite' : ''}`,
+            animation: `progressShine 2.5s ease-in-out infinite${isAlmostGone ? ', subtlePulse 2s ease-in-out infinite' : ''}`,
             transition: 'width 0.3s ease-out',
+            position: 'relative',
           }}
-        />
+        >
+          {/* Shine overlay */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+              backgroundSize: '200% 100%',
+              animation: 'progressShine 2.5s ease-in-out infinite',
+            }}
+          />
+        </div>
+
+        {/* Cursor dot at the end of progress */}
+        {soldPercentage > 0 && soldPercentage < 100 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: `${soldPercentage}%`,
+              transform: 'translate(-50%, -50%)',
+              width: '14px',
+              height: '14px',
+              borderRadius: '50%',
+              background: categoryColor,
+              border: '2px solid #ffffff',
+              boxShadow: `0 0 8px ${categoryColor}4D`,
+              animation: 'cursorGlow 2s ease-in-out infinite',
+            }}
+          />
+        )}
       </div>
     </div>
   );

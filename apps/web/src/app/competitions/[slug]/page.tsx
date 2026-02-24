@@ -243,7 +243,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           <div className="lg:w-[55%] space-y-5">
             {/* Badges */}
             <div className="flex items-center gap-2 flex-wrap">
-              {/* Category Badge */}
+              {/* Category Badge - Floating effect */}
               <span
                 style={{
                   padding: '5px 14px',
@@ -253,23 +253,37 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   fontSize: '11px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
+                  boxShadow: `0 4px 12px ${categoryColor}40`,
                 }}
               >
                 {CATEGORY_LABELS[category]}
               </span>
 
-              {/* Status Badge */}
+              {/* Status Badge - Live with pulsing dot */}
               {isActive && (
                 <span
                   style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
                     padding: '5px 14px',
                     borderRadius: '8px',
                     background: 'rgba(22, 163, 74, 0.1)',
                     color: '#16A34A',
                     fontSize: '11px',
                     fontWeight: 700,
+                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.2)',
                   }}
                 >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: '#16A34A',
+                      animation: 'livePulse 1.5s ease-in-out infinite',
+                    }}
+                  />
                   Live
                 </span>
               )}
@@ -311,21 +325,28 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               {competition.title}
             </h1>
 
-            {/* Prize Value - More impactful */}
+            {/* Prize Value - WOW effect */}
             <div>
               <p
                 className="font-[family-name:var(--font-outfit)]"
-                style={{ fontSize: '42px', fontWeight: 900, color: '#1a1a2e', lineHeight: 1.1 }}
+                style={{
+                  fontSize: '42px',
+                  fontWeight: 900,
+                  color: '#1a1a2e',
+                  lineHeight: 1.1,
+                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
+                }}
               >
                 {formattedPrizeValue}
               </p>
               <p
                 style={{
                   fontSize: '11px',
-                  color: '#9a9eb0',
+                  color: categoryColor,
                   textTransform: 'uppercase',
-                  letterSpacing: '1px',
+                  letterSpacing: '1.5px',
                   marginTop: '4px',
+                  fontWeight: 600,
                 }}
               >
                 Card Value
@@ -341,57 +362,71 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               />
             )}
 
-            {/* Info Grid */}
+            {/* Info Grid - Premium style */}
             <div
-              className="grid grid-cols-3 gap-4"
+              className="grid grid-cols-3"
               style={{
-                background: '#F7F7FA',
+                background: '#ffffff',
                 borderRadius: '16px',
-                padding: '16px 20px',
+                border: '1.5px solid rgba(0, 0, 0, 0.06)',
+                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
+                overflow: 'hidden',
               }}
             >
-              <div>
+              <div style={{ padding: '16px 20px' }}>
                 <p
                   style={{
-                    fontSize: '11px',
-                    color: '#9a9eb0',
+                    fontSize: '10px',
+                    color: categoryColor,
                     textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
                     marginBottom: '4px',
+                    fontWeight: 600,
                   }}
                 >
                   Ticket Price
                 </p>
-                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
+                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
                   {formatPrice(competition.ticketPrice)}
                 </p>
               </div>
-              <div>
+              <div
+                style={{
+                  padding: '16px 20px',
+                  borderLeft: '1px solid rgba(0, 0, 0, 0.06)',
+                  borderRight: '1px solid rgba(0, 0, 0, 0.06)',
+                }}
+              >
                 <p
                   style={{
-                    fontSize: '11px',
-                    color: '#9a9eb0',
+                    fontSize: '10px',
+                    color: categoryColor,
                     textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
                     marginBottom: '4px',
+                    fontWeight: 600,
                   }}
                 >
                   Tickets Left
                 </p>
-                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
-                  {ticketsRemaining}/{competition.totalTickets}
+                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
+                  {ticketsRemaining.toLocaleString()}/{competition.totalTickets.toLocaleString()}
                 </p>
               </div>
-              <div>
+              <div style={{ padding: '16px 20px' }}>
                 <p
                   style={{
-                    fontSize: '11px',
-                    color: '#9a9eb0',
+                    fontSize: '10px',
+                    color: categoryColor,
                     textTransform: 'uppercase',
+                    letterSpacing: '1.5px',
                     marginBottom: '4px',
+                    fontWeight: 600,
                   }}
                 >
                   Draw Date
                 </p>
-                <p style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a2e' }}>
+                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
                   {new Date(competition.drawDate).toLocaleDateString('en-GB', {
                     day: 'numeric',
                     month: 'short',
@@ -403,7 +438,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
             {/* Countdown - Live with animations */}
             {(isActive || isUpcoming) && (
-              <LiveCountdown targetDate={new Date(competition.drawDate)} />
+              <LiveCountdown targetDate={new Date(competition.drawDate)} categoryColor={categoryColor} />
             )}
 
             {/* Active Competition - Ticket Selector */}
