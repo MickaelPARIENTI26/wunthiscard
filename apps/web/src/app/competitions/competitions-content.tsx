@@ -4,16 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CompetitionCard } from '@/components/competition/competition-card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+
 interface Competition {
   id: string;
   slug: string;
@@ -49,28 +40,24 @@ interface CompetitionsContentProps {
   filters: Filters;
 }
 
-const CATEGORY_TABS = [
-  { value: 'all', label: 'All' },
-  { value: 'pokemon', label: 'Pokemon' },
-  { value: 'one-piece', label: 'One Piece' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'memorabilia', label: 'Memorabilia' },
-  { value: 'other', label: 'Other' },
-];
+// TODO: Réactiver les filtres quand on aura plus de compétitions simultanées
+// Category filters with emojis
+// const CATEGORY_FILTERS = [
+//   { value: 'all', label: 'All', emoji: '✨' },
+//   { value: 'pokemon', label: 'Pokemon', emoji: '🔥' },
+//   { value: 'one-piece', label: 'One Piece', emoji: '🏴‍☠️' },
+//   { value: 'sports', label: 'Sports', emoji: '⚽' },
+//   { value: 'memorabilia', label: 'Memorabilia', emoji: '🏆' },
+//   { value: 'other', label: 'Other', emoji: '🎴' },
+// ];
 
-// No "Completed" option - users can see completed competitions on /winners page
-const STATUS_OPTIONS = [
-  { value: 'all', label: 'All Status' },
-  { value: 'active', label: 'Active' },
-  { value: 'upcoming', label: 'Coming Soon' },
-];
-
-const SORT_OPTIONS = [
-  { value: 'end-date', label: 'End Date' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-  { value: 'popularity', label: 'Popularity' },
-];
+// Status filters
+// const STATUS_FILTERS = [
+//   { value: 'all', label: 'All' },
+//   { value: 'live', label: 'Live' },
+//   { value: 'ending-soon', label: 'Ending Soon' },
+//   { value: 'coming-soon', label: 'Coming Soon' },
+// ];
 
 export function CompetitionsContent({
   competitions,
@@ -106,76 +93,62 @@ export function CompetitionsContent({
 
   return (
     <div>
-      {/* Filters Section */}
-      <div className="mb-6 space-y-4">
-        {/* Category Tabs - Scrollable on mobile */}
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
-          <Tabs
-            value={filters.category}
-            onValueChange={(value) => updateFilters('category', value)}
-          >
-            <TabsList className="inline-flex h-auto gap-1 bg-transparent p-0">
-              {CATEGORY_TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className={cn(
-                    'rounded-full px-3 py-1.5 text-sm font-medium transition-all',
-                    'data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
-                    'data-[state=inactive]:bg-muted data-[state=inactive]:hover:bg-muted/80'
-                  )}
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
+      {/* TODO: Réactiver les filtres quand on aura plus de compétitions simultanées */}
+      {/* Category Filters - DISABLED
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
+        {CATEGORY_FILTERS.map((filter) => {
+          const isActive = filters.category === filter.value;
+          return (
+            <button
+              key={filter.value}
+              onClick={() => updateFilters('category', filter.value)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
+              style={{
+                background: isActive ? '#1a1a2e' : '#ffffff',
+                color: isActive ? '#ffffff' : '#6b7088',
+                border: isActive ? 'none' : '1px solid #e8e8ec',
+                boxShadow: isActive ? '0 4px 12px rgba(26, 26, 46, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
+              }}
+            >
+              <span>{filter.emoji}</span>
+              <span>{filter.label}</span>
+            </button>
+          );
+        })}
+      </div>
+      */}
 
-        {/* Status and Sort Filters */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-2">
-            <Select value={filters.status} onValueChange={(value) => updateFilters('status', value)}>
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+      {/* Status Filters - DISABLED
+      <div className="flex flex-wrap justify-center gap-2 mb-8">
+        {STATUS_FILTERS.map((filter) => {
+          const isActive = filters.status === filter.value;
+          return (
+            <button
+              key={filter.value}
+              onClick={() => updateFilters('status', filter.value)}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
+              style={{
+                background: isActive ? 'rgba(240, 185, 11, 0.1)' : 'transparent',
+                color: isActive ? '#E8A000' : '#6b7088',
+                border: `1px solid ${isActive ? 'rgba(240, 185, 11, 0.3)' : 'transparent'}`,
+              }}
+            >
+              {filter.label}
+            </button>
+          );
+        })}
+      </div>
+      */}
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Sort by:</span>
-            <Select value={filters.sort} onValueChange={(value) => updateFilters('sort', value)}>
-              <SelectTrigger className="w-[160px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                {SORT_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Results count */}
-        <div className="text-sm text-muted-foreground">
-          Showing {competitions.length} of {pagination.totalCount} competitions
-        </div>
+      {/* Results count */}
+      <div className="text-center mb-8" style={{ color: '#6b7088', fontSize: '14px' }}>
+        Showing {competitions.length} of {pagination.totalCount} competitions
       </div>
 
       {/* Competitions Grid */}
       {competitions.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {competitions.map((competition) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {competitions.map((competition, index) => (
             <CompetitionCard
               key={competition.id}
               id={competition.id}
@@ -189,77 +162,98 @@ export function CompetitionsContent({
               soldTickets={competition.soldTickets}
               drawDate={competition.drawDate}
               status={competition.status}
+              index={index}
             />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 text-6xl">🎴</div>
-          <h3 className="mb-2 text-lg font-semibold">No competitions found</h3>
-          <p className="mb-6 text-muted-foreground">
+          <h3 className="mb-2 text-lg font-semibold" style={{ color: '#1a1a2e' }}>
+            No competitions found
+          </h3>
+          <p className="mb-6" style={{ color: '#6b7088' }}>
             Try adjusting your filters to find more competitions
           </p>
-          <Button
-            variant="outline"
-            onClick={() => {
-              router.push('/competitions');
+          <button
+            onClick={() => router.push('/competitions')}
+            className="px-6 py-3 rounded-xl font-medium transition-all duration-300"
+            style={{
+              background: '#ffffff',
+              color: '#1a1a2e',
+              border: '1px solid #e8e8ec',
             }}
           >
             Clear Filters
-          </Button>
+          </button>
         </div>
       )}
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <nav className="mt-8 flex items-center justify-center gap-1" aria-label="Pagination">
-          <Button
-            variant="outline"
-            size="icon"
+        <nav className="mt-12 flex items-center justify-center gap-2" aria-label="Pagination">
+          <button
             disabled={!pagination.hasPrev}
             onClick={() => handlePageChange(pagination.page - 1)}
             aria-label="Previous page"
+            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300"
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e8e8ec',
+              color: pagination.hasPrev ? '#1a1a2e' : '#d0d0d4',
+              cursor: pagination.hasPrev ? 'pointer' : 'not-allowed',
+            }}
           >
             <ChevronLeft className="h-4 w-4" />
-          </Button>
+          </button>
 
           <div className="flex items-center gap-1">
-            {/* Generate page numbers */}
             {generatePageNumbers(pagination.page, pagination.totalPages).map((pageNum, index) => {
               if (pageNum === 'ellipsis') {
                 return (
                   <span
                     key={`ellipsis-${index}`}
-                    className="flex h-9 w-9 items-center justify-center text-muted-foreground"
+                    className="flex h-10 w-10 items-center justify-center"
+                    style={{ color: '#6b7088' }}
                   >
                     ...
                   </span>
                 );
               }
+              const isCurrentPage = pageNum === pagination.page;
               return (
-                <Button
+                <button
                   key={pageNum}
-                  variant={pageNum === pagination.page ? 'default' : 'outline'}
-                  size="icon"
                   onClick={() => handlePageChange(pageNum as number)}
                   aria-label={`Page ${pageNum}`}
-                  aria-current={pageNum === pagination.page ? 'page' : undefined}
+                  aria-current={isCurrentPage ? 'page' : undefined}
+                  className="flex items-center justify-center w-10 h-10 rounded-xl font-medium transition-all duration-300"
+                  style={{
+                    background: isCurrentPage ? '#1a1a2e' : '#ffffff',
+                    color: isCurrentPage ? '#ffffff' : '#1a1a2e',
+                    border: isCurrentPage ? 'none' : '1px solid #e8e8ec',
+                  }}
                 >
                   {pageNum}
-                </Button>
+                </button>
               );
             })}
           </div>
 
-          <Button
-            variant="outline"
-            size="icon"
+          <button
             disabled={!pagination.hasNext}
             onClick={() => handlePageChange(pagination.page + 1)}
             aria-label="Next page"
+            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300"
+            style={{
+              background: '#ffffff',
+              border: '1px solid #e8e8ec',
+              color: pagination.hasNext ? '#1a1a2e' : '#d0d0d4',
+              cursor: pagination.hasNext ? 'pointer' : 'not-allowed',
+            }}
           >
             <ChevronRight className="h-4 w-4" />
-          </Button>
+          </button>
         </nav>
       )}
     </div>
@@ -273,19 +267,16 @@ function generatePageNumbers(
   const pages: (number | 'ellipsis')[] = [];
 
   if (totalPages <= 7) {
-    // Show all pages
     for (let i = 1; i <= totalPages; i++) {
       pages.push(i);
     }
   } else {
-    // Always show first page
     pages.push(1);
 
     if (currentPage > 3) {
       pages.push('ellipsis');
     }
 
-    // Show pages around current page
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
 
@@ -297,7 +288,6 @@ function generatePageNumbers(
       pages.push('ellipsis');
     }
 
-    // Always show last page
     pages.push(totalPages);
   }
 

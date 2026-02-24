@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { RegisterForm } from './register-form';
 
 export const metadata: Metadata = {
@@ -12,30 +10,43 @@ export const metadata: Metadata = {
 
 function RegisterFormSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 animate-pulse">
       <div className="grid grid-cols-2 gap-4">
-        <Skeleton className="h-10" />
-        <Skeleton className="h-10" />
+        <div className="h-11 rounded-xl" style={{ background: '#F5F5F7' }} />
+        <div className="h-11 rounded-xl" style={{ background: '#F5F5F7' }} />
       </div>
-      <Skeleton className="h-10" />
-      <Skeleton className="h-10" />
-      <Skeleton className="h-10" />
+      <div className="h-11 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
+      <div className="h-11 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
+      <div className="h-11 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
+      <div className="h-12 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
     </div>
   );
 }
 
 export default function RegisterPage() {
   return (
-    <Card>
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold font-[family-name:var(--font-outfit)] text-gradient-gold">Create an account</CardTitle>
-        <CardDescription>Enter your details to get started</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Suspense fallback={<RegisterFormSkeleton />}>
-          <RegisterForm />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <div>
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1
+          className="font-[family-name:var(--font-outfit)] mb-2"
+          style={{
+            fontSize: '29px',
+            fontWeight: 700,
+            color: '#1a1a2e',
+          }}
+        >
+          Create your account
+        </h1>
+        <p style={{ color: '#6b7088', fontSize: '14px' }}>
+          Enter your details to get started
+        </p>
+      </div>
+
+      {/* Form */}
+      <Suspense fallback={<RegisterFormSkeleton />}>
+        <RegisterForm />
+      </Suspense>
+    </div>
   );
 }

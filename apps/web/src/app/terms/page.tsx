@@ -59,7 +59,7 @@ export default async function TermsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8" style={{ paddingTop: '80px', paddingBottom: '32px' }}>
         {/* Header */}
         <div className="mb-8">
           <Link
@@ -68,7 +68,7 @@ export default async function TermsPage() {
           >
             &larr; Back to Home
           </Link>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="mt-4 font-bold tracking-tight font-[family-name:var(--font-outfit)]" style={{ fontSize: '42px', color: '#1a1a2e' }}>
             Terms & Conditions
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">

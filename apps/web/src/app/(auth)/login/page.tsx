@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = {
@@ -10,17 +9,29 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Card>
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold font-[family-name:var(--font-outfit)] text-gradient-gold">Welcome back</CardTitle>
-        <CardDescription>Sign in to your account to continue</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Suspense fallback={<LoginFormSkeleton />}>
-          <LoginForm />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <div>
+      {/* Header */}
+      <div className="text-center mb-6">
+        <h1
+          className="font-[family-name:var(--font-outfit)] mb-2"
+          style={{
+            fontSize: '29px',
+            fontWeight: 700,
+            color: '#1a1a2e',
+          }}
+        >
+          Welcome back
+        </h1>
+        <p style={{ color: '#6b7088', fontSize: '14px' }}>
+          Sign in to your account to continue
+        </p>
+      </div>
+
+      {/* Form */}
+      <Suspense fallback={<LoginFormSkeleton />}>
+        <LoginForm />
+      </Suspense>
+    </div>
   );
 }
 
@@ -28,14 +39,14 @@ function LoginFormSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
       <div className="space-y-2">
-        <div className="h-4 w-12 bg-muted rounded" />
-        <div className="h-9 w-full bg-muted rounded-md" />
+        <div className="h-4 w-12 rounded" style={{ background: '#F5F5F7' }} />
+        <div className="h-11 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
       </div>
       <div className="space-y-2">
-        <div className="h-4 w-16 bg-muted rounded" />
-        <div className="h-9 w-full bg-muted rounded-md" />
+        <div className="h-4 w-16 rounded" style={{ background: '#F5F5F7' }} />
+        <div className="h-11 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
       </div>
-      <div className="h-9 w-full bg-muted rounded-md" />
+      <div className="h-12 w-full rounded-xl" style={{ background: '#F5F5F7' }} />
     </div>
   );
 }

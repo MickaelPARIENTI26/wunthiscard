@@ -3,8 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { ArrowRight, Sparkles, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { CompetitionCard } from '@/components/competition/competition-card';
 import { cn } from '@/lib/utils';
 import type { CompetitionCategory, CompetitionStatus } from '@winucard/shared/types';
@@ -28,49 +27,49 @@ interface LiveCompetitionsProps {
   className?: string;
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4 },
-  },
-};
+// TODO: Réactiver les filtres quand on aura plus de compétitions simultanées
+// Category filter options
+// const categoryFilters = [
+//   { key: 'ALL', label: 'All', emoji: '✨' },
+//   { key: 'POKEMON', label: 'Pokemon', emoji: '🔥', color: '#F0B90B' },
+//   { key: 'ONE_PIECE', label: 'One Piece', emoji: '🏴‍☠️', color: '#EF4444' },
+//   { key: 'SPORTS_FOOTBALL', label: 'Football', emoji: '⚽', color: '#22C55E' },
+//   { key: 'SPORTS_BASKETBALL', label: 'Basketball', emoji: '🏀', color: '#3B82F6' },
+//   { key: 'MEMORABILIA', label: 'Memorabilia', emoji: '🏆', color: '#A855F7' },
+// ];
 
 export function LiveCompetitions({ competitions, className }: LiveCompetitionsProps) {
   const t = useTranslations();
+  // TODO: Réactiver les filtres quand on aura plus de compétitions simultanées
+  // const [activeFilter, setActiveFilter] = useState('ALL');
+
+  // Show all competitions (no filter)
+  const displayedCompetitions = competitions;
 
   if (competitions.length === 0) {
     return (
-      <section className={cn('py-16 md:py-20 lg:py-24', className)}>
+      <section
+        className={cn('py-16 md:py-20 lg:py-24', className)}
+        style={{ background: '#F7F7FA' }}
+      >
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-display)]">
-              <span className="text-gradient-gold">{t('competitions.liveCompetitions')}</span>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-outfit)]">
+              <span style={{ color: '#1a1a2e' }}>{t('competitions.liveCompetitions')}</span>
             </h2>
-            <p className="text-muted-foreground text-lg mb-8" style={{ color: '#a0a0a0' }}>
+            <p className="mb-8" style={{ color: '#6b7088', fontSize: '16px' }}>
               {t('competitions.noLiveCompetitions')}
             </p>
-            <Button
-              asChild
-              variant="outline"
+            <Link
+              href="/competitions"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300"
               style={{
-                background: 'transparent',
-                borderColor: 'oklch(0.3 0.02 270)',
+                background: '#1a1a2e',
+                color: '#ffffff',
               }}
             >
-              <Link href="/competitions">{t('common.viewCompetitions')}</Link>
-            </Button>
+              {t('common.viewCompetitions')}
+            </Link>
           </div>
         </div>
       </section>
@@ -78,13 +77,10 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
   }
 
   return (
-    <section className={cn('py-16 md:py-20 lg:py-24 relative', className)}>
-      {/* Decorative background glow */}
-      <div
-        className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none"
-        style={{ background: 'oklch(0.82 0.165 85 / 0.04)' }}
-      />
-
+    <section
+      className={cn('py-16 md:py-20 lg:py-24 relative', className)}
+      style={{ background: '#F7F7FA' }}
+    >
       <div className="container mx-auto px-4 relative">
         {/* Section Header */}
         <motion.div
@@ -92,89 +88,131 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 md:mb-14"
+          className="text-center mb-10 md:mb-12"
         >
-          <div>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold flex items-center gap-3 font-[family-name:var(--font-display)]">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-xl animate-pulse"
+          <h2
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-[family-name:var(--font-outfit)]"
+            style={{ color: '#1a1a2e', letterSpacing: '-1px' }}
+          >
+            {t('competitions.liveCompetitions')}
+          </h2>
+          <p style={{ color: '#6b7088', fontSize: '16px', maxWidth: '500px', margin: '0 auto' }}>
+            {t('competitions.liveCompetitionsSubtitle')}
+          </p>
+        </motion.div>
+
+        {/* TODO: Réactiver les filtres quand on aura plus de compétitions simultanées */}
+        {/* Category Filters - DISABLED
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="flex flex-wrap justify-center gap-2 mb-10 md:mb-12"
+        >
+          {categoryFilters.map((filter) => {
+            const isActive = activeFilter === filter.key;
+            return (
+              <button
+                key={filter.key}
+                onClick={() => setActiveFilter(filter.key)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
                 style={{
-                  background: 'linear-gradient(135deg, oklch(0.6 0.2 25) 0%, oklch(0.45 0.18 25) 100%)',
+                  background: isActive ? '#1a1a2e' : '#ffffff',
+                  color: isActive ? '#ffffff' : '#6b7088',
+                  border: isActive ? 'none' : '1px solid #e8e8ec',
+                  boxShadow: isActive ? '0 4px 12px rgba(26, 26, 46, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
                 }}
               >
-                <Zap className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-gradient-gold">{t('competitions.liveCompetitions')}</span>
-            </h2>
-            <p className="text-muted-foreground mt-2" style={{ color: '#a0a0a0' }}>
-              {t('competitions.liveCompetitionsSubtitle')}
-            </p>
-          </div>
-          <Button
-            asChild
-            variant="outline"
-            className="self-start sm:self-auto group transition-all hover:border-primary/50"
-            style={{
-              background: 'transparent',
-              borderColor: 'oklch(0.3 0.02 270)',
-            }}
-          >
-            <Link href="/competitions" className="flex items-center gap-2">
-              {t('common.viewAll')}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
+                <span>{filter.emoji}</span>
+                <span>{filter.label}</span>
+              </button>
+            );
+          })}
         </motion.div>
+        */}
 
         {/* Competitions Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {competitions.map((competition) => (
-            <motion.div key={competition.id} variants={itemVariants}>
-              <CompetitionCard
-                id={competition.id}
-                slug={competition.slug}
-                title={competition.title}
-                mainImageUrl={competition.mainImageUrl}
-                category={competition.category}
-                prizeValue={competition.prizeValue}
-                ticketPrice={competition.ticketPrice}
-                totalTickets={competition.totalTickets}
-                soldTickets={competition.soldTickets}
-                drawDate={competition.drawDate}
-                status={competition.status}
-              />
-            </motion.div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedCompetitions.map((competition, index) => (
+            <CompetitionCard
+              key={competition.id}
+              id={competition.id}
+              slug={competition.slug}
+              title={competition.title}
+              mainImageUrl={competition.mainImageUrl}
+              category={competition.category}
+              prizeValue={competition.prizeValue}
+              ticketPrice={competition.ticketPrice}
+              totalTickets={competition.totalTickets}
+              soldTickets={competition.soldTickets}
+              drawDate={competition.drawDate}
+              status={competition.status}
+              index={index}
+            />
           ))}
-        </motion.div>
+        </div>
 
-        {/* View All Link (Mobile) */}
-        {competitions.length >= 3 && (
+        {/* TODO: Réactiver les filtres quand on aura plus de compétitions simultanées */}
+        {/* Empty State for filtered results - DISABLED
+        {filteredCompetitions.length === 0 && activeFilter !== 'ALL' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <p style={{ color: '#6b7088', fontSize: '16px', marginBottom: '16px' }}>
+              No competitions available right now.
+            </p>
+            <button
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all duration-300"
+              style={{
+                background: '#ffffff',
+                color: '#1a1a2e',
+                border: '1px solid #e8e8ec',
+              }}
+            >
+              View All Competitions
+            </button>
+          </motion.div>
+        )}
+        */}
+
+        {/* View All Link */}
+        {displayedCompetitions.length >= 3 && (
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mt-8 text-center sm:hidden"
+            className="mt-10 md:mt-12 text-center"
           >
-            <Button
-              asChild
-              className="font-semibold"
-              style={{
-                background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-                color: 'black',
-              }}
+            <style>{`
+              .view-all-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 14px 28px;
+                font-weight: 600;
+                font-size: 15px;
+                background: #1a1a2e;
+                color: #ffffff;
+                border-radius: 14px;
+                transition: all 0.3s ease;
+              }
+              .view-all-btn:hover {
+                background: #2a2a3e;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 24px rgba(26, 26, 46, 0.3);
+              }
+            `}</style>
+            <Link
+              href="/competitions"
+              className="view-all-btn group"
             >
-              <Link href="/competitions" className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                {t('common.viewCompetitions')}
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+              <Sparkles className="h-4 w-4" />
+              {t('common.viewCompetitions')}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </motion.div>
         )}
       </div>

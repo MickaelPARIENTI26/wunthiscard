@@ -4,8 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Menu, User, Ticket, Trophy, Settings, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Menu, User, Ticket, Trophy, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -30,7 +29,6 @@ interface HeaderProps {
 export function Header({ user = null }: HeaderProps) {
   const router = useRouter();
   const t = useTranslations();
-  const [isScrolled, setIsScrolled] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const navLinks = [
@@ -45,15 +43,6 @@ export function Header({ user = null }: HeaderProps) {
     router.push('/logout');
   };
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const getInitials = (name: string) => {
     return name
       .split(' ')
@@ -65,83 +54,112 @@ export function Header({ user = null }: HeaderProps) {
 
   return (
     <header
-      className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300',
-        isScrolled
-          ? 'border-b backdrop-blur-xl'
-          : 'bg-transparent'
-      )}
-      style={isScrolled ? {
-        background: 'rgba(18, 21, 30, 0.85)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderColor: 'rgba(255, 255, 255, 0.05)',
-      } : undefined}
+      className="fixed top-0 w-full"
+      style={{
+        height: '66px',
+        zIndex: 100,
+        background: 'rgba(255, 255, 255, 0.92)',
+        backdropFilter: 'blur(24px)',
+        WebkitBackdropFilter: 'blur(24px)',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+      }}
     >
-      {/* Subtle gold line at top when scrolled */}
-      {isScrolled && (
-        <div
-          className="absolute inset-x-0 top-0 h-px"
-          style={{
-            background: 'linear-gradient(90deg, transparent 0%, rgba(240, 185, 11, 0.3) 50%, transparent 100%)',
-          }}
-        />
-      )}
-
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-full items-center justify-between px-4">
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          {/* Gold square with W */}
           <div
-            className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden transition-transform duration-300 group-hover:scale-105"
+            className="flex items-center justify-center"
             style={{
-              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+              width: '34px',
+              height: '34px',
+              borderRadius: '10px',
+              background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
             }}
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-            <Trophy className="h-5 w-5 text-black relative z-10" />
-          </div>
-          <div className="flex flex-col">
-            <span className="hidden text-lg font-bold tracking-tight sm:inline-block font-[family-name:var(--font-outfit)] text-gradient-gold">
-              WinUCard
+            <span
+              style={{
+                color: '#ffffff',
+                fontSize: '16px',
+                fontWeight: 800,
+                fontFamily: 'var(--font-outfit)',
+              }}
+            >
+              W
             </span>
-            <span className="hidden text-[10px] text-muted-foreground sm:inline-block -mt-0.5">
-              {t('meta.premiumCollectibles')}
-            </span>
           </div>
+          {/* Text */}
+          <span
+            className="font-[family-name:var(--font-outfit)]"
+            style={{
+              fontSize: '20px',
+              fontWeight: 700,
+              letterSpacing: '-0.5px',
+              color: 'var(--text-primary)',
+            }}
+          >
+            WinUCard
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
+        <style>{`
+          .header-nav-link {
+            position: relative;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: color 0.2s ease;
+          }
+          .header-nav-link:hover {
+            color: var(--text-primary);
+          }
+          .header-login-btn {
+            padding: 8px 16px;
+            background: #ffffff;
+            border: 1.5px solid #e0e0e4;
+            border-radius: 12px;
+            color: #333333;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+          }
+          .header-login-btn:hover {
+            background: #f5f5f7;
+            border-color: #d0d0d4;
+          }
+          .header-signup-btn {
+            padding: 8px 20px;
+            background: #1a1a2e;
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+          }
+          .header-signup-btn:hover {
+            background: #2a2a3e;
+          }
+        `}</style>
         <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="group relative rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="header-nav-link"
             >
-              <span className="relative z-10">{link.label}</span>
-              {/* Hover underline */}
-              <span
-                className="absolute inset-x-4 -bottom-0.5 h-0.5 scale-x-0 transition-transform duration-300 group-hover:scale-x-100"
-                style={{
-                  background: 'linear-gradient(90deg, #F0B90B, #C9990A)',
-                }}
-              />
-              {/* Hover background */}
-              <span
-                className="absolute inset-0 rounded-lg opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.1) 0%, transparent 100%)',
-                }}
-              />
+              {link.label}
             </Link>
           ))}
         </nav>
 
         {/* Right side actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {/* Language Switcher */}
-          <LanguageSwitcher className="hidden sm:flex" />
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
 
           {/* Desktop: User menu or Login/Register */}
           <div className="hidden lg:flex lg:items-center lg:gap-3">
@@ -157,8 +175,8 @@ export function Header({ user = null }: HeaderProps) {
                       <AvatarFallback
                         className="font-semibold"
                         style={{
-                          background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                          color: '#12151e',
+                          background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
+                          color: '#ffffff',
                         }}
                       >
                         {getInitials(user.name)}
@@ -171,8 +189,8 @@ export function Header({ user = null }: HeaderProps) {
                   align="end"
                   forceMount
                   style={{
-                    background: 'linear-gradient(135deg, #161a28 0%, #12151e 100%)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: '#ffffff',
+                    border: '1px solid #e8e8ec',
                   }}
                 >
                   <DropdownMenuLabel className="font-normal">
@@ -221,33 +239,21 @@ export function Header({ user = null }: HeaderProps) {
               </DropdownMenu>
             ) : (
               <>
-                <Button
-                  variant="ghost"
-                  asChild
-                  className="text-muted-foreground hover:text-foreground"
+                {/* Login Button */}
+                <button
+                  onClick={() => router.push('/login')}
+                  className="header-login-btn"
                 >
-                  <Link href="/login">{t('common.login')}</Link>
-                </Button>
-                <Button
-                  asChild
-                  className="relative overflow-hidden font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                  style={{
-                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                    color: '#12151e',
-                    boxShadow: '0 0 0 rgba(240, 185, 11, 0)',
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.boxShadow = '0 4px 20px rgba(240, 185, 11, 0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.boxShadow = '0 0 0 rgba(240, 185, 11, 0)';
-                  }}
+                  {t('common.login')}
+                </button>
+
+                {/* Sign Up Button */}
+                <button
+                  onClick={() => router.push('/register')}
+                  className="header-signup-btn"
                 >
-                  <Link href="/register" className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4" />
-                    {t('common.register')}
-                  </Link>
-                </Button>
+                  {t('common.register')}
+                </button>
               </>
             )}
           </div>
@@ -259,6 +265,7 @@ export function Header({ user = null }: HeaderProps) {
             className="lg:hidden relative"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
+            style={{ color: 'var(--text-muted)' }}
           >
             <Menu className="h-5 w-5" />
           </Button>

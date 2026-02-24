@@ -161,7 +161,7 @@ export function ResetPasswordContent() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
             <XCircle className="h-6 w-6 text-destructive" />
           </div>
-          <CardTitle className="text-2xl font-bold">Invalid or expired link</CardTitle>
+          <CardTitle className="font-bold font-[family-name:var(--font-outfit)]" style={{ fontSize: '29px', color: 'var(--text-primary)' }}>Invalid or expired link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired. Please request a new one.
           </CardDescription>
@@ -180,10 +180,13 @@ export function ResetPasswordContent() {
     return (
       <Card>
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+          <div
+            className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
+            style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
+          >
+            <CheckCircle className="h-6 w-6" style={{ color: '#22C55E' }} />
           </div>
-          <CardTitle className="text-2xl font-bold">Password reset successful</CardTitle>
+          <CardTitle className="font-bold font-[family-name:var(--font-outfit)] text-gradient-gold" style={{ fontSize: '29px' }}>Password reset successful</CardTitle>
           <CardDescription>
             Your password has been reset. You can now sign in with your new password.
           </CardDescription>
@@ -200,7 +203,7 @@ export function ResetPasswordContent() {
   return (
     <Card>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold">Reset your password</CardTitle>
+        <CardTitle className="font-bold font-[family-name:var(--font-outfit)] text-gradient-gold" style={{ fontSize: '29px' }}>Reset your password</CardTitle>
         <CardDescription>Enter your new password below</CardDescription>
       </CardHeader>
       <CardContent>

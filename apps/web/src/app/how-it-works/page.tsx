@@ -1,15 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import {
-  Target,
-  Ticket,
-  HelpCircle,
-  Trophy,
-  ShieldCheck,
-  Mail,
-  ArrowRight,
-} from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'How It Works',
@@ -24,249 +15,299 @@ export const metadata: Metadata = {
 
 const steps = [
   {
-    icon: Target,
-    title: 'Browse & Choose',
-    description: 'Find a competition you love',
-    details:
-      'Explore our selection of premium collectible cards including Pokemon, One Piece TCG, sports cards, and signed memorabilia. Each competition clearly shows the prize value, ticket price, and number of tickets available.',
+    number: 1,
+    emoji: '🔍',
+    title: 'Browse',
+    description:
+      'Explore our curated selection of premium collectible cards including rare Pokémon, One Piece TCG, sports cards, and signed memorabilia. Each competition displays the prize value, ticket price, total tickets available, and draw date so you can make an informed choice.',
+    bgGradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
+    borderColor: 'rgba(232, 160, 0, 0.12)',
+    numberBg: '#E8A000',
+    shadowColor: 'rgba(232, 160, 0, 0.25)',
   },
   {
-    icon: Ticket,
-    title: 'Select Your Tickets',
-    description: 'Pick your lucky numbers or use random',
-    details:
-      'Choose specific ticket numbers that feel lucky to you, or let our system randomly select available numbers. The more tickets you purchase, the better your chances of winning. Bonus tickets are included with larger purchases.',
+    number: 2,
+    emoji: '✏️',
+    title: 'Answer',
+    description:
+      'To comply with UK prize competition law, each entry requires a skill-based question. Answer correctly to validate your entry. Questions test genuine knowledge related to collectibles — challenging but fair for anyone with an interest in the hobby.',
+    bgGradient: 'linear-gradient(135deg, #EEF4FF, #DBEAFE)',
+    borderColor: 'rgba(37, 99, 235, 0.12)',
+    numberBg: '#2563EB',
+    shadowColor: 'rgba(37, 99, 235, 0.25)',
   },
   {
-    icon: HelpCircle,
-    title: 'Answer the Question',
-    description: 'Prove your knowledge with our skill question',
-    details:
-      'To comply with UK law, each entry requires you to correctly answer a skill-based question. This ensures our competitions are classified as prize competitions rather than lotteries, keeping everything legal and fair.',
+    number: 3,
+    emoji: '🎟️',
+    title: 'Enter',
+    description:
+      'Choose your lucky ticket numbers manually or let our system randomly select available numbers for you. The more tickets you purchase, the better your chances. Bonus tickets are included with larger purchases to give you even more opportunities to win.',
+    bgGradient: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)',
+    borderColor: 'rgba(22, 163, 74, 0.12)',
+    numberBg: '#16A34A',
+    shadowColor: 'rgba(22, 163, 74, 0.25)',
   },
   {
-    icon: Trophy,
-    title: 'Win Amazing Prizes',
-    description: 'Winners drawn fairly using certified RNG',
-    details:
-      'Once all tickets are sold or the draw date arrives, we conduct a transparent draw using certified Random Number Generation. The winning ticket number is published, and the lucky winner receives their prize.',
+    number: 4,
+    emoji: '🏆',
+    title: 'Win',
+    description:
+      'Once all tickets sell out or the draw date arrives, we conduct a transparent draw using certified Random Number Generation. The winning ticket is published publicly, and the lucky winner receives their prize via tracked, insured delivery with full documentation.',
+    bgGradient: 'linear-gradient(135deg, #FEF2F2, #FECACA)',
+    borderColor: 'rgba(239, 68, 68, 0.12)',
+    numberBg: '#EF4444',
+    shadowColor: 'rgba(239, 68, 68, 0.25)',
+  },
+];
+
+const faqItems = [
+  {
+    question: 'Is this legal in the UK?',
+    answer:
+      'Yes, absolutely. Our competitions are classified as prize competitions under the UK Gambling Act 2005, not lotteries. This is because entry requires answering a skill-based question correctly. We also offer a free postal entry route as required by UK regulations.',
+  },
+  {
+    question: 'How is the winner selected?',
+    answer:
+      'Winners are selected using a certified Random Number Generator (RNG) that is cryptographically secure and cannot be manipulated. For high-value prizes, draws may be conducted under independent supervision or live-streamed for complete transparency.',
+  },
+  {
+    question: 'Can I enter for free?',
+    answer:
+      'Yes. In accordance with UK regulations, we offer a free postal entry route for all competitions. Simply send a letter with your details, chosen ticket number, and answer to the skill question to our registered address. One free entry per person per competition is permitted.',
+  },
+  {
+    question: 'How will I receive my prize?',
+    answer:
+      'Winners receive their prizes via tracked, insured delivery within 7-14 business days of the draw. Every item is carefully packaged, photographed before dispatch, and shipped with full tracking and insurance for your peace of mind.',
   },
 ];
 
 export default function HowItWorksPage() {
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
+    <main className="min-h-screen" style={{ background: '#ffffff' }}>
+      {/* Hero Mini */}
       <section
-        className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8"
         style={{
-          background: 'linear-gradient(180deg, oklch(0.10 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+          padding: '80px 40px 40px',
+          background: '#ffffff',
         }}
       >
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
-            <span className="text-gradient-gold">How It Works</span>
+        <div className="container mx-auto text-center">
+          <h1
+            className="font-[family-name:var(--font-outfit)] mb-3"
+            style={{
+              fontSize: '46px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            How It Works
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Win your dream collectible cards and memorabilia in just four simple
-            steps. Our competitions are fair, transparent, and fully compliant
-            with UK law.
+          <p style={{ color: '#6b7088', fontSize: '15px', maxWidth: '500px', margin: '0 auto' }}>
+            Win your dream collectible cards in just four simple steps.
           </p>
         </div>
       </section>
 
-      {/* Steps Section */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <div className="grid gap-6 md:grid-cols-2">
-            {steps.map((step, index) => (
-              <Card
-                key={step.title}
-                className="relative overflow-hidden transition-shadow hover:shadow-lg"
+      {/* Steps Section - 2 Column Grid */}
+      <section style={{ background: '#F7F7FA', padding: '48px 0 64px' }}>
+        <div className="container mx-auto px-4">
+          <div className="grid gap-6 md:grid-cols-2" style={{ maxWidth: '900px', margin: '0 auto' }}>
+            {steps.map((step) => (
+              <div
+                key={step.number}
+                style={{
+                  background: step.bgGradient,
+                  border: `1px solid ${step.borderColor}`,
+                  borderRadius: '20px',
+                  padding: '40px 30px',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+                }}
               >
-                <CardContent className="p-6">
-                  <div className="mb-4 flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                      <step.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                      {index + 1}
-                    </div>
-                  </div>
-                  <h3 className="mb-2 text-xl font-semibold" style={{ color: '#f5f5f5' }}>{step.title}</h3>
-                  <p className="mb-3 font-medium text-primary" style={{ color: '#FFD700' }}>
-                    {step.description}
-                  </p>
-                  <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>{step.details}</p>
-                </CardContent>
-              </Card>
+                {/* Step Number Badge */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    background: step.numberBg,
+                    color: '#ffffff',
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    marginBottom: '20px',
+                    boxShadow: `0 4px 12px ${step.shadowColor}`,
+                  }}
+                >
+                  {step.number}
+                </div>
+
+                {/* Emoji + Title */}
+                <div className="flex items-center gap-3 mb-4">
+                  <span style={{ fontSize: '28px' }}>{step.emoji}</span>
+                  <h3
+                    className="font-[family-name:var(--font-outfit)]"
+                    style={{
+                      fontSize: '22px',
+                      fontWeight: 700,
+                      color: '#1a1a2e',
+                    }}
+                  >
+                    {step.title}
+                  </h3>
+                </div>
+
+                {/* Description */}
+                <p
+                  style={{
+                    fontSize: '14px',
+                    lineHeight: 1.7,
+                    color: '#555',
+                  }}
+                >
+                  {step.description}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Skill Question Section */}
-      <section
-        className="px-4 py-12 sm:px-6 lg:px-8"
-        style={{ background: 'oklch(0.06 0.02 270)' }}
-      >
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-8 flex items-center justify-center gap-3">
-            <ShieldCheck className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
-              The Skill Question
-            </h2>
-          </div>
-          <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              Under the UK Gambling Act 2005, prize competitions must include an
-              element of skill to distinguish them from lotteries. This is why
-              we include a multiple-choice question with every entry.
-            </p>
-            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              The questions are designed to test genuine knowledge related to
-              the collectibles world. They are challenging enough to require
-              thought, but fair for anyone with an interest in the hobby.
-            </p>
-            <div className="rounded-md bg-primary/5 p-4">
-              <p className="text-sm font-medium">
-                <strong>Example question:</strong> In what year was the first
-                Pokemon TCG Base Set released in Japan?
-              </p>
-              <p className="mt-2 text-xs text-muted-foreground">
-                This type of question requires actual knowledge, not just luck,
-                ensuring our competitions remain legal and fair.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Draw Process Section */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-8 flex items-center justify-center gap-3">
-            <Trophy className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
-              The Draw Process
-            </h2>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Certified RNG</h3>
-              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                We use a certified Random Number Generator to ensure every draw
-                is completely fair and unbiased. The RNG is cryptographically
-                secure and cannot be manipulated.
-              </p>
-            </div>
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Transparent Results</h3>
-              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                Every draw result is published publicly, showing the winning
-                ticket number, date and time of the draw, and the anonymised
-                winner details. Full transparency is our priority.
-              </p>
-            </div>
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Independent Supervision</h3>
-              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                For high-value prizes, draws are conducted under independent
-                supervision. We may also live stream draws on social media for
-                complete transparency.
-              </p>
-            </div>
-            <div className="rounded-lg border bg-card p-6 shadow-sm">
-              <h3 className="mb-3 font-semibold" style={{ color: '#f5f5f5' }}>Secure Delivery</h3>
-              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                Winners receive their prizes via tracked, insured delivery.
-                Every item is carefully packaged and photographed before
-                dispatch for your peace of mind.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Free Entry Section */}
-      <section
-        className="px-4 py-12 sm:px-6 lg:px-8"
-        style={{ background: 'oklch(0.06 0.02 270)' }}
-      >
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-8 flex items-center justify-center gap-3">
-            <Mail className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">Free Entry Route</h2>
-          </div>
-          <div className="rounded-lg border bg-card p-6 shadow-sm md:p-8">
-            <p className="mb-4 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              In accordance with UK regulations, we offer a free postal entry
-              route for all our competitions. This ensures everyone has the
-              opportunity to participate, regardless of their financial
-              situation.
-            </p>
-            <div className="mb-4 rounded-md bg-primary/5 p-4">
-              <h3 className="mb-2 font-semibold" style={{ color: '#f5f5f5' }}>How to Enter for Free:</h3>
-              <ol className="list-inside list-decimal space-y-2 text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                <li>
-                  Write a letter including your full name, email address, and
-                  the competition you wish to enter
-                </li>
-                <li>
-                  Include your chosen ticket number(s) and your answer to the
-                  skill question
-                </li>
-                <li>
-                  Send via standard post (1st or 2nd class) to our registered
-                  address
-                </li>
-                <li>
-                  One free entry per person per competition is permitted
-                </li>
-              </ol>
-            </div>
-            <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              Free postal entries are treated exactly the same as paid entries
-              in the draw. There is no discrimination between entry methods.
-            </p>
-            <div className="mt-4 rounded-md border p-4">
-              <p className="text-sm font-medium" style={{ color: '#f5f5f5' }}>Postal Address:</p>
-              <p className="text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                WinUCard Ltd
-                <br />
-                Competition Entry
-                <br />
-                [Address Line 1]
-                <br />
-                [City, Postcode]
-                <br />
-                United Kingdom
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl font-[family-name:var(--font-display)]">
-            <span className="text-gradient-gold">Ready to Win Your Dream Card?</span>
-          </h2>
-          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Browse our current competitions and find your next grail piece.
-          </p>
-          <Link
-            href="/competitions"
-            className="inline-flex items-center gap-2 rounded-lg px-8 py-3 text-sm font-semibold shadow transition-all hover:scale-105"
+      {/* FAQ Section */}
+      <section style={{ background: '#ffffff', padding: '64px 0' }}>
+        <div className="container mx-auto px-4" style={{ maxWidth: '700px' }}>
+          <h2
+            className="font-[family-name:var(--font-outfit)] text-center mb-8"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-              color: 'black',
+              fontSize: '28px',
+              fontWeight: 700,
+              color: '#1a1a2e',
             }}
           >
-            Browse Competitions
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+            Common Questions
+          </h2>
+
+          <div className="space-y-3">
+            {faqItems.map((item, index) => (
+              <details
+                key={index}
+                className="group"
+                style={{
+                  background: '#F7F7FA',
+                  borderRadius: '14px',
+                  overflow: 'hidden',
+                }}
+              >
+                <summary
+                  className="flex items-center justify-between cursor-pointer"
+                  style={{
+                    padding: '18px 24px',
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: '#1a1a2e',
+                    listStyle: 'none',
+                  }}
+                >
+                  <span>{item.question}</span>
+                  <ChevronDown
+                    className="h-5 w-5 transition-transform group-open:rotate-180"
+                    style={{ color: '#6b7088' }}
+                  />
+                </summary>
+                <div
+                  style={{
+                    padding: '0 24px 18px',
+                    fontSize: '14px',
+                    lineHeight: 1.7,
+                    color: '#555',
+                  }}
+                >
+                  {item.answer}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div className="text-center mt-8">
+            <Link
+              href="/faq"
+              style={{
+                color: '#E8A000',
+                fontSize: '14px',
+                fontWeight: 600,
+              }}
+            >
+              View all FAQs →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Golden CTA */}
+      <section
+        style={{
+          background: 'linear-gradient(135deg, #FFF8E7, #FFF0CC, #FFECB3, #FFF3D6)',
+          padding: '72px 40px',
+        }}
+      >
+        <div className="container mx-auto text-center" style={{ maxWidth: '600px' }}>
+          <h2
+            className="font-[family-name:var(--font-outfit)] mb-4"
+            style={{
+              fontSize: '32px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            Ready to Enter?
+          </h2>
+          <p
+            style={{
+              fontSize: '15px',
+              color: '#5a5a6e',
+              marginBottom: '32px',
+            }}
+          >
+            Browse our current competitions and find your next grail piece.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/auth/signup"
+              className="inline-flex items-center gap-2 font-medium transition-all duration-300"
+              style={{
+                padding: '14px 32px',
+                borderRadius: '14px',
+                background: '#1a1a2e',
+                color: '#ffffff',
+                fontSize: '15px',
+                fontWeight: 600,
+              }}
+            >
+              Sign Up Free
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <Link
+              href="/competitions"
+              className="inline-flex items-center gap-2 font-medium transition-all duration-300"
+              style={{
+                padding: '14px 32px',
+                borderRadius: '14px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.5)',
+                color: '#1a1a2e',
+                fontSize: '15px',
+                fontWeight: 600,
+              }}
+            >
+              View Competitions
+            </Link>
+          </div>
         </div>
       </section>
     </main>

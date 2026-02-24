@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { HelpCircle, Search, MessageSquare } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { FaqAccordion } from './faq-accordion';
 import { FaqSearch } from './faq-search';
@@ -16,15 +16,16 @@ export const metadata: Metadata = {
   },
 };
 
-// FAQ categories in display order
-const categoryOrder = [
-  'Account',
-  'Tickets',
-  'Payment',
-  'Draw',
-  'Delivery',
-  'Legal',
-];
+// Category display configuration with emojis
+const categoryConfig: Record<string, { emoji: string; label: string; order: number }> = {
+  General: { emoji: '📋', label: 'General', order: 1 },
+  Account: { emoji: '👤', label: 'Account & Payments', order: 5 },
+  Tickets: { emoji: '🎟️', label: 'Entering Competitions', order: 2 },
+  Payment: { emoji: '💳', label: 'Account & Payments', order: 5 },
+  Draw: { emoji: '🎲', label: 'Draws & Winners', order: 3 },
+  Delivery: { emoji: '📦', label: 'Cards & Delivery', order: 4 },
+  Legal: { emoji: '⚖️', label: 'General', order: 1 },
+};
 
 async function getFaqItems() {
   const faqItems = await prisma.faqItem.findMany({
@@ -49,12 +50,10 @@ async function getFaqItems() {
 
   // Sort categories by predefined order
   const sortedCategories = Object.keys(grouped).sort((a, b) => {
-    const indexA = categoryOrder.indexOf(a);
-    const indexB = categoryOrder.indexOf(b);
-    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-    return indexA - indexB;
+    const orderA = categoryConfig[a]?.order ?? 99;
+    const orderB = categoryConfig[b]?.order ?? 99;
+    if (orderA !== orderB) return orderA - orderB;
+    return a.localeCompare(b);
   });
 
   return { grouped, sortedCategories, allItems: faqItems };
@@ -64,57 +63,110 @@ export default async function FaqPage() {
   const { grouped, sortedCategories, allItems } = await getFaqItems();
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
+    <main className="min-h-screen" style={{ background: '#ffffff' }}>
+      {/* Hero Mini */}
       <section
-        className="relative overflow-hidden px-4 py-16 sm:px-6 lg:px-8"
         style={{
-          background: 'linear-gradient(180deg, oklch(0.10 0.02 270) 0%, oklch(0.08 0.02 270) 100%)',
+          padding: '80px 40px 40px',
+          background: '#ffffff',
         }}
       >
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-4 flex justify-center">
-            <HelpCircle className="h-12 w-12 text-primary" />
-          </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl font-[family-name:var(--font-display)]">
-            <span className="text-gradient-gold">Frequently Asked Questions</span>
+        <div className="container mx-auto text-center">
+          <h1
+            className="font-[family-name:var(--font-outfit)] mb-3"
+            style={{
+              fontSize: '46px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            Frequently Asked Questions
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Find answers to common questions about our prize competitions. Can
-            not find what you are looking for? Contact us and we will help.
+          <p style={{ color: '#6b7088', fontSize: '15px', maxWidth: '500px', margin: '0 auto' }}>
+            Find answers to common questions about our prize competitions.
           </p>
         </div>
       </section>
 
       {/* Search Section */}
-      <section className="border-b px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
+      <section
+        style={{
+          background: '#F7F7FA',
+          padding: '24px 0',
+          borderBottom: '1px solid #e8e8ec',
+        }}
+      >
+        <div className="container mx-auto px-4" style={{ maxWidth: '700px' }}>
           <FaqSearch allItems={allItems} />
         </div>
       </section>
 
       {/* FAQ Content */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl">
+      <section style={{ background: '#F7F7FA', padding: '40px 0 64px' }}>
+        <div className="container mx-auto px-4" style={{ maxWidth: '700px' }}>
           {sortedCategories.length > 0 ? (
             <div className="space-y-8">
-              {sortedCategories.map((category) => (
-                <div key={category}>
-                  <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-sm font-medium text-primary">
-                      {category.charAt(0)}
-                    </span>
-                    {category}
-                  </h2>
-                  <FaqAccordion items={grouped[category] ?? []} />
-                </div>
-              ))}
+              {sortedCategories.map((category) => {
+                const config = categoryConfig[category] ?? { emoji: '❓', label: category, order: 99 };
+                return (
+                  <div key={category}>
+                    {/* Category Header */}
+                    <div
+                      className="flex items-center gap-3 mb-4"
+                      style={{
+                        paddingBottom: '12px',
+                        borderBottom: '1px solid #e8e8ec',
+                      }}
+                    >
+                      <span style={{ fontSize: '24px' }}>{config.emoji}</span>
+                      <h2
+                        className="font-[family-name:var(--font-outfit)]"
+                        style={{
+                          fontSize: '20px',
+                          fontWeight: 700,
+                          color: '#1a1a2e',
+                        }}
+                      >
+                        {config.label}
+                      </h2>
+                    </div>
+
+                    {/* FAQ Items */}
+                    <div
+                      style={{
+                        background: '#ffffff',
+                        borderRadius: '16px',
+                        border: '1px solid #e8e8ec',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <FaqAccordion items={grouped[category] ?? []} />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <div className="rounded-lg border bg-card p-8 text-center">
-              <Search className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-              <h3 className="mb-2 text-lg font-semibold" style={{ color: '#f5f5f5' }}>No FAQs Available</h3>
-              <p className="text-muted-foreground" style={{ color: '#a0a0a0' }}>
+            <div
+              className="text-center"
+              style={{
+                background: '#ffffff',
+                borderRadius: '16px',
+                border: '1px solid #e8e8ec',
+                padding: '48px 24px',
+              }}
+            >
+              <Search
+                className="mx-auto mb-4"
+                style={{ width: '48px', height: '48px', color: '#d0d0d4' }}
+              />
+              <h3
+                className="font-[family-name:var(--font-outfit)] mb-2"
+                style={{ fontSize: '18px', fontWeight: 600, color: '#1a1a2e' }}
+              >
+                No FAQs Available
+              </h3>
+              <p style={{ color: '#6b7088', fontSize: '14px' }}>
                 We are working on adding frequently asked questions. In the
                 meantime, please contact us with any questions you may have.
               </p>
@@ -123,27 +175,49 @@ export default async function FaqPage() {
         </div>
       </section>
 
-      {/* Contact CTA */}
+      {/* Golden CTA */}
       <section
-        className="px-4 py-12 sm:px-6 lg:px-8"
-        style={{ background: 'oklch(0.06 0.02 270)' }}
+        style={{
+          background: 'linear-gradient(135deg, #FFF8E7, #FFF0CC, #FFECB3, #FFF3D6)',
+          padding: '72px 40px',
+        }}
       >
-        <div className="mx-auto max-w-3xl text-center">
-          <MessageSquare className="mx-auto mb-4 h-10 w-10 text-primary" />
-          <h2 className="mb-3 text-xl font-semibold font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>Still Have Questions?</h2>
-          <p className="mb-6 text-muted-foreground" style={{ color: '#a0a0a0' }}>
+        <div className="container mx-auto text-center" style={{ maxWidth: '600px' }}>
+          <h2
+            className="font-[family-name:var(--font-outfit)] mb-4"
+            style={{
+              fontSize: '28px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            Still Have Questions?
+          </h2>
+          <p
+            style={{
+              fontSize: '15px',
+              color: '#5a5a6e',
+              marginBottom: '32px',
+            }}
+          >
             Our support team is here to help. Get in touch and we will respond
             as soon as possible.
           </p>
+
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold shadow transition-all hover:scale-105"
+            className="inline-flex items-center gap-2 font-medium transition-all duration-300"
             style={{
-              background: 'linear-gradient(135deg, oklch(0.82 0.165 85) 0%, oklch(0.65 0.18 85) 100%)',
-              color: 'black',
+              padding: '14px 32px',
+              borderRadius: '14px',
+              background: '#1a1a2e',
+              color: '#ffffff',
+              fontSize: '15px',
+              fontWeight: 600,
             }}
           >
             Contact Us
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </section>

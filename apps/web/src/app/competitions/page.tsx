@@ -36,13 +36,11 @@ const CATEGORY_FILTER_MAP: Record<string, string[]> = {
   other: ['YUGIOH', 'MTG', 'OTHER'],
 };
 
-// Only show ACTIVE, SOLD_OUT, and UPCOMING competitions
-// COMPLETED, CANCELLED, and DRAFT are hidden from the public competitions page
-// (Users can see completed competitions on the /winners page)
 const STATUS_FILTER_MAP: Record<string, string[]> = {
   all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING'],
-  active: ['ACTIVE', 'SOLD_OUT'], // Include SOLD_OUT with active (draw is still pending)
-  upcoming: ['UPCOMING'],
+  live: ['ACTIVE'],
+  'ending-soon': ['ACTIVE', 'SOLD_OUT'],
+  'coming-soon': ['UPCOMING'],
 };
 
 // Status priority for sorting: ACTIVE first, then SOLD_OUT, then UPCOMING
@@ -72,13 +70,13 @@ interface CompetitionWithCount {
 }
 
 async function getCompetitions(searchParams: SearchParams) {
-  const category = searchParams.category || 'all';
-  const status = searchParams.status || 'all';
-  const sort = (searchParams.sort || 'end-date') as SortOption;
-  const page = Math.max(1, parseInt(searchParams.page || '1', 10));
+  const category = searchParams.category ?? 'all';
+  const status = searchParams.status ?? 'all';
+  const sort = (searchParams.sort ?? 'end-date') as SortOption;
+  const page = Math.max(1, parseInt(searchParams.page ?? '1', 10));
 
-  const categoryFilter = CATEGORY_FILTER_MAP[category] || [];
-  const statusFilter = STATUS_FILTER_MAP[status] || STATUS_FILTER_MAP['all'];
+  const categoryFilter = CATEGORY_FILTER_MAP[category] ?? [];
+  const statusFilter = STATUS_FILTER_MAP[status] ?? STATUS_FILTER_MAP['all'];
 
   // Build where clause
   const where: Record<string, unknown> = {
@@ -90,6 +88,16 @@ async function getCompetitions(searchParams: SearchParams) {
   if (categoryFilter.length > 0) {
     where.category = {
       in: categoryFilter,
+    };
+  }
+
+  // For "ending soon", filter by draw date within next 48 hours
+  if (status === 'ending-soon') {
+    const now = new Date();
+    const in48Hours = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    where.drawDate = {
+      lte: in48Hours,
+      gte: now,
     };
   }
 
@@ -106,7 +114,6 @@ async function getCompetitions(searchParams: SearchParams) {
       orderBy = [{ ticketPrice: 'desc' }];
       break;
     case 'popularity':
-      // Order by sold tickets count (calculated from tickets with status SOLD)
       orderBy = [{ createdAt: 'desc' }];
       break;
     default:
@@ -149,16 +156,14 @@ async function getCompetitions(searchParams: SearchParams) {
     },
   });
 
-  // Sort competitions: first by status priority (ACTIVE > SOLD_OUT > UPCOMING), then by user's sort preference
+  // Sort competitions by status priority
   const sortedCompetitions = [...competitions].sort((a, b) => {
-    // First, sort by status priority
     const statusA = STATUS_PRIORITY[a.status] ?? 99;
     const statusB = STATUS_PRIORITY[b.status] ?? 99;
     if (statusA !== statusB) {
       return statusA - statusB;
     }
 
-    // Within the same status, apply the user's sort preference
     switch (sort) {
       case 'price-low': {
         const priceA = typeof a.ticketPrice === 'object' && 'toNumber' in a.ticketPrice
@@ -223,26 +228,43 @@ export default async function CompetitionsPage({
   const data = await getCompetitions(params);
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        {/* Page Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl font-bold sm:text-3xl lg:text-4xl font-[family-name:var(--font-display)]" style={{ color: '#f5f5f5' }}>
-            <span className="text-gradient-gold">Competitions</span>
+    <main className="min-h-screen" style={{ background: '#ffffff' }}>
+      {/* Hero Mini */}
+      <section
+        style={{
+          padding: '80px 40px 40px',
+          background: '#ffffff',
+        }}
+      >
+        <div className="container mx-auto text-center">
+          <h1
+            className="font-[family-name:var(--font-outfit)] mb-3"
+            style={{
+              fontSize: '46px',
+              fontWeight: 700,
+              color: '#1a1a2e',
+            }}
+          >
+            All Competitions
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base" style={{ color: '#a0a0a0' }}>
-            Browse our latest prize competitions and win amazing collectibles
+          <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
+            Browse all our live and upcoming competitions.
           </p>
         </div>
+      </section>
 
-        <Suspense fallback={<CompetitionsLoading />}>
-          <CompetitionsContent
-            competitions={data.competitions}
-            pagination={data.pagination}
-            filters={data.filters}
-          />
-        </Suspense>
-      </div>
+      {/* Competitions Content */}
+      <section style={{ background: '#F7F7FA', padding: '40px 0 80px' }}>
+        <div className="container mx-auto px-4">
+          <Suspense fallback={<CompetitionsLoading />}>
+            <CompetitionsContent
+              competitions={data.competitions}
+              pagination={data.pagination}
+              filters={data.filters}
+            />
+          </Suspense>
+        </div>
+      </section>
     </main>
   );
 }
