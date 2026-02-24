@@ -134,7 +134,7 @@ export function PremiumCardImage({ src, alt, categoryColor, categoryEmoji }: Pre
             position: 'absolute',
             inset: 0,
             borderRadius: '20px',
-            background: isHovering
+            backgroundImage: isHovering
               ? `linear-gradient(
                   ${45 + (shine.x - 50) * 0.5}deg,
                   transparent 30%,
