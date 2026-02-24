@@ -12,13 +12,12 @@ interface ImmersiveHeroProps {
   className?: string;
 }
 
-// Les images du carrousel sont statiques — les remplacer dans /public/images/hero/
-// TEST: Utilise la même image Charizard PSA 10 pour toutes les cartes
+// Hero carousel cards - 4 categories
 const heroCards = [
-  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#E8A000', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
-  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#E8A000', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
-  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#E8A000', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
-  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#E8A000', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
+  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#F0B90B', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
+  { src: '/images/hero/luffy.webp', alt: 'PSA 10 Luffy Gear 5', emoji: '🏴‍☠️', color: '#DC2626', bg: 'linear-gradient(160deg, #FFE5E5, #FFBABA, #FF8A8A)' },
+  { src: '/images/hero/messi.webp', alt: 'PSA 10 Lionel Messi', emoji: '⚽', color: '#22C55E', bg: 'linear-gradient(160deg, #DCFCE7, #BBF7D0, #86EFAC)' },
+  { src: '/images/hero/michael-jordan.webp', alt: 'PSA 10 Michael Jordan', emoji: '🏀', color: '#F97316', bg: 'linear-gradient(160deg, #FFF1E6, #FFDCC7, #FFB88C)' },
 ];
 
 // Stat chips data
