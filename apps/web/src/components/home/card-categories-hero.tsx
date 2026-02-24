@@ -11,12 +11,12 @@ interface CardCategoriesHeroProps {
   className?: string;
 }
 
-// Category data
+// Category data - using CSS variable values
 const categories = [
-  { key: 'pokemon', label: 'Pokémon', color: '#F0B90B', emoji: '🔥', bgColor: '#FFF8E1' },
-  { key: 'onePiece', label: 'One Piece', color: '#E05555', emoji: '🏴‍☠️', bgColor: '#FFEBEE' },
-  { key: 'football', label: 'Football', color: '#34C772', emoji: '⚽', bgColor: '#E8F5E9' },
-  { key: 'basketball', label: 'Basketball', color: '#4A90E2', emoji: '🏀', bgColor: '#E3F2FD' },
+  { key: 'pokemon', label: 'Pokémon', color: 'var(--cat-pokemon)', rawColor: '#F0B90B', emoji: '🔥', bgColor: '#FFF8E1' },
+  { key: 'onePiece', label: 'One Piece', color: 'var(--cat-onepiece)', rawColor: '#EF4444', emoji: '🏴‍☠️', bgColor: '#FFEBEE' },
+  { key: 'football', label: 'Football', color: 'var(--cat-football)', rawColor: '#22C55E', emoji: '⚽', bgColor: '#E8F5E9' },
+  { key: 'basketball', label: 'Basketball', color: 'var(--cat-basketball)', rawColor: '#3B82F6', emoji: '🏀', bgColor: '#E3F2FD' },
 ];
 
 // Card display positions (rotation and offset)
@@ -84,17 +84,6 @@ function FloatingCard({
           >
             {category.label}
           </span>
-
-          {/* PSA 10 badge */}
-          <div
-            className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-bold"
-            style={{
-              backgroundColor: category.color,
-              color: category.key === 'pokemon' ? '#12151e' : '#ffffff',
-            }}
-          >
-            PSA 10
-          </div>
         </div>
       </motion.div>
     </motion.div>
@@ -107,7 +96,7 @@ export function CardCategoriesHero({ className }: CardCategoriesHeroProps) {
   return (
     <section
       className={cn('py-16 md:py-20 lg:py-24 relative overflow-hidden', className)}
-      style={{ backgroundColor: '#161a28' }}
+      style={{ backgroundColor: 'var(--bg-elevated)' }}
     >
       {/* Background glow */}
       <div
@@ -142,9 +131,9 @@ export function CardCategoriesHero({ className }: CardCategoriesHeroProps) {
               <span
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider mb-6"
                 style={{
-                  backgroundColor: 'rgba(240, 185, 11, 0.08)',
-                  border: '1px solid rgba(240, 185, 11, 0.2)',
-                  color: '#F0B90B',
+                  backgroundColor: 'var(--accent-soft)',
+                  border: '1px solid var(--accent-border)',
+                  color: 'var(--accent)',
                 }}
               >
                 <Trophy className="w-4 h-4" />
@@ -158,10 +147,10 @@ export function CardCategoriesHero({ className }: CardCategoriesHeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 font-[family-name:var(--font-outfit)]"
-              style={{ color: '#ffffff' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               {t('titlePart1')}{' '}
-              <span style={{ color: '#F0B90B' }}>{t('titleHighlight')}</span>
+              <span style={{ color: 'var(--accent)' }}>{t('titleHighlight')}</span>
             </motion.h1>
 
             {/* Description */}
@@ -170,7 +159,7 @@ export function CardCategoriesHero({ className }: CardCategoriesHeroProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
               className="text-base sm:text-lg mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0"
-              style={{ color: '#7a7e90', lineHeight: 1.7 }}
+              style={{ color: 'var(--text-muted)', lineHeight: 1.7 }}
             >
               {t('description')}
             </motion.p>

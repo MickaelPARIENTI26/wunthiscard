@@ -1,263 +1,235 @@
 'use client';
 
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { Search, Ticket, HelpCircle, Trophy, ArrowRight, Shield, Sparkles, Mail, Lock, type LucideIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface HowItWorksPreviewProps {
   className?: string;
 }
 
-interface Step {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  gradient: string;
-  iconColor: string;
-}
+// Step data with specific colors for each step
+const steps = [
+  {
+    number: 1,
+    emoji: '🔍',
+    title: 'Browse',
+    description: 'Explore our live competitions and choose the graded card you want to win.',
+    bgGradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
+    borderColor: 'rgba(232, 160, 0, 0.12)',
+    numberBg: '#E8A000',
+    shadowColor: 'rgba(232, 160, 0, 0.25)',
+    hoverShadow: 'rgba(232, 160, 0, 0.12)',
+  },
+  {
+    number: 2,
+    emoji: '🧠',
+    title: 'Answer',
+    description: 'Answer a simple skill-based question to qualify for entry.',
+    bgGradient: 'linear-gradient(135deg, #EFF4FF, #DBEAFE)',
+    borderColor: 'rgba(37, 99, 235, 0.12)',
+    numberBg: '#2563EB',
+    shadowColor: 'rgba(37, 99, 235, 0.25)',
+    hoverShadow: 'rgba(37, 99, 235, 0.12)',
+  },
+  {
+    number: 3,
+    emoji: '🎟️',
+    title: 'Enter',
+    description: 'Purchase your tickets securely. Starting from just £14.99 each.',
+    bgGradient: 'linear-gradient(135deg, #EEFFF4, #DCFCE7)',
+    borderColor: 'rgba(22, 163, 74, 0.12)',
+    numberBg: '#16A34A',
+    shadowColor: 'rgba(22, 163, 74, 0.25)',
+    hoverShadow: 'rgba(22, 163, 74, 0.12)',
+  },
+  {
+    number: 4,
+    emoji: '🎬',
+    title: 'Win',
+    description: 'Watch the live draw streamed on TikTok. Fully transparent, every time.',
+    bgGradient: 'linear-gradient(135deg, #FFF5F5, #FEE2E2)',
+    borderColor: 'rgba(239, 68, 68, 0.12)',
+    numberBg: '#EF4444',
+    shadowColor: 'rgba(239, 68, 68, 0.25)',
+    hoverShadow: 'rgba(239, 68, 68, 0.12)',
+  },
+];
+
+// Trust badges data
+const trustBadges = [
+  { emoji: '🔒', text: 'Secure Payments' },
+  { emoji: '🎬', text: 'Live Draws' },
+  { emoji: '📦', text: 'Free Delivery' },
+  { emoji: '✉️', text: 'Free Postal Entry' },
+  { emoji: '⭐', text: 'PSA 10 Authenticated' },
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.15,
+      staggerChildren: 0.1,
     },
   },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5 },
+    transition: { duration: 0.4 },
   },
 };
 
 export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
-  const t = useTranslations('howItWorks');
-  const tCommon = useTranslations('common');
-
-  const steps: Step[] = [
-    {
-      icon: Search,
-      title: t('step1Title'),
-      description: t('step1Desc'),
-      gradient: 'from-blue-500/20 to-cyan-500/20',
-      iconColor: 'text-blue-400',
-    },
-    {
-      icon: Ticket,
-      title: t('step2Title'),
-      description: t('step2Desc'),
-      gradient: 'from-emerald-500/20 to-green-500/20',
-      iconColor: 'text-emerald-400',
-    },
-    {
-      icon: HelpCircle,
-      title: t('step3Title'),
-      description: t('step3Desc'),
-      gradient: 'from-purple-500/20 to-violet-500/20',
-      iconColor: 'text-purple-400',
-    },
-    {
-      icon: Trophy,
-      title: t('step4Title'),
-      description: t('step4Desc'),
-      gradient: 'from-amber-500/20 to-yellow-500/20',
-      iconColor: 'text-primary',
-    },
-  ];
-
   return (
-    <section
-      className={cn('py-16 md:py-20 lg:py-24 relative', className)}
-      style={{
-        background: 'linear-gradient(180deg, #12151e 0%, #161a28 50%, #12151e 100%)',
-      }}
-    >
-      {/* Subtle pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-30 pointer-events-none"
+    <>
+      {/* How It Works Section */}
+      <section
+        className={cn('relative', className)}
         style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.1) 1px, transparent 0)`,
-          backgroundSize: '32px 32px',
+          background: 'linear-gradient(180deg, #ffffff, #FDFCF9)',
+          padding: '80px 40px',
         }}
-      />
+      >
+        <div className="container mx-auto">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <h2
+              className="font-[family-name:var(--font-outfit)] mb-3"
+              style={{
+                fontSize: '34px',
+                fontWeight: 700,
+                color: '#1a1a2e',
+              }}
+            >
+              How It Works
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
+              Enter any competition in four simple steps.
+            </p>
+          </motion.div>
 
-      <div className="container mx-auto px-4 relative">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-14 md:mb-18"
-        >
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 font-[family-name:var(--font-outfit)]">
-            <span className="text-gradient-gold">{t('title')}</span>
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto" style={{ color: '#7a7e90' }}>
-            {t('subtitle')}
-          </p>
-        </motion.div>
-
-        {/* Steps Grid */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
+          {/* Steps Grid - 4 columns */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
+            {steps.map((step) => (
               <motion.div
-                key={step.title}
+                key={step.number}
                 variants={itemVariants}
-                className="relative text-center group"
+                className="group"
               >
-                {/* Connector Line (Desktop only) */}
-                {index < steps.length - 1 && (
+                <div
+                  className="h-full text-center transition-all duration-[350ms] ease-out"
+                  style={{
+                    background: step.bgGradient,
+                    border: `1.5px solid ${step.borderColor}`,
+                    borderRadius: '22px',
+                    padding: '32px 18px',
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget;
+                    el.style.transform = 'translateY(-6px)';
+                    el.style.boxShadow = `0 16px 40px ${step.hoverShadow}`;
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget;
+                    el.style.transform = 'translateY(0)';
+                    el.style.boxShadow = 'none';
+                  }}
+                >
+                  {/* Emoji Icon */}
+                  <div style={{ fontSize: '40px', lineHeight: 1, marginBottom: '16px' }}>
+                    {step.emoji}
+                  </div>
+
+                  {/* Step Number */}
                   <div
-                    className="hidden lg:block absolute top-14 left-[60%] w-[80%] h-px"
+                    className="mx-auto flex items-center justify-center mb-4"
                     style={{
-                      background: 'linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '12px',
+                      background: step.numberBg,
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      boxShadow: `0 4px 12px ${step.shadowColor}`,
                     }}
                   >
-                    <div
-                      className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
-                      style={{ background: 'rgba(255, 255, 255, 0.15)' }}
-                    />
+                    {step.number}
                   </div>
-                )}
 
-                {/* Step Number */}
-                <div
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center z-10"
-                  style={{
-                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                    color: '#12151e',
-                  }}
-                >
-                  {index + 1}
+                  {/* Title */}
+                  <h3
+                    className="font-[family-name:var(--font-outfit)] mb-3"
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: 700,
+                      color: '#1a1a2e',
+                    }}
+                  >
+                    {step.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p
+                    style={{
+                      fontSize: '13px',
+                      color: 'var(--text-muted)',
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    {step.description}
+                  </p>
                 </div>
-
-                {/* Icon Container */}
-                <div
-                  className={cn(
-                    'w-24 h-24 md:w-28 md:h-28 rounded-2xl mx-auto mb-6 flex items-center justify-center transition-transform duration-300 group-hover:scale-105',
-                    `bg-gradient-to-br ${step.gradient}`
-                  )}
-                  style={{
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                  }}
-                >
-                  <Icon className={cn('w-12 h-12', step.iconColor)} />
-                </div>
-
-                {/* Title */}
-                <h3 className="text-xl font-semibold mb-3 font-[family-name:var(--font-outfit)]" style={{ color: '#ffffff' }}>
-                  {step.title}
-                </h3>
-
-                {/* Description */}
-                <p className="text-muted-foreground text-sm leading-relaxed" style={{ color: '#7a7e90' }}>
-                  {step.description}
-                </p>
               </motion.div>
-            );
-          })}
-        </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center mt-14"
-        >
-          <Button
-            asChild
-            size="lg"
-            className="font-semibold group btn-primary-gold"
+      {/* Trust Badges Section */}
+      <div
+        className="flex flex-wrap justify-center items-center"
+        style={{
+          background: '#F0F0F4',
+          padding: '24px 40px',
+          gap: '40px',
+        }}
+      >
+        {trustBadges.map((badge) => (
+          <div
+            key={badge.text}
+            className="flex items-center"
+            style={{ gap: '8px' }}
           >
-            <Link href="/how-it-works" className="flex items-center gap-2">
-              {tCommon('learnMore')}
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </Button>
-        </motion.div>
-
-        {/* Trust Badges */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-16 md:mt-20 pt-8"
-          style={{
-            borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-          }}
-        >
-          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 text-center text-sm text-muted-foreground" style={{ color: '#7a7e90' }}>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(52, 199, 114, 0.15) 0%, rgba(52, 199, 114, 0.08) 100%)',
-                  border: '1px solid rgba(52, 199, 114, 0.2)',
-                }}
-              >
-                <Shield className="w-5 h-5" style={{ color: '#34C772' }} />
-              </div>
-              <span>{t('trustBadges.ukBased')}</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(74, 144, 226, 0.15) 0%, rgba(74, 144, 226, 0.08) 100%)',
-                  border: '1px solid rgba(74, 144, 226, 0.2)',
-                }}
-              >
-                <Sparkles className="w-5 h-5" style={{ color: '#4A90E2' }} />
-              </div>
-              <span>{t('trustBadges.certifiedRng')}</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(155, 89, 182, 0.15) 0%, rgba(155, 89, 182, 0.08) 100%)',
-                  border: '1px solid rgba(155, 89, 182, 0.2)',
-                }}
-              >
-                <Mail className="w-5 h-5" style={{ color: '#9B59B6' }} />
-              </div>
-              <span>{t('trustBadges.freePostalEntry')}</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.15) 0%, rgba(240, 185, 11, 0.08) 100%)',
-                  border: '1px solid rgba(240, 185, 11, 0.2)',
-                }}
-              >
-                <Lock className="w-5 h-5" style={{ color: '#F0B90B' }} />
-              </div>
-              <span>{t('trustBadges.securePayments')}</span>
-            </div>
+            <span style={{ fontSize: '16px' }}>{badge.emoji}</span>
+            <span
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#555',
+              }}
+            >
+              {badge.text}
+            </span>
           </div>
-        </motion.div>
+        ))}
       </div>
-    </section>
+    </>
   );
 }

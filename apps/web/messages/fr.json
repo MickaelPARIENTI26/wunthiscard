@@ -560,5 +560,19 @@
     "titleHighlight": "Rêves",
     "description": "Des cartes Pokémon rares aux One Piece TCG, des légendes du football aux icônes du basketball. Explorez nos compétitions de cartes de collection premium et gagnez la carte dont vous avez toujours rêvé.",
     "cta": "Parcourir Toutes Les Compétitions"
+  },
+  "immersiveHero": {
+    "badge": "Compétitions en Direct",
+    "titlePart1": "Gagnez La Carte",
+    "titlePart2": "De Vos Rêves",
+    "subtitle": "Cartes PSA 10 de {pokemon}, {onePiece}, {football} & {basketball}. Chaque tirage diffusé en direct.",
+    "cta": "Voir Les Compétitions",
+    "secondaryCta": "Comment ça marche",
+    "statFromLabel": "À partir de",
+    "statTopPrizeLabel": "Prix Max",
+    "statLiveDrawsLabel": "Tirages Live",
+    "statFromValue": "14,99€",
+    "statTopPrizeValue": "15K€",
+    "statLiveDrawsValue": "100%"
   }
 }

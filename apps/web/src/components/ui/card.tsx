@@ -5,11 +5,15 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-xl border bg-card text-card-foreground shadow', className)}
+      className={cn('rounded-xl border text-card-foreground', className)}
       style={{
-        backgroundColor: 'var(--color-card, #1a1a2e)',
-        color: 'var(--color-card-foreground, #f5f5f5)',
-        borderColor: 'var(--color-border, #2a2a4a)',
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderColor: 'rgba(255, 255, 255, 0.06)',
+        borderRadius: '20px',
+        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 24px rgba(0, 0, 0, 0.2)',
+        color: 'var(--text-primary)',
         ...style,
       }}
       {...props}
@@ -30,7 +34,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
     <div
       ref={ref}
       className={cn('font-semibold leading-none tracking-tight', className)}
-      style={{ color: '#f5f5f5', ...style }}
+      style={{ color: 'var(--text-primary)', ...style }}
       {...props}
     />
   )
@@ -41,8 +45,8 @@ const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('text-sm text-muted-foreground', className)}
-      style={{ color: '#a0a0a0', ...style }}
+      className={cn('text-sm', className)}
+      style={{ color: 'var(--text-muted)', ...style }}
       {...props}
     />
   )

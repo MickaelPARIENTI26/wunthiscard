@@ -10,9 +10,6 @@ import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { loginSchema, type LoginInput } from '@winucard/shared/validators';
 import { checkLoginRateLimit, logLoginSuccess, logLoginFailure, verifyLoginCaptcha } from './actions';
 
@@ -20,6 +17,19 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 // Check if Google OAuth is enabled via public env variable
 const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true';
+
+// Input style
+const inputStyle = {
+  width: '100%',
+  padding: '12px 16px',
+  fontSize: '14px',
+  background: '#F5F5F7',
+  border: '1px solid rgba(0, 0, 0, 0.1)',
+  borderRadius: '12px',
+  color: '#1a1a2e',
+  outline: 'none',
+  transition: 'all 0.2s ease',
+};
 
 export function LoginForm() {
   const router = useRouter();
@@ -147,47 +157,100 @@ export function LoginForm() {
   return (
     <div className="space-y-6">
       {displayError && (
-        <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+        <div
+          style={{
+            padding: '12px 16px',
+            fontSize: '14px',
+            color: '#DC2626',
+            background: 'rgba(220, 38, 38, 0.08)',
+            border: '1px solid rgba(220, 38, 38, 0.2)',
+            borderRadius: '12px',
+          }}
+        >
           {displayError}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="email">{t('email')}</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder={t('emailPlaceholder')}
-            autoComplete="email"
-            disabled={isLoading || isGoogleLoading}
-            {...register('email')}
-          />
+          <label
+            htmlFor="email"
+            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+          >
+            {t('email')}
+          </label>
+          {(() => {
+            const { onBlur: registerOnBlur, ...emailRegister } = register('email');
+            return (
+              <input
+                id="email"
+                type="email"
+                placeholder={t('emailPlaceholder')}
+                autoComplete="email"
+                disabled={isLoading || isGoogleLoading}
+                style={inputStyle}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#F0B90B';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  registerOnBlur(e);
+                }}
+                {...emailRegister}
+              />
+            );
+          })()}
           {errors.email && (
-            <p className="text-sm text-destructive">{errors.email.message}</p>
+            <p style={{ fontSize: '13px', color: '#DC2626' }}>{errors.email.message}</p>
           )}
         </div>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password">{t('password')}</Label>
+            <label
+              htmlFor="password"
+              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            >
+              {t('password')}
+            </label>
             <Link
               href="/forgot-password"
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
+              style={{
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#F0B90B',
+              }}
             >
               {t('forgotPassword')}
             </Link>
           </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder={t('passwordPlaceholder')}
-            autoComplete="current-password"
-            disabled={isLoading || isGoogleLoading}
-            {...register('password')}
-          />
+          {(() => {
+            const { onBlur: registerOnBlur, ...passwordRegister } = register('password');
+            return (
+              <input
+                id="password"
+                type="password"
+                placeholder={t('passwordPlaceholder')}
+                autoComplete="current-password"
+                disabled={isLoading || isGoogleLoading}
+                style={inputStyle}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#F0B90B';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  registerOnBlur(e);
+                }}
+                {...passwordRegister}
+              />
+            );
+          })()}
           {errors.password && (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
+            <p style={{ fontSize: '13px', color: '#DC2626' }}>{errors.password.message}</p>
           )}
         </div>
 
@@ -206,44 +269,82 @@ export function LoginForm() {
           />
         )}
 
-        <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
+        <button
+          type="submit"
+          disabled={isLoading || isGoogleLoading}
+          className="flex items-center justify-center gap-2 w-full transition-all duration-200"
+          style={{
+            padding: '14px',
+            borderRadius: '12px',
+            background: '#1a1a2e',
+            color: '#ffffff',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading || isGoogleLoading ? 0.7 : 1,
+          }}
+        >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
               {t('signingIn')}
             </>
           ) : (
             t('signIn')
           )}
-        </Button>
+        </button>
       </form>
 
       {isGoogleOAuthEnabled && (
         <>
+          {/* Separator */}
           <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+            <div
+              className="absolute inset-0 flex items-center"
+              style={{ top: '50%', transform: 'translateY(-50%)' }}
+            >
+              <span style={{ width: '100%', height: '1px', background: '#e0e0e4' }} />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">{t('orContinueWith')}</span>
+            <div className="relative flex justify-center">
+              <span
+                style={{
+                  background: '#ffffff',
+                  padding: '0 12px',
+                  fontSize: '12px',
+                  color: '#6b7088',
+                  textTransform: 'uppercase',
+                }}
+              >
+                or
+              </span>
             </div>
           </div>
 
-          <Button
+          <button
             type="button"
-            variant="outline"
-            className="w-full"
             onClick={handleGoogleSignIn}
             disabled={isLoading || isGoogleLoading}
+            className="flex items-center justify-center gap-2 w-full transition-all duration-200"
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              background: 'transparent',
+              border: '1.5px solid rgba(0, 0, 0, 0.12)',
+              color: '#1a1a2e',
+              fontSize: '15px',
+              fontWeight: 500,
+              cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading || isGoogleLoading ? 0.7 : 1,
+            }}
           >
             {isGoogleLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 {t('connecting')}
               </>
             ) : (
               <>
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
@@ -264,15 +365,15 @@ export function LoginForm() {
                 {t('signInWithGoogle')}
               </>
             )}
-          </Button>
+          </button>
         </>
       )}
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center" style={{ fontSize: '14px', color: '#6b7088' }}>
         {t('noAccount')}{' '}
         <Link
           href={callbackUrl !== '/' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/register'}
-          className="font-medium text-primary hover:text-primary/80 transition-colors"
+          style={{ fontWeight: 500, color: '#F0B90B' }}
         >
           {t('register')}
         </Link>

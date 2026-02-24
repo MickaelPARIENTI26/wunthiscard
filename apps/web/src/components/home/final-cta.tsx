@@ -2,9 +2,6 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import { Sparkles, ArrowRight, Trophy } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface FinalCTAProps {
@@ -12,140 +9,149 @@ interface FinalCTAProps {
 }
 
 export function FinalCTA({ className }: FinalCTAProps) {
-  const t = useTranslations();
-
   return (
-    <section className={cn('py-20 md:py-28 relative overflow-hidden', className)}>
-      {/* CTA gradient background */}
-      <div className="absolute inset-0 cta-gradient" />
-
-      {/* Gold glow decorations */}
+    <section
+      className={cn('relative overflow-hidden text-center', className)}
+      style={{
+        background: 'linear-gradient(135deg, #FFF8E7, #FFF0CC, #FFECB3, #FFF3D6)',
+        padding: '72px 40px',
+      }}
+    >
+      {/* Decorative blobs */}
       <div
-        className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none"
-        style={{ background: 'rgba(240, 185, 11, 0.08)' }}
+        className="absolute pointer-events-none"
+        style={{
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: 'rgba(240, 185, 11, 0.12)',
+          filter: 'blur(40px)',
+          top: '-100px',
+          left: '-50px',
+        }}
       />
       <div
-        className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: 'rgba(240, 185, 11, 0.05)' }}
+        className="absolute pointer-events-none"
+        style={{
+          width: '250px',
+          height: '250px',
+          borderRadius: '50%',
+          background: 'rgba(240, 185, 11, 0.12)',
+          filter: 'blur(40px)',
+          bottom: '-80px',
+          right: '-30px',
+        }}
       />
 
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1.5 h-1.5 rounded-full"
-            style={{
-              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              delay: i * 0.3,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto text-center"
+          className="max-w-2xl mx-auto"
         >
-          {/* Icon */}
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl mx-auto mb-8 flex items-center justify-center"
+          {/* Title */}
+          <h2
+            className="font-[family-name:var(--font-outfit)] mb-4"
             style={{
-              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+              fontSize: '36px',
+              fontWeight: 700,
+              color: '#1a1a2e',
             }}
           >
-            {/* Shine effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent rounded-2xl" />
-            <Trophy className="w-10 h-10 md:w-12 md:h-12 relative z-10" style={{ color: '#12151e' }} />
-
-            {/* Sparkle decorations */}
-            <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-primary animate-pulse" />
-          </motion.div>
-
-          {/* Title */}
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-[family-name:var(--font-outfit)]" style={{ color: '#ffffff' }}>
-            {t('cta.title')}
+            Ready to Enter?
           </h2>
 
-          {/* Description */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#7a7e90' }}>
-            {t('cta.subtitle')}
+          {/* Subtitle */}
+          <p
+            className="mb-8"
+            style={{
+              color: '#7a6830',
+              fontSize: '15px',
+            }}
+          >
+            Create your free account and browse our live competitions.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="text-lg px-8 font-semibold group relative overflow-hidden btn-primary-gold"
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            {/* Primary Button - Sign Up Free */}
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center transition-all duration-300"
+              style={{
+                background: '#1a1a2e',
+                color: '#ffffff',
+                padding: '15px 40px',
+                borderRadius: '14px',
+                fontWeight: 600,
+                fontSize: '15px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#2a2a3e';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(26, 26, 46, 0.25)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#1a1a2e';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
             >
-              <Link href="/competitions" className="flex items-center gap-2">
-                <span className="relative z-10 flex items-center gap-2">
-                  {t('common.viewCompetitions')}
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="text-lg px-8 group btn-secondary-dark"
-            >
-              <Link href="/register" className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                {t('common.createFreeAccount')}
-              </Link>
-            </Button>
-          </div>
+              Sign Up Free
+            </Link>
 
-          {/* Additional Info */}
+            {/* Secondary Button - View Competitions */}
+            <Link
+              href="/competitions"
+              className="inline-flex items-center justify-center transition-all duration-300"
+              style={{
+                background: 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: '1.5px solid rgba(184, 134, 11, 0.2)',
+                color: '#8B6914',
+                padding: '15px 40px',
+                borderRadius: '14px',
+                fontWeight: 600,
+                fontSize: '15px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                e.currentTarget.style.borderColor = 'rgba(184, 134, 11, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.7)';
+                e.currentTarget.style.borderColor = 'rgba(184, 134, 11, 0.2)';
+              }}
+            >
+              View Competitions
+            </Link>
+          </motion.div>
+
+          {/* Legal Text */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="mt-10 text-sm text-muted-foreground"
-            style={{ color: '#7a7e90' }}
+            transition={{ delay: 0.3 }}
+            style={{
+              color: '#B8A060',
+              fontSize: '12px',
+              marginTop: '24px',
+            }}
           >
-            {t('cta.disclaimer')}{' '}
-            <Link
-              href="/terms"
-              className="text-primary/80 hover:text-primary underline-offset-2 hover:underline transition-colors"
-            >
-              {t('cta.termsApply')}
-            </Link>
-            .
+            18+ Only. Free postal entry available on all competitions. Terms apply.
           </motion.p>
         </motion.div>
       </div>
-
-      {/* Bottom gold gradient line */}
-      <div
-        className="absolute bottom-0 inset-x-0 h-px"
-        style={{
-          background: 'linear-gradient(90deg, transparent 0%, rgba(240, 185, 11, 0.3) 50%, transparent 100%)',
-        }}
-      />
     </section>
   );
 }

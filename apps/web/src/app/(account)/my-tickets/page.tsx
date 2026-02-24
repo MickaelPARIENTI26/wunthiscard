@@ -115,8 +115,12 @@ export default async function MyTicketsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold md:text-3xl">My Tickets</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1
+          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
+        >
+          My Tickets
+        </h1>
+        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
           View all your competition entries
         </p>
       </div>
@@ -146,7 +150,14 @@ export default async function MyTicketsPage() {
             const isWinner = winningTicket !== undefined;
 
             return (
-              <Card key={competition.id} className={`overflow-hidden ${isWinner ? 'border-2 border-yellow-400' : ''}`}>
+              <Card
+                key={competition.id}
+                className="overflow-hidden"
+                style={{
+                  border: isWinner ? '2px solid #F0B90B' : undefined,
+                  boxShadow: isWinner ? '0 0 20px rgba(240, 185, 11, 0.2)' : undefined,
+                }}
+              >
                 <CardContent className="p-0">
                   <div className="flex flex-col sm:flex-row">
                     {/* Competition image */}
@@ -170,10 +181,17 @@ export default async function MyTicketsPage() {
                       <div>
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           {isWinner && (
-                            <Badge variant="success" className="gap-1 bg-yellow-400 text-yellow-900">
-                              <Trophy className="h-3 w-3" />
-                              Winner!
-                            </Badge>
+                            <Badge
+                            className="gap-1"
+                            style={{
+                              background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
+                              color: 'var(--text-primary)',
+                              border: 'none',
+                            }}
+                          >
+                            <Trophy className="h-3 w-3" />
+                            Winner!
+                          </Badge>
                           )}
                           {getStatusBadge(competition.status as CompetitionStatus)}
                           <span className="text-sm font-medium text-primary">
@@ -214,11 +232,14 @@ export default async function MyTicketsPage() {
                           {ticketNumbers.sort((a, b) => a - b).map((num) => (
                             <span
                               key={num}
-                              className={`inline-flex h-8 min-w-[2.5rem] items-center justify-center rounded-md px-2 text-sm font-medium ${
-                                num === winningTicket
-                                  ? 'bg-yellow-400 text-yellow-900 ring-2 ring-yellow-500'
-                                  : 'bg-primary/10 text-primary'
-                              }`}
+                              className="inline-flex h-8 min-w-[2.5rem] items-center justify-center rounded-md px-2 text-sm font-medium"
+                              style={{
+                                background: num === winningTicket
+                                  ? 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)'
+                                  : 'rgba(240, 185, 11, 0.1)',
+                                color: num === winningTicket ? '#0c0f17' : '#F0B90B',
+                                boxShadow: num === winningTicket ? '0 0 12px rgba(240, 185, 11, 0.4)' : 'none',
+                              }}
                             >
                               #{num}
                               {num === winningTicket && <Trophy className="ml-1 h-3 w-3" />}

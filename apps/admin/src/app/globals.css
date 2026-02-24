@@ -1,39 +1,76 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+/* =========================================
+   Deep Navy Admin Theme (Dark by default)
+   ========================================= */
+
+/* Custom Design Tokens */
+:root {
+  /* Base backgrounds */
+  --bg-base: #0c0f17;
+  --bg-deep: #080a10;
+  --bg-elevated: #10141e;
+  --bg-surface: #161b28;
+  --bg-card: rgba(255, 255, 255, 0.03);
+  --bg-card-hover: rgba(255, 255, 255, 0.06);
+  --bg-input: #0d1019;
+
+  /* Text hierarchy */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e5e5;
+  --text-muted: #a0a0a0;
+  --text-faded: #6b6b6b;
+  --text-disabled: #4a4a4a;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Accent colors */
+  --accent: #F0B90B;
+  --accent-hover: #FFD000;
+  --accent-muted: rgba(240, 185, 11, 0.15);
+  --accent-soft: rgba(240, 185, 11, 0.08);
+  --accent-glow: rgba(240, 185, 11, 0.3);
+  --accent-border: rgba(240, 185, 11, 0.25);
+}
+
 @theme {
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.145 0 0);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.145 0 0);
-  --color-primary: oklch(0.205 0.03 264.05);
-  --color-primary-foreground: oklch(0.985 0 0);
-  --color-secondary: oklch(0.97 0 0);
-  --color-secondary-foreground: oklch(0.205 0.03 264.05);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0.015 264.05);
-  --color-accent: oklch(0.97 0 0);
-  --color-accent-foreground: oklch(0.205 0.03 264.05);
-  --color-destructive: oklch(0.577 0.245 27.325);
-  --color-destructive-foreground: oklch(0.985 0 0);
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
-  --color-ring: oklch(0.708 0.165 254.624);
-  --color-chart-1: oklch(0.646 0.222 41.116);
-  --color-chart-2: oklch(0.6 0.118 184.714);
-  --color-chart-3: oklch(0.398 0.07 227.392);
-  --color-chart-4: oklch(0.828 0.189 84.429);
-  --color-chart-5: oklch(0.769 0.188 70.08);
-  --color-sidebar-background: oklch(0.985 0 0);
-  --color-sidebar-foreground: oklch(0.556 0.015 264.05);
-  --color-sidebar-primary: oklch(0.205 0.03 264.05);
-  --color-sidebar-primary-foreground: oklch(0.985 0 0);
-  --color-sidebar-accent: oklch(0.97 0 0);
-  --color-sidebar-accent-foreground: oklch(0.205 0.03 264.05);
-  --color-sidebar-border: oklch(0.922 0 0);
-  --color-sidebar-ring: oklch(0.708 0.165 254.624);
+  /* Dark navy admin theme */
+  --color-background: #0c0f17;
+  --color-foreground: #ffffff;
+  --color-card: rgba(255, 255, 255, 0.03);
+  --color-card-foreground: #ffffff;
+  --color-popover: #161b28;
+  --color-popover-foreground: #ffffff;
+  --color-primary: #F0B90B;
+  --color-primary-foreground: #0c0f17;
+  --color-secondary: #161b28;
+  --color-secondary-foreground: #e5e5e5;
+  --color-muted: #161b28;
+  --color-muted-foreground: #a0a0a0;
+  --color-accent: #161b28;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #ffffff;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-input: #0d1019;
+  --color-ring: rgba(240, 185, 11, 0.5);
+  --color-chart-1: #F0B90B;
+  --color-chart-2: #3B82F6;
+  --color-chart-3: #22C55E;
+  --color-chart-4: #EF4444;
+  --color-chart-5: #A855F7;
+  --color-sidebar-background: #080a10;
+  --color-sidebar-foreground: #a0a0a0;
+  --color-sidebar-primary: #F0B90B;
+  --color-sidebar-primary-foreground: #0c0f17;
+  --color-sidebar-accent: rgba(240, 185, 11, 0.1);
+  --color-sidebar-accent-foreground: #F0B90B;
+  --color-sidebar-border: rgba(255, 255, 255, 0.06);
+  --color-sidebar-ring: rgba(240, 185, 11, 0.5);
   --radius: 0.625rem;
 }
 
@@ -43,43 +80,52 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    background: var(--bg-base);
+    color: var(--text-primary);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-deep);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--text-disabled);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: oklch(0.145 0 0);
-    --color-foreground: oklch(0.985 0 0);
-    --color-card: oklch(0.145 0 0);
-    --color-card-foreground: oklch(0.985 0 0);
-    --color-popover: oklch(0.145 0 0);
-    --color-popover-foreground: oklch(0.985 0 0);
-    --color-primary: oklch(0.985 0 0);
-    --color-primary-foreground: oklch(0.205 0.03 264.05);
-    --color-secondary: oklch(0.269 0.015 264.05);
-    --color-secondary-foreground: oklch(0.985 0 0);
-    --color-muted: oklch(0.269 0.015 264.05);
-    --color-muted-foreground: oklch(0.708 0.015 264.05);
-    --color-accent: oklch(0.269 0.015 264.05);
-    --color-accent-foreground: oklch(0.985 0 0);
-    --color-destructive: oklch(0.704 0.191 22.216);
-    --color-destructive-foreground: oklch(0.985 0 0);
-    --color-border: oklch(0.269 0.015 264.05);
-    --color-input: oklch(0.269 0.015 264.05);
-    --color-ring: oklch(0.551 0.027 264.05);
-    --color-chart-1: oklch(0.488 0.243 264.376);
-    --color-chart-2: oklch(0.696 0.17 162.48);
-    --color-chart-3: oklch(0.769 0.188 70.08);
-    --color-chart-4: oklch(0.627 0.265 303.9);
-    --color-chart-5: oklch(0.645 0.246 16.439);
-    --color-sidebar-background: oklch(0.205 0.03 264.05);
-    --color-sidebar-foreground: oklch(0.985 0 0);
-    --color-sidebar-primary: oklch(0.488 0.243 264.376);
-    --color-sidebar-primary-foreground: oklch(0.985 0 0);
-    --color-sidebar-accent: oklch(0.269 0.015 264.05);
-    --color-sidebar-accent-foreground: oklch(0.985 0 0);
-    --color-sidebar-border: oklch(0.269 0.015 264.05);
-    --color-sidebar-ring: oklch(0.551 0.027 264.05);
-  }
+/* Gold text gradient */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #F0B90B 0%, #FFD000 50%, #F0B90B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass card effect */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Input focus */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent-border) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
+  outline: none !important;
 }

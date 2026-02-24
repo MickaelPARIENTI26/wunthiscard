@@ -560,5 +560,19 @@
     "titleHighlight": "Dreams",
     "description": "From rare Pokémon cards to One Piece TCG, from football legends to basketball icons. Explore our premium collectible card competitions and win the card you've always dreamed of.",
     "cta": "Browse All Competitions"
+  },
+  "immersiveHero": {
+    "badge": "Live Competitions Open Now",
+    "titlePart1": "Win The Card",
+    "titlePart2": "Of Your Dreams",
+    "subtitle": "PSA 10 graded cards from {pokemon}, {onePiece}, {football} & {basketball}. Every draw streamed live.",
+    "cta": "Browse Competitions",
+    "secondaryCta": "How It Works",
+    "statFromLabel": "From",
+    "statTopPrizeLabel": "Top Prize",
+    "statLiveDrawsLabel": "Live Draws",
+    "statFromValue": "£14.99",
+    "statTopPrizeValue": "£15K",
+    "statLiveDrawsValue": "100%"
   }
 }

@@ -1,9 +1,7 @@
 import { Suspense } from 'react';
 import { prisma } from '@winucard/database';
-import { CardCategoriesHero } from '@/components/home/card-categories-hero';
+import { ImmersiveHero } from '@/components/home/immersive-hero';
 import { LiveCompetitions } from '@/components/home/live-competitions';
-import { ComingSoon as _ComingSoon } from '@/components/home/coming-soon';
-import { RecentWinners as _RecentWinners } from '@/components/home/recent-winners';
 import { HowItWorksPreview } from '@/components/home/how-it-works-preview';
 import { FinalCTA } from '@/components/home/final-cta';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -59,94 +57,32 @@ async function getLiveCompetitions() {
   }));
 }
 
-// Fetch upcoming competitions (UPCOMING status)
-async function getUpcomingCompetitions() {
-  const competitions = await prisma.competition.findMany({
-    where: {
-      status: 'UPCOMING',
-    },
-    orderBy: {
-      saleStartDate: 'asc',
-    },
-    take: 3,
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      mainImageUrl: true,
-      category: true,
-      prizeValue: true,
-      ticketPrice: true,
-      saleStartDate: true,
-    },
-  });
-
-  return competitions
-    .filter((comp) => comp.saleStartDate !== null)
-    .map((comp) => ({
-      id: comp.id,
-      slug: comp.slug,
-      title: comp.title,
-      mainImageUrl: comp.mainImageUrl,
-      category: comp.category,
-      prizeValue: Number(comp.prizeValue),
-      ticketPrice: Number(comp.ticketPrice),
-      saleStartDate: comp.saleStartDate as Date,
-    }));
-}
-
-// Fetch recent winners
-async function getRecentWinners() {
-  const wins = await prisma.win.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-    take: 6,
-    include: {
-      competition: {
-        select: {
-          title: true,
-          slug: true,
-          mainImageUrl: true,
-          prizeValue: true,
-        },
-      },
-      user: {
-        select: {
-          firstName: true,
-          lastName: true,
-        },
-      },
-    },
-  });
-
-  return wins.map((win) => ({
-    id: win.id,
-    competitionTitle: win.competition.title,
-    competitionSlug: win.competition.slug,
-    prizeImageUrl: win.competition.mainImageUrl,
-    prizeValue: Number(win.competition.prizeValue),
-    winnerFirstName: win.user?.firstName ?? 'Lucky',
-    winnerLastName: win.user?.lastName ?? 'Winner',
-    wonAt: win.createdAt,
-  }));
-}
-
 // Loading skeleton components
 function CompetitionsSkeleton() {
   return (
-    <div className="py-12 md:py-16">
+    <div className="py-12 md:py-16" style={{ background: '#F7F7FA' }}>
       <div className="container mx-auto px-4">
-        <Skeleton className="h-10 w-64 mb-8" />
+        <div className="flex justify-center mb-8">
+          <Skeleton className="h-10 w-64" style={{ background: '#e8e8ec' }} />
+        </div>
+        <div className="flex justify-center gap-2 mb-10">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-10 w-24 rounded-xl" style={{ background: '#e8e8ec' }} />
+          ))}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-xl border overflow-hidden">
-              <Skeleton className="aspect-square" />
+            <div
+              key={i}
+              className="rounded-xl overflow-hidden"
+              style={{ background: '#ffffff', border: '1px solid #e8e8ec' }}
+            >
+              <Skeleton className="aspect-[9/16]" style={{ background: '#f5f5f7', maxHeight: '280px' }} />
               <div className="p-4">
-                <Skeleton className="h-6 w-full mb-3" />
-                <Skeleton className="h-8 w-24 mb-3" />
-                <Skeleton className="h-2 w-full mb-3" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-6 w-full mb-3" style={{ background: '#f0f0f3' }} />
+                <Skeleton className="h-8 w-24 mb-3" style={{ background: '#f0f0f3' }} />
+                <Skeleton className="h-2 w-full mb-3" style={{ background: '#f0f0f3' }} />
+                <Skeleton className="h-10 w-full" style={{ background: '#f0f0f3' }} />
               </div>
             </div>
           ))}
@@ -162,30 +98,18 @@ async function LiveCompetitionsServer() {
   return <LiveCompetitions competitions={competitions} />;
 }
 
-// Server Component for Coming Soon (hidden, kept for future use)
-async function _ComingSoonServer() {
-  const competitions = await getUpcomingCompetitions();
-  return <_ComingSoon competitions={competitions} />;
-}
-
-// Server Component for Recent Winners (hidden, kept for future use)
-async function _RecentWinnersServer() {
-  const winners = await getRecentWinners();
-  return <_RecentWinners winners={winners} />;
-}
-
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
-      {/* Hero Section - Card Categories */}
-      <CardCategoriesHero />
+    <main className="min-h-screen" style={{ background: '#FAFAFA' }}>
+      {/* Immersive Hero Section */}
+      <ImmersiveHero />
 
       {/* Live Competitions */}
       <Suspense fallback={<CompetitionsSkeleton />}>
         <LiveCompetitionsServer />
       </Suspense>
 
-      {/* How It Works */}
+      {/* How It Works + Trust Badges */}
       <HowItWorksPreview />
 
       {/* Final CTA */}

@@ -10,11 +10,6 @@ import { Loader2, Check, X } from 'lucide-react';
 import { z } from 'zod';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 import { registerUser } from './actions';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
@@ -84,14 +79,38 @@ function getPasswordStrengthLabel(strength: number): string {
 }
 
 function getPasswordStrengthColor(strength: number): string {
-  if (strength < 40) return 'bg-destructive';
-  if (strength < 60) return 'bg-orange-500';
-  if (strength < 80) return 'bg-yellow-500';
-  return 'bg-green-500';
+  if (strength < 40) return '#DC2626';
+  if (strength < 60) return '#F97316';
+  if (strength < 80) return '#EAB308';
+  return '#22C55E';
 }
 
 // Check if Google OAuth is enabled via public env variable
 const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true';
+
+// Input style
+const inputStyle = {
+  width: '100%',
+  padding: '12px 16px',
+  fontSize: '14px',
+  background: '#F5F5F7',
+  border: '1px solid rgba(0, 0, 0, 0.1)',
+  borderRadius: '12px',
+  color: '#1a1a2e',
+  outline: 'none',
+  transition: 'all 0.2s ease',
+};
+
+// Focus/blur handlers for input styling
+const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+  e.currentTarget.style.borderColor = '#F0B90B';
+  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+};
+
+const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+  e.currentTarget.style.boxShadow = 'none';
+};
 
 export function RegisterForm() {
   const router = useRouter();
@@ -194,101 +213,167 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {serverError && (
-        <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+        <div
+          style={{
+            padding: '12px 16px',
+            fontSize: '14px',
+            color: '#DC2626',
+            background: 'rgba(220, 38, 38, 0.08)',
+            border: '1px solid rgba(220, 38, 38, 0.2)',
+            borderRadius: '12px',
+          }}
+        >
           {serverError}
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First name</Label>
-            <Input
-              id="firstName"
-              type="text"
-              placeholder="John"
-              autoComplete="given-name"
-              disabled={isLoading || isGoogleLoading}
-              {...register('firstName')}
-            />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-1.5">
+            <label
+              htmlFor="firstName"
+              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            >
+              First name
+            </label>
+            {(() => {
+              const { onBlur: registerOnBlur, ...rest } = register('firstName');
+              return (
+                <input
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  autoComplete="given-name"
+                  disabled={isLoading || isGoogleLoading}
+                  style={inputStyle}
+                  onFocus={handleInputFocus}
+                  onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                  {...rest}
+                />
+              );
+            })()}
             {errors.firstName && (
-              <p className="text-sm text-destructive">{errors.firstName.message}</p>
+              <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.firstName.message}</p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last name</Label>
-            <Input
-              id="lastName"
-              type="text"
-              placeholder="Doe"
-              autoComplete="family-name"
-              disabled={isLoading || isGoogleLoading}
-              {...register('lastName')}
-            />
+          <div className="space-y-1.5">
+            <label
+              htmlFor="lastName"
+              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            >
+              Last name
+            </label>
+            {(() => {
+              const { onBlur: registerOnBlur, ...rest } = register('lastName');
+              return (
+                <input
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  autoComplete="family-name"
+                  disabled={isLoading || isGoogleLoading}
+                  style={inputStyle}
+                  onFocus={handleInputFocus}
+                  onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                  {...rest}
+                />
+              );
+            })()}
             {errors.lastName && (
-              <p className="text-sm text-destructive">{errors.lastName.message}</p>
+              <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.lastName.message}</p>
             )}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="you@example.com"
-            autoComplete="email"
-            disabled={isLoading || isGoogleLoading}
-            {...register('email')}
-          />
-          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+        <div className="space-y-1.5">
+          <label
+            htmlFor="email"
+            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+          >
+            Email
+          </label>
+          {(() => {
+            const { onBlur: registerOnBlur, ...rest } = register('email');
+            return (
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                autoComplete="email"
+                disabled={isLoading || isGoogleLoading}
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                {...rest}
+              />
+            );
+          })()}
+          {errors.email && (
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.email.message}</p>
+          )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            placeholder="Create a secure password"
-            autoComplete="new-password"
-            disabled={isLoading || isGoogleLoading}
-            {...register('password')}
-          />
+        <div className="space-y-1.5">
+          <label
+            htmlFor="password"
+            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+          >
+            Password
+          </label>
+          {(() => {
+            const { onBlur: registerOnBlur, ...rest } = register('password');
+            return (
+              <input
+                id="password"
+                type="password"
+                placeholder="Create a secure password"
+                autoComplete="new-password"
+                disabled={isLoading || isGoogleLoading}
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                {...rest}
+              />
+            );
+          })()}
 
           {/* Password Strength Indicator */}
           {password && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">Password strength</span>
-                <span
-                  className={
-                    passwordStrength < 60
-                      ? 'text-destructive'
-                      : passwordStrength < 100
-                        ? 'text-yellow-600'
-                        : 'text-green-600'
-                  }
-                >
+            <div className="space-y-2 mt-2">
+              <div className="flex items-center justify-between" style={{ fontSize: '12px' }}>
+                <span style={{ color: '#6b7088' }}>Password strength</span>
+                <span style={{ color: getPasswordStrengthColor(passwordStrength), fontWeight: 500 }}>
                   {getPasswordStrengthLabel(passwordStrength)}
                 </span>
               </div>
-              <Progress
-                value={passwordStrength}
-                className="h-1.5"
-                indicatorClassName={getPasswordStrengthColor(passwordStrength)}
-              />
+              <div
+                style={{
+                  height: '4px',
+                  borderRadius: '2px',
+                  background: '#e8e8ec',
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%',
+                    width: `${passwordStrength}%`,
+                    background: getPasswordStrengthColor(passwordStrength),
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+              </div>
 
               {/* Requirements Checklist */}
-              <ul className="space-y-1 text-xs">
+              <ul className="space-y-1" style={{ fontSize: '12px' }}>
                 {passwordRequirements.map((req) => (
                   <li
                     key={req.label}
-                    className={`flex items-center gap-1.5 ${
-                      req.met ? 'text-green-600' : 'text-muted-foreground'
-                    }`}
+                    className="flex items-center gap-1.5"
+                    style={{ color: req.met ? '#22C55E' : '#6b7088' }}
                   >
                     {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                     {req.label}
@@ -299,58 +384,87 @@ export function RegisterForm() {
           )}
 
           {errors.password && (
-            <p className="text-sm text-destructive">{errors.password.message}</p>
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.password.message}</p>
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            autoComplete="new-password"
-            disabled={isLoading || isGoogleLoading}
-            {...register('confirmPassword')}
-          />
+        <div className="space-y-1.5">
+          <label
+            htmlFor="confirmPassword"
+            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+          >
+            Confirm Password
+          </label>
+          {(() => {
+            const { onBlur: registerOnBlur, ...rest } = register('confirmPassword');
+            return (
+              <input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                autoComplete="new-password"
+                disabled={isLoading || isGoogleLoading}
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                {...rest}
+              />
+            );
+          })()}
           {errors.confirmPassword && (
-            <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.confirmPassword.message}</p>
           )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="dateOfBirth">Date of Birth</Label>
-          <Input
-            id="dateOfBirth"
-            type="date"
-            autoComplete="bday"
-            disabled={isLoading || isGoogleLoading}
-            max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
-            {...register('dateOfBirth')}
-          />
-          <p className="text-xs text-muted-foreground">You must be at least 18 years old</p>
+        <div className="space-y-1.5">
+          <label
+            htmlFor="dateOfBirth"
+            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+          >
+            Date of Birth
+          </label>
+          {(() => {
+            const { onBlur: registerOnBlur, ...rest } = register('dateOfBirth');
+            return (
+              <input
+                id="dateOfBirth"
+                type="date"
+                autoComplete="bday"
+                disabled={isLoading || isGoogleLoading}
+                max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                style={inputStyle}
+                onFocus={handleInputFocus}
+                onBlur={(e) => { handleInputBlur(e); registerOnBlur(e); }}
+                {...rest}
+              />
+            );
+          })()}
+          <p style={{ fontSize: '12px', color: '#6b7088' }}>You must be at least 18 years old</p>
           {errors.dateOfBirth && (
-            <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.dateOfBirth.message}</p>
           )}
         </div>
 
         {/* Terms Acceptance */}
-        <div className="space-y-2">
-          <div className="flex items-start space-x-2">
-            <Checkbox
-              id="terms"
+        <div className="space-y-1.5">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
               checked={acceptTerms}
-              onCheckedChange={handleTermsChange}
+              onChange={(e) => handleTermsChange(e.target.checked)}
               disabled={isLoading || isGoogleLoading}
+              style={{
+                width: '18px',
+                height: '18px',
+                marginTop: '2px',
+                accentColor: '#F0B90B',
+              }}
             />
-            <label
-              htmlFor="terms"
-              className="text-sm leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
+            <span style={{ fontSize: '13px', color: '#555', lineHeight: 1.5 }}>
               I agree to the{' '}
               <Link
                 href="/terms"
-                className="text-primary hover:text-primary/80 underline"
+                style={{ color: '#F0B90B', fontWeight: 500 }}
                 target="_blank"
               >
                 Terms of Service
@@ -358,15 +472,15 @@ export function RegisterForm() {
               and{' '}
               <Link
                 href="/privacy"
-                className="text-primary hover:text-primary/80 underline"
+                style={{ color: '#F0B90B', fontWeight: 500 }}
                 target="_blank"
               >
                 Privacy Policy
               </Link>
-            </label>
-          </div>
+            </span>
+          </label>
           {errors.acceptTerms && (
-            <p className="text-sm text-destructive">{errors.acceptTerms.message}</p>
+            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.acceptTerms.message}</p>
           )}
         </div>
 
@@ -385,44 +499,82 @@ export function RegisterForm() {
           />
         )}
 
-        <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
+        <button
+          type="submit"
+          disabled={isLoading || isGoogleLoading}
+          className="flex items-center justify-center gap-2 w-full transition-all duration-200"
+          style={{
+            padding: '14px',
+            borderRadius: '12px',
+            background: '#1a1a2e',
+            color: '#ffffff',
+            fontSize: '15px',
+            fontWeight: 600,
+            cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
+            opacity: isLoading || isGoogleLoading ? 0.7 : 1,
+          }}
+        >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
               Creating account...
             </>
           ) : (
             'Create account'
           )}
-        </Button>
+        </button>
       </form>
 
       {isGoogleOAuthEnabled && (
         <>
+          {/* Separator */}
           <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+            <div
+              className="absolute inset-0 flex items-center"
+              style={{ top: '50%', transform: 'translateY(-50%)' }}
+            >
+              <span style={{ width: '100%', height: '1px', background: '#e0e0e4' }} />
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+            <div className="relative flex justify-center">
+              <span
+                style={{
+                  background: '#ffffff',
+                  padding: '0 12px',
+                  fontSize: '12px',
+                  color: '#6b7088',
+                  textTransform: 'uppercase',
+                }}
+              >
+                or
+              </span>
             </div>
           </div>
 
-          <Button
+          <button
             type="button"
-            variant="outline"
-            className="w-full"
             onClick={handleGoogleSignIn}
             disabled={isLoading || isGoogleLoading}
+            className="flex items-center justify-center gap-2 w-full transition-all duration-200"
+            style={{
+              padding: '14px',
+              borderRadius: '12px',
+              background: 'transparent',
+              border: '1.5px solid rgba(0, 0, 0, 0.12)',
+              color: '#1a1a2e',
+              fontSize: '15px',
+              fontWeight: 500,
+              cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading || isGoogleLoading ? 0.7 : 1,
+            }}
           >
             {isGoogleLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
                 Connecting...
               </>
             ) : (
               <>
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
@@ -443,15 +595,15 @@ export function RegisterForm() {
                 Sign up with Google
               </>
             )}
-          </Button>
+          </button>
         </>
       )}
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center" style={{ fontSize: '14px', color: '#6b7088' }}>
         Already have an account?{' '}
         <Link
           href={callbackUrl !== '/' ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/login'}
-          className="font-medium text-primary hover:text-primary/80 transition-colors"
+          style={{ fontWeight: 500, color: '#F0B90B' }}
         >
           Login
         </Link>

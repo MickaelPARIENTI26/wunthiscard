@@ -1,26 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { CountdownTimer } from '@/components/common/countdown-timer';
-import { ProgressBar } from '@/components/common/progress-bar';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Flame,
-  Sparkles,
-  Zap,
-  CircleDot,
-  Anchor,
-  Trophy,
-  Shirt,
-  Swords,
-  Layers,
-  HelpCircle,
-} from 'lucide-react';
 
 interface CompetitionCardProps {
   id: string;
@@ -36,68 +21,20 @@ interface CompetitionCardProps {
   status: string;
   createdAt?: Date;
   className?: string;
+  index?: number;
 }
 
-const categoryLabels: Record<string, string> = {
-  POKEMON: 'Pokemon',
-  ONE_PIECE: 'One Piece',
-  SPORTS_BASKETBALL: 'Basketball',
-  SPORTS_FOOTBALL: 'Football',
-  SPORTS_OTHER: 'Sports',
-  MEMORABILIA: 'Memorabilia',
-  YUGIOH: 'Yu-Gi-Oh!',
-  MTG: 'MTG',
-  OTHER: 'Other',
-};
-
-// Category icons
-const categoryIcons: Record<string, React.ReactNode> = {
-  POKEMON: <CircleDot className="w-3 h-3" />,
-  ONE_PIECE: <Anchor className="w-3 h-3" />,
-  SPORTS_BASKETBALL: <Trophy className="w-3 h-3" />,
-  SPORTS_FOOTBALL: <Trophy className="w-3 h-3" />,
-  SPORTS_OTHER: <Trophy className="w-3 h-3" />,
-  MEMORABILIA: <Shirt className="w-3 h-3" />,
-  YUGIOH: <Swords className="w-3 h-3" />,
-  MTG: <Layers className="w-3 h-3" />,
-  OTHER: <HelpCircle className="w-3 h-3" />,
-};
-
-// Deep Navy category colors
-const categoryColors: Record<string, string> = {
-  POKEMON: 'text-[#12151e] border-[#F0B90B]/50',
-  ONE_PIECE: 'text-white border-[#E05555]/50',
-  SPORTS_BASKETBALL: 'text-white border-[#4A90E2]/50',
-  SPORTS_FOOTBALL: 'text-white border-[#34C772]/50',
-  SPORTS_OTHER: 'text-white border-[#4A90E2]/50',
-  MEMORABILIA: 'text-white border-[#9B59B6]/50',
-  YUGIOH: 'text-white border-[#8B5CF6]/50',
-  MTG: 'text-white border-[#64748B]/50',
-  OTHER: 'text-white border-[#5a5e70]/50',
-};
-
-const categoryBgColors: Record<string, string> = {
-  POKEMON: '#F0B90B',
-  ONE_PIECE: '#E05555',
-  SPORTS_BASKETBALL: '#4A90E2',
-  SPORTS_FOOTBALL: '#34C772',
-  SPORTS_OTHER: '#4A90E2',
-  MEMORABILIA: '#9B59B6',
-  YUGIOH: '#8B5CF6',
-  MTG: '#64748B',
-  OTHER: '#5a5e70',
-};
-
-const categoryHoverClasses: Record<string, string> = {
-  POKEMON: 'card-hover-category-pokemon',
-  ONE_PIECE: 'card-hover-category-one-piece',
-  SPORTS_BASKETBALL: 'card-hover-category-basketball',
-  SPORTS_FOOTBALL: 'card-hover-category-football',
-  SPORTS_OTHER: 'card-hover-category-basketball',
-  MEMORABILIA: 'card-hover-gold',
-  YUGIOH: 'card-hover-gold',
-  MTG: 'card-hover-gold',
-  OTHER: 'card-hover-gold',
+// Category configuration
+const categoryConfig: Record<string, { label: string; emoji: string; color: string }> = {
+  POKEMON: { label: 'Pokemon', emoji: '🔥', color: '#F0B90B' },
+  ONE_PIECE: { label: 'One Piece', emoji: '🏴‍☠️', color: '#EF4444' },
+  SPORTS_BASKETBALL: { label: 'Basketball', emoji: '🏀', color: '#3B82F6' },
+  SPORTS_FOOTBALL: { label: 'Football', emoji: '⚽', color: '#22C55E' },
+  SPORTS_OTHER: { label: 'Sports', emoji: '🏆', color: '#3B82F6' },
+  MEMORABILIA: { label: 'Memorabilia', emoji: '✨', color: '#A855F7' },
+  YUGIOH: { label: 'Yu-Gi-Oh!', emoji: '🃏', color: '#8B5CF6' },
+  MTG: { label: 'MTG', emoji: '🧙', color: '#64748B' },
+  OTHER: { label: 'Other', emoji: '🎴', color: '#6B7280' },
 };
 
 export function CompetitionCard({
@@ -109,188 +46,249 @@ export function CompetitionCard({
   ticketPrice,
   totalTickets,
   soldTickets,
-  drawDate,
   status,
-  createdAt,
   className,
+  index = 0,
 }: CompetitionCardProps) {
   const t = useTranslations('competitions');
   const isActive = status === 'ACTIVE';
-  const isUpcoming = status === 'UPCOMING';
   const isSoldOut = status === 'SOLD_OUT';
 
-  const soldPercentage = (soldTickets / totalTickets) * 100;
-  const isHot = soldPercentage >= 80 && soldPercentage < 90;
-  const isAlmostGone = soldPercentage >= 90;
+  const soldPercentage = Math.round((soldTickets / totalTickets) * 100);
+  const isHotSelling = soldPercentage >= 75;
 
-  // Check if new (created within last 24 hours)
-  const isNew = createdAt && (Date.now() - new Date(createdAt).getTime()) < 24 * 60 * 60 * 1000;
+  const defaultConfig = { label: 'Other', emoji: '🎴', color: '#6B7280' };
+  const config = categoryConfig[category] ?? defaultConfig;
+  const categoryColor = config.color;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      whileHover={{ y: -8 }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      }}
       className={cn('group', className)}
     >
       <Link href={`/competitions/${slug}`} className="block h-full">
-        <Card
-          className={cn(
-            'overflow-hidden h-full flex flex-col cursor-pointer transition-all duration-300',
-            'border hover:shadow-xl',
-            categoryHoverClasses[category] || 'card-hover-gold',
-            isActive && !isSoldOut && 'holo-shimmer'
-          )}
+        <div
+          className="h-full flex flex-col overflow-hidden competition-card"
           style={{
-            background: 'rgba(255, 255, 255, 0.025)',
-            borderColor: 'rgba(255, 255, 255, 0.08)',
+            background: '#ffffff',
+            border: '1px solid #e8e8ec',
+            borderRadius: '20px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+            transition: 'all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          }}
+          onMouseEnter={(e) => {
+            const el = e.currentTarget;
+            el.style.borderColor = `${categoryColor}40`;
+            el.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px ${categoryColor}12`;
+            el.style.transform = 'translateY(-8px)';
+          }}
+          onMouseLeave={(e) => {
+            const el = e.currentTarget;
+            el.style.borderColor = '#e8e8ec';
+            el.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.04)';
+            el.style.transform = 'translateY(0)';
           }}
         >
-          {/* Image Container */}
-          <div className="relative aspect-square overflow-hidden bg-muted">
-            <Image
-              src={mainImageUrl}
-              alt={title}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className={cn(
-                'object-cover transition-transform duration-500 group-hover:scale-110',
-                isSoldOut && 'grayscale opacity-70'
-              )}
-              loading="lazy"
-            />
-
-            {/* Category Badge */}
-            <Badge
-              className={cn(
-                'absolute top-3 left-3 border gap-1',
-                categoryColors[category]
-              )}
-              style={{
-                backgroundColor: categoryBgColors[category] || '#5a5e70',
-              }}
-            >
-              {categoryIcons[category]}
-              {categoryLabels[category]}
-            </Badge>
-
-            {/* Status Badges */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2">
-              {isSoldOut && (
-                <Badge variant="destructive" className="bg-red-600 border-red-500">
-                  {t('soldOut')}
-                </Badge>
-              )}
-              {isUpcoming && (
-                <Badge variant="secondary" className="bg-secondary border-border">
-                  {t('comingSoon')}
-                </Badge>
-              )}
-              {isNew && !isSoldOut && (
-                <Badge className="bg-accent text-accent-foreground border-accent/50">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  {t('new')}
-                </Badge>
-              )}
-              {isHot && !isSoldOut && (
-                <Badge className="bg-orange-500 text-white border-orange-400 urgency-pulse">
-                  <Flame className="w-3 h-3 mr-1" />
-                  {t('hot')}
-                </Badge>
-              )}
-              {isAlmostGone && !isSoldOut && (
-                <Badge className="bg-red-500 text-white border-red-400 urgency-pulse">
-                  <Zap className="w-3 h-3 mr-1" />
-                  {t('almostGone')}
-                </Badge>
-              )}
-            </div>
-
-            {/* Sold Out Overlay */}
-            {isSoldOut && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                <div className="bg-red-600 text-white px-6 py-2 text-xl font-bold -rotate-12 shadow-lg">
-                  {t('soldOut')}
-                </div>
-              </div>
+          {/* Image Zone - 9:16 Aspect Ratio */}
+          <div
+            className="relative flex items-center justify-center overflow-hidden"
+            style={{
+              aspectRatio: '9/16',
+              maxHeight: '280px',
+              background: mainImageUrl ? '#f5f5f7' : `linear-gradient(135deg, ${categoryColor}12 0%, ${categoryColor}05 50%, #f5f5f7 100%)`,
+              borderRadius: '20px 20px 0 0',
+            }}
+          >
+            {/* Real Image or Emoji Fallback */}
+            {mainImageUrl ? (
+              <Image
+                src={mainImageUrl}
+                alt={title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                style={{ borderRadius: '20px 20px 0 0' }}
+              />
+            ) : (
+              <span
+                className="text-7xl md:text-8xl transition-all duration-500 ease-out group-hover:scale-[1.15] group-hover:rotate-[-3deg]"
+                style={{
+                  filter: `drop-shadow(0 12px 32px ${categoryColor}30)`,
+                }}
+              >
+                {config.emoji}
+              </span>
             )}
 
-            {/* Prize Value Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-4 pt-12">
-              <div>
-                <p className="text-xs uppercase tracking-wider text-white/70 mb-1">{t('prizeValue')}</p>
-                <p className="text-2xl md:text-3xl font-bold text-gradient-gold tabular-nums font-[family-name:var(--font-outfit)]">
-                  {new Intl.NumberFormat('en-GB', {
-                    style: 'currency',
-                    currency: 'GBP',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0,
-                  }).format(prizeValue)}
-                </p>
-              </div>
+            {/* Category Badge - Top Left */}
+            <div
+              className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider z-10"
+              style={{
+                background: '#ffffff',
+                border: `1px solid ${categoryColor}30`,
+                color: categoryColor,
+              }}
+            >
+              {config.label}
+            </div>
+
+            {/* Status Badge - Top Right */}
+            <div
+              className="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 z-10"
+              style={{
+                background: '#ffffff',
+                border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+                color: isHotSelling ? '#EF4444' : '#22C55E',
+              }}
+            >
+              {isHotSelling ? (
+                <>🔥 {soldPercentage}% sold</>
+              ) : (
+                <>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  Open
+                </>
+              )}
             </div>
           </div>
 
-          <CardContent className="flex-1 p-4 flex flex-col" style={{ color: '#ffffff' }}>
+          {/* Info Zone */}
+          <div className="flex-1 flex flex-col" style={{ padding: '18px 22px 24px' }}>
             {/* Title */}
             <h3
-              className="font-semibold text-lg line-clamp-2 mb-3 min-h-[3.5rem] group-hover:text-primary transition-colors font-[family-name:var(--font-outfit)]"
-              style={{ color: '#ffffff' }}
+              className="font-semibold line-clamp-2 mb-3 min-h-[2.5rem] font-[family-name:var(--font-outfit)]"
+              style={{
+                fontSize: '15px',
+                fontWeight: 600,
+                color: '#1a1a2e',
+              }}
             >
               {title}
             </h3>
 
-            {/* Ticket Price */}
-            <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-2xl font-bold tabular-nums" style={{ color: '#F0B90B' }}>
-                {new Intl.NumberFormat('en-GB', {
-                  style: 'currency',
-                  currency: 'GBP',
-                  minimumFractionDigits: 2,
-                }).format(ticketPrice)}
-              </span>
-              <span className="text-sm" style={{ color: '#7a7e90' }}>{t('perTicket')}</span>
-            </div>
+            {/* Prize Value */}
+            <p
+              className="font-[family-name:var(--font-outfit)] mb-4"
+              style={{
+                fontSize: '30px',
+                fontWeight: 800,
+                color: '#1a1a2e',
+              }}
+            >
+              {new Intl.NumberFormat('en-GB', {
+                style: 'currency',
+                currency: 'GBP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(prizeValue)}
+            </p>
 
             {/* Progress Bar */}
-            <ProgressBar
-              sold={soldTickets}
-              total={totalTickets}
-              size="sm"
-              className="mb-4"
-            />
-
-            {/* Countdown */}
-            {(isActive || isUpcoming) && (
-              <div className="mt-auto">
-                <p className="text-xs mb-2" style={{ color: '#7a7e90' }}>
-                  {isActive ? t('drawEndsIn') : t('saleStartsIn')}
-                </p>
-                <CountdownTimer
-                  targetDate={drawDate}
-                  size="sm"
-                  showLabels={false}
-                />
-              </div>
-            )}
-
-            {/* CTA Button */}
-            <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}>
-              <span
-                className={cn(
-                  'block w-full text-center py-2.5 rounded-lg font-semibold transition-all duration-300'
-                )}
+            <div className="mb-4">
+              <div
+                className="w-full rounded-full overflow-hidden"
                 style={{
-                  background: isActive ? 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)' : '#1a1e2e',
-                  color: isActive ? '#12151e' : '#7a7e90',
+                  height: '6px',
+                  background: '#f0f0f3',
                 }}
               >
-                {isActive ? t('enterNow') : isUpcoming ? t('viewDetails') : isSoldOut ? t('soldOut') : t('viewDetails')}
-              </span>
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${soldPercentage}%`,
+                    background: `linear-gradient(90deg, ${categoryColor} 0%, ${categoryColor}CC 100%)`,
+                    boxShadow: `0 0 12px ${categoryColor}40`,
+                  }}
+                />
+              </div>
+              {/* Stats */}
+              <div className="flex justify-between mt-2">
+                <span style={{ fontSize: '11px', color: '#6b7088' }}>
+                  {soldTickets} / {totalTickets} {t('sold')}
+                </span>
+                <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
+                  {totalTickets - soldTickets} {t('ticketsLeft')}
+                </span>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Separator + Price + CTA */}
+            <div
+              style={{
+                borderTop: '1px solid #f0f0f3',
+                marginTop: '18px',
+                paddingTop: '14px',
+              }}
+            >
+              {/* Price */}
+              <div className="flex items-baseline justify-between mb-3">
+                <span style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e' }}>
+                  {new Intl.NumberFormat('en-GB', {
+                    style: 'currency',
+                    currency: 'GBP',
+                    minimumFractionDigits: 2,
+                  }).format(ticketPrice)}
+                </span>
+                <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
+                  {t('perTicket')}
+                </span>
+              </div>
+
+              {/* CTA Button */}
+              <button
+                className="w-full flex items-center justify-center gap-2 py-3 font-semibold transition-all duration-300"
+                style={{
+                  background: isActive && !isSoldOut
+                    ? '#1a1a2e'
+                    : '#f5f5f7',
+                  color: isActive && !isSoldOut
+                    ? '#ffffff'
+                    : '#6b7088',
+                  borderRadius: '12px',
+                  fontSize: '14px',
+                  boxShadow: isActive && !isSoldOut ? '0 4px 16px rgba(26, 26, 46, 0.2)' : 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (isActive && !isSoldOut) {
+                    e.currentTarget.style.background = '#2a2a3e';
+                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(26, 26, 46, 0.3)';
+                    e.currentTarget.style.transform = 'scale(1.02)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (isActive && !isSoldOut) {
+                    e.currentTarget.style.background = '#1a1a2e';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(26, 26, 46, 0.2)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
+                }}
+              >
+                {isActive && !isSoldOut ? (
+                  <>
+                    {t('enterNow')}
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                ) : isSoldOut ? (
+                  t('soldOut')
+                ) : (
+                  t('viewDetails')
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       </Link>
     </motion.div>
   );

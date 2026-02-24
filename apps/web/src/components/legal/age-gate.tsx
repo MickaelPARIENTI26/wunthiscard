@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Trophy, AlertTriangle } from 'lucide-react';
+import Link from 'next/link';
 
 const AGE_VERIFIED_COOKIE = 'age_verified';
 const COOKIE_EXPIRY_DAYS = 30;
@@ -83,7 +83,7 @@ export function AgeGate() {
         isAnimating ? 'opacity-100' : 'opacity-0'
       }`}
       style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
       }}
@@ -92,83 +92,95 @@ export function AgeGate() {
       aria-labelledby="age-gate-title"
     >
       <div
-        className={`relative w-full max-w-[480px] rounded-2xl p-6 sm:p-8 transition-all duration-300 ${
+        className={`relative w-full max-w-[440px] text-center transition-all duration-300 ${
           isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
         style={{
-          backgroundColor: '#161a28',
-          border: '1px solid rgba(240, 185, 11, 0.2)',
-          boxShadow: '0 0 60px rgba(240, 185, 11, 0.1), 0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          background: '#ffffff',
+          borderRadius: '24px',
+          padding: '40px',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.12)',
         }}
       >
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            {/* Gold square with W */}
             <div
-              className="relative flex h-12 w-12 items-center justify-center rounded-xl overflow-hidden"
+              className="flex items-center justify-center"
               style={{
-                background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
+                width: '40px',
+                height: '40px',
+                borderRadius: '12px',
+                background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
+                boxShadow: '0 4px 12px rgba(240, 185, 11, 0.3)',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-              <Trophy className="h-6 w-6 relative z-10" style={{ color: '#12151e' }} />
+              <span
+                style={{
+                  color: '#ffffff',
+                  fontSize: '18px',
+                  fontWeight: 800,
+                  fontFamily: 'var(--font-outfit)',
+                }}
+              >
+                W
+              </span>
             </div>
+            {/* Text */}
             <span
-              className="text-2xl font-bold tracking-tight font-[family-name:var(--font-outfit)]"
+              className="font-[family-name:var(--font-outfit)]"
               style={{
-                background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
+                fontSize: '22px',
+                fontWeight: 700,
+                letterSpacing: '-0.5px',
+                color: '#1a1a2e',
               }}
             >
               WinUCard
             </span>
-          </div>
-        </div>
-
-        {/* Warning Icon */}
-        <div className="flex justify-center mb-4">
-          <div
-            className="flex h-16 w-16 items-center justify-center rounded-full"
-            style={{
-              background: 'linear-gradient(135deg, rgba(240, 185, 11, 0.15) 0%, rgba(240, 185, 11, 0.08) 100%)',
-              border: '1px solid rgba(240, 185, 11, 0.3)',
-            }}
-          >
-            <AlertTriangle className="h-8 w-8" style={{ color: '#F0B90B' }} />
-          </div>
+          </Link>
         </div>
 
         {/* Title */}
         <h1
           id="age-gate-title"
-          className="text-2xl sm:text-3xl font-bold text-center mb-4 font-[family-name:var(--font-outfit)]"
+          className="font-[family-name:var(--font-outfit)] mb-3"
           style={{
-            background: 'linear-gradient(135deg, #F0B90B 0%, #FFD000 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
+            fontSize: '24px',
+            fontWeight: 700,
+            color: '#1a1a2e',
           }}
         >
           {t('title')}
         </h1>
 
         {/* Description */}
-        <p className="text-center text-sm sm:text-base mb-8" style={{ color: '#7a7e90' }}>
+        <p
+          className="mb-8"
+          style={{
+            fontSize: '15px',
+            color: '#6b7088',
+            lineHeight: 1.6,
+          }}
+        >
           {t('message')}
         </p>
 
         {/* Buttons */}
-        <div className="flex flex-col gap-3">
+        <div className="space-y-3">
           {/* Primary Button - Yes, I'm 18+ */}
           <button
             onClick={handleConfirmAge}
-            className="w-full py-4 px-6 rounded-lg text-base sm:text-lg font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full transition-all duration-200"
             style={{
-              background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-              color: '#12151e',
-              boxShadow: '0 4px 20px rgba(240, 185, 11, 0.3)',
+              padding: '14px',
+              borderRadius: '12px',
+              background: '#1a1a2e',
+              color: '#ffffff',
+              fontSize: '15px',
+              fontWeight: 600,
+              cursor: 'pointer',
             }}
           >
             {t('confirm')}
@@ -177,11 +189,16 @@ export function AgeGate() {
           {/* Secondary Button - No, I'm under 18 */}
           <button
             onClick={handleUnderAge}
-            className="w-full py-3 px-6 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/5"
+            className="w-full transition-all duration-200"
             style={{
+              padding: '14px',
+              borderRadius: '12px',
               background: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              color: '#7a7e90',
+              border: '1.5px solid rgba(0, 0, 0, 0.12)',
+              color: '#6b7088',
+              fontSize: '15px',
+              fontWeight: 500,
+              cursor: 'pointer',
             }}
           >
             {t('deny')}
@@ -189,7 +206,14 @@ export function AgeGate() {
         </div>
 
         {/* Legal Text */}
-        <p className="text-center text-xs mt-6" style={{ color: '#5a5e70' }}>
+        <p
+          className="mt-6"
+          style={{
+            fontSize: '12px',
+            color: '#9a9eb0',
+            lineHeight: 1.5,
+          }}
+        >
           {t('legal')}
         </p>
       </div>

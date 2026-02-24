@@ -35,8 +35,12 @@ export default async function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold md:text-3xl">Profile</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1
+          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
+        >
+          Profile
+        </h1>
+        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
           Manage your personal information
         </p>
       </div>

@@ -133,8 +133,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         side="right"
         className="flex w-full flex-col sm:max-w-sm border-l"
         style={{
-          background: 'linear-gradient(180deg, #161a28 0%, #12151e 100%)',
-          borderColor: 'rgba(255, 255, 255, 0.05)',
+          background: 'linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-base) 100%)',
+          borderColor: 'var(--border-subtle)',
         }}
       >
         <SheetHeader className="text-left">
@@ -147,7 +147,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                <Trophy className="h-5 w-5 relative z-10" style={{ color: '#12151e' }} />
+                <Trophy className="h-5 w-5 relative z-10" style={{ color: 'var(--bg-base)' }} />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight font-[family-name:var(--font-outfit)] text-gradient-gold">
@@ -167,8 +167,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             <div
               className="flex items-center gap-3 rounded-xl p-4"
               style={{
-                background: 'linear-gradient(135deg, #1a1e2e 0%, #161a28 100%)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
+                border: '1px solid var(--border-light)',
               }}
             >
               <Avatar className="h-12 w-12 ring-2 ring-primary/30">
@@ -176,8 +176,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 <AvatarFallback
                   className="font-semibold"
                   style={{
-                    background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                    color: '#12151e',
+                    background: 'linear-gradient(135deg, var(--accent) 0%, #C9990A 100%)',
+                    color: 'var(--bg-base)',
                   }}
                 >
                   {getInitials(user.name)}
@@ -250,8 +250,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 size="lg"
                 className="w-full font-semibold"
                 style={{
-                  background: 'linear-gradient(135deg, #F0B90B 0%, #C9990A 100%)',
-                  color: '#12151e',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, #C9990A 100%)',
+                  color: 'var(--bg-base)',
                 }}
               >
                 <Link href="/register" onClick={onClose} className="flex items-center gap-2">
@@ -266,7 +266,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 className="w-full"
                 style={{
                   background: 'transparent',
-                  borderColor: 'rgba(255, 255, 255, 0.12)',
+                  borderColor: 'var(--border-hover)',
                 }}
               >
                 <Link href="/login" onClick={onClose}>
@@ -283,7 +283,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           <div
             className="pt-6"
             style={{
-              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              borderTop: '1px solid var(--border-light)',
             }}
           >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
@@ -298,8 +298,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   rel="noopener noreferrer"
                   className="group flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, #1a1e2e 0%, #161a28 100%)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
+                    border: '1px solid var(--border-light)',
                   }}
                   aria-label={`Follow us on ${social.label}`}
                 >

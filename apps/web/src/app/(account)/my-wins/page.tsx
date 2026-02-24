@@ -86,8 +86,12 @@ export default async function MyWinsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold md:text-3xl">My Wins</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1
+          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
+        >
+          My Wins
+        </h1>
+        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
           View all your competition wins
         </p>
       </div>
@@ -125,8 +129,8 @@ export default async function MyWinsPage() {
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, 160px"
                       />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                        <Trophy className="h-10 w-10 text-yellow-400" />
+                      <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(12, 15, 23, 0.6)' }}>
+                        <Trophy className="h-10 w-10" style={{ color: '#F0B90B' }} />
                       </div>
                     </div>
 

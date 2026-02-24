@@ -53,25 +53,17 @@ export function LanguageSwitcher({ className, variant = 'default' }: LanguageSwi
               onClick={() => handleLocaleChange(locale)}
               disabled={isPending}
               className={cn(
-                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
-                isActive
-                  ? 'ring-1'
-                  : 'hover:bg-white/5'
+                'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200'
               )}
               style={{
-                background: isActive
-                  ? 'linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 165, 0, 0.1) 100%)'
-                  : 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                ...(isActive && {
-                  borderColor: 'rgba(255, 215, 0, 0.3)',
-                }),
+                background: isActive ? '#F0B90B' : '#F5F5F7',
+                border: '1px solid #e8e8ec',
+                borderRadius: '10px',
+                color: isActive ? '#1a1a2e' : '#6b7088',
               }}
             >
               <span className="text-base">{config.flag}</span>
-              <span className={isActive ? 'text-primary' : 'text-muted-foreground'}>
-                {config.code}
-              </span>
+              <span>{config.code}</span>
             </button>
           );
         })}
@@ -86,19 +78,26 @@ export function LanguageSwitcher({ className, variant = 'default' }: LanguageSwi
         <button
           disabled={isPending}
           className={cn(
-            'flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium transition-all duration-200',
-            'hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
+            'flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium transition-all duration-200',
+            'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50',
             isPending && 'opacity-50 cursor-not-allowed',
             className
           )}
           style={{
-            background: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            background: '#F5F5F7',
+            border: '1px solid #e8e8ec',
+            borderRadius: '10px',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background = '#EDEDF0';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = '#F5F5F7';
           }}
         >
           <span className="text-base leading-none">{current.flag}</span>
-          <span className="text-muted-foreground">{current.code}</span>
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
+          <span style={{ color: '#6b7088', fontWeight: 500 }}>{current.code}</span>
+          <ChevronDown className="h-3 w-3" style={{ color: '#6b7088' }} />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -106,9 +105,10 @@ export function LanguageSwitcher({ className, variant = 'default' }: LanguageSwi
         sideOffset={8}
         className="min-w-[140px] p-1 animate-in fade-in-0 zoom-in-95 duration-200"
         style={{
-          background: '#111118',
-          border: '1px solid rgba(255, 215, 0, 0.15)',
-          borderRadius: '8px',
+          background: '#ffffff',
+          border: '1px solid #e8e8ec',
+          borderRadius: '10px',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.08)',
         }}
       >
         {locales.map((locale) => {
@@ -120,21 +120,36 @@ export function LanguageSwitcher({ className, variant = 'default' }: LanguageSwi
               onClick={() => handleLocaleChange(locale)}
               className={cn(
                 'flex items-center gap-2.5 rounded-md px-3 py-2 cursor-pointer transition-colors',
-                'focus:bg-white/5 focus:outline-none',
-                isActive && 'bg-white/5'
+                'focus:outline-none'
               )}
+              style={{
+                background: isActive ? '#F5F5F7' : 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  (e.currentTarget as HTMLElement).style.background = '#F5F5F7';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                }
+              }}
             >
               <span className="text-base leading-none">{config.flag}</span>
-              <span className={cn(
-                'flex-1',
-                isActive ? 'text-foreground font-medium' : 'text-muted-foreground'
-              )}>
+              <span
+                className="flex-1"
+                style={{
+                  color: isActive ? '#1a1a2e' : '#6b7088',
+                  fontWeight: isActive ? 600 : 400,
+                }}
+              >
                 {config.name}
               </span>
               {isActive && (
                 <span
                   className="text-xs font-bold"
-                  style={{ color: '#FFD700' }}
+                  style={{ color: '#E8A000' }}
                 >
                   ✓
                 </span>

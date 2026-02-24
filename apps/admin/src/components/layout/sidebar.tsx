@@ -58,14 +58,31 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex h-screen flex-col border-r bg-sidebar-background transition-all duration-300',
+        'flex h-screen flex-col transition-all duration-300',
         collapsed ? 'w-16' : 'w-64'
       )}
+      style={{
+        background: 'var(--bg-deep)',
+        borderRight: '1px solid var(--border-subtle)',
+      }}
     >
-      <div className="flex h-16 items-center justify-between border-b px-4">
+      <div
+        className="flex h-16 items-center justify-between px-4"
+        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+      >
         {!collapsed && (
           <Link href="/dashboard" className="flex items-center gap-2">
-            <span className="text-xl font-bold">WinUCard</span>
+            <span
+              className="text-xl font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              WinUCard
+            </span>
           </Link>
         )}
         <Button
@@ -73,6 +90,7 @@ export function Sidebar() {
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
           className="h-8 w-8"
+          style={{ color: 'var(--text-muted)' }}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
@@ -86,11 +104,27 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300'
               )}
+              style={{
+                background: isActive
+                  ? 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)'
+                  : 'transparent',
+                color: isActive ? '#0c0f17' : 'var(--text-muted)',
+                boxShadow: isActive ? '0 2px 8px rgba(240, 185, 11, 0.25)' : 'none',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.background = 'var(--bg-card-hover)';
+                  e.currentTarget.style.color = 'var(--text-primary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = 'var(--text-muted)';
+                }
+              }}
             >
               <item.icon className="h-5 w-5 shrink-0" />
               {!collapsed && <span>{item.name}</span>}
@@ -99,12 +133,22 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="border-t p-2">
+      <div style={{ borderTop: '1px solid var(--border-subtle)' }} className="p-2">
         <button
           onClick={handleSignOut}
-          className={cn(
-            'flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-          )}
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300"
+          style={{
+            background: 'transparent',
+            color: 'var(--text-muted)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+            e.currentTarget.style.color = '#EF4444';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
         >
           <LogOut className="h-5 w-5 shrink-0" />
           {!collapsed && <span>Sign Out</span>}

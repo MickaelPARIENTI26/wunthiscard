@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Outfit } from 'next/font/google';
+import { GeistSans } from 'geist/font/sans';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
 import './globals.css';
@@ -27,8 +28,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#12151e',
-  colorScheme: 'dark',
+  themeColor: '#ffffff',
+  colorScheme: 'light',
 };
 
 export const metadata: Metadata = {
@@ -135,12 +136,12 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={outfit.variable}>
+    <html lang={locale} className={`${GeistSans.variable} ${outfit.variable}`}>
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
       </head>
-      <body className="min-h-screen antialiased flex flex-col" style={{ fontFamily: 'var(--font-outfit), system-ui, sans-serif' }}>
+      <body className="min-h-screen antialiased flex flex-col" style={{ fontFamily: "var(--font-geist-sans), 'Inter', -apple-system, sans-serif", paddingTop: '66px' }}>
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
             <AuthHeader />
