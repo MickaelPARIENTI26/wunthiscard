@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, Loader2, Mail, Clock, Gift } from 'lucide-react';
+import { ArrowRight, Loader2, Mail, Clock, X } from 'lucide-react';
 import { formatPrice } from '@winucard/shared/utils';
 
 // TODO: Rendre les paliers de bonus configurables depuis l'admin
@@ -15,8 +15,10 @@ const BONUS_TIERS = [
   { minTickets: 50, bonusTickets: 5 },
 ];
 
+// Preset buttons for row 2
+const PRESET_BUTTONS = [15, 20, 25, 50];
+
 function getBonusTickets(quantity: number): number {
-  // Find the highest tier the user qualifies for
   let bonus = 0;
   for (const tier of BONUS_TIERS) {
     if (quantity >= tier.minTickets) {
@@ -50,8 +52,8 @@ export function SimpleTicketSelector({
   const isAuthenticated = !!session?.user;
 
   const [quantity, setQuantity] = useState(1);
-  const [customValue, setCustomValue] = useState('');
-  const [isCustomActive, setIsCustomActive] = useState(false);
+  const [showOtherInput, setShowOtherInput] = useState(false);
+  const [otherValue, setOtherValue] = useState('');
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservation, setReservation] = useState<{
@@ -60,7 +62,7 @@ export function SimpleTicketSelector({
   } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const customInputRef = useRef<HTMLInputElement>(null);
+  const otherInputRef = useRef<HTMLInputElement>(null);
 
   // Effective max considers user's existing tickets
   const remainingAllowance = maxTicketsPerUser - userTicketCount;
@@ -72,6 +74,11 @@ export function SimpleTicketSelector({
 
   // Quick select buttons (1-10)
   const quickButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  // Determine which row/button is selected
+  const isRow1Selected = quantity >= 1 && quantity <= 10 && !showOtherInput;
+  const isPresetSelected = PRESET_BUTTONS.includes(quantity) && !showOtherInput;
+  const isOtherSelected = showOtherInput && otherValue !== '';
 
   // Format countdown timer
   const formatCountdown = (ms: number): string => {
@@ -128,36 +135,52 @@ export function SimpleTicketSelector({
     };
   }, [reservation, competitionId, isAuthenticated]);
 
-  const handleQuickSelect = (num: number) => {
+  // Auto-focus other input when opened
+  useEffect(() => {
+    if (showOtherInput && otherInputRef.current) {
+      otherInputRef.current.focus();
+    }
+  }, [showOtherInput]);
+
+  const handleRow1Select = (num: number) => {
     if (num <= maxQuantity) {
       setQuantity(num);
-      setCustomValue('');
-      setIsCustomActive(false);
+      setShowOtherInput(false);
+      setOtherValue('');
       setReservationError(null);
     }
   };
 
-  const handleCustomFocus = () => {
-    setIsCustomActive(true);
+  const handlePresetSelect = (num: number) => {
+    if (num <= maxQuantity) {
+      setQuantity(num);
+      setShowOtherInput(false);
+      setOtherValue('');
+      setReservationError(null);
+    }
   };
 
-  const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOtherClick = () => {
+    setShowOtherInput(true);
+  };
+
+  const handleOtherClose = () => {
+    setShowOtherInput(false);
+    setOtherValue('');
+    // Reset to last valid selection if needed
+    if (!PRESET_BUTTONS.includes(quantity) && (quantity < 1 || quantity > 10)) {
+      setQuantity(1);
+    }
+  };
+
+  const handleOtherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setCustomValue(value);
+    setOtherValue(value);
 
     const num = parseInt(value, 10);
-    if (!isNaN(num) && num >= 11 && num <= maxQuantity) {
+    if (!isNaN(num) && num >= 1 && num <= maxQuantity) {
       setQuantity(num);
       setReservationError(null);
-    }
-  };
-
-  const handleCustomBlur = () => {
-    const num = parseInt(customValue, 10);
-    // If the value is less than 11 or invalid, clear the input
-    if (isNaN(num) || num < 11) {
-      setCustomValue('');
-      setIsCustomActive(false);
     }
   };
 
@@ -166,7 +189,6 @@ export function SimpleTicketSelector({
     setIsProceeding(true);
     setReservationError(null);
 
-    // For anonymous users, store quantity and proceed
     if (!isAuthenticated) {
       sessionStorage.setItem(
         `pending_quantity_${competitionId}`,
@@ -176,7 +198,6 @@ export function SimpleTicketSelector({
       return;
     }
 
-    // For authenticated users, reserve tickets via API
     try {
       const response = await fetch('/api/tickets/reserve', {
         method: 'POST',
@@ -210,23 +231,27 @@ export function SimpleTicketSelector({
     }
   };
 
-  // Determine if custom input has a valid value (for styling)
-  const hasCustomValue = customValue !== '' && parseInt(customValue, 10) >= 11;
-
   return (
     <div className="space-y-5">
-      {/* CSS for hiding number input spinners */}
+      {/* CSS for styling */}
       <style>{`
-        .ticket-custom-input::-webkit-inner-spin-button,
-        .ticket-custom-input::-webkit-outer-spin-button {
+        .ticket-other-input::-webkit-inner-spin-button,
+        .ticket-other-input::-webkit-outer-spin-button {
           -webkit-appearance: none;
           margin: 0;
         }
-        .ticket-custom-input {
+        .ticket-other-input {
           -moz-appearance: textfield;
         }
         .ticket-btn:hover:not(:disabled):not(.selected) {
           background: #EDEDF0 !important;
+        }
+        .preset-btn:hover:not(:disabled):not(.selected) {
+          background: #EDEDF0 !important;
+        }
+        .other-btn:hover {
+          background: #EDEDF0 !important;
+          border-style: solid !important;
         }
       `}</style>
 
@@ -235,16 +260,16 @@ export function SimpleTicketSelector({
         Select tickets
       </p>
 
-      {/* Ticket Buttons Row */}
+      {/* Row 1: Buttons 1-10 */}
       <div className="flex flex-wrap gap-2">
         {quickButtons.map((num) => {
-          const isSelected = quantity === num && !hasCustomValue;
+          const isSelected = quantity === num && isRow1Selected;
           const isDisabled = num > maxQuantity;
 
           return (
             <button
               key={num}
-              onClick={() => handleQuickSelect(num)}
+              onClick={() => handleRow1Select(num)}
               disabled={isDisabled}
               className={`ticket-btn ${isSelected ? 'selected' : ''}`}
               style={{
@@ -266,101 +291,153 @@ export function SimpleTicketSelector({
             </button>
           );
         })}
-
-        {/* Custom Input (always visible) */}
-        <input
-          ref={customInputRef}
-          type="number"
-          min={11}
-          max={maxQuantity}
-          value={customValue}
-          onChange={handleCustomChange}
-          onFocus={handleCustomFocus}
-          onBlur={handleCustomBlur}
-          placeholder="25"
-          className="ticket-custom-input"
-          style={{
-            width: '80px',
-            height: '44px',
-            borderRadius: '10px',
-            border: hasCustomValue
-              ? 'none'
-              : isCustomActive
-                ? '1px solid rgba(240, 185, 11, 0.3)'
-                : '1px solid rgba(0, 0, 0, 0.1)',
-            background: hasCustomValue ? '#1a1a2e' : '#F7F7FA',
-            color: hasCustomValue ? '#ffffff' : 'var(--text-primary)',
-            fontSize: '16px',
-            fontWeight: 600,
-            textAlign: 'center',
-            outline: 'none',
-            boxShadow: hasCustomValue
-              ? '0 4px 12px rgba(0, 0, 0, 0.1)'
-              : isCustomActive
-                ? '0 0 0 3px rgba(240, 185, 11, 0.08)'
-                : 'none',
-            transition: 'all 0.2s',
-          }}
-        />
       </div>
 
-      {/* Bonus Offers Section */}
-      <div
-        style={{
-          background: '#F7F7FA',
-          borderRadius: '14px',
-          padding: '14px 18px',
-        }}
-      >
-        <div
-          className="flex items-center gap-2 mb-2"
-          style={{ marginBottom: '8px' }}
-        >
-          <Gift style={{ width: '14px', height: '14px', color: '#F0B90B' }} />
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#1a1a2e' }}>
-            Bonus Offers
-          </span>
-        </div>
-        <div className="space-y-1">
+      {/* Row 2: Presets + Other */}
+      <div className="flex flex-wrap gap-2">
+        {PRESET_BUTTONS.map((num) => {
+          const isSelected = quantity === num && isPresetSelected;
+          const isDisabled = num > maxQuantity;
+
+          return (
+            <button
+              key={num}
+              onClick={() => handlePresetSelect(num)}
+              disabled={isDisabled}
+              className={`preset-btn ${isSelected ? 'selected' : ''}`}
+              style={{
+                height: '44px',
+                padding: '0 20px',
+                borderRadius: '10px',
+                border: isSelected ? 'none' : '1px solid rgba(0, 0, 0, 0.08)',
+                background: isSelected ? '#1a1a2e' : '#F7F7FA',
+                color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
+                fontSize: '15px',
+                fontWeight: 600,
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                opacity: isDisabled ? 0.5 : 1,
+                transition: 'all 0.2s',
+                boxShadow: isSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
+              }}
+            >
+              {num}
+            </button>
+          );
+        })}
+
+        {/* Other button / Input */}
+        {showOtherInput ? (
+          <div className="flex items-center gap-1">
+            <input
+              ref={otherInputRef}
+              type="number"
+              min={1}
+              max={maxQuantity}
+              value={otherValue}
+              onChange={handleOtherChange}
+              placeholder="Qty"
+              className="ticket-other-input"
+              style={{
+                width: '80px',
+                height: '44px',
+                borderRadius: '10px',
+                border: '1.5px solid rgba(240, 185, 11, 0.3)',
+                background: isOtherSelected ? '#1a1a2e' : '#F7F7FA',
+                color: isOtherSelected ? '#ffffff' : 'var(--text-primary)',
+                fontSize: '16px',
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+                boxShadow: isOtherSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
+                transition: 'all 0.2s',
+              }}
+            />
+            <button
+              onClick={handleOtherClose}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                border: 'none',
+                background: 'rgba(0, 0, 0, 0.06)',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              <X style={{ width: '14px', height: '14px' }} />
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleOtherClick}
+            className="other-btn"
+            style={{
+              height: '44px',
+              padding: '0 20px',
+              borderRadius: '10px',
+              border: '1px dashed rgba(0, 0, 0, 0.15)',
+              background: '#F7F7FA',
+              color: 'var(--text-muted)',
+              fontSize: '14px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+          >
+            Other
+          </button>
+        )}
+      </div>
+
+      {/* Bonus Offers - Horizontal Chips */}
+      <div>
+        <p style={{ fontSize: '11px', color: 'var(--text-faded)', marginBottom: '8px' }}>
+          Buy more, get free tickets:
+        </p>
+        <div className="flex flex-wrap gap-2 items-center">
           {BONUS_TIERS.map((tier) => {
-            const isActive = quantity >= tier.minTickets &&
-              (BONUS_TIERS.find(t => t.minTickets > tier.minTickets && quantity >= t.minTickets) === undefined ||
-               tier.bonusTickets === bonusTickets);
+            const isActive = bonusTickets === tier.bonusTickets && quantity >= tier.minTickets;
             const isAbove = quantity < tier.minTickets;
-            const isExactMatch = bonusTickets === tier.bonusTickets && quantity >= tier.minTickets;
 
             return (
               <div
                 key={tier.minTickets}
-                className="flex items-center gap-2"
                 style={{
-                  padding: '4px 8px',
-                  marginLeft: '-8px',
-                  borderRadius: '6px',
-                  background: isExactMatch ? 'rgba(240, 185, 11, 0.06)' : 'transparent',
-                  borderLeft: isExactMatch ? '3px solid #F0B90B' : '3px solid transparent',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  background: isActive ? 'rgba(240, 185, 11, 0.08)' : '#F7F7FA',
+                  border: isActive
+                    ? '1.5px solid rgba(240, 185, 11, 0.25)'
+                    : '1px solid rgba(0, 0, 0, 0.06)',
                   opacity: isAbove ? 0.5 : 1,
                   transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
                 }}
               >
                 <span
                   style={{
-                    fontSize: '13px',
-                    fontWeight: isExactMatch ? 600 : 400,
+                    fontSize: '12px',
+                    fontWeight: isActive ? 600 : 400,
                     color: 'var(--text-muted)',
                   }}
                 >
-                  Buy {tier.minTickets}
+                  {tier.minTickets}
                 </span>
-                <span style={{ fontSize: '13px', color: 'var(--text-faded)' }}>→</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-faded)' }}>→</span>
                 <span
                   style={{
-                    fontSize: '13px',
+                    fontSize: '12px',
                     fontWeight: 700,
                     color: '#F0B90B',
                   }}
                 >
-                  Get {tier.bonusTickets} FREE
+                  +{tier.bonusTickets} FREE
                 </span>
               </div>
             );
@@ -463,7 +540,6 @@ export function SimpleTicketSelector({
       {/* Free Entry Route Link */}
       <button
         onClick={() => {
-          // Open modal or scroll to free entry section
           const freeEntrySection = document.getElementById('free-entry-section');
           if (freeEntrySection) {
             freeEntrySection.scrollIntoView({ behavior: 'smooth' });
