@@ -50,16 +50,8 @@ function CarouselCard({
         overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
         backfaceVisibility: 'visible',
-        cursor: 'pointer',
-        transition: 'box-shadow 0.3s',
         transform: `rotateY(${angle}deg) translateZ(230px)`,
         aspectRatio: '2/3',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = `0 16px 48px ${card.color}4D`;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.12)';
       }}
     >
       {!imageError ? (
@@ -136,10 +128,6 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
 
         .carousel-track {
           animation: rotateCarousel 25s linear infinite;
-        }
-
-        .hero-carousel:hover .carousel-track {
-          animation-duration: 80s;
         }
 
         .shimmer-text {
