@@ -347,7 +347,7 @@ export function SimpleTicketSelector({
       </div>
 
       {/* Row 2: Presets + Other */}
-      <div className="flex flex-wrap gap-2 items-end">
+      <div className="flex flex-wrap gap-2 items-start">
         {PRESET_BUTTONS.map((num) => {
           const isSelected = quantity === num && isPresetSelected;
           const isDisabled = num > maxQuantity;
@@ -390,72 +390,74 @@ export function SimpleTicketSelector({
           );
         })}
 
-        {/* Other button / Input */}
-        {showOtherInput ? (
-          <div className="flex items-center gap-1">
-            <input
-              ref={otherInputRef}
-              type="number"
-              min={1}
-              max={maxQuantity}
-              value={otherValue}
-              onChange={handleOtherChange}
-              placeholder="Qty"
-              className="ticket-other-input"
-              style={{
-                width: '80px',
-                height: '44px',
-                borderRadius: '10px',
-                border: '1.5px solid rgba(240, 185, 11, 0.3)',
-                background: isOtherSelected ? '#1a1a2e' : '#F7F7FA',
-                color: isOtherSelected ? '#ffffff' : 'var(--text-primary)',
-                fontSize: '16px',
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-                boxShadow: isOtherSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
-                transition: 'all 0.2s',
-              }}
-            />
+        {/* Other button / Input - wrapped in flex col to align with preset buttons */}
+        <div className="flex flex-col items-center">
+          {showOtherInput ? (
+            <div className="flex items-center gap-1">
+              <input
+                ref={otherInputRef}
+                type="number"
+                min={1}
+                max={maxQuantity}
+                value={otherValue}
+                onChange={handleOtherChange}
+                placeholder="Qty"
+                className="ticket-other-input"
+                style={{
+                  width: '80px',
+                  height: '44px',
+                  borderRadius: '10px',
+                  border: '1.5px solid rgba(240, 185, 11, 0.3)',
+                  background: isOtherSelected ? '#1a1a2e' : '#F7F7FA',
+                  color: isOtherSelected ? '#ffffff' : 'var(--text-primary)',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  outline: 'none',
+                  boxShadow: isOtherSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              />
+              <button
+                onClick={handleOtherClose}
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'rgba(0, 0, 0, 0.06)',
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <X style={{ width: '14px', height: '14px' }} />
+              </button>
+            </div>
+          ) : (
             <button
-              onClick={handleOtherClose}
+              onClick={handleOtherClick}
+              className="other-btn"
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                border: 'none',
-                background: 'rgba(0, 0, 0, 0.06)',
+                height: '44px',
+                padding: '0 20px',
+                borderRadius: '10px',
+                border: '1px dashed rgba(0, 0, 0, 0.15)',
+                background: '#F7F7FA',
                 color: 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                fontSize: '14px',
+                fontWeight: 500,
                 cursor: 'pointer',
                 transition: 'all 0.2s',
               }}
             >
-              <X style={{ width: '14px', height: '14px' }} />
+              Other
             </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleOtherClick}
-            className="other-btn"
-            style={{
-              height: '44px',
-              padding: '0 20px',
-              borderRadius: '10px',
-              border: '1px dashed rgba(0, 0, 0, 0.15)',
-              background: '#F7F7FA',
-              color: 'var(--text-muted)',
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-          >
-            Other
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Bonus Offers - Compact Chips */}
