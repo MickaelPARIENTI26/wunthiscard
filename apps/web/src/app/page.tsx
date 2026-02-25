@@ -3,6 +3,7 @@ import { prisma } from '@winucard/database';
 import { ImmersiveHero } from '@/components/home/immersive-hero';
 import { LiveCompetitions } from '@/components/home/live-competitions';
 import { HowItWorksPreview } from '@/components/home/how-it-works-preview';
+import { FAQPreview } from '@/components/home/faq-preview';
 import { FinalCTA } from '@/components/home/final-cta';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -111,6 +112,9 @@ export default function HomePage() {
 
       {/* How It Works + Trust Badges */}
       <HowItWorksPreview />
+
+      {/* Common Questions */}
+      <FAQPreview />
 
       {/* Final CTA */}
       <FinalCTA />
