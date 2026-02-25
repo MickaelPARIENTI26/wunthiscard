@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { HowItWorksPreview } from '@/components/home/how-it-works-preview';
 
 export const metadata: Metadata = {
   title: 'About Us',
@@ -50,40 +51,6 @@ const stats = [
   { value: '24h', label: 'Winner Notification', color: '#16A34A' },
 ];
 
-const howItWorksSteps = [
-  {
-    number: '01',
-    title: 'Browse',
-    description: 'Explore our live competitions featuring rare graded cards and memorabilia.',
-    gradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
-    borderColor: 'rgba(232,160,0,0.15)',
-    color: '#E8A000',
-  },
-  {
-    number: '02',
-    title: 'Answer',
-    description: 'Answer a simple skill question to qualify for the competition.',
-    gradient: 'linear-gradient(135deg, #EFF4FF, #DBEAFE)',
-    borderColor: 'rgba(37,99,235,0.15)',
-    color: '#2563EB',
-  },
-  {
-    number: '03',
-    title: 'Enter',
-    description: 'Purchase your tickets or use our free postal entry route.',
-    gradient: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
-    borderColor: 'rgba(22,163,74,0.15)',
-    color: '#16A34A',
-  },
-  {
-    number: '04',
-    title: 'Win',
-    description: 'Watch the live draw and see if you\'re our next lucky winner!',
-    gradient: 'linear-gradient(135deg, #FFF5F5, #FEE2E2)',
-    borderColor: 'rgba(239,68,68,0.15)',
-    color: '#EF4444',
-  },
-];
 
 export default function AboutPage() {
   return (
@@ -96,14 +63,6 @@ export default function AboutPage() {
           transition: all 0.3s ease;
         }
         .value-card:hover {
-          transform: translateY(-4px);
-        }
-        .how-card {
-          padding: 28px;
-          border-radius: 18px;
-          transition: all 0.3s ease;
-        }
-        .how-card:hover {
           transform: translateY(-4px);
         }
         .cta-btn-primary {
@@ -344,72 +303,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ══════ SECTION 5 — Comment ça marche (fond blanc) ══════ */}
-      <section style={{ padding: '80px 40px', background: '#ffffff' }}>
-        <div className="container mx-auto" style={{ maxWidth: '1000px' }}>
-          <div className="text-center mb-12">
-            <h2
-              className="font-[family-name:var(--font-outfit)] mb-3"
-              style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: '#1a1a2e',
-              }}
-            >
-              How It Works
-            </h2>
-            <p style={{ fontSize: '15px', color: '#6b7088' }}>
-              Four simple steps to enter any competition.
-            </p>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {howItWorksSteps.map((step, index) => (
-              <div
-                key={index}
-                className="how-card"
-                style={{
-                  background: step.gradient,
-                  border: `1.5px solid ${step.borderColor}`,
-                }}
-              >
-                <span
-                  className="font-[family-name:var(--font-outfit)]"
-                  style={{
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    color: step.color,
-                    display: 'block',
-                    marginBottom: '12px',
-                  }}
-                >
-                  {step.number}
-                </span>
-                <h3
-                  className="font-[family-name:var(--font-outfit)]"
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 700,
-                    color: '#1a1a2e',
-                    marginBottom: '8px',
-                  }}
-                >
-                  {step.title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: '13px',
-                    color: '#6b7088',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ══════ SECTION 5 — Comment ça marche (composant réutilisable) ══════ */}
+      <HowItWorksPreview />
 
       {/* ══════ SECTION 6 — CTA (gradient doré) ══════ */}
       <section
