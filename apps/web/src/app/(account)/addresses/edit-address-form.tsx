@@ -11,20 +11,13 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { updateAddress } from './actions';
 
-// UK postcode regex pattern
-const ukPostcodeRegex = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
-
 const addressSchema = z.object({
   label: z.string().max(50).optional(),
   line1: z.string().min(1, 'Address line 1 is required').max(100),
   line2: z.string().max(100).optional(),
   city: z.string().min(1, 'City is required').max(50),
   county: z.string().max(50).optional(),
-  postcode: z
-    .string()
-    .min(1, 'Postcode is required')
-    .max(10)
-    .regex(ukPostcodeRegex, 'Please enter a valid UK postcode'),
+  postcode: z.string().min(1, 'Postcode / ZIP is required').max(15),
   isDefault: z.boolean().default(false),
 });
 
