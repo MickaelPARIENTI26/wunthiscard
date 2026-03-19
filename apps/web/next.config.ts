@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
@@ -36,7 +38,7 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://js.stripe.com https://*.googletagmanager.com https://challenges.cloudflare.com",
+      `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ''} https://js.stripe.com https://*.googletagmanager.com https://challenges.cloudflare.com`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https://images.pokemontcg.io https://*.cloudflare.com https://*.r2.cloudflarestorage.com https://*.stripe.com https://picsum.photos",
       "font-src 'self' https://fonts.gstatic.com",
