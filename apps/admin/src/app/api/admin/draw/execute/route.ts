@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomInt } from 'crypto';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { rateLimits } from '@/lib/redis';
 
-// Simple in-memory rate limiting (for production, use Redis)
-const lastDrawTime = new Map<string, number>();
-const RATE_LIMIT_MS = 60 * 1000; // 1 minute
+const drawSchema = z.object({
+  competition_id: z.string().min(1, 'competition_id is required'),
+});
 
 /**
  * POST /api/admin/draw/execute
@@ -29,18 +31,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    // Rate limiting: 1 draw per minute
+    // Rate limiting via Redis (persists across serverless instances)
     const userId = session.user.id;
-    const now = Date.now();
-    const lastDraw = lastDrawTime.get(userId);
-
-    if (lastDraw && now - lastDraw < RATE_LIMIT_MS) {
-      const waitSeconds = Math.ceil((RATE_LIMIT_MS - (now - lastDraw)) / 1000);
+    const { success: rateLimitOk } = await rateLimits.api.limit(`draw:${userId}`);
+    if (!rateLimitOk) {
       return NextResponse.json(
-        {
-          error: 'Rate limit exceeded',
-          details: `Please wait ${waitSeconds} seconds before executing another draw`,
-        },
+        { error: 'Rate limit exceeded. Please wait before executing another draw.' },
         { status: 429 }
       );
     }
@@ -53,14 +49,14 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     const body = await request.json();
-    const { competition_id } = body;
-
-    if (!competition_id) {
+    const validation = drawSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'competition_id is required' },
+        { error: validation.error.errors[0]?.message ?? 'Invalid request' },
         { status: 400 }
       );
     }
+    const { competition_id } = validation.data;
 
     // Get the competition with ticket count
     const competition = await prisma.competition.findUnique({
@@ -281,8 +277,7 @@ export async function POST(request: NextRequest) {
         });
       });
 
-      // Update rate limit tracker
-      lastDrawTime.set(userId, Date.now());
+      // Rate limiting is handled by Redis at the start of the request
 
       return NextResponse.json({
         success: true,
@@ -395,9 +390,6 @@ export async function POST(request: NextRequest) {
         },
       });
     });
-
-    // Update rate limit tracker
-    lastDrawTime.set(userId, Date.now());
 
     // Return the result (without sending email yet)
     return NextResponse.json({

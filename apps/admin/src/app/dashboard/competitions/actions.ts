@@ -28,7 +28,10 @@ export async function createCompetition(formData: FormData) {
   const isFree = formData.get('isFree') === 'true';
   const drawType = (formData.get('drawType') as string) || 'single';
   const prizesStr = formData.get('prizes') as string | null;
-  const prizes = prizesStr ? JSON.parse(prizesStr) : null;
+  let prizes = null;
+  if (prizesStr) {
+    try { prizes = JSON.parse(prizesStr); } catch { throw new Error('Invalid prizes format'); }
+  }
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
   const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
@@ -64,7 +67,22 @@ export async function createCompetition(formData: FormData) {
   const realGrade = formData.get('realGrade') as string | null;
 
   const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
-  const questionChoices = JSON.parse(questionChoicesStr || '[]') as string[];
+
+  let questionChoices: string[];
+  try {
+    questionChoices = JSON.parse(questionChoicesStr || '[]') as string[];
+  } catch {
+    throw new Error('Invalid question choices format');
+  }
+
+  let parsedPrizes = prizes;
+  if (typeof prizes === 'string') {
+    try {
+      parsedPrizes = JSON.parse(prizes);
+    } catch {
+      throw new Error('Invalid prizes format');
+    }
+  }
 
   // Validation
   const errors: string[] = [];
@@ -213,7 +231,10 @@ export async function updateCompetition(id: string, formData: FormData) {
   const isFree = formData.get('isFree') === 'true';
   const drawType = (formData.get('drawType') as string) || existing.drawType;
   const prizesStr = formData.get('prizes') as string | null;
-  const prizes = prizesStr ? JSON.parse(prizesStr) : (drawType === 'multi' ? existing.prizes : null);
+  let prizes = drawType === 'multi' ? existing.prizes : null;
+  if (prizesStr) {
+    try { prizes = JSON.parse(prizesStr); } catch { throw new Error('Invalid prizes format'); }
+  }
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
   const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
@@ -250,7 +271,10 @@ export async function updateCompetition(id: string, formData: FormData) {
   const realGrade = formData.get('realGrade') as string | null;
 
   const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').map(s => s.trim()).filter(Boolean) : existing.galleryUrls;
-  const questionChoices = questionChoicesStr ? JSON.parse(questionChoicesStr) : existing.questionChoices;
+  let questionChoices = existing.questionChoices;
+  if (questionChoicesStr) {
+    try { questionChoices = JSON.parse(questionChoicesStr); } catch { throw new Error('Invalid question choices format'); }
+  }
 
   await prisma.competition.update({
     where: { id },

@@ -9,6 +9,7 @@ export default auth((req) => {
   const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard');
   const isOnLogin = req.nextUrl.pathname === '/login';
   const isOnRoot = req.nextUrl.pathname === '/';
+  const isAdminApi = req.nextUrl.pathname.startsWith('/api/admin');
 
   // Redirect root to dashboard or login
   if (isOnRoot) {
@@ -16,6 +17,18 @@ export default auth((req) => {
       return NextResponse.redirect(new URL('/dashboard', req.nextUrl));
     }
     return NextResponse.redirect(new URL('/login', req.nextUrl));
+  }
+
+  // Protect admin API routes at middleware level (defense-in-depth)
+  if (isAdminApi) {
+    if (!isLoggedIn) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const role = req.auth?.user?.role;
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'DRAW_MASTER') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+    return NextResponse.next();
   }
 
   // Protect dashboard routes
@@ -43,5 +56,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

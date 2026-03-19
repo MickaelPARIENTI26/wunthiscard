@@ -22,7 +22,7 @@ const guestCheckoutSchema = z.object({
   phone: z.string().min(6).max(20).trim(),
   acceptTerms: z.literal(true),
   acceptMarketing: z.boolean().optional(),
-  turnstileToken: z.string().optional(),
+  turnstileToken: process.env.NODE_ENV === 'production' ? z.string().min(1, 'CAPTCHA verification required') : z.string().optional(),
   competitionId: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     const data = validationResult.data;
 
-    // Verify Turnstile captcha if token provided
+    // Verify Turnstile captcha (required in production)
     if (data.turnstileToken) {
       const captchaResult = await verifyTurnstileToken(data.turnstileToken, ip);
       if (!captchaResult.success) {

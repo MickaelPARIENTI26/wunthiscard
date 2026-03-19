@@ -22,7 +22,7 @@ const DEFAULT_CONFIG = {
   ],
   ALLOWED_ATTR: [
     'href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel',
-    'width', 'height', 'style',
+    'width', 'height',
   ],
   ALLOW_DATA_ATTR: false,
 };

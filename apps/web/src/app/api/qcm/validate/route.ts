@@ -19,7 +19,7 @@ import {
 const validateSchema = z.object({
   competitionId: z.string().min(1),
   answer: z.number().int().min(0).max(3),
-  turnstileToken: z.string().optional(),
+  turnstileToken: process.env.NODE_ENV === 'production' ? z.string().min(1, 'CAPTCHA verification required') : z.string().optional(),
   ticketNumbers: z.array(z.number().int().positive()).optional(),
 });
 

@@ -138,7 +138,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Find the next available ticket and update it atomically
+      // Atomically find and claim the next available ticket
+      // Using updateMany with a limit-like approach to avoid race conditions
       const availableTicket = await prisma.ticket.findFirst({
         where: {
           competitionId,
@@ -155,14 +156,26 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      await prisma.ticket.update({
-        where: { id: availableTicket.id },
+      // Atomic update: only succeeds if ticket is still AVAILABLE (prevents race condition)
+      const updated = await prisma.ticket.updateMany({
+        where: {
+          id: availableTicket.id,
+          status: 'AVAILABLE', // Guard: another request may have claimed it
+        },
         data: {
           status: 'FREE_ENTRY',
           userId,
           isFreeEntry: true,
         },
       });
+
+      if (updated.count === 0) {
+        // Ticket was claimed by another request — retry or fail
+        return NextResponse.json(
+          { error: 'Ticket was claimed by another user. Please try again.' },
+          { status: 409 }
+        );
+      }
 
       ticketNumber = availableTicket.ticketNumber;
     } else {

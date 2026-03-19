@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { sendEmail, replaceVariables } from '@/lib/email';
+
+const confirmSchema = z.object({
+  competition_id: z.string().min(1, 'competition_id is required'),
+});
 
 /**
  * POST /api/admin/draw/confirm
@@ -23,14 +28,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { competition_id } = body;
-
-    if (!competition_id) {
+    const validation = confirmSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
-        { error: 'competition_id is required' },
+        { error: validation.error.errors[0]?.message ?? 'Invalid request' },
         { status: 400 }
       );
     }
+    const { competition_id } = validation.data;
 
     // Get the competition with win info
     const competition = await prisma.competition.findUnique({
