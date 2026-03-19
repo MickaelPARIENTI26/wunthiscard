@@ -67,8 +67,9 @@ export function FreeEntryButton({
           disabled
           className="w-full flex items-center justify-center gap-2"
           style={{
-            padding: '16px',
-            borderRadius: '14px',
+            minHeight: 'var(--btn-height-lg)',
+            padding: '0 24px',
+            borderRadius: 'var(--radius-btn)',
             background: '#E0E0E4',
             color: '#9a9eb0',
             fontSize: '16px',
@@ -118,8 +119,9 @@ export function FreeEntryButton({
         disabled={isSubmitting || isLoading}
         className="w-full flex items-center justify-center gap-2"
         style={{
-          padding: '16px',
-          borderRadius: '14px',
+          minHeight: 'var(--btn-height-lg)',
+          padding: '0 24px',
+          borderRadius: 'var(--radius-btn)',
           background: '#1a1a2e',
           color: '#ffffff',
           fontSize: '16px',

@@ -98,7 +98,7 @@ export function Footer() {
             text-align: center !important;
           }
           .footer-links-column h3 {
-            font-size: 10px !important;
+            font-size: 11px !important;
             margin-bottom: 12px !important;
           }
           .footer-links-column ul {

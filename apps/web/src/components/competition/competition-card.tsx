@@ -106,7 +106,7 @@ export function CompetitionCard({
               : urgency === 'ending-soon'
               ? '2px solid rgba(245, 158, 11, 0.2)'
               : '1px solid var(--border-light)',
-            borderRadius: '20px',
+            borderRadius: 'var(--radius-card)',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
             ['--cat-color' as string]: categoryColor,
           }}
@@ -120,7 +120,7 @@ export function CompetitionCard({
               background: isMystery && !isRevealed
                 ? `linear-gradient(160deg, ${categoryColor}30, ${categoryColor}, ${categoryColor}30)`
                 : mainImageUrl ? '#f5f5f7' : `linear-gradient(135deg, ${categoryColor}12 0%, ${categoryColor}05 50%, #f5f5f7 100%)`,
-              borderRadius: '20px 20px 0 0',
+              borderRadius: 'var(--radius-card) var(--radius-card) 0 0',
             }}
           >
             {/* Mystery unrevealed: gradient + "?" */}
@@ -144,7 +144,7 @@ export function CompetitionCard({
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                style={{ borderRadius: '20px 20px 0 0' }}
+                style={{ borderRadius: 'var(--radius-card) var(--radius-card) 0 0' }}
               />
             ) : (
               <config.icon
@@ -168,7 +168,7 @@ export function CompetitionCard({
 
             {/* Category Badge - Top Left */}
             <div
-              className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider z-10"
+              className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider z-10"
               style={{
                 background: '#ffffff',
                 border: `1px solid ${categoryColor}30`,
@@ -185,10 +185,10 @@ export function CompetitionCard({
                   style={{
                     background: '#8B5CF6',
                     color: '#ffffff',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     fontWeight: 700,
                     padding: '4px 10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
                   MYSTERY
@@ -199,10 +199,10 @@ export function CompetitionCard({
                   style={{
                     background: 'rgba(139, 92, 246, 0.15)',
                     color: '#8B5CF6',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     fontWeight: 700,
                     padding: '4px 10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
                   Was a Mystery
@@ -213,10 +213,10 @@ export function CompetitionCard({
                   style={{
                     background: '#8B5CF6',
                     color: '#ffffff',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     fontWeight: 700,
                     padding: '4px 10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
                   {prizeCount} Winners
@@ -227,10 +227,10 @@ export function CompetitionCard({
                   style={{
                     background: '#16A34A',
                     color: '#ffffff',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     fontWeight: 700,
                     padding: '4px 10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-sm)',
                   }}
                 >
                   FREE
@@ -238,21 +238,21 @@ export function CompetitionCard({
               )}
               {urgency === 'last-hours' ? (
                 <div
-                  className="urgency-badge-pulse px-3 py-1.5 rounded-lg text-[9px] font-bold"
+                  className="urgency-badge-pulse px-3 py-1.5 rounded-lg text-[11px] font-bold"
                   style={{ background: '#EF4444', color: '#ffffff' }}
                 >
                   Last Hours
                 </div>
               ) : urgency === 'ending-soon' ? (
                 <div
-                  className="px-3 py-1.5 rounded-lg text-[9px] font-bold"
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-bold"
                   style={{ background: '#F59E0B', color: '#ffffff' }}
                 >
                   Ending Soon
                 </div>
               ) : (
                 <div
-                  className="px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5"
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1.5"
                   style={{
                     background: '#ffffff',
                     border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
@@ -402,7 +402,7 @@ export function CompetitionCard({
                   color: isActive && !isSoldOut
                     ? '#ffffff'
                     : 'var(--text-muted)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-md)',
                   fontSize: '14px',
                   boxShadow: isActive && !isSoldOut
                     ? (isFree ? '0 4px 16px rgba(22, 163, 74, 0.3)' : '0 4px 16px rgba(26, 26, 46, 0.2)')

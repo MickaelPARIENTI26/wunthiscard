@@ -537,8 +537,9 @@ export function SimpleTicketSelector({
         disabled={quantity === 0 || isProceeding || maxQuantity === 0 || sessionStatus === 'loading'}
         className="w-full flex items-center justify-center gap-2 checkout-btn"
         style={{
-          padding: '18px',
-          borderRadius: '16px',
+          minHeight: 'var(--btn-height-lg)',
+          padding: '0 24px',
+          borderRadius: 'var(--radius-lg)',
           background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
           color: '#ffffff',
           fontSize: '16px',
