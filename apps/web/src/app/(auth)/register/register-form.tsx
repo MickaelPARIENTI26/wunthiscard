@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
-import { Loader2, Check, X } from 'lucide-react';
+import { Loader2, Check, X, UserPlus } from 'lucide-react';
 import { z } from 'zod';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
@@ -121,7 +121,18 @@ export function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [hasRefCookie, setHasRefCookie] = useState(false);
   const turnstileRef = useRef<TurnstileInstance>(null);
+
+  // Check for referral cookie on mount
+  useEffect(() => {
+    const refCookie = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('ref_code='));
+    if (refCookie) {
+      setHasRefCookie(true);
+    }
+  }, []);
 
   const {
     register,
@@ -214,6 +225,23 @@ export function RegisterForm() {
 
   return (
     <div className="space-y-5">
+      {hasRefCookie && (
+        <div
+          className="flex items-center gap-2"
+          style={{
+            padding: '10px 14px',
+            fontSize: '13px',
+            color: 'var(--text-muted, #6b7088)',
+            background: 'rgba(240, 185, 11, 0.06)',
+            border: '1px solid rgba(240, 185, 11, 0.2)',
+            borderRadius: '10px',
+          }}
+        >
+          <UserPlus className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#F0B90B' }} />
+          <span>Invited by a friend — welcome aboard!</span>
+        </div>
+      )}
+
       {serverError && (
         <div
           style={{

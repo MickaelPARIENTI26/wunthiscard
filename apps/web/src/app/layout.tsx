@@ -12,6 +12,7 @@ import { AuthHeader } from '@/components/layout/auth-header';
 import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { ReferralTracker } from '@/components/common/referral-tracker';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -157,6 +158,7 @@ export default async function RootLayout({
             <CookieConsentBanner />
             <Toaster />
             <AgeGate />
+            <ReferralTracker />
           </SessionProvider>
         </NextIntlClientProvider>
       </body>

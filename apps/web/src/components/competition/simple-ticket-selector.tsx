@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, Loader2, Clock, X } from 'lucide-react';
+import { ArrowRight, Loader2, Clock, X, Gift } from 'lucide-react';
 import { formatPrice } from '@winucard/shared/utils';
 
 // TODO: Rendre les paliers de bonus configurables depuis l'admin
@@ -36,6 +36,7 @@ interface SimpleTicketSelectorProps {
   availableTicketCount: number;
   userTicketCount?: number;
   categoryColor: string;
+  referralFreeTickets?: number;
 }
 
 export function SimpleTicketSelector({
@@ -46,6 +47,7 @@ export function SimpleTicketSelector({
   availableTicketCount,
   userTicketCount = 0,
   categoryColor,
+  referralFreeTickets = 0,
 }: SimpleTicketSelectorProps) {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
@@ -54,6 +56,7 @@ export function SimpleTicketSelector({
   const [quantity, setQuantity] = useState(1);
   const [showOtherInput, setShowOtherInput] = useState(false);
   const [otherValue, setOtherValue] = useState('');
+  const [useReferralTicket, setUseReferralTicket] = useState(false);
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservation, setReservation] = useState<{
@@ -70,7 +73,8 @@ export function SimpleTicketSelector({
 
   const bonusTickets = getBonusTickets(quantity);
   const totalTickets = quantity + bonusTickets;
-  const totalPrice = quantity * ticketPrice;
+  const paidTickets = useReferralTicket ? Math.max(quantity - 1, 0) : quantity;
+  const totalPrice = paidTickets * ticketPrice;
 
   // Quick select buttons (1-10)
   const quickButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -194,6 +198,11 @@ export function SimpleTicketSelector({
         `pending_quantity_${competitionId}`,
         JSON.stringify({ quantity, timestamp: Date.now() })
       );
+      if (useReferralTicket) {
+        sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
+      } else {
+        sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
+      }
       router.push(`/competitions/${competitionSlug}/question`);
       return;
     }
@@ -223,6 +232,11 @@ export function SimpleTicketSelector({
         `reservation_${competitionId}`,
         JSON.stringify({ ticketNumbers: data.ticketNumbers, expiresAt: data.expiresAt })
       );
+      if (useReferralTicket) {
+        sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
+      } else {
+        sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
+      }
 
       router.push(`/competitions/${competitionSlug}/question`);
     } catch {
@@ -313,6 +327,55 @@ export function SimpleTicketSelector({
           animation: bonusFlash 0.4s ease;
         }
       `}</style>
+
+      {/* Referral Free Ticket Banner */}
+      {referralFreeTickets > 0 && (
+        <div>
+          <div
+            style={{
+              background: 'rgba(240,185,11,0.08)',
+              border: '1px solid rgba(240,185,11,0.2)',
+              borderRadius: '12px',
+              padding: '10px 16px',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: '#1a1a2e',
+            }}
+          >
+            <Gift style={{ width: '16px', height: '16px', color: '#F0B90B', flexShrink: 0 }} />
+            <span>
+              You have <strong>{referralFreeTickets}</strong> free ticket{referralFreeTickets > 1 ? 's' : ''} available from referrals
+            </span>
+          </div>
+          <label
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '8px',
+              fontSize: '13px',
+              color: '#1a1a2e',
+              cursor: 'pointer',
+              userSelect: 'none',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={useReferralTicket}
+              onChange={(e) => setUseReferralTicket(e.target.checked)}
+              style={{
+                width: '16px',
+                height: '16px',
+                accentColor: '#F0B90B',
+                cursor: 'pointer',
+              }}
+            />
+            Use 1 free ticket
+          </label>
+        </div>
+      )}
 
       {/* Select Tickets Label */}
       <p id="ticket-selector-label" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -553,6 +616,17 @@ export function SimpleTicketSelector({
             }}
           >
             (+{bonusTickets} free!)
+          </span>
+        )}
+        {useReferralTicket && (
+          <span
+            style={{
+              color: '#16A34A',
+              fontWeight: 600,
+              fontSize: '13px',
+            }}
+          >
+            (1 referral ticket applied)
           </span>
         )}
       </div>

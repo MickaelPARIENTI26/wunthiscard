@@ -34,6 +34,14 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
+  // Referral system
+  referralCode                String?  @unique // Auto-generated 8-char code (e.g. "MICK3A2F")
+  referredById                String?          // The user who referred this user
+  referralTicketCount         Int      @default(0) // Current counter (resets every 10)
+  referralTotalTickets        Int      @default(0) // Lifetime tickets from referees (never resets)
+  referralFreeTicketsEarned   Int      @default(0) // Total free tickets earned via referrals
+  referralFreeTicketsAvailable Int     @default(0) // Free tickets not yet used
+
   accounts           Account[]
   sessions           Session[]
   addresses          Address[]
@@ -43,9 +51,13 @@ model User {
   auditLogs          AuditLog[]
   drawnCompetitions  Competition[] @relation("DrawnCompetitions")
   drawLogs           DrawLog[]     @relation("DrawnByUser")
+  referredBy         User?         @relation("Referrals", fields: [referredById], references: [id], onDelete: SetNull)
+  referrals          User[]        @relation("Referrals") // Users this user has referred
 
   @@index([email])
   @@index([role])
+  @@index([referralCode])
+  @@index([referredById])
 }
 
 enum UserRole {

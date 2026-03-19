@@ -6,6 +6,7 @@ import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/db';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { sendPurchaseConfirmationEmail } from '@/lib/email';
+import { REFERRAL_TICKETS_REQUIRED } from '@winucard/shared';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -263,6 +264,66 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       totalAmount,
       drawDate: order.competition.drawDate,
     });
+  }
+
+  // Referral tracking — runs after payment is confirmed, outside the main transaction
+  // Failure here should never block payment confirmation
+  try {
+    const buyer = await prisma.user.findUnique({
+      where: { id: order.userId },
+      select: { referredById: true },
+    });
+
+    if (buyer?.referredById) {
+      const referrerId = buyer.referredById;
+      const ticketCount = paidTicketNumbers.length;
+
+      // Increment referrer's counters
+      const updatedReferrer = await prisma.user.update({
+        where: { id: referrerId },
+        data: {
+          referralTicketCount: { increment: ticketCount },
+          referralTotalTickets: { increment: ticketCount },
+        },
+        select: { referralTicketCount: true },
+      });
+
+      // Calculate free tickets earned from accumulated referral tickets
+      const freeTicketsToAward = Math.floor(
+        updatedReferrer.referralTicketCount / REFERRAL_TICKETS_REQUIRED
+      );
+
+      if (freeTicketsToAward > 0) {
+        const ticketsToSubtract = freeTicketsToAward * REFERRAL_TICKETS_REQUIRED;
+
+        await prisma.user.update({
+          where: { id: referrerId },
+          data: {
+            referralTicketCount: { decrement: ticketsToSubtract },
+            referralFreeTicketsEarned: { increment: freeTicketsToAward },
+            referralFreeTicketsAvailable: { increment: freeTicketsToAward },
+          },
+        });
+
+        await prisma.auditLog.create({
+          data: {
+            userId: referrerId,
+            action: 'REFERRAL_BONUS_EARNED',
+            entity: 'user',
+            entityId: referrerId,
+            metadata: {
+              ticketsFromReferee: ticketCount,
+              freeTicketsAwarded: freeTicketsToAward,
+              refereeUserId: order.userId,
+            },
+          },
+        });
+
+        // TODO: Send email notification to referrer about earned free tickets
+      }
+    }
+  } catch (referralError) {
+    console.error('Referral tracking failed (non-blocking):', referralError);
   }
 }
 

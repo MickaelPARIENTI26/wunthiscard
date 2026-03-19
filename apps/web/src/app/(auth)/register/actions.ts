@@ -1,9 +1,10 @@
 'use server';
 
 import { randomBytes } from 'crypto';
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { registerSchema, type RegisterInput } from '@winucard/shared/validators';
+import { MAX_REFERRALS_PER_USER } from '@winucard/shared';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { hashPassword } from '@/lib/password';
@@ -19,6 +20,19 @@ interface RegisterInputWithCaptcha extends RegisterInput {
 
 async function generateVerificationToken(): Promise<string> {
   return randomBytes(32).toString('hex');
+}
+
+/**
+ * Generate a unique 8-character referral code.
+ * Format: first 4 chars from firstName (uppercase, padded with random chars if short) + 4 random hex chars.
+ * Example: "MICK3A2F"
+ */
+function generateReferralCode(firstName: string): string {
+  const sanitised = firstName.replace(/[^A-Za-z]/g, '').toUpperCase();
+  const randomPad = randomBytes(4).toString('hex').toUpperCase();
+  const prefix = (sanitised + randomPad).slice(0, 4);
+  const suffix = randomBytes(2).toString('hex').toUpperCase();
+  return prefix + suffix;
 }
 
 export async function registerUser(input: RegisterInputWithCaptcha): Promise<RegisterResult> {
@@ -81,8 +95,38 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
     // TODO: Remove auto-verify in production — email verification should be required
     const isProduction = process.env.NODE_ENV === 'production';
 
+    // Generate a unique referral code (retry on collision)
+    let referralCode = generateReferralCode(firstName);
+    const maxRetries = 5;
+    for (let i = 0; i < maxRetries; i++) {
+      const existing = await prisma.user.findUnique({ where: { referralCode } });
+      if (!existing) break;
+      referralCode = generateReferralCode(firstName);
+    }
+
+    // Read referral cookie to link referrer
+    const cookieStore = await cookies();
+    const refCode = cookieStore.get('ref_code')?.value ?? null;
+
     // Create the user in a transaction
     await prisma.$transaction(async (tx) => {
+      // Resolve referrer if ref cookie exists
+      let referredById: string | null = null;
+
+      if (refCode) {
+        // Don't allow self-referral (the code we just generated)
+        if (refCode !== referralCode) {
+          const referrer = await tx.user.findUnique({
+            where: { referralCode: refCode },
+            select: { id: true, isActive: true, referrals: { select: { id: true } } },
+          });
+
+          if (referrer && referrer.isActive && referrer.referrals.length < MAX_REFERRALS_PER_USER) {
+            referredById = referrer.id;
+          }
+        }
+      }
+
       // Create user
       const user = await tx.user.create({
         data: {
@@ -91,6 +135,8 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
           firstName,
           lastName,
           dateOfBirth,
+          referralCode,
+          referredById,
           // In development: auto-verify emails to skip verification flow
           // In production: require email verification (set to null)
           emailVerified: isProduction ? null : new Date(),
@@ -120,6 +166,22 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
           },
         },
       });
+
+      // Create referral audit log if referral was established
+      if (referredById) {
+        await tx.auditLog.create({
+          data: {
+            userId: user.id,
+            action: 'REFERRAL_LINKED',
+            entity: 'user',
+            entityId: user.id,
+            metadata: {
+              referrerId: referredById,
+              referralCode: refCode,
+            },
+          },
+        });
+      }
 
       return user;
     });

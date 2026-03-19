@@ -177,12 +177,20 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   const isSoldOut = competition.status === 'SOLD_OUT';
   const isCancelled = competition.status === 'CANCELLED';
 
-  const [userTicketCount, availableTicketCount] = isActive
+  const [userTicketCount, availableTicketCount, referralFreeTickets] = isActive
     ? await Promise.all([
         getUserTicketCount(competition.id, session?.user?.id),
         getAvailableTicketCount(competition.id),
+        (async () => {
+          if (!session?.user?.id) return 0;
+          const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { referralFreeTicketsAvailable: true },
+          });
+          return user?.referralFreeTicketsAvailable ?? 0;
+        })(),
       ])
-    : [0, 0];
+    : [0, 0, 0];
 
   const category = competition.category as CompetitionCategory;
   const categoryColor = CATEGORY_COLORS[category];
@@ -554,6 +562,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   availableTicketCount={availableTicketCount}
                   userTicketCount={userTicketCount}
                   categoryColor={categoryColor}
+                  referralFreeTickets={referralFreeTickets}
                 />
               )
             )}

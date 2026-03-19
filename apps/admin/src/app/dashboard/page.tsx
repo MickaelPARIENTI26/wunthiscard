@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { prisma } from '@/lib/db';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DollarSign, ShoppingCart, Users, Trophy } from 'lucide-react';
+import { DollarSign, ShoppingCart, Users, Trophy, UserPlus, Ticket } from 'lucide-react';
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { RecentOrders } from '@/components/dashboard/recent-orders';
 import { ActiveCompetitions } from '@/components/dashboard/active-competitions';
@@ -24,6 +24,9 @@ async function getStats() {
     totalTicketsSold,
     recentOrders,
     competitions,
+    totalReferrals,
+    freeTicketsData,
+    topReferrers,
   ] = await Promise.all([
     prisma.user.count({ where: { role: 'USER' } }),
     prisma.competition.count({ where: { status: 'ACTIVE' } }),
@@ -71,6 +74,21 @@ async function getStats() {
         _count: { select: { tickets: { where: { status: 'SOLD' } } } },
       },
     }),
+    // Referral stats
+    prisma.user.count({ where: { referredById: { not: null } } }),
+    prisma.user.aggregate({ _sum: { referralFreeTicketsEarned: true } }),
+    prisma.user.findMany({
+      where: { referrals: { some: {} } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        referralFreeTicketsEarned: true,
+        _count: { select: { referrals: true } },
+      },
+      orderBy: { referrals: { _count: 'desc' } },
+      take: 5,
+    }),
   ]);
 
   // Serialize Decimal fields for client components
@@ -97,6 +115,14 @@ async function getStats() {
     totalTicketsSold,
     recentOrders: serializedOrders,
     competitions: serializedCompetitions,
+    totalReferrals,
+    totalFreeTicketsDistributed: freeTicketsData._sum.referralFreeTicketsEarned ?? 0,
+    topReferrers: topReferrers.map((u) => ({
+      id: u.id,
+      name: [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown',
+      referralCount: u._count.referrals,
+      freeTicketsEarned: u.referralFreeTicketsEarned,
+    })),
   };
 }
 
@@ -251,6 +277,56 @@ async function DashboardStats() {
           </CardHeader>
           <CardContent>
             <ActiveCompetitions competitions={stats.competitions} />
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 grid gap-4 md:grid-cols-2">
+          <StatCard
+            title="Total Referrals"
+            value={stats.totalReferrals.toLocaleString()}
+            description="Users who joined via referral"
+            icon={UserPlus}
+          />
+          <StatCard
+            title="Free Tickets Distributed"
+            value={stats.totalFreeTicketsDistributed.toLocaleString()}
+            description="Earned through referrals"
+            icon={Ticket}
+          />
+        </div>
+
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Top Referrers</CardTitle>
+            <CardDescription>Users with the most referrals</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {stats.topReferrers.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No referrals yet</p>
+            ) : (
+              <div className="space-y-4">
+                {stats.topReferrers.map((referrer, index) => (
+                  <div key={referrer.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                        {index + 1}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium leading-none">{referrer.name}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {referrer.freeTicketsEarned} free ticket{referrer.freeTicketsEarned !== 1 ? 's' : ''} earned
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold">
+                      {referrer.referralCount} referral{referrer.referralCount !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

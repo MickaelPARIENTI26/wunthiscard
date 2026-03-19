@@ -31,6 +31,7 @@ interface SiteSettingsData {
   socialTiktok?: string;
   socialDiscord?: string;
   bonusTiers?: Array<{ minTickets: number; bonusPercent: number }>;
+  referralTicketsRequired?: number;
 }
 
 async function getSettings(): Promise<SiteSettingsData> {
@@ -81,6 +82,29 @@ export async function updateSettings(formData: FormData) {
     entityId: 'global',
     adminId,
     details: { keys: Object.keys(updates) },
+  });
+
+  revalidatePath('/dashboard/settings');
+}
+
+export async function updateReferralSettings(referralTicketsRequired: number) {
+  const session = await auth();
+  const adminId = requireAdmin(session);
+
+  if (referralTicketsRequired < 1 || !Number.isInteger(referralTicketsRequired)) {
+    throw new Error('Tickets required must be a positive integer');
+  }
+
+  const currentSettings = await getSettings();
+  const newSettings = { ...currentSettings, referralTicketsRequired };
+  await saveSettings(newSettings);
+
+  await createAuditLog({
+    action: 'REFERRAL_SETTINGS_UPDATED',
+    entityType: 'SiteSettings',
+    entityId: 'global',
+    adminId,
+    details: { referralTicketsRequired },
   });
 
   revalidatePath('/dashboard/settings');
