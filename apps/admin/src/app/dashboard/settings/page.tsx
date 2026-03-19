@@ -6,6 +6,7 @@ import { BonusTiersForm } from '@/components/settings/bonus-tiers-form';
 import { PaymentSettingsForm } from '@/components/settings/payment-settings-form';
 import { HomepageSettingsForm } from '@/components/settings/homepage-settings-form';
 import { ReferralSettingsForm } from '@/components/settings/referral-settings-form';
+import { TicketPacksForm } from '@/components/settings/ticket-packs-form';
 
 async function getSettings(): Promise<Record<string, string>> {
   const settings = await prisma.siteSettings.findUnique({
@@ -73,6 +74,7 @@ export default async function SettingsPage() {
           <TabsTrigger value="bonus">Bonus Tiers</TabsTrigger>
           <TabsTrigger value="payment">Payment</TabsTrigger>
           <TabsTrigger value="referrals">Referrals</TabsTrigger>
+          <TabsTrigger value="ticket-packs">Ticket Packs</TabsTrigger>
         </TabsList>
 
         <TabsContent value="homepage">
@@ -100,6 +102,10 @@ export default async function SettingsPage() {
 
         <TabsContent value="referrals">
           <ReferralSettingsForm settings={settings} />
+        </TabsContent>
+
+        <TabsContent value="ticket-packs">
+          <TicketPacksForm settings={settings} />
         </TabsContent>
       </Tabs>
     </div>

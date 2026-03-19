@@ -3,26 +3,35 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, Loader2, Clock, X, Gift } from 'lucide-react';
+import { ArrowRight, Loader2, Clock, Minus, Plus, Gift } from 'lucide-react';
 import { formatPrice } from '@winucard/shared/utils';
 
-// TODO: Rendre les paliers de bonus configurables depuis l'admin
-const BONUS_TIERS = [
-  { minTickets: 10, bonusTickets: 1 },
-  { minTickets: 15, bonusTickets: 2 },
-  { minTickets: 20, bonusTickets: 3 },
-  { minTickets: 25, bonusTickets: 4 },
-  { minTickets: 50, bonusTickets: 5 },
+// Default ticket packs
+const DEFAULT_PACKS = [
+  { name: 'Starter', tickets: 5, bonus: 0, badge: null },
+  { name: 'Popular', tickets: 10, bonus: 1, badge: 'Most Popular' as const },
+  { name: 'Best Value', tickets: 20, bonus: 3, badge: 'Best Value' as const },
+  { name: 'Ultimate', tickets: 50, bonus: 5, badge: null },
 ];
 
-// Preset buttons for row 2
-const PRESET_BUTTONS = [15, 20, 25, 50];
+type PackBadge = 'Most Popular' | 'Best Value' | null;
 
-function getBonusTickets(quantity: number): number {
+interface TicketPack {
+  name: string;
+  tickets: number;
+  bonus: number;
+  badge: PackBadge;
+}
+
+function getBonusForQuantity(quantity: number, packs: TicketPack[]): number {
+  // Find the best matching pack for the exact quantity
+  const exactPack = packs.find(p => p.tickets === quantity);
+  if (exactPack) return exactPack.bonus;
+  // For custom quantities, find the highest applicable bonus
   let bonus = 0;
-  for (const tier of BONUS_TIERS) {
-    if (quantity >= tier.minTickets) {
-      bonus = tier.bonusTickets;
+  for (const pack of packs) {
+    if (quantity >= pack.tickets) {
+      bonus = pack.bonus;
     }
   }
   return bonus;
@@ -54,8 +63,7 @@ export function SimpleTicketSelector({
   const isAuthenticated = !!session?.user;
 
   const [quantity, setQuantity] = useState(1);
-  const [showOtherInput, setShowOtherInput] = useState(false);
-  const [otherValue, setOtherValue] = useState('');
+  const [selectedPack, setSelectedPack] = useState<string | null>(null);
   const [useReferralTicket, setUseReferralTicket] = useState(false);
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
@@ -65,24 +73,17 @@ export function SimpleTicketSelector({
   } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const otherInputRef = useRef<HTMLInputElement>(null);
+
+  const packs = DEFAULT_PACKS;
 
   // Effective max considers user's existing tickets
   const remainingAllowance = maxTicketsPerUser - userTicketCount;
   const maxQuantity = Math.min(remainingAllowance, availableTicketCount, 100);
 
-  const bonusTickets = getBonusTickets(quantity);
+  const bonusTickets = getBonusForQuantity(quantity, packs);
   const totalTickets = quantity + bonusTickets;
   const paidTickets = useReferralTicket ? Math.max(quantity - 1, 0) : quantity;
   const totalPrice = paidTickets * ticketPrice;
-
-  // Quick select buttons (1-10)
-  const quickButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-  // Determine which row/button is selected
-  const isRow1Selected = quantity >= 1 && quantity <= 10 && !showOtherInput;
-  const isPresetSelected = PRESET_BUTTONS.includes(quantity) && !showOtherInput;
-  const isOtherSelected = showOtherInput && otherValue !== '';
 
   // Format countdown timer
   const formatCountdown = (ms: number): string => {
@@ -139,53 +140,18 @@ export function SimpleTicketSelector({
     };
   }, [reservation, competitionId, isAuthenticated]);
 
-  // Auto-focus other input when opened
-  useEffect(() => {
-    if (showOtherInput && otherInputRef.current) {
-      otherInputRef.current.focus();
-    }
-  }, [showOtherInput]);
-
-  const handleRow1Select = (num: number) => {
-    if (num <= maxQuantity) {
-      setQuantity(num);
-      setShowOtherInput(false);
-      setOtherValue('');
-      setReservationError(null);
-    }
+  const handleQuantityChange = (newQty: number) => {
+    const clamped = Math.max(1, Math.min(newQty, maxQuantity));
+    setQuantity(clamped);
+    setSelectedPack(null); // Deselect pack when manually changing
+    setReservationError(null);
   };
 
-  const handlePresetSelect = (num: number) => {
-    if (num <= maxQuantity) {
-      setQuantity(num);
-      setShowOtherInput(false);
-      setOtherValue('');
-      setReservationError(null);
-    }
-  };
-
-  const handleOtherClick = () => {
-    setShowOtherInput(true);
-  };
-
-  const handleOtherClose = () => {
-    setShowOtherInput(false);
-    setOtherValue('');
-    // Reset to last valid selection if needed
-    if (!PRESET_BUTTONS.includes(quantity) && (quantity < 1 || quantity > 10)) {
-      setQuantity(1);
-    }
-  };
-
-  const handleOtherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setOtherValue(value);
-
-    const num = parseInt(value, 10);
-    if (!isNaN(num) && num >= 1 && num <= maxQuantity) {
-      setQuantity(num);
-      setReservationError(null);
-    }
+  const handlePackSelect = (pack: TicketPack) => {
+    if (pack.tickets > maxQuantity) return;
+    setQuantity(pack.tickets);
+    setSelectedPack(pack.name);
+    setReservationError(null);
   };
 
   const proceedToCheckout = async () => {
@@ -217,7 +183,7 @@ export function SimpleTicketSelector({
       const data = await response.json();
 
       if (!response.ok) {
-        setReservationError(data.error || 'Failed to reserve tickets');
+        setReservationError(data.error ?? 'Failed to reserve tickets');
         setIsProceeding(false);
         return;
       }
@@ -247,85 +213,31 @@ export function SimpleTicketSelector({
 
   return (
     <div className="space-y-5">
-      {/* CSS for styling */}
+      {/* CSS */}
       <style>{`
-        .ticket-other-input::-webkit-inner-spin-button,
-        .ticket-other-input::-webkit-outer-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        .ticket-other-input {
-          -moz-appearance: textfield;
-        }
-        .ticket-btn:focus-visible, .preset-btn:focus-visible, .other-btn:focus-visible, .checkout-btn:focus-visible {
+        .pack-card { transition: all 0.2s ease-out; }
+        .pack-card:hover:not(.pack-disabled) { background: #F7F7FA !important; border-color: rgba(0,0,0,0.15) !important; }
+        .pack-card.pack-selected { border: 2px solid #1A1A2E !important; box-shadow: 0 4px 14px rgba(0,0,0,0.1); transform: scale(1.02); }
+        .pack-card:active:not(.pack-disabled) { transform: scale(0.98); }
+        .pack-card:focus-visible, .checkout-btn:focus-visible, .qty-btn:focus-visible {
           outline: 2px solid var(--accent);
           outline-offset: 2px;
         }
-        .ticket-btn {
-          transition: all 0.2s ease-out !important;
-        }
-        .ticket-btn:hover:not(:disabled):not(.selected) {
-          background: #F7F7FA !important;
-          border-color: ${categoryColor}4D !important;
-        }
-        .ticket-btn.selected {
-          background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
-          transform: scale(1.05);
-          box-shadow: 0 4px 14px rgba(26, 26, 46, 0.2) !important;
-        }
-        .ticket-btn:active:not(:disabled) {
-          transform: scale(0.92);
-        }
-        .preset-btn {
-          transition: all 0.2s ease-out !important;
-        }
-        .preset-btn:hover:not(:disabled):not(.selected) {
-          background: #F7F7FA !important;
-          border-color: ${categoryColor}4D !important;
-        }
-        .preset-btn.selected {
-          background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
-          transform: scale(1.05);
-          box-shadow: 0 4px 14px rgba(26, 26, 46, 0.2) !important;
-        }
-        .preset-btn:active:not(:disabled) {
-          transform: scale(0.92);
-        }
-        .other-btn:hover {
-          background: #F7F7FA !important;
-          border-style: solid !important;
-        }
+        .qty-input::-webkit-inner-spin-button,
+        .qty-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .qty-input { -moz-appearance: textfield; }
         .checkout-btn {
           background: linear-gradient(135deg, #1a1a2e, #2a2e4e) !important;
-          position: relative;
-          overflow: hidden;
+          position: relative; overflow: hidden;
         }
         .checkout-btn::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
+          content: ''; position: absolute; top: 0; left: -100%;
+          width: 100%; height: 100%;
           background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
           transition: left 0.6s ease;
         }
-        .checkout-btn:hover:not(:disabled)::after {
-          left: 100%;
-        }
-        .checkout-btn:hover:not(:disabled) {
-          box-shadow: 0 12px 36px rgba(26, 26, 46, 0.3) !important;
-        }
-        .checkout-btn:hover:not(:disabled) .checkout-arrow {
-          transform: translateX(4px);
-        }
-        @keyframes bonusFlash {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; text-shadow: 0 0 8px rgba(240, 185, 11, 0.5); }
-        }
-        .bonus-flash {
-          animation: bonusFlash 0.4s ease;
-        }
+        .checkout-btn:hover:not(:disabled)::after { left: 100%; }
+        .checkout-btn:hover:not(:disabled) { box-shadow: 0 12px 36px rgba(26, 26, 46, 0.3) !important; }
       `}</style>
 
       {/* Referral Free Ticket Banner */}
@@ -365,228 +277,194 @@ export function SimpleTicketSelector({
               type="checkbox"
               checked={useReferralTicket}
               onChange={(e) => setUseReferralTicket(e.target.checked)}
-              style={{
-                width: '16px',
-                height: '16px',
-                accentColor: '#F0B90B',
-                cursor: 'pointer',
-              }}
+              style={{ width: '16px', height: '16px', accentColor: '#F0B90B', cursor: 'pointer' }}
             />
             Use 1 free ticket
           </label>
         </div>
       )}
 
-      {/* Select Tickets Label */}
+      {/* Title */}
       <p id="ticket-selector-label" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
-        Select tickets
+        Choose your tickets
       </p>
 
-      {/* Row 1: Buttons 1-10 */}
-      <div className="flex flex-wrap gap-2" role="group" aria-labelledby="ticket-selector-label">
-        {quickButtons.map((num) => {
-          const isSelected = quantity === num && isRow1Selected;
-          const isDisabled = num > maxQuantity;
+      {/* Custom Quantity Selector */}
+      <div
+        className="flex items-center gap-3"
+        role="group"
+        aria-labelledby="ticket-selector-label"
+      >
+        <button
+          className="qty-btn"
+          onClick={() => handleQuantityChange(quantity - 1)}
+          disabled={quantity <= 1}
+          aria-label="Decrease quantity"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            border: '1.5px solid rgba(0,0,0,0.08)',
+            background: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: quantity <= 1 ? 'not-allowed' : 'pointer',
+            opacity: quantity <= 1 ? 0.4 : 1,
+            transition: 'all 0.15s',
+          }}
+        >
+          <Minus style={{ width: '16px', height: '16px' }} />
+        </button>
 
-          return (
-            <button
-              key={num}
-              onClick={() => handleRow1Select(num)}
-              disabled={isDisabled}
-              className={`ticket-btn ${isSelected ? 'selected' : ''}`}
-              style={{
-                width: '44px',
-                height: '44px',
-                borderRadius: '12px',
-                border: isSelected ? 'none' : '1.5px solid rgba(0, 0, 0, 0.08)',
-                background: isSelected ? 'linear-gradient(135deg, #1a1a2e, #2a2e4e)' : '#ffffff',
-                color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
-                fontSize: '15px',
-                fontWeight: 600,
-                cursor: isDisabled ? 'not-allowed' : 'pointer',
-                opacity: isDisabled ? 0.5 : 1,
-              }}
-            >
-              {num}
-            </button>
-          );
-        })}
+        <input
+          type="number"
+          min={1}
+          max={maxQuantity}
+          value={quantity}
+          onChange={(e) => {
+            const v = parseInt(e.target.value, 10);
+            if (!isNaN(v)) handleQuantityChange(v);
+          }}
+          className="qty-input"
+          aria-label="Ticket quantity"
+          style={{
+            width: '64px',
+            height: '40px',
+            borderRadius: '10px',
+            border: '1.5px solid rgba(0,0,0,0.08)',
+            background: '#ffffff',
+            textAlign: 'center',
+            fontSize: '18px',
+            fontWeight: 700,
+            color: 'var(--text-primary)',
+            outline: 'none',
+          }}
+        />
+
+        <button
+          className="qty-btn"
+          onClick={() => handleQuantityChange(quantity + 1)}
+          disabled={quantity >= maxQuantity}
+          aria-label="Increase quantity"
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '10px',
+            border: '1.5px solid rgba(0,0,0,0.08)',
+            background: '#ffffff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: quantity >= maxQuantity ? 'not-allowed' : 'pointer',
+            opacity: quantity >= maxQuantity ? 0.4 : 1,
+            transition: 'all 0.15s',
+          }}
+        >
+          <Plus style={{ width: '16px', height: '16px' }} />
+        </button>
+
+        <span style={{ fontSize: '14px', color: 'var(--text-muted)', marginLeft: '4px' }}>
+          {formatPrice(quantity * ticketPrice)} total
+        </span>
       </div>
 
-      {/* Row 2: Presets + Other */}
-      <div className="flex flex-wrap gap-2 items-start">
-        {PRESET_BUTTONS.map((num) => {
-          const isSelected = quantity === num && isPresetSelected;
-          const isDisabled = num > maxQuantity;
-          const bonusForPreset = getBonusTickets(num);
-
-          return (
-            <div key={num} className="flex flex-col items-center">
-              <button
-                onClick={() => handlePresetSelect(num)}
-                disabled={isDisabled}
-                className={`preset-btn ${isSelected ? 'selected' : ''}`}
-                style={{
-                  height: '44px',
-                  padding: '0 20px',
-                  borderRadius: '12px',
-                  border: isSelected ? 'none' : '1.5px solid rgba(0, 0, 0, 0.08)',
-                  background: isSelected ? 'linear-gradient(135deg, #1a1a2e, #2a2e4e)' : '#ffffff',
-                  color: isSelected ? '#ffffff' : isDisabled ? '#9a9eb0' : '#1a1a2e',
-                  fontSize: '15px',
-                  fontWeight: 600,
-                  cursor: isDisabled ? 'not-allowed' : 'pointer',
-                  opacity: isDisabled ? 0.5 : 1,
-                }}
-              >
-                {num}
-              </button>
-              {bonusForPreset > 0 && (
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    color: 'var(--accent-text)',
-                    marginTop: '3px',
-                  }}
-                >
-                  +{bonusForPreset} free
-                </span>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Other button / Input - wrapped in flex col to align with preset buttons */}
-        <div className="flex flex-col items-center">
-          {showOtherInput ? (
-            <div className="flex items-center gap-1">
-              <input
-                ref={otherInputRef}
-                type="number"
-                min={1}
-                max={maxQuantity}
-                value={otherValue}
-                onChange={handleOtherChange}
-                placeholder="Qty"
-                aria-label={`Custom ticket quantity, 1 to ${maxQuantity}`}
-                className="ticket-other-input focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{
-                  width: '80px',
-                  height: '44px',
-                  borderRadius: '10px',
-                  border: '1.5px solid rgba(240, 185, 11, 0.3)',
-                  background: isOtherSelected ? '#1a1a2e' : '#F7F7FA',
-                  color: isOtherSelected ? '#ffffff' : 'var(--text-primary)',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  textAlign: 'center',
-                  outline: 'none',
-                  boxShadow: isOtherSelected ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
-                  transition: 'all 0.2s',
-                }}
-              />
-              <button
-                onClick={handleOtherClose}
-                aria-label="Close custom quantity input"
-                className="focus-visible:outline-2 focus-visible:outline-offset-2"
-                style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: 'rgba(0, 0, 0, 0.06)',
-                  color: 'var(--text-muted)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  outlineColor: 'var(--accent)',
-                }}
-              >
-                <X style={{ width: '16px', height: '16px' }} />
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={handleOtherClick}
-              className="other-btn"
-              style={{
-                height: '44px',
-                padding: '0 20px',
-                borderRadius: '10px',
-                border: '1px dashed rgba(0, 0, 0, 0.15)',
-                background: '#F7F7FA',
-                color: 'var(--text-muted)',
-                fontSize: '14px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              Other
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Bonus Offers - Compact Chips */}
+      {/* Recommended Packs */}
       <div>
-        <p style={{ fontSize: '10px', color: '#9a9eb0', marginBottom: '6px' }}>
-          Buy more, get free tickets:
+        <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Recommended packs
         </p>
-        <div className="flex items-center" style={{ gap: '6px', flexWrap: 'nowrap', overflowX: 'auto' }}>
-          {BONUS_TIERS.map((tier) => {
-            const isActive = bonusTickets === tier.bonusTickets && quantity >= tier.minTickets;
-            const isAbove = quantity < tier.minTickets;
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {packs.map((pack) => {
+            const isSelected = selectedPack === pack.name;
+            const isDisabled = pack.tickets > maxQuantity;
+            const totalPackTickets = pack.tickets + pack.bonus;
+            const fullPrice = totalPackTickets * ticketPrice;
+            const actualPrice = pack.tickets * ticketPrice;
+            const savings = fullPrice - actualPrice;
 
             return (
-              <div
-                key={tier.minTickets}
-                className="bonus-chip"
+              <button
+                key={pack.name}
+                onClick={() => handlePackSelect(pack)}
+                disabled={isDisabled}
+                className={`pack-card relative flex flex-col items-center text-center ${isSelected ? 'pack-selected' : ''} ${isDisabled ? 'pack-disabled' : ''}`}
                 style={{
-                  padding: '4px 10px',
-                  borderRadius: '8px',
-                  background: isActive ? 'rgba(240, 185, 11, 0.1)' : '#ffffff',
-                  border: isActive
-                    ? '1.5px solid #F0B90B'
-                    : '1px solid rgba(240, 185, 11, 0.15)',
-                  boxShadow: isActive ? '0 2px 8px rgba(240, 185, 11, 0.12)' : 'none',
-                  opacity: isAbove ? 0.5 : 1,
-                  transition: 'all 0.2s',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  cursor: 'default',
-                  flexShrink: 0,
+                  padding: '16px 12px',
+                  borderRadius: '16px',
+                  border: isSelected ? '2px solid #1A1A2E' : '1.5px solid rgba(0,0,0,0.08)',
+                  background: '#ffffff',
+                  cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  opacity: isDisabled ? 0.5 : 1,
+                  minHeight: '160px',
                 }}
               >
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 400,
-                    color: isActive ? '#1a1a2e' : '#6b7088',
-                  }}
-                >
-                  {tier.minTickets}→
+                {/* Badge */}
+                {pack.badge && (
+                  <span
+                    className="absolute"
+                    style={{
+                      top: '-10px',
+                      right: '-10px',
+                      background: pack.badge === 'Most Popular' ? '#F0B90B' : '#16A34A',
+                      color: '#ffffff',
+                      fontSize: '9px',
+                      fontWeight: 700,
+                      padding: '3px 10px',
+                      borderRadius: '8px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {pack.badge}
+                  </span>
+                )}
+
+                {/* Pack name */}
+                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                  {pack.name}
                 </span>
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: '#E8A000',
-                  }}
-                >
-                  +{tier.bonusTickets}
+
+                {/* Ticket count */}
+                <span style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
+                  {totalPackTickets}
                 </span>
-              </div>
+                <span style={{ fontSize: '11px', color: 'var(--text-faded)', marginBottom: '2px' }}>
+                  tickets
+                </span>
+
+                {/* Bonus info */}
+                {pack.bonus > 0 && (
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A', marginBottom: '6px' }}>
+                    ({pack.bonus} free)
+                  </span>
+                )}
+                {pack.bonus === 0 && <div style={{ height: '17px' }} />}
+
+                {/* Strikethrough price */}
+                {pack.bonus > 0 && (
+                  <span style={{ fontSize: '12px', color: 'var(--text-faded)', textDecoration: 'line-through' }}>
+                    {formatPrice(fullPrice)}
+                  </span>
+                )}
+
+                {/* Actual price */}
+                <span style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {formatPrice(actualPrice)}
+                </span>
+
+                {/* Savings */}
+                {savings > 0 && (
+                  <span style={{ fontSize: '11px', fontWeight: 600, color: '#16A34A', marginTop: '2px' }}>
+                    Save {formatPrice(savings)}
+                  </span>
+                )}
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Total Price with Bonus Info - Highlighted container */}
+      {/* Total Price */}
       <div
         style={{
           padding: '12px 20px',
@@ -607,25 +485,12 @@ export function SimpleTicketSelector({
           — {totalTickets} ticket{totalTickets > 1 ? 's' : ''}
         </span>
         {bonusTickets > 0 && (
-          <span
-            className="bonus-flash"
-            style={{
-              color: '#F0B90B',
-              fontWeight: 700,
-              fontSize: '14px',
-            }}
-          >
-            (+{bonusTickets} free!)
+          <span style={{ color: 'var(--accent-text)', fontWeight: 700, fontSize: '14px' }}>
+            ({bonusTickets} free!)
           </span>
         )}
         {useReferralTicket && (
-          <span
-            style={{
-              color: '#16A34A',
-              fontWeight: 600,
-              fontSize: '13px',
-            }}
-          >
+          <span style={{ color: '#16A34A', fontWeight: 600, fontSize: '13px' }}>
             (1 referral ticket applied)
           </span>
         )}
@@ -666,7 +531,7 @@ export function SimpleTicketSelector({
         </div>
       )}
 
-      {/* Checkout Button - Premium */}
+      {/* Checkout Button */}
       <button
         onClick={proceedToCheckout}
         disabled={quantity === 0 || isProceeding || maxQuantity === 0 || sessionStatus === 'loading'}
@@ -692,7 +557,7 @@ export function SimpleTicketSelector({
         ) : (
           <>
             Proceed to Checkout
-            <ArrowRight className="h-5 w-5 checkout-arrow" style={{ transition: 'transform 0.2s' }} />
+            <ArrowRight className="h-5 w-5" style={{ transition: 'transform 0.2s' }} />
           </>
         )}
       </button>
