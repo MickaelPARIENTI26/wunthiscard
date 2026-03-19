@@ -624,28 +624,38 @@ export function GuestCheckoutForm({
           </div>
 
           {/* Submit Button */}
-          <Button
+          <button
             type="submit"
-            size="lg"
-            className="w-full text-base h-12 font-semibold"
+            className="w-full flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2"
             disabled={isLoading}
             onClick={handleSubmit(onSubmit)}
             style={{
-              background: 'linear-gradient(135deg, oklch(0.35 0.15 160) 0%, oklch(0.25 0.12 160) 100%)',
+              minHeight: 'var(--btn-height-lg)',
+              padding: '0 24px',
+              borderRadius: 'var(--radius-btn)',
+              background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
+              color: '#ffffff',
+              fontSize: '16px',
+              fontWeight: 600,
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              opacity: isLoading ? 0.6 : 1,
+              transition: 'all 0.3s',
+              boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
+              outlineColor: 'var(--accent)',
             }}
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" />
                 Processing...
               </>
             ) : (
               <>
                 Proceed to checkout
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="h-5 w-5" />
               </>
             )}
-          </Button>
+          </button>
         </div>
       </div>
     </div>
