@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ProfileForm } from './profile-form';
+import { AddressList } from '../addresses/address-list';
+import { AddressForm } from '../addresses/address-form';
 
 export const metadata = {
   title: 'Profile | WinUCard',
@@ -15,19 +17,25 @@ export default async function ProfilePage() {
     redirect('/login?callbackUrl=/profile');
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      phone: true,
-      instagram: true,
-      dateOfBirth: true,
-      avatarUrl: true,
-    },
-  });
+  const [user, addresses] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        instagram: true,
+        dateOfBirth: true,
+        avatarUrl: true,
+      },
+    }),
+    prisma.address.findMany({
+      where: { userId: session.user.id },
+      orderBy: { isDefault: 'desc' },
+    }),
+  ]);
 
   if (!user) {
     redirect('/login');
@@ -58,6 +66,23 @@ export default async function ProfilePage() {
           avatarUrl: user.avatarUrl ?? '',
         }}
       />
+
+      {/* Delivery Addresses */}
+      <AddressList
+        addresses={addresses.map((addr) => ({
+          id: addr.id,
+          label: addr.label,
+          line1: addr.line1,
+          line2: addr.line2,
+          city: addr.city,
+          county: addr.county,
+          postcode: addr.postcode,
+          country: addr.country,
+          isDefault: addr.isDefault,
+        }))}
+      />
+
+      <AddressForm />
     </div>
   );
 }

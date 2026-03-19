@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Menu, User, Ticket, Trophy, Settings, MapPin, Gift } from 'lucide-react';
+import { Menu, User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -228,12 +228,6 @@ export function Header({ user = null }: HeaderProps) {
                     <Link href="/my-wins" className="cursor-pointer">
                       <Trophy className="mr-2 h-4 w-4 text-primary" />
                       {t('common.myWins')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/addresses" className="cursor-pointer">
-                      <MapPin className="mr-2 h-4 w-4" />
-                      Addresses
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
