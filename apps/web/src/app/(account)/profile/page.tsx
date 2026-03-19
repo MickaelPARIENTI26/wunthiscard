@@ -54,35 +54,40 @@ export default async function ProfilePage() {
         </p>
       </div>
 
-      <ProfileForm
-        user={{
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          phone: user.phone ?? '',
-          instagram: user.instagram ?? '',
-          dateOfBirth: user.dateOfBirth?.toISOString().split('T')[0] ?? '',
-          avatarUrl: user.avatarUrl ?? '',
-        }}
-      />
+      {/* Two-column layout: Personal Info (left) + Addresses (right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Left: Personal Information */}
+        <ProfileForm
+          user={{
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone ?? '',
+            instagram: user.instagram ?? '',
+            dateOfBirth: user.dateOfBirth?.toISOString().split('T')[0] ?? '',
+            avatarUrl: user.avatarUrl ?? '',
+          }}
+        />
 
-      {/* Delivery Addresses */}
-      <AddressList
-        addresses={addresses.map((addr) => ({
-          id: addr.id,
-          label: addr.label,
-          line1: addr.line1,
-          line2: addr.line2,
-          city: addr.city,
-          county: addr.county,
-          postcode: addr.postcode,
-          country: addr.country,
-          isDefault: addr.isDefault,
-        }))}
-      />
-
-      <AddressForm />
+        {/* Right: Delivery Addresses */}
+        <div className="space-y-6">
+          <AddressList
+            addresses={addresses.map((addr) => ({
+              id: addr.id,
+              label: addr.label,
+              line1: addr.line1,
+              line2: addr.line2,
+              city: addr.city,
+              county: addr.county,
+              postcode: addr.postcode,
+              country: addr.country,
+              isDefault: addr.isDefault,
+            }))}
+          />
+          <AddressForm />
+        </div>
+      </div>
     </div>
   );
 }
