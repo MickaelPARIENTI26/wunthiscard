@@ -214,6 +214,7 @@ export function CheckoutClient({
         <CardContent>
           <Button
             className="w-full"
+            variant="outline"
             onClick={() => router.push('/competitions/' + competitionSlug + '/tickets')}
           >
             Select Tickets Again
@@ -327,24 +328,48 @@ export function CheckoutClient({
       </Card>
 
       {/* Payment Button */}
-      <Button
-        size="lg"
-        className="w-full text-lg"
+      <button
+        className="w-full flex items-center justify-center gap-2 checkout-btn focus-visible:outline-2 focus-visible:outline-offset-2"
         onClick={handleCheckout}
         disabled={isProcessing || !qcmPassed}
+        style={{
+          minHeight: 'var(--btn-height-lg)',
+          padding: '0 24px',
+          borderRadius: 'var(--radius-lg)',
+          background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
+          color: '#ffffff',
+          fontSize: '16px',
+          fontWeight: 600,
+          cursor: isProcessing || !qcmPassed ? 'not-allowed' : 'pointer',
+          opacity: isProcessing || !qcmPassed ? 0.6 : 1,
+          transition: 'all 0.3s',
+          boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
+          outlineColor: 'var(--accent)',
+        }}
       >
         {isProcessing ? (
           <>
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
             Redirecting to payment...
           </>
         ) : (
           <>
-            <CreditCard className="mr-2 h-5 w-5" />
+            <CreditCard className="h-5 w-5" />
             Pay {formatPrice(totalPrice)}
           </>
         )}
-      </Button>
+      </button>
+      <style>{`
+        .checkout-btn { position: relative; overflow: hidden; }
+        .checkout-btn::after {
+          content: ''; position: absolute; top: 0; left: -100%;
+          width: 100%; height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transition: left 0.6s ease;
+        }
+        .checkout-btn:hover:not(:disabled)::after { left: 100%; }
+        .checkout-btn:hover:not(:disabled) { box-shadow: 0 12px 36px rgba(26, 26, 46, 0.3) !important; }
+      `}</style>
 
       {/* Security Note */}
       <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
