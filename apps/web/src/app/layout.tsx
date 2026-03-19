@@ -137,7 +137,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${GeistSans.variable} ${outfit.variable}`}>
+    <html lang={locale} className={`${GeistSans.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
