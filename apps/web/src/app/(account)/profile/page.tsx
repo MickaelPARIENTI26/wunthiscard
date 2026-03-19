@@ -23,6 +23,7 @@ export default async function ProfilePage() {
       firstName: true,
       lastName: true,
       phone: true,
+      instagram: true,
       dateOfBirth: true,
       avatarUrl: true,
     },
@@ -52,6 +53,7 @@ export default async function ProfilePage() {
           firstName: user.firstName,
           lastName: user.lastName,
           phone: user.phone ?? '',
+          instagram: user.instagram ?? '',
           dateOfBirth: user.dateOfBirth?.toISOString().split('T')[0] ?? '',
           avatarUrl: user.avatarUrl ?? '',
         }}

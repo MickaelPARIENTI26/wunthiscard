@@ -16,6 +16,7 @@ const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50),
   lastName: z.string().min(1, 'Last name is required').max(50),
   phone: z.string().max(20).optional(),
+  instagram: z.string().max(30).optional(),
   dateOfBirth: z.string().optional(),
 });
 
@@ -28,6 +29,7 @@ interface ProfileFormProps {
     firstName: string;
     lastName: string;
     phone: string;
+    instagram: string;
     dateOfBirth: string;
     avatarUrl: string;
   };
@@ -47,6 +49,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       firstName: user.firstName,
       lastName: user.lastName,
       phone: user.phone,
+      instagram: user.instagram,
       dateOfBirth: user.dateOfBirth,
     },
   });
@@ -168,6 +171,29 @@ export function ProfileForm({ user }: ProfileFormProps) {
               )}
               <p className="text-xs text-muted-foreground">
                 Used for delivery notifications
+              </p>
+            </div>
+
+            {/* Instagram */}
+            <div className="space-y-2">
+              <Label htmlFor="instagram">Instagram</Label>
+              <div className="flex">
+                <span className="inline-flex items-center rounded-l-md border border-r-0 bg-muted px-3 text-sm text-muted-foreground" style={{ borderColor: 'var(--border-light)' }}>
+                  @
+                </span>
+                <Input
+                  id="instagram"
+                  placeholder="winucard"
+                  className="rounded-l-none"
+                  {...register('instagram')}
+                  aria-invalid={!!errors.instagram}
+                />
+              </div>
+              {errors.instagram && (
+                <p className="text-sm text-destructive">{errors.instagram.message}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Your Instagram handle (optional)
               </p>
             </div>
 

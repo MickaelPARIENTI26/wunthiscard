@@ -9,6 +9,7 @@ const updateProfileSchema = z.object({
   firstName: z.string().min(1, 'First name is required').max(50).trim(),
   lastName: z.string().min(1, 'Last name is required').max(50).trim(),
   phone: z.string().max(20).optional(),
+  instagram: z.string().max(30).optional(),
   dateOfBirth: z.string().optional(),
 });
 
@@ -30,7 +31,7 @@ export async function updateProfile(
       return { success: false, error: validationResult.error.errors[0]?.message };
     }
 
-    const { firstName, lastName, phone, dateOfBirth } = validationResult.data;
+    const { firstName, lastName, phone, instagram, dateOfBirth } = validationResult.data;
 
     // Parse date of birth if provided
     let parsedDateOfBirth: Date | null = null;
@@ -57,6 +58,7 @@ export async function updateProfile(
         firstName,
         lastName,
         phone: phone ? phone : null,
+        instagram: instagram ? instagram : null,
         dateOfBirth: parsedDateOfBirth,
       },
     });

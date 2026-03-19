@@ -24,6 +24,7 @@ model User {
   displayName         String?
   dateOfBirth         DateTime?
   phone               String?
+  instagram           String?
   avatarUrl           String?
   role                UserRole  @default(USER)
   isActive            Boolean   @default(true)
