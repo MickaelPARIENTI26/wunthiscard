@@ -21,6 +21,8 @@ interface Competition {
   drawDate: Date;
   status: CompetitionStatus;
   isFree: boolean;
+  drawType?: string;
+  prizeCount?: number;
 }
 
 interface LiveCompetitionsProps {
@@ -161,6 +163,8 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
               drawDate={competition.drawDate}
               status={competition.status}
               isFree={competition.isFree}
+              drawType={competition.drawType}
+              prizeCount={competition.prizeCount}
               index={index}
             />
           ))}

@@ -64,6 +64,9 @@ interface CompetitionWithCount {
   ticketPrice: { toNumber: () => number } | number;
   totalTickets: number;
   drawDate: Date;
+  drawType: string;
+  prizes: unknown;
+  isFree: boolean;
   _count: {
     tickets: number;
   };
@@ -143,6 +146,8 @@ async function getCompetitions(searchParams: SearchParams) {
       totalTickets: true,
       drawDate: true,
       isFree: true,
+      drawType: true,
+      prizes: true,
       _count: {
         select: {
           tickets: {
@@ -205,6 +210,8 @@ async function getCompetitions(searchParams: SearchParams) {
           : Number(comp.ticketPrice),
       soldTickets: comp._count.tickets,
       isFree: comp.isFree,
+      drawType: comp.drawType,
+      prizeCount: Array.isArray(comp.prizes) ? (comp.prizes as unknown[]).length : 1,
     })),
     pagination: {
       page,

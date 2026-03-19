@@ -316,18 +316,35 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
       {competition.wins.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Winner</CardTitle>
+            <CardTitle>
+              {competition.wins.length === 1 ? 'Winner' : `Winners (${competition.wins.length})`}
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            {competition.wins.map((win) => (
-              <div key={win.id} className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">
-                    {win.user ? `${win.user.firstName} ${win.user.lastName}` : 'Deleted User'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {win.user?.email ?? 'Account deleted'}
-                  </p>
+          <CardContent className="space-y-4">
+            {competition.wins
+              .sort((a, b) => (a.prizePosition ?? 1) - (b.prizePosition ?? 1))
+              .map((win) => (
+              <div key={win.id} className="flex items-center justify-between rounded-lg border p-3">
+                <div className="flex items-center gap-3">
+                  {competition.wins.length > 1 && (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-bold">
+                      {win.prizePosition ?? 1}
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-medium">
+                      {win.user ? `${win.user.firstName} ${win.user.lastName}` : 'Deleted User'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {win.user?.email ?? 'Account deleted'}
+                    </p>
+                    {win.prizeTitle && (
+                      <p className="text-sm text-primary font-medium mt-0.5">
+                        {win.prizeTitle}
+                        {win.prizeValue && ` — ${formatPrice(Number(win.prizeValue))}`}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="text-right">
                   <p className="font-medium">Ticket #{win.ticketNumber}</p>

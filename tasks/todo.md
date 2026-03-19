@@ -1,19 +1,22 @@
 # WinUCard — Todo
 
 ## En cours
-- [ ] Feat: Ticket packs system — admin settings (agent en cours)
+- [ ] Feat: Multi-Draw competitions (multiple prizes/winners)
+
+### Plan
+1. Schema: drawType field, prizes JSON, Win model (remove @unique on competitionId, add prizePosition)
+2. Shared: types, validators
+3. Admin: form multi-draw section (prizes list)
+4. Admin: draw execution (multi-draw logic)
+5. Frontend: cards (multi-draw badge, total value)
+6. Frontend: detail page (prizes section, results display)
+7. Build verification
 
 ## À faire
 
 
 ## Terminé
-- [x] Feat: Compétitions gratuites (FREE competitions) — 2026-03-19
-- [x] Feat: Système de parrainage (Referral system) — 2026-03-19
-- [x] Feat: Ending Soon / Last Hours urgency system — 2026-03-19
+- [x] Feat: Compétitions gratuites — 2026-03-19
+- [x] Feat: Système de parrainage — 2026-03-19
+- [x] Feat: Ending Soon / Last Hours — 2026-03-19
 - [x] Feat: Ticket packs avec réduction visible — 2026-03-19
-  - Sélecteur libre +/- avec total en temps réel
-  - 4 packs visuels: Starter (5), Popular (10+1), Best Value (20+3), Ultimate (50+5)
-  - Badges "Most Popular" (doré) et "Best Value" (vert)
-  - Prix barré + économie en vert
-  - Grid 2x2 sur mobile, 4 colonnes sur desktop
-  - Supprimé: boutons 1-10, presets, chips bonus

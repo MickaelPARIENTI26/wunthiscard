@@ -146,10 +146,12 @@ model Competition {
   isFeatured       Boolean             @default(false) // Only one competition can be featured on homepage
 
   // Competition type
-  isFree Boolean @default(false) // Free competition (no payment required)
+  isFree   Boolean @default(false) // Free competition (no payment required)
+  drawType String  @default("single") // "single" or "multi"
+  prizes   Json?   // Multi-draw: [{ position, title, value, imageUrl, certification, grade }]
 
   // Prize details
-  prizeValue        Decimal  @db.Decimal(10, 2) // £ value
+  prizeValue        Decimal  @db.Decimal(10, 2) // £ total value (sum of all prizes for multi-draw)
   ticketPrice       Decimal  @db.Decimal(10, 2)
   totalTickets      Int? // null = unlimited participants (free competitions only)
   maxTicketsPerUser Int      @default(50)
@@ -301,9 +303,12 @@ enum PaymentStatus {
 
 model Win {
   id              String    @id @default(cuid())
-  competitionId   String    @unique
+  competitionId   String
   userId          String?   // Optional to allow anonymization on account deletion
   ticketNumber    Int
+  prizePosition   Int       @default(1) // 1 = 1st prize, 2 = 2nd, etc. (always 1 for single draw)
+  prizeTitle      String?   // For multi-draw: "Charizard PSA 10" etc.
+  prizeValue      Decimal?  @db.Decimal(10, 2) // Individual prize value (multi-draw)
   claimedAt       DateTime?
   shippedAt       DateTime?
   deliveredAt     DateTime?
@@ -318,6 +323,8 @@ model Win {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([competitionId, prizePosition])
+  @@index([competitionId])
   @@index([userId])
 }
 

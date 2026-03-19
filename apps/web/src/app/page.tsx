@@ -32,6 +32,8 @@ async function getLiveCompetitions() {
       drawDate: true,
       status: true,
       isFree: true,
+      drawType: true,
+      prizes: true,
       _count: {
         select: {
           tickets: {
@@ -57,6 +59,8 @@ async function getLiveCompetitions() {
     drawDate: comp.drawDate,
     status: comp.status,
     isFree: comp.isFree,
+    drawType: comp.drawType,
+    prizeCount: Array.isArray(comp.prizes) ? (comp.prizes as unknown[]).length : 1,
   }));
 }
 

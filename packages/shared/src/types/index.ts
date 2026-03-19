@@ -77,4 +77,16 @@ export type AuditAction =
   | 'FREE_ENTRY_CLAIMED'
   | 'REFERRAL_LINKED'
   | 'REFERRAL_BONUS_EARNED'
-  | 'REFERRAL_TICKET_USED';
+  | 'REFERRAL_TICKET_USED'
+  | 'MULTI_DRAW_EXECUTED';
+
+// Multi-draw prize type
+export interface CompetitionPrize {
+  position: number;
+  title: string;
+  value: number;
+  imageUrl?: string;
+  certification?: string;
+  grade?: string;
+  description?: string;
+}

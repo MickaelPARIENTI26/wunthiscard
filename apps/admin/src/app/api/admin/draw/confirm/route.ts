@@ -75,68 +75,85 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get the win record
-    const win = competition.wins[0];
-    if (!win || !win.user) {
+    // Get all win records (supports both single and multi-draw)
+    const wins = competition.wins;
+    if (wins.length === 0 || !wins[0]?.user) {
       return NextResponse.json(
         { error: 'Winner information not found' },
         { status: 404 }
       );
     }
 
-    const winner = win.user;
-
     // Get the winner_notification email template from database
     const emailTemplate = await prisma.emailTemplate.findUnique({
       where: { slug: 'winner_notification' },
     });
 
-    let emailSent = false;
-    let emailError: string | null = null;
+    let allEmailsSent = true;
+    const emailErrors: string[] = [];
+    const winnersNotified: Array<{ id: string; email: string; name: string }> = [];
 
-    if (emailTemplate && emailTemplate.isActive) {
-      // Prepare template variables
-      const templateData: Record<string, string> = {
-        user_firstname: winner.firstName,
-        user_lastname: winner.lastName,
-        user_email: winner.email,
-        competition_title: competition.title,
-        competition_card_name: competition.title,
-        competition_card_image: competition.mainImageUrl,
-        competition_card_value: formatCurrency(Number(competition.prizeValue)),
-        draw_winning_ticket: String(competition.winningTicketNumber),
-        draw_date: formatDate(competition.actualDrawDate),
-        site_url: process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk',
-        site_logo_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk'}/logo-email.png`,
-        current_year: new Date().getFullYear().toString(),
-      };
+    // Send notification emails to all winners
+    for (const win of wins) {
+      const winner = win.user;
+      if (!winner) continue;
 
-      // Replace variables in template
-      const subject = replaceVariables(emailTemplate.subject, templateData);
-      const html = replaceVariables(emailTemplate.htmlContent, templateData);
+      let emailSent = false;
 
-      // Send the email
-      const result = await sendEmail({
-        to: winner.email,
-        subject,
-        html,
-      });
+      const prizeLabel = win.prizeTitle
+        ? `${win.prizeTitle} (${formatCurrency(Number(win.prizeValue ?? competition.prizeValue))})`
+        : competition.title;
 
-      emailSent = result.success;
-      if (!result.success) {
-        emailError = String(result.error || 'Unknown error');
+      if (emailTemplate && emailTemplate.isActive) {
+        const templateData: Record<string, string> = {
+          user_firstname: winner.firstName,
+          user_lastname: winner.lastName,
+          user_email: winner.email,
+          competition_title: competition.title,
+          competition_card_name: prizeLabel,
+          competition_card_image: competition.mainImageUrl,
+          competition_card_value: formatCurrency(Number(win.prizeValue ?? competition.prizeValue)),
+          draw_winning_ticket: String(win.ticketNumber),
+          draw_date: formatDate(competition.actualDrawDate),
+          site_url: process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk',
+          site_logo_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk'}/logo-email.png`,
+          current_year: new Date().getFullYear().toString(),
+        };
+
+        const subject = replaceVariables(emailTemplate.subject, templateData);
+        const html = replaceVariables(emailTemplate.htmlContent, templateData);
+
+        const result = await sendEmail({
+          to: winner.email,
+          subject,
+          html,
+        });
+
+        emailSent = result.success;
+        if (!result.success) {
+          allEmailsSent = false;
+          emailErrors.push(`${winner.email}: ${String(result.error || 'Unknown error')}`);
+        }
+      } else {
+        const { sendWinnerNotificationEmail } = await import('@/lib/email');
+        const result = await sendWinnerNotificationEmail(winner.email, winner.firstName, {
+          competitionTitle: competition.title,
+          ticketNumber: win.ticketNumber,
+          prizeValue: Number(win.prizeValue ?? competition.prizeValue),
+        });
+        emailSent = result.success;
+        if (!result.success) {
+          allEmailsSent = false;
+          emailErrors.push(`${winner.email}: ${String(result.error || 'Unknown error')}`);
+        }
       }
-    } else {
-      // Fallback: Use the built-in winner notification function if template not found
-      const { sendWinnerNotificationEmail } = await import('@/lib/email');
-      const result = await sendWinnerNotificationEmail(winner.email, winner.firstName, {
-        competitionTitle: competition.title,
-        ticketNumber: competition.winningTicketNumber!,
-        prizeValue: Number(competition.prizeValue),
-      });
-      emailSent = result.success;
-      if (!result.success) {
-        emailError = String(result.error || 'Unknown error');
+
+      if (emailSent) {
+        winnersNotified.push({
+          id: winner.id,
+          email: winner.email,
+          name: winner.displayName || `${winner.firstName} ${winner.lastName}`,
+        });
       }
     }
 
@@ -153,7 +170,7 @@ export async function POST(request: NextRequest) {
       where: { competitionId: competition_id },
       data: {
         confirmedAt,
-        emailSentAt: emailSent ? confirmedAt : null,
+        emailSentAt: allEmailsSent ? confirmedAt : null,
       },
     });
 
@@ -165,10 +182,10 @@ export async function POST(request: NextRequest) {
         entity: 'competition',
         entityId: competition_id,
         metadata: {
-          winnerId: winner.id,
-          winnerEmail: winner.email,
-          emailSent,
-          emailError,
+          winnersCount: wins.length,
+          winnersNotified: winnersNotified.map((w) => ({ id: w.id, email: w.email })),
+          allEmailsSent,
+          emailErrors: emailErrors.length > 0 ? emailErrors : undefined,
           confirmedAt: confirmedAt.toISOString(),
         },
       },
@@ -176,13 +193,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      email_sent: emailSent,
-      email_error: emailError,
-      winner: {
-        id: winner.id,
-        email: winner.email,
-        name: winner.displayName || `${winner.firstName} ${winner.lastName}`,
-      },
+      email_sent: allEmailsSent,
+      email_errors: emailErrors.length > 0 ? emailErrors : undefined,
+      winners: winnersNotified,
     });
   } catch (error) {
     console.error('Error confirming draw:', error);

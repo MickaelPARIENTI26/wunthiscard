@@ -32,6 +32,8 @@ interface CompetitionCardProps {
   status: string;
   isFree?: boolean;
   createdAt?: Date;
+  drawType?: string;
+  prizeCount?: number;
   className?: string;
   index?: number;
 }
@@ -58,8 +60,11 @@ export function CompetitionCard({
   ticketPrice,
   totalTickets,
   soldTickets,
+  drawDate,
   status,
   isFree = false,
+  drawType = 'single',
+  prizeCount = 1,
   className,
   index = 0,
 }: CompetitionCardProps) {
@@ -146,6 +151,20 @@ export function CompetitionCard({
 
             {/* Status Badge - Top Right */}
             <div className="absolute top-4 right-4 flex items-center gap-1.5 z-10">
+              {drawType === 'multi' && prizeCount > 1 && (
+                <div
+                  style={{
+                    background: '#8B5CF6',
+                    color: '#ffffff',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  {prizeCount} Winners
+                </div>
+              )}
               {isFree && (
                 <div
                   style={{
@@ -229,6 +248,12 @@ export function CompetitionCard({
                 maximumFractionDigits: 0,
               }).format(prizeValue)}
             </p>
+
+            {drawType === 'multi' && prizeCount > 1 && (
+              <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '-8px', marginBottom: '4px' }}>
+                {prizeCount} cards to win
+              </p>
+            )}
 
             {/* Progress Bar */}
             <div className="mb-4">

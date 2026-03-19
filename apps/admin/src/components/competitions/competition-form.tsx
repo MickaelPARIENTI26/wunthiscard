@@ -23,9 +23,19 @@ import { createCompetition, updateCompetition } from '@/app/dashboard/competitio
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Star } from 'lucide-react';
+import { Loader2, Star, Plus, Trash2 } from 'lucide-react';
 import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
 import type { Competition } from '@winucard/database';
+
+// Type for individual prize in multi-draw
+interface Prize {
+  position: number;
+  title: string;
+  value: number;
+  imageUrl: string;
+  certification: string;
+  grade: string;
+}
 
 // Zod validation schema for competition form
 const competitionFormSchema = z.object({
@@ -35,6 +45,7 @@ const competitionFormSchema = z.object({
   category: z.string().min(1, 'Category is required'),
   subcategory: z.string().max(100).optional(),
   isFree: z.boolean().default(false),
+  drawType: z.enum(['single', 'multi']).default('single'),
   prizeValue: z.coerce.number().positive('Prize value must be positive'),
   ticketPrice: z.coerce.number().min(0, 'Ticket price cannot be negative'),
   totalTickets: z.coerce.number().int().min(1, 'Must have at least 1 ticket').max(100000, 'Maximum 100,000 tickets').optional(),
@@ -74,6 +85,18 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
   const [isTogglingFeatured, setIsTogglingFeatured] = useState(false);
   const [isFeatured, setIsFeatured] = useState(competition?.isFeatured ?? false);
   const [isFreeState, setIsFreeState] = useState(competition?.isFree ?? false);
+  const [drawTypeState, setDrawTypeState] = useState<'single' | 'multi'>(
+    (competition?.drawType as 'single' | 'multi') ?? 'single'
+  );
+  const [prizes, setPrizes] = useState<Prize[]>(() => {
+    if (competition?.prizes && Array.isArray(competition.prizes)) {
+      return competition.prizes as unknown as Prize[];
+    }
+    return [
+      { position: 1, title: '', value: 0, imageUrl: '', certification: '', grade: '' },
+      { position: 2, title: '', value: 0, imageUrl: '', certification: '', grade: '' },
+    ];
+  });
   const [unlimitedParticipants, setUnlimitedParticipants] = useState(competition?.totalTickets === null);
   const [descriptionLong, setDescriptionLong] = useState(competition?.descriptionLong ?? '');
   const [questionChoices, setQuestionChoices] = useState<string[]>(
@@ -96,6 +119,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       subtitle: competition?.subtitle ?? '',
       descriptionShort: competition?.descriptionShort ?? '',
       isFree: competition?.isFree ?? false,
+      drawType: (competition?.drawType as 'single' | 'multi') ?? 'single',
       category: competition?.category ?? 'POKEMON',
       subcategory: competition?.subcategory ?? '',
       prizeValue: competition?.prizeValue ?? undefined,
@@ -164,9 +188,16 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       }
     });
     formData.set('isFree', String(isFreeState));
+    formData.set('drawType', drawTypeState);
     formData.set('unlimitedParticipants', String(unlimitedParticipants));
     if (isFreeState) {
       formData.set('ticketPrice', '0');
+    }
+    if (drawTypeState === 'multi') {
+      formData.set('prizes', JSON.stringify(prizes));
+      // Auto-compute prizeValue as sum of all prize values
+      const totalPrizeValue = prizes.reduce((sum, p) => sum + (p.value || 0), 0);
+      formData.set('prizeValue', String(totalPrizeValue));
     }
     formData.set('descriptionLong', descriptionLong);
     formData.set('questionChoices', JSON.stringify(questionChoices));
@@ -354,9 +385,159 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 </div>
               </div>
 
+              {/* Draw Type Select */}
+              <div className="space-y-2">
+                <Label>Draw Type</Label>
+                <Select
+                  value={drawTypeState}
+                  onValueChange={(value: 'single' | 'multi') => {
+                    setDrawTypeState(value);
+                    setValue('drawType', value);
+                    if (value === 'multi' && prizes.length < 2) {
+                      setPrizes([
+                        { position: 1, title: '', value: 0, imageUrl: '', certification: '', grade: '' },
+                        { position: 2, title: '', value: 0, imageUrl: '', certification: '', grade: '' },
+                      ]);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="single">Single Draw (1 winner)</SelectItem>
+                    <SelectItem value="multi">Multi-Draw (multiple winners)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Multi-Draw Prizes Section */}
+              {drawTypeState === 'multi' && (
+                <Card className="border-dashed">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Prizes</CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Define each prize for the multi-draw. Total prize value auto-computes as the sum of all prize values.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {prizes.map((prize, index) => (
+                      <div key={index} className="rounded-lg border p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-semibold text-sm">
+                            {index === 0 ? '1st' : index === 1 ? '2nd' : index === 2 ? '3rd' : `${index + 1}th`} Prize
+                          </h4>
+                          {prizes.length > 2 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                const updated = prizes.filter((_, i) => i !== index).map((p, i) => ({ ...p, position: i + 1 }));
+                                setPrizes(updated);
+                                const total = updated.reduce((sum, p) => sum + (p.value || 0), 0);
+                                setValue('prizeValue', total);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                          )}
+                        </div>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <div className="space-y-1">
+                            <Label className="text-xs">Title *</Label>
+                            <Input
+                              placeholder="e.g. Charizard PSA 10"
+                              value={prize.title}
+                              onChange={(e) => {
+                                const updated = [...prizes];
+                                updated[index] = { ...updated[index], title: e.target.value };
+                                setPrizes(updated);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Value (£) *</Label>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              placeholder="500.00"
+                              value={prize.value || ''}
+                              onChange={(e) => {
+                                const updated = [...prizes];
+                                updated[index] = { ...updated[index], value: parseFloat(e.target.value) || 0 };
+                                setPrizes(updated);
+                                const total = updated.reduce((sum, p) => sum + (p.value || 0), 0);
+                                setValue('prizeValue', total);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Image URL</Label>
+                            <Input
+                              type="url"
+                              placeholder="https://..."
+                              value={prize.imageUrl}
+                              onChange={(e) => {
+                                const updated = [...prizes];
+                                updated[index] = { ...updated[index], imageUrl: e.target.value };
+                                setPrizes(updated);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Certification #</Label>
+                            <Input
+                              placeholder="PSA # or BGS #"
+                              value={prize.certification}
+                              onChange={(e) => {
+                                const updated = [...prizes];
+                                updated[index] = { ...updated[index], certification: e.target.value };
+                                setPrizes(updated);
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-1 md:col-span-2">
+                            <Label className="text-xs">Grade</Label>
+                            <Input
+                              placeholder="PSA 10, BGS 9.5, etc."
+                              value={prize.grade}
+                              onChange={(e) => {
+                                const updated = [...prizes];
+                                updated[index] = { ...updated[index], grade: e.target.value };
+                                setPrizes(updated);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        setPrizes([
+                          ...prizes,
+                          { position: prizes.length + 1, title: '', value: 0, imageUrl: '', certification: '', grade: '' },
+                        ]);
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Prize
+                    </Button>
+                    <div className="text-sm font-medium text-muted-foreground">
+                      Total Prize Value: £{prizes.reduce((sum, p) => sum + (p.value || 0), 0).toFixed(2)}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="prizeValue">Prize Value (£) *</Label>
+                  <Label htmlFor="prizeValue">Prize Value (£) {drawTypeState === 'multi' ? '(auto-computed)' : '*'}</Label>
                   <Input
                     id="prizeValue"
                     type="number"
@@ -364,6 +545,8 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                     min="0"
                     placeholder="1000.00"
                     {...register('prizeValue')}
+                    readOnly={drawTypeState === 'multi'}
+                    className={drawTypeState === 'multi' ? 'bg-muted' : ''}
                     aria-invalid={!!errors.prizeValue}
                   />
                   {errors.prizeValue && (

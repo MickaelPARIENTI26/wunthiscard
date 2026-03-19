@@ -141,13 +141,194 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const ticketsSold = competition._count.tickets;
+    const isMultiDraw = competition.drawType === 'multi';
+
+    if (isMultiDraw) {
+      // ===== MULTI-DRAW LOGIC =====
+      interface PrizeDef {
+        position: number;
+        title: string;
+        value: number;
+        imageUrl?: string;
+        certification?: string;
+        grade?: string;
+      }
+      const prizesData = (competition.prizes as unknown as PrizeDef[]) || [];
+      if (prizesData.length < 2) {
+        return NextResponse.json(
+          { error: 'Multi-draw competition must have at least 2 prizes' },
+          { status: 400 }
+        );
+      }
+
+      // Sort prizes by position
+      const sortedPrizes = [...prizesData].sort((a, b) => a.position - b.position);
+
+      // Track winners to enforce one-win-per-user
+      const winnerUserIds = new Set<string>();
+      const results: Array<{
+        prize: PrizeDef;
+        ticket: typeof eligibleTickets[0];
+        winnerName: string;
+      }> = [];
+
+      // Build a mutable pool of remaining eligible tickets
+      let remainingTickets = [...eligibleTickets];
+
+      for (const prize of sortedPrizes) {
+        if (remainingTickets.length === 0) {
+          return NextResponse.json(
+            { error: `Not enough eligible tickets to award all prizes. Ran out at position ${prize.position}` },
+            { status: 400 }
+          );
+        }
+
+        // Filter out tickets belonging to users who already won
+        let candidateTickets = remainingTickets.filter(
+          (t) => !winnerUserIds.has(t.userId!)
+        );
+
+        // If no candidates left (all remaining users already won), fall back to all remaining
+        if (candidateTickets.length === 0) {
+          candidateTickets = remainingTickets;
+        }
+
+        const winningIndex = randomInt(0, candidateTickets.length);
+        const winningTicket = candidateTickets[winningIndex]!;
+        const winner = winningTicket.user!;
+
+        winnerUserIds.add(winner.id);
+
+        // Remove this ticket from remaining pool
+        remainingTickets = remainingTickets.filter((t) => t.id !== winningTicket.id);
+
+        const winnerName = winner.displayName || `${winner.firstName} ${winner.lastName}`;
+        results.push({ prize, ticket: winningTicket, winnerName });
+      }
+
+      // Execute all in a transaction
+      await prisma.$transaction(async (tx) => {
+        // Update competition status
+        await tx.competition.update({
+          where: { id: competition_id },
+          data: {
+            status: 'COMPLETED',
+            actualDrawDate: currentTime,
+            winningTicketNumber: results[0]!.ticket.ticketNumber, // 1st prize ticket
+            drawnById: userId,
+            winnerNotified: false,
+          },
+        });
+
+        // Create Win records for each prize
+        for (const result of results) {
+          await tx.win.create({
+            data: {
+              competitionId: competition_id,
+              userId: result.ticket.user!.id,
+              ticketNumber: result.ticket.ticketNumber,
+              prizePosition: result.prize.position,
+              prizeTitle: result.prize.title,
+              prizeValue: result.prize.value,
+            },
+          });
+
+          // Create DrawLog for each winner
+          await tx.drawLog.create({
+            data: {
+              competitionId: competition_id,
+              competitionTitle: competition.title,
+              totalTickets: competition.totalTickets ?? ticketsSold,
+              ticketsSold,
+              winningTicketNumber: result.ticket.ticketNumber,
+              winnerUserId: result.ticket.user!.id,
+              winnerName: result.winnerName,
+              winnerEmail: result.ticket.user!.email,
+              drawnById: userId,
+              drawnByRole: userRole,
+              drawMethod: 'crypto.randomInt',
+              ipAddress,
+              userAgent,
+            },
+          });
+        }
+
+        // Create audit log
+        await tx.auditLog.create({
+          data: {
+            userId,
+            action: 'DRAW_EXECUTED',
+            entity: 'competition',
+            entityId: competition_id,
+            ipAddress,
+            metadata: {
+              drawType: 'multi',
+              prizeCount: results.length,
+              winners: results.map((r) => ({
+                prizePosition: r.prize.position,
+                prizeTitle: r.prize.title,
+                prizeValue: r.prize.value,
+                ticketNumber: r.ticket.ticketNumber,
+                winnerId: r.ticket.user!.id,
+                winnerEmail: r.ticket.user!.email,
+              })),
+              totalEligibleTickets: eligibleTickets.length,
+              drawMethod: 'crypto.randomInt',
+              userAgent,
+            },
+          },
+        });
+      });
+
+      // Update rate limit tracker
+      lastDrawTime.set(userId, Date.now());
+
+      return NextResponse.json({
+        success: true,
+        drawType: 'multi',
+        winners: results.map((r) => ({
+          prizePosition: r.prize.position,
+          prizeTitle: r.prize.title,
+          prizeValue: r.prize.value,
+          winning_ticket: {
+            id: r.ticket.id,
+            number: r.ticket.ticketNumber,
+            isBonus: r.ticket.isBonus,
+            isFreeEntry: r.ticket.isFreeEntry,
+          },
+          winner: {
+            id: r.ticket.user!.id,
+            firstName: r.ticket.user!.firstName,
+            lastName: r.ticket.user!.lastName,
+            displayName: r.ticket.user!.displayName,
+            email: r.ticket.user!.email,
+            name: r.winnerName,
+          },
+        })),
+        competition: {
+          id: competition.id,
+          slug: competition.slug,
+          title: competition.title,
+          prizeValue: Number(competition.prizeValue),
+          mainImageUrl: competition.mainImageUrl,
+        },
+        draw: {
+          executedAt: currentTime,
+          executedById: userId,
+          executedByRole: userRole,
+          totalEligibleTickets: eligibleTickets.length,
+          method: 'crypto.randomInt',
+        },
+      });
+    }
+
+    // ===== SINGLE DRAW LOGIC (existing) =====
     // Use cryptographically secure random number generation
-    // crypto.randomInt is cryptographically secure
     const winningIndex = randomInt(0, eligibleTickets.length);
     const winningTicket = eligibleTickets[winningIndex]!;
     const winner = winningTicket.user!;
 
-    const ticketsSold = competition._count.tickets;
     const winnerName = winner.displayName || `${winner.firstName} ${winner.lastName}`;
 
     // Execute the draw in a transaction
@@ -170,6 +351,7 @@ export async function POST(request: NextRequest) {
           competitionId: competition_id,
           userId: winner.id,
           ticketNumber: winningTicket.ticketNumber,
+          prizePosition: 1,
         },
       });
 
@@ -220,6 +402,7 @@ export async function POST(request: NextRequest) {
     // Return the result (without sending email yet)
     return NextResponse.json({
       success: true,
+      drawType: 'single',
       winning_ticket: {
         id: winningTicket.id,
         number: winningTicket.ticketNumber,

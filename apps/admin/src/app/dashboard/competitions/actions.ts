@@ -26,6 +26,9 @@ export async function createCompetition(formData: FormData) {
   const category = formData.get('category') as string;
   const subcategory = formData.get('subcategory') as string | null;
   const isFree = formData.get('isFree') === 'true';
+  const drawType = (formData.get('drawType') as string) || 'single';
+  const prizesStr = formData.get('prizes') as string | null;
+  const prizes = prizesStr ? JSON.parse(prizesStr) : null;
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
   const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
@@ -128,6 +131,8 @@ export async function createCompetition(formData: FormData) {
       subcategory,
       status: 'DRAFT',
       isFree,
+      drawType,
+      prizes: prizes ?? undefined,
       prizeValue,
       ticketPrice,
       totalTickets,
@@ -183,6 +188,9 @@ export async function updateCompetition(id: string, formData: FormData) {
   const category = formData.get('category') as string;
   const subcategory = formData.get('subcategory') as string | null;
   const isFree = formData.get('isFree') === 'true';
+  const drawType = (formData.get('drawType') as string) || existing.drawType;
+  const prizesStr = formData.get('prizes') as string | null;
+  const prizes = prizesStr ? JSON.parse(prizesStr) : (drawType === 'multi' ? existing.prizes : null);
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
   const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
@@ -218,6 +226,8 @@ export async function updateCompetition(id: string, formData: FormData) {
       category: category as never,
       subcategory,
       isFree,
+      drawType,
+      prizes: prizes ?? undefined,
       prizeValue,
       ticketPrice,
       totalTickets,
@@ -394,6 +404,8 @@ export async function duplicateCompetition(id: string) {
       subcategory: original.subcategory,
       status: 'DRAFT',
       isFree: original.isFree,
+      drawType: original.drawType,
+      prizes: original.prizes ?? undefined,
       prizeValue: original.prizeValue,
       ticketPrice: original.ticketPrice,
       totalTickets: original.totalTickets,

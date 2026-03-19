@@ -12,7 +12,7 @@ import { MediaGallery, type MediaItem } from '@/components/competition/media-gal
 import { LiveCountdown } from '@/components/competition/live-countdown';
 import { UrgencyProgressBar } from '@/components/competition/urgency-progress-bar';
 import { SafeHtml } from '@/components/common/safe-html';
-import type { CompetitionCategory } from '@winucard/shared/types';
+import type { CompetitionCategory, CompetitionPrize } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
 
 const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
@@ -84,10 +84,12 @@ async function getCompetition(slug: string) {
       wins: {
         select: {
           ticketNumber: true,
+          prizePosition: true,
           user: {
             select: { firstName: true, lastName: true },
           },
         },
+        orderBy: { prizePosition: 'asc' },
       },
     },
   });
@@ -102,8 +104,14 @@ async function getCompetition(slug: string) {
       ? 'Lucky Winner'
       : null;
 
+  // Parse prizes JSON for multi-draw
+  const parsedPrizes: CompetitionPrize[] = Array.isArray(competition.prizes)
+    ? (competition.prizes as unknown as CompetitionPrize[])
+    : [];
+
   return {
     ...competition,
+    prizes: parsedPrizes,
     prizeValue:
       typeof competition.prizeValue === 'object' && 'toNumber' in competition.prizeValue
         ? (competition.prizeValue as { toNumber: () => number }).toNumber()
@@ -203,6 +211,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
     : 0;
   const ticketsRemaining = hasTotalTickets
     ? competition.totalTickets! - competition.soldTickets
+    : 0;
+
+  const isMultiDraw = competition.drawType === 'multi' && competition.prizes.length > 1;
+  const totalPrizesValue = isMultiDraw
+    ? competition.prizes.reduce((sum: number, p: CompetitionPrize) => sum + p.value, 0)
     : 0;
 
   // Format prize value without decimals
@@ -435,7 +448,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   fontWeight: 600,
                 }}
               >
-                Card Value
+                {isMultiDraw ? 'Total Value' : 'Card Value'}
               </p>
             </div>
 
@@ -550,6 +563,58 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <UrgencyBanner drawDate={competition.drawDate} status={competition.status} />
             )}
 
+            {/* Multi-Draw Prizes Section */}
+            {isMultiDraw && (
+              <div
+                style={{
+                  background: '#ffffff',
+                  border: '1.5px solid rgba(0, 0, 0, 0.06)',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                }}
+              >
+                {competition.prizes.map((prize: CompetitionPrize, index: number) => {
+                  const medal = index === 0 ? '\u{1F947}' : index === 1 ? '\u{1F948}' : index === 2 ? '\u{1F949}' : null;
+                  const posLabel = `${prize.position}${prize.position === 1 ? 'st' : prize.position === 2 ? 'nd' : prize.position === 3 ? 'rd' : 'th'} Prize`;
+                  const isLast = index === competition.prizes.length - 1;
+                  return (
+                    <div
+                      key={prize.position}
+                      style={{
+                        padding: '12px 16px',
+                        borderBottom: isLast ? 'none' : '1px solid rgba(0, 0, 0, 0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <div>
+                        <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
+                          {medal ?? prize.position} {posLabel}
+                        </p>
+                        <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {prize.title}
+                        </p>
+                      </div>
+                      <p style={{ fontSize: '14px', fontWeight: 700, color: categoryColor }}>
+                        {formatPrice(prize.value)}
+                      </p>
+                    </div>
+                  );
+                })}
+                <div
+                  style={{
+                    background: '#F7F7FA',
+                    padding: '10px 16px',
+                  }}
+                >
+                  <p style={{ fontSize: '13px', fontWeight: 600 }}>
+                    Total value: {formatPrice(totalPrizesValue)} — {competition.prizes.length} winners
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Active Competition - Ticket Selector or Free Entry */}
             {isActive && (
               isFree ? (
@@ -629,16 +694,43 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     Competition Completed
                   </p>
                 </div>
-                <p style={{ fontSize: '14px', color: '#6b7088' }}>
-                  Winning ticket:{' '}
-                  <span style={{ fontWeight: 700, color: categoryColor }}>
-                    #{competition.winningTicketNumber}
-                  </span>
-                </p>
-                {competition.winnerDisplayName && (
-                  <p style={{ fontSize: '14px', color: '#9a9eb0', marginTop: '4px' }}>
-                    Winner: {competition.winnerDisplayName}
-                  </p>
+                {isMultiDraw && competition.wins.length > 0 ? (
+                  <div style={{ marginTop: '12px', textAlign: 'left' }}>
+                    {competition.wins.map((win: { ticketNumber: number; prizePosition: number | null; user: { firstName: string; lastName: string | null } | null }, idx: number) => {
+                      const medal = idx === 0 ? '\u{1F947}' : idx === 1 ? '\u{1F948}' : idx === 2 ? '\u{1F949}' : null;
+                      const pos = win.prizePosition ?? idx + 1;
+                      const posLabel = `${pos}${pos === 1 ? 'st' : pos === 2 ? 'nd' : pos === 3 ? 'rd' : 'th'} Prize`;
+                      const prize = competition.prizes.find((p: CompetitionPrize) => p.position === pos);
+                      const winnerName = win.user
+                        ? `${win.user.firstName} ${win.user.lastName?.charAt(0) ?? ''}.`
+                        : 'Lucky Winner';
+                      return (
+                        <div key={idx} style={{ marginBottom: '8px' }}>
+                          <p style={{ fontSize: '14px', fontWeight: 600, color: '#1a1a2e' }}>
+                            {medal ?? pos} {posLabel}
+                            {prize && <span style={{ color: '#6b7088' }}> — {prize.title} ({formatPrice(prize.value)})</span>}
+                          </p>
+                          <p style={{ fontSize: '13px', color: '#9a9eb0' }}>
+                            Winner: Ticket <span style={{ fontWeight: 700, color: categoryColor }}>#{win.ticketNumber}</span> — {winnerName}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <>
+                    <p style={{ fontSize: '14px', color: '#6b7088' }}>
+                      Winning ticket:{' '}
+                      <span style={{ fontWeight: 700, color: categoryColor }}>
+                        #{competition.winningTicketNumber}
+                      </span>
+                    </p>
+                    {competition.winnerDisplayName && (
+                      <p style={{ fontSize: '14px', color: '#9a9eb0', marginTop: '4px' }}>
+                        Winner: {competition.winnerDisplayName}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}
