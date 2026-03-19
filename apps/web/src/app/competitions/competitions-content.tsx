@@ -96,16 +96,27 @@ export function CompetitionsContent({
     [updateFilters]
   );
 
-  // Sort by urgency: Last Hours first, then Ending Soon, then closest draw date
+  // Sort: ACTIVE first (by urgency then draw date), then SOLD_OUT, then UPCOMING last
   const sortedCompetitions = useMemo(() => {
     const now = Date.now();
+    const statusOrder: Record<string, number> = { ACTIVE: 0, SOLD_OUT: 1, UPCOMING: 2 };
     return [...competitions].sort((a, b) => {
-      const diffA = new Date(a.drawDate).getTime() - now;
-      const diffB = new Date(b.drawDate).getTime() - now;
-      const urgA = a.status === 'ACTIVE' && diffA > 0 && diffA < 3 * 3600000 ? 0 : a.status === 'ACTIVE' && diffA > 0 && diffA < 24 * 3600000 ? 1 : 2;
-      const urgB = b.status === 'ACTIVE' && diffB > 0 && diffB < 3 * 3600000 ? 0 : b.status === 'ACTIVE' && diffB > 0 && diffB < 24 * 3600000 ? 1 : 2;
-      if (urgA !== urgB) return urgA - urgB;
-      return diffA - diffB;
+      const orderA = statusOrder[a.status] ?? 3;
+      const orderB = statusOrder[b.status] ?? 3;
+      if (orderA !== orderB) return orderA - orderB;
+
+      // Within ACTIVE: sort by urgency then draw date
+      if (a.status === 'ACTIVE' && b.status === 'ACTIVE') {
+        const diffA = new Date(a.drawDate).getTime() - now;
+        const diffB = new Date(b.drawDate).getTime() - now;
+        const urgA = diffA > 0 && diffA < 3 * 3600000 ? 0 : diffA > 0 && diffA < 24 * 3600000 ? 1 : 2;
+        const urgB = diffB > 0 && diffB < 3 * 3600000 ? 0 : diffB > 0 && diffB < 24 * 3600000 ? 1 : 2;
+        if (urgA !== urgB) return urgA - urgB;
+        return diffA - diffB;
+      }
+
+      // Within same status: sort by draw date
+      return new Date(a.drawDate).getTime() - new Date(b.drawDate).getTime();
     });
   }, [competitions]);
 
