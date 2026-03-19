@@ -50,6 +50,19 @@ export async function createCompetition(formData: FormData) {
   const metaTitle = formData.get('metaTitle') as string | null;
   const metaDescription = formData.get('metaDescription') as string | null;
 
+  // Mystery card fields
+  const isMystery = formData.get('isMystery') === 'true';
+  const minimumValueStr = formData.get('minimumValue') as string | null;
+  const minimumValue = minimumValueStr ? parseFloat(minimumValueStr) : null;
+  const teaser = formData.get('teaser') as string | null;
+  const realTitle = formData.get('realTitle') as string | null;
+  const realValueStr = formData.get('realValue') as string | null;
+  const realValue = realValueStr ? parseFloat(realValueStr) : null;
+  const realImagesStr = formData.get('realImages') as string | null;
+  const realImages = realImagesStr ? realImagesStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const realCertification = formData.get('realCertification') as string | null;
+  const realGrade = formData.get('realGrade') as string | null;
+
   const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
   const questionChoices = JSON.parse(questionChoicesStr || '[]') as string[];
 
@@ -151,6 +164,16 @@ export async function createCompetition(formData: FormData) {
       questionAnswer,
       metaTitle: metaTitle || title,
       metaDescription: metaDescription || descriptionShort,
+      // Mystery card fields
+      isMystery,
+      isRevealed: false,
+      minimumValue: isMystery && minimumValue !== null ? minimumValue : null,
+      teaser: isMystery ? teaser : null,
+      realTitle: isMystery ? realTitle : null,
+      realValue: isMystery && realValue !== null ? realValue : null,
+      realImages: isMystery ? realImages : [],
+      realCertification: isMystery ? realCertification : null,
+      realGrade: isMystery ? realGrade : null,
     },
   });
 
@@ -213,6 +236,19 @@ export async function updateCompetition(id: string, formData: FormData) {
   const metaTitle = formData.get('metaTitle') as string | null;
   const metaDescription = formData.get('metaDescription') as string | null;
 
+  // Mystery card fields
+  const isMystery = formData.get('isMystery') === 'true';
+  const minimumValueStr = formData.get('minimumValue') as string | null;
+  const minimumValue = minimumValueStr ? parseFloat(minimumValueStr) : null;
+  const teaser = formData.get('teaser') as string | null;
+  const realTitle = formData.get('realTitle') as string | null;
+  const realValueStr = formData.get('realValue') as string | null;
+  const realValue = realValueStr ? parseFloat(realValueStr) : null;
+  const realImagesStr = formData.get('realImages') as string | null;
+  const realImages = realImagesStr ? realImagesStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const realCertification = formData.get('realCertification') as string | null;
+  const realGrade = formData.get('realGrade') as string | null;
+
   const galleryUrls = galleryUrlsStr ? galleryUrlsStr.split(',').map(s => s.trim()).filter(Boolean) : existing.galleryUrls;
   const questionChoices = questionChoicesStr ? JSON.parse(questionChoicesStr) : existing.questionChoices;
 
@@ -246,6 +282,15 @@ export async function updateCompetition(id: string, formData: FormData) {
       questionAnswer: isNaN(questionAnswer) ? existing.questionAnswer : questionAnswer,
       metaTitle: metaTitle || title,
       metaDescription: metaDescription || descriptionShort,
+      // Mystery card fields
+      isMystery,
+      minimumValue: isMystery && minimumValue !== null ? minimumValue : null,
+      teaser: isMystery ? teaser : null,
+      realTitle: isMystery ? realTitle : null,
+      realValue: isMystery && realValue !== null ? realValue : null,
+      realImages: isMystery ? realImages : [],
+      realCertification: isMystery ? realCertification : null,
+      realGrade: isMystery ? realGrade : null,
     },
   });
 
@@ -424,6 +469,16 @@ export async function duplicateCompetition(id: string) {
       questionAnswer: original.questionAnswer,
       metaTitle: original.metaTitle,
       metaDescription: original.metaDescription,
+      // Mystery card fields — copy but always reset isRevealed
+      isMystery: original.isMystery,
+      isRevealed: false,
+      minimumValue: original.minimumValue,
+      teaser: original.teaser,
+      realTitle: original.realTitle,
+      realValue: original.realValue,
+      realImages: original.realImages,
+      realCertification: original.realCertification,
+      realGrade: original.realGrade,
     },
   });
 
@@ -660,4 +715,73 @@ export async function setFeaturedCompetition(competitionId: string | null) {
   if (competitionId) {
     revalidatePath(`/dashboard/competitions/${competitionId}`);
   }
+}
+
+export async function revealMysteryCard(competitionId: string) {
+  const session = await auth();
+  if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+    throw new Error('Unauthorized');
+  }
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId },
+  });
+
+  if (!competition) {
+    throw new Error('Competition not found');
+  }
+
+  if (!competition.isMystery) {
+    throw new Error('This competition is not a mystery card');
+  }
+
+  if (competition.isRevealed) {
+    throw new Error('This mystery card has already been revealed');
+  }
+
+  // Build update data: reveal and copy real fields to public fields
+  const updateData: Record<string, unknown> = {
+    isRevealed: true,
+  };
+
+  if (competition.realValue) {
+    updateData.prizeValue = competition.realValue;
+  }
+
+  if (competition.realCertification) {
+    updateData.certificationNumber = competition.realCertification;
+  }
+
+  if (competition.realGrade) {
+    updateData.grade = competition.realGrade;
+  }
+
+  if (competition.realImages && competition.realImages.length > 0) {
+    // Append real images to existing gallery
+    updateData.galleryUrls = [...(competition.galleryUrls || []), ...competition.realImages];
+  }
+
+  await prisma.competition.update({
+    where: { id: competitionId },
+    data: updateData,
+  });
+
+  // Log action
+  await prisma.auditLog.create({
+    data: {
+      userId: session.user.id,
+      action: 'MYSTERY_REVEALED',
+      entity: 'competition',
+      entityId: competitionId,
+      metadata: {
+        title: competition.title,
+        realTitle: competition.realTitle,
+        realValue: competition.realValue ? Number(competition.realValue) : null,
+      },
+    },
+  });
+
+  revalidatePath('/dashboard/competitions');
+  revalidatePath(`/dashboard/competitions/${competitionId}`);
+  revalidatePath('/'); // Revalidate public pages
 }

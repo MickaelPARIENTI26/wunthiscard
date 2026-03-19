@@ -67,6 +67,8 @@ interface CompetitionWithCount {
   drawType: string;
   prizes: unknown;
   isFree: boolean;
+  isMystery: boolean;
+  isRevealed: boolean;
   _count: {
     tickets: number;
   };
@@ -146,6 +148,8 @@ async function getCompetitions(searchParams: SearchParams) {
       totalTickets: true,
       drawDate: true,
       isFree: true,
+      isMystery: true,
+      isRevealed: true,
       drawType: true,
       prizes: true,
       _count: {
@@ -210,6 +214,8 @@ async function getCompetitions(searchParams: SearchParams) {
           : Number(comp.ticketPrice),
       soldTickets: comp._count.tickets,
       isFree: comp.isFree,
+      isMystery: comp.isMystery,
+      isRevealed: comp.isRevealed,
       drawType: comp.drawType,
       prizeCount: Array.isArray(comp.prizes) ? (comp.prizes as unknown[]).length : 1,
     })),

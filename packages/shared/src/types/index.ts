@@ -78,7 +78,8 @@ export type AuditAction =
   | 'REFERRAL_LINKED'
   | 'REFERRAL_BONUS_EARNED'
   | 'REFERRAL_TICKET_USED'
-  | 'MULTI_DRAW_EXECUTED';
+  | 'MULTI_DRAW_EXECUTED'
+  | 'MYSTERY_REVEALED';
 
 // Multi-draw prize type
 export interface CompetitionPrize {

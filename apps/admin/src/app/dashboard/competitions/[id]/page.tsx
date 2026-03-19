@@ -7,10 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice, formatDate, formatDateTime, calculateProgress } from '@winucard/shared';
 import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winucard/shared';
-import { Pencil, ArrowLeft, Dices } from 'lucide-react';
+import { Pencil, ArrowLeft, Dices, EyeOff, Eye } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import type { CompetitionStatus } from '@winucard/database';
 import { CancelCompetitionDialog } from './cancel-competition-dialog';
+import { RevealMysteryButton } from './reveal-mystery-button';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
@@ -171,6 +172,74 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
           </CardContent>
         </Card>
       </div>
+
+      {/* Mystery Card Section */}
+      {competition.isMystery && (
+        <Card className={competition.isRevealed ? 'border-green-500 bg-green-500/5' : 'border-purple-500 bg-purple-500/5'}>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              {competition.isRevealed ? (
+                <>
+                  <Eye className="h-5 w-5 text-green-600" />
+                  Mystery Card
+                  <Badge variant="success">Revealed</Badge>
+                </>
+              ) : (
+                <>
+                  <EyeOff className="h-5 w-5 text-purple-600" />
+                  Mystery Card
+                  <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                    Hidden
+                  </Badge>
+                </>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {competition.minimumValue && (
+                <div>
+                  <p className="text-sm text-muted-foreground">Minimum Guaranteed Value</p>
+                  <p className="font-medium">{formatPrice(Number(competition.minimumValue))}</p>
+                </div>
+              )}
+              {competition.teaser && (
+                <div className="col-span-2">
+                  <p className="text-sm text-muted-foreground">Teaser Description</p>
+                  <p className="font-medium">{competition.teaser}</p>
+                </div>
+              )}
+            </div>
+            {!competition.isRevealed && (
+              <>
+                <Separator />
+                <RevealMysteryButton
+                  competitionId={competition.id}
+                  realTitle={competition.realTitle}
+                  realValue={competition.realValue ? Number(competition.realValue) : null}
+                />
+              </>
+            )}
+            {competition.isRevealed && competition.realTitle && (
+              <>
+                <Separator />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Revealed Title</p>
+                    <p className="font-medium">{competition.realTitle}</p>
+                  </div>
+                  {competition.realValue && (
+                    <div>
+                      <p className="text-sm text-muted-foreground">Revealed Value</p>
+                      <p className="font-medium">{formatPrice(Number(competition.realValue))}</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>

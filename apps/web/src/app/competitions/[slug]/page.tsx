@@ -109,17 +109,33 @@ async function getCompetition(slug: string) {
     ? (competition.prizes as unknown as CompetitionPrize[])
     : [];
 
+  // SECURITY: Strip real* fields for unrevealed mystery cards — never send to client
+  const safeCompetition = { ...competition };
+  if (safeCompetition.isMystery && !safeCompetition.isRevealed) {
+    safeCompetition.realTitle = null;
+    safeCompetition.realValue = null;
+    safeCompetition.realImages = [];
+    safeCompetition.realCertification = null;
+    safeCompetition.realGrade = null;
+  }
+
   return {
-    ...competition,
+    ...safeCompetition,
     prizes: parsedPrizes,
     prizeValue:
-      typeof competition.prizeValue === 'object' && 'toNumber' in competition.prizeValue
-        ? (competition.prizeValue as { toNumber: () => number }).toNumber()
-        : Number(competition.prizeValue),
+      typeof safeCompetition.prizeValue === 'object' && 'toNumber' in safeCompetition.prizeValue
+        ? (safeCompetition.prizeValue as { toNumber: () => number }).toNumber()
+        : Number(safeCompetition.prizeValue),
     ticketPrice:
-      typeof competition.ticketPrice === 'object' && 'toNumber' in competition.ticketPrice
-        ? (competition.ticketPrice as { toNumber: () => number }).toNumber()
-        : Number(competition.ticketPrice),
+      typeof safeCompetition.ticketPrice === 'object' && 'toNumber' in safeCompetition.ticketPrice
+        ? (safeCompetition.ticketPrice as { toNumber: () => number }).toNumber()
+        : Number(safeCompetition.ticketPrice),
+    minimumValue:
+      safeCompetition.minimumValue != null
+        ? (typeof safeCompetition.minimumValue === 'object' && 'toNumber' in safeCompetition.minimumValue
+            ? (safeCompetition.minimumValue as { toNumber: () => number }).toNumber()
+            : Number(safeCompetition.minimumValue))
+        : null,
     soldTickets: soldTicketsCount,
     winnerDisplayName,
   };
@@ -151,10 +167,14 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
 
   if (!competition) return notFound();
 
-  const title = competition.metaTitle || competition.title;
-  const description =
-    competition.metaDescription ||
-    `Win ${competition.title} worth ${formatPrice(competition.prizeValue)}. Tickets from ${formatPrice(competition.ticketPrice)}. UK prize competition with free entry route.`;
+  const isMysteryUnrevealed = competition.isMystery && !competition.isRevealed;
+  const title = isMysteryUnrevealed
+    ? `Mystery ${CATEGORY_LABELS[competition.category as CompetitionCategory] ?? ''} Card`
+    : (competition.metaTitle || competition.title);
+  const description = isMysteryUnrevealed
+    ? `Win a Mystery ${CATEGORY_LABELS[competition.category as CompetitionCategory] ?? ''} Card guaranteed worth at least ${formatPrice(competition.minimumValue ?? competition.prizeValue)}. UK prize competition with free entry route.`
+    : (competition.metaDescription ||
+      `Win ${competition.title} worth ${formatPrice(competition.prizeValue)}. Tickets from ${formatPrice(competition.ticketPrice)}. UK prize competition with free entry route.`);
 
   return {
     title,
@@ -162,13 +182,13 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
     openGraph: {
       title: `${title} | WinUCard`,
       description,
-      images: [{ url: competition.mainImageUrl }],
+      ...(isMysteryUnrevealed ? {} : { images: [{ url: competition.mainImageUrl }] }),
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} | WinUCard`,
       description,
-      images: [competition.mainImageUrl],
+      ...(isMysteryUnrevealed ? {} : { images: [competition.mainImageUrl] }),
     },
   };
 }
@@ -212,6 +232,10 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   const ticketsRemaining = hasTotalTickets
     ? competition.totalTickets! - competition.soldTickets
     : 0;
+
+  const isMystery = competition.isMystery;
+  const isMysteryUnrevealed = isMystery && !competition.isRevealed;
+  const isMysteryRevealed = isMystery && competition.isRevealed;
 
   const isMultiDraw = competition.drawType === 'multi' && competition.prizes.length > 1;
   const totalPrizesValue = isMultiDraw
@@ -301,14 +325,48 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Left Column - Media Gallery (45%) */}
           <div className="lg:w-[45%]">
-            {/* Media Gallery with thumbnails */}
-            <MediaGallery
-              media={mediaItems}
-              fallbackImage={competition.mainImageUrl}
-              fallbackAlt={competition.title}
-              categoryColor={categoryColor}
-              categoryEmoji={CATEGORY_EMOJIS[category]}
-            />
+            {/* Media Gallery or Mystery Visual */}
+            {isMysteryUnrevealed ? (
+              <div
+                style={{
+                  aspectRatio: '3/4',
+                  background: `linear-gradient(160deg, ${categoryColor}30, ${categoryColor}, ${categoryColor}30)`,
+                  borderRadius: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                <style>{`
+                  @keyframes mysteryDetailPulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                  }
+                `}</style>
+                <span
+                  style={{
+                    color: '#ffffff',
+                    fontSize: '120px',
+                    fontWeight: 900,
+                    textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                    animation: 'mysteryDetailPulse 3s ease-in-out infinite',
+                    userSelect: 'none',
+                  }}
+                >
+                  ?
+                </span>
+              </div>
+            ) : (
+              <MediaGallery
+                media={mediaItems}
+                fallbackImage={competition.mainImageUrl}
+                fallbackAlt={competition.title}
+                categoryColor={categoryColor}
+                categoryEmoji={CATEGORY_EMOJIS[category]}
+              />
+            )}
 
             {/* Back Link */}
             <Link
@@ -340,6 +398,39 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               >
                 {CATEGORY_LABELS[category]}
               </span>
+
+              {/* Mystery Badge */}
+              {isMysteryUnrevealed && (
+                <span
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '8px',
+                    background: '#8B5CF6',
+                    color: '#ffffff',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)',
+                  }}
+                >
+                  Mystery Card
+                </span>
+              )}
+              {isMysteryRevealed && (
+                <span
+                  style={{
+                    padding: '5px 14px',
+                    borderRadius: '8px',
+                    background: '#16A34A',
+                    color: '#ffffff',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  REVEALED
+                </span>
+              )}
 
               {/* Free Entry Badge */}
               {isFree && (
@@ -421,36 +512,86 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               className="font-[family-name:var(--font-outfit)]"
               style={{ fontSize: '26px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}
             >
-              {competition.title}
+              {isMysteryUnrevealed
+                ? `Mystery ${CATEGORY_LABELS[category]} Card`
+                : competition.title}
             </h1>
 
             {/* Prize Value - WOW effect */}
             <div>
-              <p
-                className="font-[family-name:var(--font-outfit)]"
-                style={{
-                  fontSize: '42px',
-                  fontWeight: 900,
-                  color: '#1a1a2e',
-                  lineHeight: 1.1,
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
-                }}
-              >
-                {formattedPrizeValue}
-              </p>
-              <p
-                style={{
-                  fontSize: '11px',
-                  color: categoryColor,
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  marginTop: '4px',
-                  fontWeight: 600,
-                }}
-              >
-                {isMultiDraw ? 'Total Value' : 'Card Value'}
-              </p>
+              {isMysteryUnrevealed ? (
+                <>
+                  <p
+                    className="font-[family-name:var(--font-outfit)]"
+                    style={{
+                      fontSize: '42px',
+                      fontWeight: 900,
+                      color: '#1a1a2e',
+                      lineHeight: 1.1,
+                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
+                    }}
+                  >
+                    Guaranteed minimum: {competition.minimumValue != null
+                      ? formatPrice(competition.minimumValue)
+                      : formattedPrizeValue}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: '14px',
+                      fontStyle: 'italic',
+                      color: 'var(--text-muted)',
+                      marginTop: '8px',
+                    }}
+                  >
+                    The real card could be worth much more.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p
+                    className="font-[family-name:var(--font-outfit)]"
+                    style={{
+                      fontSize: '42px',
+                      fontWeight: 900,
+                      color: '#1a1a2e',
+                      lineHeight: 1.1,
+                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
+                    }}
+                  >
+                    {formattedPrizeValue}
+                  </p>
+                  <p
+                    style={{
+                      fontSize: '11px',
+                      color: categoryColor,
+                      textTransform: 'uppercase',
+                      letterSpacing: '1.5px',
+                      marginTop: '4px',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {isMultiDraw ? 'Total Value' : 'Card Value'}
+                  </p>
+                </>
+              )}
             </div>
+
+            {/* Mystery Teaser */}
+            {isMysteryUnrevealed && competition.teaser && (
+              <div
+                style={{
+                  background: '#F7F7FA',
+                  fontStyle: 'italic',
+                  fontSize: '14px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  color: '#555',
+                  lineHeight: 1.6,
+                }}
+              >
+                {competition.teaser}
+              </div>
+            )}
 
             {/* Progress Bar with Urgency / Participant Count */}
             {!isCompleted && !isCancelled && (
@@ -694,6 +835,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     Competition Completed
                   </p>
                 </div>
+                {isMystery && (
+                  <p style={{ fontSize: '12px', fontWeight: 600, color: '#8B5CF6', marginBottom: '8px' }}>
+                    Was a Mystery
+                  </p>
+                )}
                 {isMultiDraw && competition.wins.length > 0 ? (
                   <div style={{ marginTop: '12px', textAlign: 'left' }}>
                     {competition.wins.map((win: { ticketNumber: number; prizePosition: number | null; user: { firstName: string; lastName: string | null } | null }, idx: number) => {
@@ -777,56 +923,97 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               About This Card
             </h2>
 
-            {competition.descriptionLong ? (
-              <SafeHtml
-                html={competition.descriptionLong}
-                className="prose prose-sm max-w-none"
-                style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}
-              />
+            {isMysteryUnrevealed ? (
+              <>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Category</span>
+                    <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{CATEGORY_LABELS[category]}</span>
+                  </div>
+                  {competition.grade && (
+                    <div className="flex justify-between items-center">
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
+                      <span
+                        style={{
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          background: '#F0B90B',
+                          color: '#ffffff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {competition.grade}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Minimum value</span>
+                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#1a1a2e' }}>
+                      {competition.minimumValue != null
+                        ? formatPrice(competition.minimumValue)
+                        : formattedPrizeValue}
+                    </span>
+                  </div>
+                </div>
+                <p style={{ fontSize: '14px', color: '#6b7088', marginTop: '16px', lineHeight: 1.6 }}>
+                  The card will be revealed LIVE during the draw on TikTok.
+                </p>
+              </>
             ) : (
-              <p style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}>
-                {competition.descriptionShort || 'No description available.'}
-              </p>
-            )}
+              <>
+                {competition.descriptionLong ? (
+                  <SafeHtml
+                    html={competition.descriptionLong}
+                    className="prose prose-sm max-w-none"
+                    style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}
+                  />
+                ) : (
+                  <p style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}>
+                    {competition.descriptionShort || 'No description available.'}
+                  </p>
+                )}
 
-            {/* Card Details */}
-            <div className="mt-6 space-y-3">
-              {competition.certificationNumber && (
-                <div className="flex justify-between">
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
-                    Certification
-                  </span>
-                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>
-                    {competition.certificationNumber}
-                  </span>
+                {/* Card Details */}
+                <div className="mt-6 space-y-3">
+                  {competition.certificationNumber && (
+                    <div className="flex justify-between">
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
+                        Certification
+                      </span>
+                      <span style={{ fontSize: '14px', color: '#1a1a2e' }}>
+                        {competition.certificationNumber}
+                      </span>
+                    </div>
+                  )}
+                  {competition.grade && (
+                    <div className="flex justify-between items-center">
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
+                      <span
+                        style={{
+                          padding: '3px 10px',
+                          borderRadius: '6px',
+                          background: '#F0B90B',
+                          color: '#ffffff',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {competition.grade}
+                      </span>
+                    </div>
+                  )}
+                  {competition.condition && (
+                    <div className="flex justify-between">
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
+                        Condition
+                      </span>
+                      <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.condition}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {competition.grade && (
-                <div className="flex justify-between items-center">
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
-                  <span
-                    style={{
-                      padding: '3px 10px',
-                      borderRadius: '6px',
-                      background: '#F0B90B',
-                      color: '#ffffff',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                    }}
-                  >
-                    {competition.grade}
-                  </span>
-                </div>
-              )}
-              {competition.condition && (
-                <div className="flex justify-between">
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
-                    Condition
-                  </span>
-                  <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.condition}</span>
-                </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
 
           {/* Draw Details */}
@@ -864,7 +1051,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 </div>
               </div>
 
-              {competition.certificationNumber && (
+              {!isMysteryUnrevealed && competition.certificationNumber && (
                 <div className="flex items-start gap-3">
                   <Award style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
                   <div>

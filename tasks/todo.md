@@ -1,22 +1,23 @@
 # WinUCard — Todo
 
 ## En cours
-- [ ] Feat: Multi-Draw competitions (multiple prizes/winners)
+- [ ] Feat: Mystery Card competitions
 
 ### Plan
-1. Schema: drawType field, prizes JSON, Win model (remove @unique on competitionId, add prizePosition)
-2. Shared: types, validators
-3. Admin: form multi-draw section (prizes list)
-4. Admin: draw execution (multi-draw logic)
-5. Frontend: cards (multi-draw badge, total value)
-6. Frontend: detail page (prizes section, results display)
+1. Schema: mystery fields (isMystery, isRevealed, minimumValue, teaser, real* fields)
+2. Shared types
+3. Admin: form mystery section + reveal toggle
+4. Backend: API security (never return real* fields when !isRevealed)
+5. Frontend: cards (mystery visual, badge, "From £X")
+6. Frontend: detail page (mystery visual, teaser, "Guaranteed minimum")
 7. Build verification
 
 ## À faire
 
 
 ## Terminé
-- [x] Feat: Compétitions gratuites — 2026-03-19
-- [x] Feat: Système de parrainage — 2026-03-19
-- [x] Feat: Ending Soon / Last Hours — 2026-03-19
-- [x] Feat: Ticket packs avec réduction visible — 2026-03-19
+- [x] Compétitions gratuites — 2026-03-19
+- [x] Système de parrainage — 2026-03-19
+- [x] Ending Soon / Last Hours — 2026-03-19
+- [x] Ticket packs — 2026-03-19
+- [x] Multi-Draw competitions — 2026-03-19

@@ -18,12 +18,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 import { COMPETITION_CATEGORIES } from '@winucard/shared';
 import { createCompetition, updateCompetition } from '@/app/dashboard/competitions/actions';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Loader2, Star, Plus, Trash2 } from 'lucide-react';
+import { Loader2, Star, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
 import type { Competition } from '@winucard/database';
 
@@ -64,14 +65,25 @@ const competitionFormSchema = z.object({
   questionAnswer: z.string().min(1, 'Please select the correct answer'),
   metaTitle: z.string().max(70, 'Meta title must be less than 70 characters').optional(),
   metaDescription: z.string().max(160, 'Meta description must be less than 160 characters').optional(),
+  // Mystery card fields
+  isMystery: z.boolean().default(false),
+  minimumValue: z.coerce.number().min(0, 'Minimum value cannot be negative').optional(),
+  teaser: z.string().max(500, 'Teaser must be less than 500 characters').optional(),
+  realTitle: z.string().max(200).optional(),
+  realValue: z.coerce.number().min(0).optional(),
+  realImages: z.string().optional(),
+  realCertification: z.string().max(50).optional(),
+  realGrade: z.string().max(20).optional(),
 });
 
 type CompetitionFormData = z.infer<typeof competitionFormSchema>;
 
 // Serialized competition type with number instead of Decimal
-type SerializedCompetition = Omit<Competition, 'prizeValue' | 'ticketPrice'> & {
+type SerializedCompetition = Omit<Competition, 'prizeValue' | 'ticketPrice' | 'minimumValue' | 'realValue'> & {
   prizeValue: number;
   ticketPrice: number;
+  minimumValue: number | null;
+  realValue: number | null;
 };
 
 interface CompetitionFormProps {
@@ -102,6 +114,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
   const [questionChoices, setQuestionChoices] = useState<string[]>(
     (competition?.questionChoices as string[]) ?? ['', '', '', '']
   );
+  const [isMysteryState, setIsMysteryState] = useState(competition?.isMystery ?? false);
 
   const isEditing = !!competition;
   const isActive = competition?.status === 'ACTIVE';
@@ -144,6 +157,15 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       questionAnswer: competition?.questionAnswer?.toString() ?? '0',
       metaTitle: competition?.metaTitle ?? '',
       metaDescription: competition?.metaDescription ?? '',
+      // Mystery card defaults
+      isMystery: competition?.isMystery ?? false,
+      minimumValue: competition?.minimumValue ? Number(competition.minimumValue) : undefined,
+      teaser: competition?.teaser ?? '',
+      realTitle: competition?.realTitle ?? '',
+      realValue: competition?.realValue ? Number(competition.realValue) : undefined,
+      realImages: (competition?.realImages as string[])?.join(', ') ?? '',
+      realCertification: competition?.realCertification ?? '',
+      realGrade: competition?.realGrade ?? '',
     },
   });
 
@@ -201,6 +223,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
     }
     formData.set('descriptionLong', descriptionLong);
     formData.set('questionChoices', JSON.stringify(questionChoices));
+    formData.set('isMystery', String(isMysteryState));
+    if (isMysteryState) {
+      // When mystery is enabled, prizeValue should use minimumValue
+      const minVal = data.minimumValue;
+      if (minVal !== undefined && drawTypeState !== 'multi') {
+        formData.set('prizeValue', String(minVal));
+      }
+    }
 
     try {
       if (isEditing) {
@@ -384,6 +414,146 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   )}
                 </div>
               </div>
+
+              {/* Mystery Card Toggle */}
+              <div className="space-y-2">
+                <Label>Mystery Card</Label>
+                <div className="flex items-center gap-4 rounded-lg border p-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <Switch
+                      checked={isMysteryState}
+                      onCheckedChange={(checked) => {
+                        setIsMysteryState(checked);
+                        setValue('isMystery', checked);
+                      }}
+                      aria-label="Toggle mystery card"
+                    />
+                    <div>
+                      <p className="font-medium">{isMysteryState ? 'Mystery Card Enabled' : 'Standard Competition'}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {isMysteryState
+                          ? 'The real card is hidden until you reveal it after the draw'
+                          : 'Enable to hide the real card details until after the draw'}
+                      </p>
+                    </div>
+                  </div>
+                  {isMysteryState && (
+                    <span className="px-3 py-1 rounded-md bg-purple-500/10 text-purple-600 text-xs font-bold uppercase">
+                      MYSTERY
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Mystery Card Settings */}
+              {isMysteryState && (
+                <Card className="border-dashed border-purple-300 dark:border-purple-700">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <EyeOff className="h-4 w-4" />
+                      Mystery Card Settings
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Configure what the public sees vs. the real card details revealed after the draw.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* PUBLIC INFO */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-green-600" />
+                        <h4 className="text-sm font-bold uppercase tracking-wide text-green-600">Public Info — Visible to Everyone</h4>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="minimumValue">Minimum Guaranteed Value (£) *</Label>
+                          <Input
+                            id="minimumValue"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="500.00"
+                            {...register('minimumValue')}
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            Ticket price is calculated based on this value
+                          </p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="teaser">Teaser Description</Label>
+                        <Textarea
+                          id="teaser"
+                          placeholder="A fan-favourite from Gen 1. PSA 10. You'll want this one."
+                          rows={3}
+                          {...register('teaser')}
+                        />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* HIDDEN UNTIL REVEAL */}
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <EyeOff className="h-4 w-4 text-orange-600" />
+                        <h4 className="text-sm font-bold uppercase tracking-wide text-orange-600">Hidden Until Reveal — Admin Only</h4>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="realTitle">Real Card Title</Label>
+                          <Input
+                            id="realTitle"
+                            placeholder="Charizard Base Set 1st Edition"
+                            {...register('realTitle')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="realValue">Real Value (£)</Label>
+                          <Input
+                            id="realValue"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="2500.00"
+                            {...register('realValue')}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="realImages">Real Images</Label>
+                        <Textarea
+                          id="realImages"
+                          placeholder="https://example.com/front.jpg, https://example.com/back.jpg"
+                          rows={2}
+                          {...register('realImages')}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Comma-separated URLs for the real card images
+                        </p>
+                      </div>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          <Label htmlFor="realCertification">Real Certification #</Label>
+                          <Input
+                            id="realCertification"
+                            placeholder="PSA # or BGS #"
+                            {...register('realCertification')}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="realGrade">Real Grade</Label>
+                          <Input
+                            id="realGrade"
+                            placeholder="PSA 10, BGS 9.5, etc."
+                            {...register('realGrade')}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Draw Type Select */}
               <div className="space-y-2">

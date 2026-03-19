@@ -150,6 +150,17 @@ model Competition {
   drawType String  @default("single") // "single" or "multi"
   prizes   Json?   // Multi-draw: [{ position, title, value, imageUrl, certification, grade }]
 
+  // Mystery card
+  isMystery          Boolean  @default(false)
+  isRevealed         Boolean  @default(false) // Admin reveals after draw
+  minimumValue       Decimal? @db.Decimal(10, 2) // Minimum guaranteed value shown to public
+  teaser             String?  // Teaser description ("A fan-favourite from Gen 1...")
+  realTitle          String?  // Hidden until reveal
+  realValue          Decimal? @db.Decimal(10, 2) // Hidden until reveal
+  realImages         String[] // Hidden until reveal
+  realCertification  String?  // Hidden until reveal
+  realGrade          String?  // Hidden until reveal
+
   // Prize details
   prizeValue        Decimal  @db.Decimal(10, 2) // £ total value (sum of all prizes for multi-draw)
   ticketPrice       Decimal  @db.Decimal(10, 2)

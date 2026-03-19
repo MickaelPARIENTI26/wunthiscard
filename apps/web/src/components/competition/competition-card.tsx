@@ -31,6 +31,8 @@ interface CompetitionCardProps {
   drawDate: Date;
   status: string;
   isFree?: boolean;
+  isMystery?: boolean;
+  isRevealed?: boolean;
   createdAt?: Date;
   drawType?: string;
   prizeCount?: number;
@@ -63,6 +65,8 @@ export function CompetitionCard({
   drawDate,
   status,
   isFree = false,
+  isMystery = false,
+  isRevealed = false,
   drawType = 'single',
   prizeCount = 1,
   className,
@@ -113,12 +117,27 @@ export function CompetitionCard({
             style={{
               aspectRatio: '9/16',
               maxHeight: '280px',
-              background: mainImageUrl ? '#f5f5f7' : `linear-gradient(135deg, ${categoryColor}12 0%, ${categoryColor}05 50%, #f5f5f7 100%)`,
+              background: isMystery && !isRevealed
+                ? `linear-gradient(160deg, ${categoryColor}30, ${categoryColor}, ${categoryColor}30)`
+                : mainImageUrl ? '#f5f5f7' : `linear-gradient(135deg, ${categoryColor}12 0%, ${categoryColor}05 50%, #f5f5f7 100%)`,
               borderRadius: '20px 20px 0 0',
             }}
           >
-            {/* Real Image or Emoji Fallback */}
-            {mainImageUrl ? (
+            {/* Mystery unrevealed: gradient + "?" */}
+            {isMystery && !isRevealed ? (
+              <span
+                style={{
+                  color: '#ffffff',
+                  fontSize: '80px',
+                  fontWeight: 900,
+                  textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                  animation: 'mysteryPulse 3s ease-in-out infinite',
+                  userSelect: 'none',
+                }}
+              >
+                ?
+              </span>
+            ) : mainImageUrl ? (
               <Image
                 src={mainImageUrl}
                 alt={title}
@@ -137,6 +156,16 @@ export function CompetitionCard({
               />
             )}
 
+            {/* Mystery pulse animation */}
+            {isMystery && !isRevealed && (
+              <style>{`
+                @keyframes mysteryPulse {
+                  0%, 100% { transform: scale(1); }
+                  50% { transform: scale(1.05); }
+                }
+              `}</style>
+            )}
+
             {/* Category Badge - Top Left */}
             <div
               className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider z-10"
@@ -151,6 +180,34 @@ export function CompetitionCard({
 
             {/* Status Badge - Top Right */}
             <div className="absolute top-4 right-4 flex items-center gap-1.5 z-10">
+              {isMystery && !isRevealed && (
+                <div
+                  style={{
+                    background: '#8B5CF6',
+                    color: '#ffffff',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  MYSTERY
+                </div>
+              )}
+              {isMystery && isRevealed && (
+                <div
+                  style={{
+                    background: 'rgba(139, 92, 246, 0.15)',
+                    color: '#8B5CF6',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  Was a Mystery
+                </div>
+              )}
               {drawType === 'multi' && prizeCount > 1 && (
                 <div
                   style={{
@@ -241,6 +298,11 @@ export function CompetitionCard({
                 color: '#1a1a2e',
               }}
             >
+              {isMystery && !isRevealed && (
+                <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-muted)', marginRight: '4px' }}>
+                  From
+                </span>
+              )}
               {new Intl.NumberFormat('en-GB', {
                 style: 'currency',
                 currency: 'GBP',
@@ -350,7 +412,7 @@ export function CompetitionCard({
               >
                 {isActive && !isSoldOut ? (
                   <>
-                    {isFree ? 'Enter for Free' : t('enterNow')}
+                    {isFree ? 'Enter for Free' : isMystery && !isRevealed ? 'Enter the Mystery' : t('enterNow')}
                     <ArrowRight className="w-4 h-4" />
                   </>
                 ) : isSoldOut ? (

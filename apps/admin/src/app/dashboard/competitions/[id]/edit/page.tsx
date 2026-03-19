@@ -22,6 +22,8 @@ export default async function EditCompetitionPage({ params }: EditCompetitionPag
     ...competition,
     prizeValue: Number(competition.prizeValue),
     ticketPrice: Number(competition.ticketPrice),
+    minimumValue: competition.minimumValue ? Number(competition.minimumValue) : null,
+    realValue: competition.realValue ? Number(competition.realValue) : null,
   };
 
   return (

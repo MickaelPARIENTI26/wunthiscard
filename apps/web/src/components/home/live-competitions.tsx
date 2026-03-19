@@ -21,6 +21,8 @@ interface Competition {
   drawDate: Date;
   status: CompetitionStatus;
   isFree: boolean;
+  isMystery?: boolean;
+  isRevealed?: boolean;
   drawType?: string;
   prizeCount?: number;
 }
@@ -163,6 +165,8 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
               drawDate={competition.drawDate}
               status={competition.status}
               isFree={competition.isFree}
+              isMystery={competition.isMystery}
+              isRevealed={competition.isRevealed}
               drawType={competition.drawType}
               prizeCount={competition.prizeCount}
               index={index}
