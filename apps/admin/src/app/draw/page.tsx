@@ -13,7 +13,7 @@ interface PendingCompetition {
   mainImageUrl: string;
   prizeValue: number;
   category: string;
-  totalTickets: number;
+  totalTickets: number | null;
   ticketsSold: number;
   participantsCount: number;
   drawDate: string;

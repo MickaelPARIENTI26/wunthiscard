@@ -22,6 +22,7 @@ import { COMPETITION_CATEGORIES } from '@winucard/shared';
 import { createCompetition, updateCompetition } from '@/app/dashboard/competitions/actions';
 import { RichTextEditor } from '@/components/editor/rich-text-editor';
 import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Star } from 'lucide-react';
 import { setFeaturedCompetition } from '@/app/dashboard/competitions/actions';
 import type { Competition } from '@winucard/database';
@@ -33,9 +34,11 @@ const competitionFormSchema = z.object({
   descriptionShort: z.string().min(1, 'Short description is required').max(500, 'Short description must be less than 500 characters'),
   category: z.string().min(1, 'Category is required'),
   subcategory: z.string().max(100).optional(),
+  isFree: z.boolean().default(false),
   prizeValue: z.coerce.number().positive('Prize value must be positive'),
-  ticketPrice: z.coerce.number().min(1, 'Ticket price must be at least £1'),
-  totalTickets: z.coerce.number().int().min(1, 'Must have at least 1 ticket').max(100000, 'Maximum 100,000 tickets'),
+  ticketPrice: z.coerce.number().min(0, 'Ticket price cannot be negative'),
+  totalTickets: z.coerce.number().int().min(1, 'Must have at least 1 ticket').max(100000, 'Maximum 100,000 tickets').optional(),
+  unlimitedParticipants: z.boolean().default(false),
   maxTicketsPerUser: z.coerce.number().int().min(1, 'Minimum 1 ticket per user').max(100, 'Maximum 100 tickets per user').optional(),
   saleStartDate: z.string().optional(),
   drawDate: z.string().min(1, 'Draw date is required'),
@@ -70,6 +73,8 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isTogglingFeatured, setIsTogglingFeatured] = useState(false);
   const [isFeatured, setIsFeatured] = useState(competition?.isFeatured ?? false);
+  const [isFreeState, setIsFreeState] = useState(competition?.isFree ?? false);
+  const [unlimitedParticipants, setUnlimitedParticipants] = useState(competition?.totalTickets === null);
   const [descriptionLong, setDescriptionLong] = useState(competition?.descriptionLong ?? '');
   const [questionChoices, setQuestionChoices] = useState<string[]>(
     (competition?.questionChoices as string[]) ?? ['', '', '', '']
@@ -90,12 +95,14 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       title: competition?.title ?? '',
       subtitle: competition?.subtitle ?? '',
       descriptionShort: competition?.descriptionShort ?? '',
+      isFree: competition?.isFree ?? false,
       category: competition?.category ?? 'POKEMON',
       subcategory: competition?.subcategory ?? '',
       prizeValue: competition?.prizeValue ?? undefined,
-      ticketPrice: competition?.ticketPrice ?? undefined,
+      ticketPrice: competition?.isFree ? 0 : (competition?.ticketPrice ?? undefined),
       totalTickets: competition?.totalTickets ?? undefined,
-      maxTicketsPerUser: competition?.maxTicketsPerUser ?? 50,
+      unlimitedParticipants: competition?.totalTickets === null,
+      maxTicketsPerUser: competition?.maxTicketsPerUser ?? (competition?.isFree ? 1 : 50),
       saleStartDate: competition?.saleStartDate
         ? new Date(competition.saleStartDate).toISOString().slice(0, 16)
         : '',
@@ -156,6 +163,11 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
         formData.set(key, String(value));
       }
     });
+    formData.set('isFree', String(isFreeState));
+    formData.set('unlimitedParticipants', String(unlimitedParticipants));
+    if (isFreeState) {
+      formData.set('ticketPrice', '0');
+    }
     formData.set('descriptionLong', descriptionLong);
     formData.set('questionChoices', JSON.stringify(questionChoices));
 
@@ -305,6 +317,43 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                 />
               </div>
 
+              {/* Competition Type Toggle */}
+              <div className="space-y-2">
+                <Label>Competition Type</Label>
+                <div className="flex items-center gap-4 rounded-lg border p-4">
+                  <div className="flex items-center gap-3 flex-1">
+                    <Switch
+                      checked={isFreeState}
+                      onCheckedChange={(checked) => {
+                        setIsFreeState(checked);
+                        if (checked) {
+                          setValue('ticketPrice', 0);
+                          setValue('maxTicketsPerUser', 1);
+                        } else {
+                          setValue('ticketPrice', undefined as unknown as number);
+                          setValue('maxTicketsPerUser', 50);
+                          setUnlimitedParticipants(false);
+                        }
+                      }}
+                      aria-label="Toggle free competition"
+                    />
+                    <div>
+                      <p className="font-medium">{isFreeState ? 'Free Competition' : 'Paid Competition'}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {isFreeState
+                          ? 'No payment required — users enter for free'
+                          : 'Users pay per ticket to enter'}
+                      </p>
+                    </div>
+                  </div>
+                  {isFreeState && (
+                    <span className="px-3 py-1 rounded-md bg-green-500/10 text-green-600 text-xs font-bold uppercase">
+                      FREE
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="prizeValue">Prize Value (£) *</Label>
@@ -322,31 +371,55 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ticketPrice">Ticket Price (£) *</Label>
-                  <Input
-                    id="ticketPrice"
-                    type="number"
-                    step="0.01"
-                    min="1"
-                    placeholder="2.99"
-                    {...register('ticketPrice')}
-                    aria-invalid={!!errors.ticketPrice}
-                  />
+                  <Label htmlFor="ticketPrice">Ticket Price (£) {isFreeState ? '' : '*'}</Label>
+                  {isFreeState ? (
+                    <div className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm font-semibold text-green-600">
+                      FREE
+                    </div>
+                  ) : (
+                    <Input
+                      id="ticketPrice"
+                      type="number"
+                      step="0.01"
+                      min="1"
+                      placeholder="2.99"
+                      {...register('ticketPrice')}
+                      aria-invalid={!!errors.ticketPrice}
+                    />
+                  )}
                   {errors.ticketPrice && (
                     <p className="text-sm text-destructive">{errors.ticketPrice.message}</p>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="totalTickets">Total Tickets *</Label>
+                  <Label htmlFor="totalTickets">{isFreeState ? 'Max Participants' : 'Total Tickets'} {!isFreeState || !unlimitedParticipants ? '*' : ''}</Label>
                   <Input
                     id="totalTickets"
                     type="number"
                     min="1"
                     max="100000"
-                    placeholder="1000"
+                    placeholder={isFreeState ? '500' : '1000'}
                     {...register('totalTickets')}
+                    disabled={unlimitedParticipants}
                     aria-invalid={!!errors.totalTickets}
                   />
+                  {isFreeState && (
+                    <div className="flex items-center gap-2 mt-2">
+                      <Checkbox
+                        id="unlimitedParticipants"
+                        checked={unlimitedParticipants}
+                        onCheckedChange={(checked) => {
+                          setUnlimitedParticipants(checked === true);
+                          if (checked) {
+                            setValue('totalTickets', undefined);
+                          }
+                        }}
+                      />
+                      <Label htmlFor="unlimitedParticipants" className="text-sm font-normal cursor-pointer">
+                        Unlimited participants
+                      </Label>
+                    </div>
+                  )}
                   {errors.totalTickets && (
                     <p className="text-sm text-destructive">{errors.totalTickets.message}</p>
                   )}
@@ -355,16 +428,21 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="maxTicketsPerUser">Max Tickets Per User</Label>
+                  <Label htmlFor="maxTicketsPerUser">{isFreeState ? 'Tickets Per Account' : 'Max Tickets Per User'}</Label>
                   <Input
                     id="maxTicketsPerUser"
                     type="number"
                     min="1"
                     max="100"
-                    placeholder="50"
+                    placeholder={isFreeState ? '1' : '50'}
                     {...register('maxTicketsPerUser')}
                     aria-invalid={!!errors.maxTicketsPerUser}
                   />
+                  {isFreeState && (
+                    <p className="text-xs text-muted-foreground">
+                      Default is 1 for free competitions
+                    </p>
+                  )}
                   {errors.maxTicketsPerUser && (
                     <p className="text-sm text-destructive">{errors.maxTicketsPerUser.message}</p>
                   )}

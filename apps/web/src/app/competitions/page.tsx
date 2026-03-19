@@ -142,6 +142,7 @@ async function getCompetitions(searchParams: SearchParams) {
       ticketPrice: true,
       totalTickets: true,
       drawDate: true,
+      isFree: true,
       _count: {
         select: {
           tickets: {
@@ -203,6 +204,7 @@ async function getCompetitions(searchParams: SearchParams) {
           ? comp.ticketPrice.toNumber()
           : Number(comp.ticketPrice),
       soldTickets: comp._count.tickets,
+      isFree: comp.isFree,
     })),
     pagination: {
       page,

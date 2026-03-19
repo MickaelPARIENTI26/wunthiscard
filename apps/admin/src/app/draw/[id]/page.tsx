@@ -15,7 +15,7 @@ interface Competition {
   mainImageUrl: string;
   prizeValue: number;
   category: string;
-  totalTickets: number;
+  totalTickets: number | null;
   ticketsSold: number;
   ticketPrice: number;
   participantsCount: number;

@@ -15,6 +15,7 @@ export const BONUS_TIERS = [
 
 // Limits
 export const MAX_TICKETS_PER_USER_PER_COMPETITION = 50;
+export const DEFAULT_MAX_TICKETS_PER_USER_FREE = 1;
 export const MAX_GALLERY_IMAGES = 10;
 export const TICKET_RESERVATION_TTL_SECONDS = 300; // 5 minutes
 export const QCM_MAX_ATTEMPTS = 3;

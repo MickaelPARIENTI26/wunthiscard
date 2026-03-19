@@ -15,10 +15,11 @@ interface CompetitionCardProps {
   category: string;
   prizeValue: number;
   ticketPrice: number;
-  totalTickets: number;
+  totalTickets: number | null;
   soldTickets: number;
   drawDate: Date;
   status: string;
+  isFree?: boolean;
   createdAt?: Date;
   className?: string;
   index?: number;
@@ -47,6 +48,7 @@ export function CompetitionCard({
   totalTickets,
   soldTickets,
   status,
+  isFree = false,
   className,
   index = 0,
 }: CompetitionCardProps) {
@@ -54,8 +56,8 @@ export function CompetitionCard({
   const isActive = status === 'ACTIVE';
   const isSoldOut = status === 'SOLD_OUT';
 
-  const soldPercentage = Math.round((soldTickets / totalTickets) * 100);
-  const isHotSelling = soldPercentage >= 75;
+  const soldPercentage = totalTickets ? Math.round((soldTickets / totalTickets) * 100) : 0;
+  const isHotSelling = totalTickets ? soldPercentage >= 75 : false;
 
   const defaultConfig = { label: 'Other', icon: Layers, color: '#6B7280' };
   const config = categoryConfig[category] ?? defaultConfig;
@@ -126,25 +128,41 @@ export function CompetitionCard({
             </div>
 
             {/* Status Badge - Top Right */}
-            <div
-              className="absolute top-4 right-4 px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5 z-10"
-              style={{
-                background: '#ffffff',
-                border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
-                color: isHotSelling ? '#EF4444' : '#22C55E',
-              }}
-            >
-              {isHotSelling ? (
-                <>🔥 {soldPercentage}% sold</>
-              ) : (
-                <>
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </span>
-                  Open
-                </>
+            <div className="absolute top-4 right-4 flex items-center gap-1.5 z-10">
+              {isFree && (
+                <div
+                  style={{
+                    background: '#16A34A',
+                    color: '#ffffff',
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                  }}
+                >
+                  FREE
+                </div>
               )}
+              <div
+                className="px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5"
+                style={{
+                  background: '#ffffff',
+                  border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+                  color: isHotSelling ? '#EF4444' : '#22C55E',
+                }}
+              >
+                {isHotSelling ? (
+                  <>🔥 {soldPercentage}% sold</>
+                ) : (
+                  <>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    Open
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -200,10 +218,20 @@ export function CompetitionCard({
               {/* Stats */}
               <div className="flex justify-between mt-2">
                 <span style={{ fontSize: '11px', color: '#6b7088' }}>
-                  {soldTickets} / {totalTickets} {t('sold')}
+                  {isFree ? (
+                    totalTickets
+                      ? `${soldTickets} / ${totalTickets} participants`
+                      : `${soldTickets} participants`
+                  ) : (
+                    <>{soldTickets} / {totalTickets} {t('sold')}</>
+                  )}
                 </span>
                 <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
-                  {totalTickets - soldTickets} {t('ticketsLeft')}
+                  {isFree ? (
+                    totalTickets ? `${totalTickets - soldTickets} spots left` : 'Unlimited'
+                  ) : (
+                    <>{(totalTickets ?? 0) - soldTickets} {t('ticketsLeft')}</>
+                  )}
                 </span>
               </div>
             </div>
@@ -221,16 +249,24 @@ export function CompetitionCard({
             >
               {/* Price */}
               <div className="flex items-baseline justify-between mb-3">
-                <span style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e' }}>
-                  {new Intl.NumberFormat('en-GB', {
-                    style: 'currency',
-                    currency: 'GBP',
-                    minimumFractionDigits: 2,
-                  }).format(ticketPrice)}
-                </span>
-                <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
-                  {t('perTicket')}
-                </span>
+                {isFree ? (
+                  <span style={{ fontSize: '15px', fontWeight: 700, color: '#16A34A' }}>
+                    FREE
+                  </span>
+                ) : (
+                  <>
+                    <span style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e' }}>
+                      {new Intl.NumberFormat('en-GB', {
+                        style: 'currency',
+                        currency: 'GBP',
+                        minimumFractionDigits: 2,
+                      }).format(ticketPrice)}
+                    </span>
+                    <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
+                      {t('perTicket')}
+                    </span>
+                  </>
+                )}
               </div>
 
               {/* CTA Button */}
@@ -241,20 +277,22 @@ export function CompetitionCard({
                 )}
                 style={{
                   background: isActive && !isSoldOut
-                    ? 'var(--text-primary)'
+                    ? (isFree ? '#16A34A' : 'var(--text-primary)')
                     : 'var(--bg-alt)',
                   color: isActive && !isSoldOut
                     ? '#ffffff'
                     : 'var(--text-muted)',
                   borderRadius: '12px',
                   fontSize: '14px',
-                  boxShadow: isActive && !isSoldOut ? '0 4px 16px rgba(26, 26, 46, 0.2)' : 'none',
+                  boxShadow: isActive && !isSoldOut
+                    ? (isFree ? '0 4px 16px rgba(22, 163, 74, 0.3)' : '0 4px 16px rgba(26, 26, 46, 0.2)')
+                    : 'none',
                   outlineColor: categoryColor,
                 }}
               >
                 {isActive && !isSoldOut ? (
                   <>
-                    {t('enterNow')}
+                    {isFree ? 'Enter for Free' : t('enterNow')}
                     <ArrowRight className="w-4 h-4" />
                   </>
                 ) : isSoldOut ? (

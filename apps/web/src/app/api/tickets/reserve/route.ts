@@ -88,6 +88,7 @@ export async function POST(request: NextRequest) {
         totalTickets: true,
         maxTicketsPerUser: true,
         ticketPrice: true,
+        isFree: true,
       },
     });
 
@@ -95,6 +96,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Competition not found' },
         { status: 404 }
+      );
+    }
+
+    // Free competitions use the /api/tickets/free-entry endpoint
+    if (competition.isFree) {
+      return NextResponse.json(
+        { error: 'Free competitions cannot use ticket reservation. Use the free entry endpoint.' },
+        { status: 400 }
+      );
+    }
+
+    // Paid competitions must have totalTickets defined
+    if (competition.totalTickets === null) {
+      return NextResponse.json(
+        { error: 'Competition configuration error: totalTickets is not set' },
+        { status: 500 }
       );
     }
 

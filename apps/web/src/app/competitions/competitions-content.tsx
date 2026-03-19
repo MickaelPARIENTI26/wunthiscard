@@ -15,9 +15,10 @@ interface Competition {
   status: string;
   prizeValue: number;
   ticketPrice: number;
-  totalTickets: number;
+  totalTickets: number | null;
   drawDate: Date;
   soldTickets: number;
+  isFree: boolean;
 }
 
 interface Pagination {
@@ -162,6 +163,7 @@ export function CompetitionsContent({
               soldTickets={competition.soldTickets}
               drawDate={competition.drawDate}
               status={competition.status}
+              isFree={competition.isFree}
               index={index}
             />
           ))}

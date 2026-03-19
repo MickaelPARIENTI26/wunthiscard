@@ -133,11 +133,14 @@ model Competition {
   status           CompetitionStatus   @default(DRAFT)
   isFeatured       Boolean             @default(false) // Only one competition can be featured on homepage
 
+  // Competition type
+  isFree Boolean @default(false) // Free competition (no payment required)
+
   // Prize details
-  prizeValue        Decimal @db.Decimal(10, 2) // £ value
-  ticketPrice       Decimal @db.Decimal(10, 2)
-  totalTickets      Int
-  maxTicketsPerUser Int     @default(50)
+  prizeValue        Decimal  @db.Decimal(10, 2) // £ value
+  ticketPrice       Decimal  @db.Decimal(10, 2)
+  totalTickets      Int? // null = unlimited participants (free competitions only)
+  maxTicketsPerUser Int      @default(50)
 
   // Dates
   saleStartDate  DateTime? // When tickets go on sale

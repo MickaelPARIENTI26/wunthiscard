@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
         data: {
           competitionId: competition_id,
           competitionTitle: competition.title,
-          totalTickets: competition.totalTickets,
+          totalTickets: competition.totalTickets ?? ticketsSold,
           ticketsSold,
           winningTicketNumber: winningTicket.ticketNumber,
           winnerUserId: winner.id,

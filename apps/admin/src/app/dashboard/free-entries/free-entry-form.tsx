@@ -19,7 +19,7 @@ import { assignFreeEntry } from './actions';
 interface Competition {
   id: string;
   title: string;
-  totalTickets: number;
+  totalTickets: number | null;
   availableTickets: number;
 }
 

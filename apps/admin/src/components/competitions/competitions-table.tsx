@@ -68,7 +68,7 @@ interface Competition {
   isFeatured: boolean;
   prizeValue: { toString(): string };
   ticketPrice: { toString(): string };
-  totalTickets: number;
+  totalTickets: number | null;
   drawDate: Date;
   createdAt: Date;
   _count: {
@@ -169,7 +169,7 @@ const columns: ColumnDef<Competition>[] = [
         <div className="w-24">
           <div className="flex justify-between text-xs mb-1">
             <span>{sold}</span>
-            <span className="text-muted-foreground">/ {total}</span>
+            <span className="text-muted-foreground">{total !== null ? `/ ${total}` : '/ ∞'}</span>
           </div>
           <div className="h-2 rounded-full bg-muted">
             <div

@@ -12,7 +12,7 @@ interface Competition {
   title: string;
   status: CompetitionStatus;
   ticketPrice: { toString(): string };
-  totalTickets: number;
+  totalTickets: number | null;
   drawDate: Date;
   _count: {
     tickets: number;

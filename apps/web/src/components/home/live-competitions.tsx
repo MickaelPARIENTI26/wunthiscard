@@ -16,10 +16,11 @@ interface Competition {
   category: CompetitionCategory;
   prizeValue: number;
   ticketPrice: number;
-  totalTickets: number;
+  totalTickets: number | null;
   soldTickets: number;
   drawDate: Date;
   status: CompetitionStatus;
+  isFree: boolean;
 }
 
 interface LiveCompetitionsProps {
@@ -148,6 +149,7 @@ export function LiveCompetitions({ competitions, className }: LiveCompetitionsPr
               soldTickets={competition.soldTickets}
               drawDate={competition.drawDate}
               status={competition.status}
+              isFree={competition.isFree}
               index={index}
             />
           ))}

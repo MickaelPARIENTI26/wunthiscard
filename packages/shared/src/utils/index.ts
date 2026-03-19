@@ -143,8 +143,8 @@ export function getTimeRemaining(endDate: Date | string): {
 /**
  * Calculate ticket sale progress percentage
  */
-export function calculateProgress(sold: number, total: number): number {
-  if (total === 0) return 0;
+export function calculateProgress(sold: number, total: number | null): number {
+  if (total === null || total === 0) return 0;
   return Math.round((sold / total) * 100);
 }
 

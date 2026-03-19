@@ -105,9 +105,10 @@ export const createCompetitionSchema = z.object({
   descriptionLong: z.string().min(1, 'Long description is required'),
   category: competitionCategorySchema,
   subcategory: z.string().max(100).optional(),
+  isFree: z.boolean().default(false),
   prizeValue: z.number().positive('Prize value must be positive'),
-  ticketPrice: z.number().min(1, 'Ticket price must be at least £1'),
-  totalTickets: z.number().int().min(1).max(100000),
+  ticketPrice: z.number().min(0, 'Ticket price cannot be negative'),
+  totalTickets: z.number().int().min(1).max(100000).nullable().default(null),
   maxTicketsPerUser: z.number().int().min(1).max(100).default(50),
   saleStartDate: z.coerce.date().optional(),
   drawDate: z.coerce.date(),
@@ -123,6 +124,27 @@ export const createCompetitionSchema = z.object({
   questionAnswer: z.number().int().min(0).max(3, 'Answer must be 0-3'),
   metaTitle: z.string().max(70).optional(),
   metaDescription: z.string().max(160).optional(),
+}).refine((data) => {
+  // Free competitions must have ticketPrice = 0
+  if (data.isFree && data.ticketPrice !== 0) return false;
+  // Paid competitions must have ticketPrice >= 1
+  if (!data.isFree && data.ticketPrice < 1) return false;
+  return true;
+}, {
+  message: 'Paid competitions must have a ticket price of at least £1',
+  path: ['ticketPrice'],
+}).refine((data) => {
+  // Paid competitions must have totalTickets defined
+  if (!data.isFree && (data.totalTickets === null || data.totalTickets === undefined)) return false;
+  return true;
+}, {
+  message: 'Paid competitions must specify total tickets',
+  path: ['totalTickets'],
+});
+
+// Schema for free entry claim
+export const claimFreeEntrySchema = z.object({
+  competitionId: z.string().min(1, 'Competition ID is required'),
 });
 
 // Ticket validators
@@ -172,3 +194,4 @@ export type ValidateAnswerInput = z.infer<typeof validateAnswerSchema>;
 export type ContactFormInput = z.infer<typeof contactFormSchema>;
 export type AdminUserActionInput = z.infer<typeof adminUserActionSchema>;
 export type AddFreeEntryInput = z.infer<typeof addFreeEntrySchema>;
+export type ClaimFreeEntryInput = z.infer<typeof claimFreeEntrySchema>;

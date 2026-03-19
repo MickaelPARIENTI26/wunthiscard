@@ -25,10 +25,13 @@ export async function createCompetition(formData: FormData) {
   const descriptionLong = formData.get('descriptionLong') as string;
   const category = formData.get('category') as string;
   const subcategory = formData.get('subcategory') as string | null;
+  const isFree = formData.get('isFree') === 'true';
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
-  const ticketPrice = parseFloat(formData.get('ticketPrice') as string);
-  const totalTickets = parseInt(formData.get('totalTickets') as string);
-  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || 50;
+  const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
+  const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
+  const totalTicketsRaw = formData.get('totalTickets') as string;
+  const totalTickets = (isFree && unlimitedParticipants) ? null : parseInt(totalTicketsRaw);
+  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 50);
   const saleStartDate = formData.get('saleStartDate') as string | null;
   const drawDate = formData.get('drawDate') as string;
   const mainImageUrl = formData.get('mainImageUrl') as string;
@@ -55,13 +58,13 @@ export async function createCompetition(formData: FormData) {
     errors.push('Title is required');
   }
 
-  // P1-63, P1-64: Ticket price must be positive (at least £1)
-  if (isNaN(ticketPrice) || ticketPrice < 1) {
+  // P1-63, P1-64: Ticket price validation (paid competitions only)
+  if (!isFree && (isNaN(ticketPrice) || ticketPrice < 1)) {
     errors.push('Ticket price must be at least £1');
   }
 
-  // P1-65: Total tickets must be positive
-  if (isNaN(totalTickets) || totalTickets < 1) {
+  // P1-65: Total tickets must be positive (unless unlimited free)
+  if (!unlimitedParticipants && (totalTickets === null || isNaN(totalTickets) || totalTickets < 1)) {
     errors.push('Total tickets must be at least 1');
   }
 
@@ -124,6 +127,7 @@ export async function createCompetition(formData: FormData) {
       category: category as never,
       subcategory,
       status: 'DRAFT',
+      isFree,
       prizeValue,
       ticketPrice,
       totalTickets,
@@ -178,10 +182,13 @@ export async function updateCompetition(id: string, formData: FormData) {
   const descriptionLong = formData.get('descriptionLong') as string;
   const category = formData.get('category') as string;
   const subcategory = formData.get('subcategory') as string | null;
+  const isFree = formData.get('isFree') === 'true';
   const prizeValue = parseFloat(formData.get('prizeValue') as string);
-  const ticketPrice = parseFloat(formData.get('ticketPrice') as string);
-  const totalTickets = parseInt(formData.get('totalTickets') as string);
-  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || 50;
+  const ticketPrice = isFree ? 0 : parseFloat(formData.get('ticketPrice') as string);
+  const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
+  const totalTicketsRaw = formData.get('totalTickets') as string;
+  const totalTickets = (isFree && unlimitedParticipants) ? null : parseInt(totalTicketsRaw);
+  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 50);
   const saleStartDate = formData.get('saleStartDate') as string | null;
   const drawDate = formData.get('drawDate') as string;
   const mainImageUrl = (formData.get('mainImageUrl') as string) || existing.mainImageUrl;
@@ -210,6 +217,7 @@ export async function updateCompetition(id: string, formData: FormData) {
       descriptionLong,
       category: category as never,
       subcategory,
+      isFree,
       prizeValue,
       ticketPrice,
       totalTickets,
@@ -287,8 +295,8 @@ export async function updateCompetitionStatus(id: string, status: CompetitionSta
     }
   }
 
-  // If activating, create tickets
-  if (status === 'ACTIVE' && oldStatus === 'UPCOMING') {
+  // If activating, create tickets (only for paid competitions with a defined ticket count)
+  if (status === 'ACTIVE' && oldStatus === 'UPCOMING' && competition.totalTickets !== null) {
     const existingTickets = await prisma.ticket.count({ where: { competitionId: id } });
     if (existingTickets === 0) {
       const tickets = [];
@@ -385,6 +393,7 @@ export async function duplicateCompetition(id: string) {
       category: original.category,
       subcategory: original.subcategory,
       status: 'DRAFT',
+      isFree: original.isFree,
       prizeValue: original.prizeValue,
       ticketPrice: original.ticketPrice,
       totalTickets: original.totalTickets,

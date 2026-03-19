@@ -62,7 +62,9 @@ export async function POST(request: NextRequest) {
     }
 
     const unavailableCount = competition._count.tickets;
-    const availableCount = competition.totalTickets - unavailableCount;
+    const availableCount = competition.totalTickets !== null
+      ? competition.totalTickets - unavailableCount
+      : null; // unlimited
 
     // If user is authenticated, check their reservation
     let userReservation = null;

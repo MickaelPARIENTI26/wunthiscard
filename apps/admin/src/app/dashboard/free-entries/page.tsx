@@ -27,7 +27,7 @@ async function getActiveCompetitions() {
 
   return competitions.map((c) => ({
     ...c,
-    availableTickets: c.totalTickets - c._count.tickets,
+    availableTickets: (c.totalTickets ?? 0) - c._count.tickets,
   }));
 }
 

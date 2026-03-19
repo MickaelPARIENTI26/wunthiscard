@@ -77,7 +77,8 @@ export async function assignFreeEntry(formData: FormData) {
   const takenNumbers = new Set(takenTickets.map((t) => t.ticketNumber));
   const availableNumbers: number[] = [];
 
-  for (let i = 1; i <= competition.totalTickets && availableNumbers.length < ticketsToAssign; i++) {
+  const maxTickets = competition.totalTickets ?? 0;
+  for (let i = 1; i <= maxTickets && availableNumbers.length < ticketsToAssign; i++) {
     if (!takenNumbers.has(i)) {
       availableNumbers.push(i);
     }

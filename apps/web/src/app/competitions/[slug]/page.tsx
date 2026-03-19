@@ -5,6 +5,7 @@ import { ChevronLeft, Trophy, Calendar, Award, Play } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
+import { FreeEntryButton } from '@/components/competition/free-entry-button';
 import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
 import { MediaGallery, type MediaItem } from '@/components/competition/media-gallery';
 import { LiveCountdown } from '@/components/competition/live-countdown';
@@ -118,7 +119,7 @@ async function getCompetition(slug: string) {
 async function getUserTicketCount(competitionId: string, userId: string | undefined) {
   if (!userId) return 0;
   return prisma.ticket.count({
-    where: { competitionId, userId, status: 'SOLD' },
+    where: { competitionId, userId, status: { in: ['SOLD', 'FREE_ENTRY'] } },
   });
 }
 
@@ -186,8 +187,14 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   const category = competition.category as CompetitionCategory;
   const categoryColor = CATEGORY_COLORS[category];
   const categoryBgColor = CATEGORY_BG_COLORS[category];
-  const soldPercentage = Math.round((competition.soldTickets / competition.totalTickets) * 100);
-  const ticketsRemaining = competition.totalTickets - competition.soldTickets;
+  const isFree = competition.isFree;
+  const hasTotalTickets = competition.totalTickets !== null;
+  const soldPercentage = hasTotalTickets
+    ? Math.round((competition.soldTickets / competition.totalTickets!) * 100)
+    : 0;
+  const ticketsRemaining = hasTotalTickets
+    ? competition.totalTickets! - competition.soldTickets
+    : 0;
 
   // Format prize value without decimals
   const formattedPrizeValue = new Intl.NumberFormat('en-GB', {
@@ -312,6 +319,23 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 {CATEGORY_LABELS[category]}
               </span>
 
+              {/* Free Entry Badge */}
+              {isFree && (
+                <span
+                  style={{
+                    padding: '6px 16px',
+                    borderRadius: '8px',
+                    background: '#16A34A',
+                    color: '#ffffff',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  FREE ENTRY
+                </span>
+              )}
+
               {/* Status Badge - Live with pulsing dot */}
               {isActive && (
                 <span
@@ -406,13 +430,27 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </p>
             </div>
 
-            {/* Progress Bar with Urgency */}
+            {/* Progress Bar with Urgency / Participant Count */}
             {!isCompleted && !isCancelled && (
-              <UrgencyProgressBar
-                soldPercentage={soldPercentage}
-                ticketsRemaining={ticketsRemaining}
-                categoryColor={categoryColor}
-              />
+              isFree ? (
+                hasTotalTickets ? (
+                  <UrgencyProgressBar
+                    soldPercentage={soldPercentage}
+                    ticketsRemaining={ticketsRemaining}
+                    categoryColor={categoryColor}
+                  />
+                ) : (
+                  <p style={{ fontSize: '14px', color: '#6b7088' }}>
+                    {competition.soldTickets.toLocaleString('en-GB')} participant{competition.soldTickets !== 1 ? 's' : ''}
+                  </p>
+                )
+              ) : (
+                <UrgencyProgressBar
+                  soldPercentage={soldPercentage}
+                  ticketsRemaining={ticketsRemaining}
+                  categoryColor={categoryColor}
+                />
+              )
             )}
 
             {/* Info Grid - Premium style */}
@@ -437,10 +475,10 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     fontWeight: 600,
                   }}
                 >
-                  Ticket Price
+                  {isFree ? 'Price' : 'Ticket Price'}
                 </p>
-                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
-                  {formatPrice(competition.ticketPrice)}
+                <p style={{ fontSize: '16px', fontWeight: 800, color: isFree ? '#16A34A' : '#1a1a2e' }}>
+                  {isFree ? 'FREE' : formatPrice(competition.ticketPrice)}
                 </p>
               </div>
               <div
@@ -460,10 +498,14 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     fontWeight: 600,
                   }}
                 >
-                  Tickets Left
+                  {isFree ? 'Participants' : 'Tickets Left'}
                 </p>
                 <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
-                  {ticketsRemaining.toLocaleString('en-GB')}/{competition.totalTickets.toLocaleString('en-GB')}
+                  {isFree
+                    ? hasTotalTickets
+                      ? `${competition.soldTickets.toLocaleString('en-GB')}/${competition.totalTickets!.toLocaleString('en-GB')}`
+                      : competition.soldTickets.toLocaleString('en-GB')
+                    : `${ticketsRemaining.toLocaleString('en-GB')}/${competition.totalTickets!.toLocaleString('en-GB')}`}
                 </p>
               </div>
               <div style={{ padding: '16px 20px' }}>
@@ -494,17 +536,26 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <LiveCountdown targetDate={new Date(competition.drawDate)} categoryColor={categoryColor} />
             )}
 
-            {/* Active Competition - Ticket Selector */}
+            {/* Active Competition - Ticket Selector or Free Entry */}
             {isActive && (
-              <SimpleTicketSelector
-                competitionId={competition.id}
-                competitionSlug={slug}
-                ticketPrice={competition.ticketPrice}
-                maxTicketsPerUser={competition.maxTicketsPerUser}
-                availableTicketCount={availableTicketCount}
-                userTicketCount={userTicketCount}
-                categoryColor={categoryColor}
-              />
+              isFree ? (
+                <FreeEntryButton
+                  competitionId={competition.id}
+                  competitionSlug={slug}
+                  userTicketCount={userTicketCount}
+                  maxTicketsPerUser={competition.maxTicketsPerUser}
+                />
+              ) : (
+                <SimpleTicketSelector
+                  competitionId={competition.id}
+                  competitionSlug={slug}
+                  ticketPrice={competition.ticketPrice}
+                  maxTicketsPerUser={competition.maxTicketsPerUser}
+                  availableTicketCount={availableTicketCount}
+                  userTicketCount={userTicketCount}
+                  categoryColor={categoryColor}
+                />
+              )
             )}
 
             {/* Upcoming */}
@@ -808,10 +859,12 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           </div>
         </div>
 
-        {/* Free Entry Section - Subtle Accordion */}
-        <div style={{ marginBottom: '48px' }}>
-          <FreeEntryAccordion />
-        </div>
+        {/* Free Entry Section - Subtle Accordion (hidden for free competitions) */}
+        {!isFree && (
+          <div style={{ marginBottom: '48px' }}>
+            <FreeEntryAccordion />
+          </div>
+        )}
       </div>
     </main>
   );
