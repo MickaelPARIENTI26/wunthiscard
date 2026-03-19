@@ -75,6 +75,7 @@ export function CompetitionCard({
   const t = useTranslations('competitions');
   const isActive = status === 'ACTIVE';
   const isSoldOut = status === 'SOLD_OUT';
+  const isUpcoming = status === 'UPCOMING';
 
   const soldPercentage = totalTickets ? Math.round((soldTickets / totalTickets) * 100) : 0;
   const isHotSelling = totalTickets ? soldPercentage >= 75 : false;
@@ -249,6 +250,17 @@ export function CompetitionCard({
                   style={{ background: '#F59E0B', color: '#ffffff' }}
                 >
                   Ending Soon
+                </div>
+              ) : isUpcoming ? (
+                <div
+                  className="px-3 py-1.5 rounded-lg text-[11px] font-bold"
+                  style={{
+                    background: '#ffffff',
+                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                    color: '#3B82F6',
+                  }}
+                >
+                  Coming Soon
                 </div>
               ) : (
                 <div
