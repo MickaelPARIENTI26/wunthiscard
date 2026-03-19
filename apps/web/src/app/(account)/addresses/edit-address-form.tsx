@@ -16,8 +16,8 @@ const addressSchema = z.object({
   line1: z.string().min(1, 'Address line 1 is required').max(100),
   line2: z.string().max(100).optional(),
   city: z.string().min(1, 'City is required').max(50),
-  county: z.string().max(50).optional(),
   postcode: z.string().min(1, 'Postcode / ZIP is required').max(15),
+  country: z.string().min(1).default('GB'),
   isDefault: z.boolean().default(false),
 });
 
@@ -58,8 +58,8 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
       line1: address.line1,
       line2: address.line2 ?? '',
       city: address.city,
-      county: address.county ?? '',
       postcode: address.postcode,
+      country: address.country,
       isDefault: address.isDefault,
     },
   });
@@ -76,9 +76,8 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
         line1: data.line1,
         line2: data.line2 || undefined,
         city: data.city,
-        county: data.county || undefined,
-        postcode: data.postcode.toUpperCase(),
-        country: 'GB',
+        postcode: data.postcode,
+        country: data.country,
         isDefault: data.isDefault,
       });
 
@@ -146,34 +145,50 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="edit-county">County (optional)</Label>
+          <Label htmlFor="edit-postcode">Postcode / ZIP</Label>
           <Input
-            id="edit-county"
-            placeholder="County"
-            {...register('county')}
+            id="edit-postcode"
+            placeholder="e.g., SW1A 1AA"
+            {...register('postcode')}
+            aria-invalid={!!errors.postcode}
           />
+          {errors.postcode && (
+            <p className="text-sm text-destructive">{errors.postcode.message}</p>
+          )}
         </div>
       </div>
 
-      {/* Postcode */}
+      {/* Country */}
       <div className="space-y-2">
-        <Label htmlFor="edit-postcode">Postcode</Label>
-        <Input
-          id="edit-postcode"
-          placeholder="e.g., SW1A 1AA"
-          {...register('postcode')}
-          aria-invalid={!!errors.postcode}
-          className="uppercase"
-        />
-        {errors.postcode && (
-          <p className="text-sm text-destructive">{errors.postcode.message}</p>
-        )}
-      </div>
-
-      {/* Country (fixed to UK) */}
-      <div className="space-y-2">
-        <Label>Country</Label>
-        <Input value="United Kingdom" disabled className="bg-muted" />
+        <Label htmlFor="edit-country">Country</Label>
+        <select
+          id="edit-country"
+          {...register('country')}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        >
+          <option value="GB">United Kingdom</option>
+          <option value="FR">France</option>
+          <option value="DE">Germany</option>
+          <option value="ES">Spain</option>
+          <option value="IT">Italy</option>
+          <option value="NL">Netherlands</option>
+          <option value="BE">Belgium</option>
+          <option value="PT">Portugal</option>
+          <option value="IE">Ireland</option>
+          <option value="AT">Austria</option>
+          <option value="CH">Switzerland</option>
+          <option value="SE">Sweden</option>
+          <option value="DK">Denmark</option>
+          <option value="NO">Norway</option>
+          <option value="FI">Finland</option>
+          <option value="PL">Poland</option>
+          <option value="CZ">Czech Republic</option>
+          <option value="GR">Greece</option>
+          <option value="US">United States</option>
+          <option value="CA">Canada</option>
+          <option value="AU">Australia</option>
+          <option value="JP">Japan</option>
+        </select>
       </div>
 
       {/* Set as default */}

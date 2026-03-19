@@ -10,9 +10,8 @@ const addressSchema = z.object({
   line1: z.string().min(1, 'Address line 1 is required').max(100),
   line2: z.string().max(100).optional(),
   city: z.string().min(1, 'City is required').max(50),
-  county: z.string().max(50).optional(),
   postcode: z.string().min(1, 'Postcode / ZIP is required').max(15),
-  country: z.string().default('GB'),
+  country: z.string().min(1, 'Country is required').default('GB'),
   isDefault: z.boolean().default(false),
 });
 
