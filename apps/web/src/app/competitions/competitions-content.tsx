@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CompetitionCard } from '@/components/competition/competition-card';
 
@@ -92,6 +92,19 @@ export function CompetitionsContent({
     [updateFilters]
   );
 
+  // Sort by urgency: Last Hours first, then Ending Soon, then closest draw date
+  const sortedCompetitions = useMemo(() => {
+    const now = Date.now();
+    return [...competitions].sort((a, b) => {
+      const diffA = new Date(a.drawDate).getTime() - now;
+      const diffB = new Date(b.drawDate).getTime() - now;
+      const urgA = a.status === 'ACTIVE' && diffA > 0 && diffA < 3 * 3600000 ? 0 : a.status === 'ACTIVE' && diffA > 0 && diffA < 24 * 3600000 ? 1 : 2;
+      const urgB = b.status === 'ACTIVE' && diffB > 0 && diffB < 3 * 3600000 ? 0 : b.status === 'ACTIVE' && diffB > 0 && diffB < 24 * 3600000 ? 1 : 2;
+      if (urgA !== urgB) return urgA - urgB;
+      return diffA - diffB;
+    });
+  }, [competitions]);
+
   return (
     <div>
       {/* TODO: Réactiver les filtres quand on aura plus de compétitions simultanées */}
@@ -146,10 +159,10 @@ export function CompetitionsContent({
         Showing {competitions.length} of {pagination.totalCount} competitions
       </div>
 
-      {/* Competitions Grid */}
+      {/* Competitions Grid — sorted by urgency */}
       {competitions.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {competitions.map((competition, index) => (
+          {sortedCompetitions.map((competition, index) => (
             <CompetitionCard
               key={competition.id}
               id={competition.id}

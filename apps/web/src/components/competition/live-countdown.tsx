@@ -29,10 +29,9 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
       const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-      // Check urgency (< 24h)
-      setIsUrgent(diff < 24 * 60 * 60 * 1000);
-      // Check critical (< 1h)
-      setIsCritical(diff < 60 * 60 * 1000);
+      // Check urgency thresholds
+      setIsUrgent(diff < 24 * 60 * 60 * 1000); // < 24h
+      setIsCritical(diff < 3 * 60 * 60 * 1000); // < 3h
 
       return { days, hours, mins, secs };
     };
@@ -84,15 +83,15 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
         className="flex items-center gap-1.5"
         style={{
           fontSize: '12px',
-          fontWeight: 600,
-          color: isUrgent ? '#EF4444' : categoryColor,
+          fontWeight: isCritical ? 700 : 600,
+          color: isCritical ? '#EF4444' : isUrgent ? '#F59E0B' : categoryColor,
           marginBottom: '10px',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
         }}
       >
         <Clock style={{ width: '14px', height: '14px' }} />
-        {isUrgent ? 'Ending soon!' : 'Competition ends in'}
+        {isCritical ? 'Ending soon!' : isUrgent ? 'Ending soon' : 'Competition ends in'}
       </p>
 
       {/* Countdown blocks - Premium style */}
@@ -108,11 +107,15 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
                 justifyContent: 'center',
                 background: 'linear-gradient(180deg, #ffffff, #FAFAFA)',
                 borderRadius: '14px',
-                border: '1.5px solid rgba(0, 0, 0, 0.06)',
+                border: isCritical
+                  ? '1.5px solid rgba(239, 68, 68, 0.2)'
+                  : isUrgent
+                  ? '1.5px solid rgba(245, 158, 11, 0.2)'
+                  : '1.5px solid rgba(0, 0, 0, 0.06)',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
                 fontSize: '24px',
                 fontWeight: 800,
-                color: isUrgent ? '#EF4444' : '#1a1a2e',
+                color: isCritical ? '#EF4444' : isUrgent ? '#F59E0B' : '#1a1a2e',
                 transform: block.isPulsing ? 'scale(1.08)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
               }}
@@ -122,7 +125,7 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
             <p
               style={{
                 fontSize: '10px',
-                color: isUrgent ? '#EF4444' : '#9a9eb0',
+                color: isCritical ? '#EF4444' : isUrgent ? '#F59E0B' : '#9a9eb0',
                 marginTop: '6px',
                 fontWeight: 600,
                 letterSpacing: '0.5px',

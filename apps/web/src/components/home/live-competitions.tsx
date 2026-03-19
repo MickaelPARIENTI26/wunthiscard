@@ -39,13 +39,24 @@ interface LiveCompetitionsProps {
 //   { key: 'MEMORABILIA', label: 'Memorabilia', emoji: '🏆', color: '#A855F7' },
 // ];
 
+// Sort by urgency: Last Hours first, then Ending Soon, then by draw date
+function sortByUrgency(comps: Competition[]): Competition[] {
+  const now = Date.now();
+  return [...comps].sort((a, b) => {
+    const diffA = new Date(a.drawDate).getTime() - now;
+    const diffB = new Date(b.drawDate).getTime() - now;
+    const urgencyA = diffA > 0 && diffA < 3 * 3600000 ? 0 : diffA > 0 && diffA < 24 * 3600000 ? 1 : 2;
+    const urgencyB = diffB > 0 && diffB < 3 * 3600000 ? 0 : diffB > 0 && diffB < 24 * 3600000 ? 1 : 2;
+    if (urgencyA !== urgencyB) return urgencyA - urgencyB;
+    return diffA - diffB; // Closest draw date first
+  });
+}
+
 export function LiveCompetitions({ competitions, className }: LiveCompetitionsProps) {
   const t = useTranslations();
-  // TODO: Réactiver les filtres quand on aura plus de compétitions simultanées
-  // const [activeFilter, setActiveFilter] = useState('ALL');
 
-  // Show all competitions (no filter)
-  const displayedCompetitions = competitions;
+  // Sort by urgency (Last Hours → Ending Soon → rest)
+  const displayedCompetitions = sortByUrgency(competitions);
 
   if (competitions.length === 0) {
     return (

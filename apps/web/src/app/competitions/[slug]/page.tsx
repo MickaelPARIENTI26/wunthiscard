@@ -7,6 +7,7 @@ import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
 import { FreeEntryButton } from '@/components/competition/free-entry-button';
 import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
+import { UrgencyBanner } from '@/components/competition/urgency-banner';
 import { MediaGallery, type MediaItem } from '@/components/competition/media-gallery';
 import { LiveCountdown } from '@/components/competition/live-countdown';
 import { UrgencyProgressBar } from '@/components/competition/urgency-progress-bar';
@@ -542,6 +543,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             {/* Countdown - Live with animations */}
             {(isActive || isUpcoming) && (
               <LiveCountdown targetDate={new Date(competition.drawDate)} categoryColor={categoryColor} />
+            )}
+
+            {/* Urgency Banner */}
+            {isActive && (
+              <UrgencyBanner drawDate={competition.drawDate} status={competition.status} />
             )}
 
             {/* Active Competition - Ticket Selector or Free Entry */}

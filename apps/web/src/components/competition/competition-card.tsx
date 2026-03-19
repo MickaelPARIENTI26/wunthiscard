@@ -1,11 +1,22 @@
 'use client';
 
+import { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Flame, Anchor, Dribbble, Trophy, Sparkles, Layers, Hexagon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+// Urgency helpers
+function getUrgencyLevel(drawDate: Date, status: string): 'last-hours' | 'ending-soon' | null {
+  if (status !== 'ACTIVE') return null;
+  const diff = new Date(drawDate).getTime() - Date.now();
+  if (diff <= 0) return null;
+  if (diff < 3 * 60 * 60 * 1000) return 'last-hours';
+  if (diff < 24 * 60 * 60 * 1000) return 'ending-soon';
+  return null;
+}
 
 interface CompetitionCardProps {
   id: string;
@@ -63,6 +74,8 @@ export function CompetitionCard({
   const config = categoryConfig[category] ?? defaultConfig;
   const categoryColor = config.color;
 
+  const urgency = useMemo(() => getUrgencyLevel(drawDate, status), [drawDate, status]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -79,7 +92,11 @@ export function CompetitionCard({
           className="h-full flex flex-col overflow-hidden competition-card hover:-translate-y-2 transition-all duration-[450ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
           style={{
             background: 'var(--bg-card)',
-            border: `1px solid var(--border-light)`,
+            border: urgency === 'last-hours'
+              ? '2px solid rgba(239, 68, 68, 0.3)'
+              : urgency === 'ending-soon'
+              ? '2px solid rgba(245, 158, 11, 0.2)'
+              : '1px solid var(--border-light)',
             borderRadius: '20px',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
             ['--cat-color' as string]: categoryColor,
@@ -143,26 +160,42 @@ export function CompetitionCard({
                   FREE
                 </div>
               )}
-              <div
-                className="px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5"
-                style={{
-                  background: '#ffffff',
-                  border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
-                  color: isHotSelling ? '#EF4444' : '#22C55E',
-                }}
-              >
-                {isHotSelling ? (
-                  <>🔥 {soldPercentage}% sold</>
-                ) : (
-                  <>
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                    </span>
-                    Open
-                  </>
-                )}
-              </div>
+              {urgency === 'last-hours' ? (
+                <div
+                  className="urgency-badge-pulse px-3 py-1.5 rounded-lg text-[9px] font-bold"
+                  style={{ background: '#EF4444', color: '#ffffff' }}
+                >
+                  Last Hours
+                </div>
+              ) : urgency === 'ending-soon' ? (
+                <div
+                  className="px-3 py-1.5 rounded-lg text-[9px] font-bold"
+                  style={{ background: '#F59E0B', color: '#ffffff' }}
+                >
+                  Ending Soon
+                </div>
+              ) : (
+                <div
+                  className="px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1.5"
+                  style={{
+                    background: '#ffffff',
+                    border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
+                    color: isHotSelling ? '#EF4444' : '#22C55E',
+                  }}
+                >
+                  {isHotSelling ? (
+                    <>{soldPercentage}% sold</>
+                  ) : (
+                    <>
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                      Open
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
