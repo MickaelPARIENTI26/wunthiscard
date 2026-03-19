@@ -81,7 +81,8 @@ export function Footer() {
             margin-bottom: 12px !important;
           }
           .footer-description {
-            display: none !important;
+            font-size: 11px !important;
+            margin-bottom: 12px !important;
           }
           .footer-social-row {
             justify-content: center !important;
@@ -301,11 +302,13 @@ export function Footer() {
 
           {/* Trust badges */}
           <div className="flex items-center gap-4 footer-trust-badges">
-            <span style={{ color: '#9a9eb0', fontSize: '12px' }}>
-              🔒 SSL Secured
+            <span className="inline-flex items-center gap-1.5" style={{ color: '#9a9eb0', fontSize: '12px' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              SSL Secured
             </span>
-            <span style={{ color: '#9a9eb0', fontSize: '12px' }}>
-              🇬🇧 UK Registered
+            <span className="inline-flex items-center gap-1.5" style={{ color: '#9a9eb0', fontSize: '12px' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              UK Registered
             </span>
           </div>
         </div>

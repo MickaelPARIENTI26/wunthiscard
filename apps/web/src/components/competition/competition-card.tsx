@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Flame, Anchor, Dribbble, Trophy, Sparkles, Layers, Hexagon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CompetitionCardProps {
@@ -24,17 +24,17 @@ interface CompetitionCardProps {
   index?: number;
 }
 
-// Category configuration
-const categoryConfig: Record<string, { label: string; emoji: string; color: string }> = {
-  POKEMON: { label: 'Pokemon', emoji: '🔥', color: '#F0B90B' },
-  ONE_PIECE: { label: 'One Piece', emoji: '🏴‍☠️', color: '#EF4444' },
-  SPORTS_BASKETBALL: { label: 'Basketball', emoji: '🏀', color: '#3B82F6' },
-  SPORTS_FOOTBALL: { label: 'Football', emoji: '⚽', color: '#22C55E' },
-  SPORTS_OTHER: { label: 'Sports', emoji: '🏆', color: '#3B82F6' },
-  MEMORABILIA: { label: 'Memorabilia', emoji: '✨', color: '#A855F7' },
-  YUGIOH: { label: 'Yu-Gi-Oh!', emoji: '🃏', color: '#8B5CF6' },
-  MTG: { label: 'MTG', emoji: '🧙', color: '#64748B' },
-  OTHER: { label: 'Other', emoji: '🎴', color: '#6B7280' },
+// Category configuration with Lucide icons
+const categoryConfig: Record<string, { label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string }> = {
+  POKEMON: { label: 'Pokemon', icon: Flame, color: '#F0B90B' },
+  ONE_PIECE: { label: 'One Piece', icon: Anchor, color: '#EF4444' },
+  SPORTS_BASKETBALL: { label: 'Basketball', icon: Dribbble, color: '#3B82F6' },
+  SPORTS_FOOTBALL: { label: 'Football', icon: Trophy, color: '#22C55E' },
+  SPORTS_OTHER: { label: 'Sports', icon: Trophy, color: '#3B82F6' },
+  MEMORABILIA: { label: 'Memorabilia', icon: Sparkles, color: '#A855F7' },
+  YUGIOH: { label: 'Yu-Gi-Oh!', icon: Layers, color: '#8B5CF6' },
+  MTG: { label: 'MTG', icon: Hexagon, color: '#64748B' },
+  OTHER: { label: 'Other', icon: Layers, color: '#6B7280' },
 };
 
 export function CompetitionCard({
@@ -57,7 +57,7 @@ export function CompetitionCard({
   const soldPercentage = Math.round((soldTickets / totalTickets) * 100);
   const isHotSelling = soldPercentage >= 75;
 
-  const defaultConfig = { label: 'Other', emoji: '🎴', color: '#6B7280' };
+  const defaultConfig = { label: 'Other', icon: Layers, color: '#6B7280' };
   const config = categoryConfig[category] ?? defaultConfig;
   const categoryColor = config.color;
 
@@ -72,27 +72,15 @@ export function CompetitionCard({
       }}
       className={cn('group', className)}
     >
-      <Link href={`/competitions/${slug}`} className="block h-full">
+      <Link href={`/competitions/${slug}`} className="block h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:rounded-[20px]" style={{ outlineColor: categoryColor }}>
         <div
-          className="h-full flex flex-col overflow-hidden competition-card"
+          className="h-full flex flex-col overflow-hidden competition-card hover:-translate-y-2 transition-all duration-[450ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
           style={{
-            background: '#ffffff',
-            border: '1px solid #e8e8ec',
+            background: 'var(--bg-card)',
+            border: `1px solid var(--border-light)`,
             borderRadius: '20px',
             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
-            transition: 'all 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-          }}
-          onMouseEnter={(e) => {
-            const el = e.currentTarget;
-            el.style.borderColor = `${categoryColor}40`;
-            el.style.boxShadow = `0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px ${categoryColor}12`;
-            el.style.transform = 'translateY(-8px)';
-          }}
-          onMouseLeave={(e) => {
-            const el = e.currentTarget;
-            el.style.borderColor = '#e8e8ec';
-            el.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.04)';
-            el.style.transform = 'translateY(0)';
+            ['--cat-color' as string]: categoryColor,
           }}
         >
           {/* Image Zone - 9:16 Aspect Ratio */}
@@ -116,14 +104,13 @@ export function CompetitionCard({
                 style={{ borderRadius: '20px 20px 0 0' }}
               />
             ) : (
-              <span
-                className="text-7xl md:text-8xl transition-all duration-500 ease-out group-hover:scale-[1.15] group-hover:rotate-[-3deg]"
+              <config.icon
+                className="w-16 h-16 md:w-20 md:h-20 transition-all duration-500 ease-out group-hover:scale-[1.15] group-hover:rotate-[-3deg]"
                 style={{
+                  color: categoryColor,
                   filter: `drop-shadow(0 12px 32px ${categoryColor}30)`,
                 }}
-              >
-                {config.emoji}
-              </span>
+              />
             )}
 
             {/* Category Badge - Top Left */}
@@ -248,31 +235,21 @@ export function CompetitionCard({
 
               {/* CTA Button */}
               <button
-                className="w-full flex items-center justify-center gap-2 py-3 font-semibold transition-all duration-300"
+                className={cn(
+                  "w-full flex items-center justify-center gap-2 py-3 font-semibold transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2",
+                  isActive && !isSoldOut && "hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
+                )}
                 style={{
                   background: isActive && !isSoldOut
-                    ? '#1a1a2e'
-                    : '#f5f5f7',
+                    ? 'var(--text-primary)'
+                    : 'var(--bg-alt)',
                   color: isActive && !isSoldOut
                     ? '#ffffff'
-                    : '#6b7088',
+                    : 'var(--text-muted)',
                   borderRadius: '12px',
                   fontSize: '14px',
                   boxShadow: isActive && !isSoldOut ? '0 4px 16px rgba(26, 26, 46, 0.2)' : 'none',
-                }}
-                onMouseEnter={(e) => {
-                  if (isActive && !isSoldOut) {
-                    e.currentTarget.style.background = '#2a2a3e';
-                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(26, 26, 46, 0.3)';
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (isActive && !isSoldOut) {
-                    e.currentTarget.style.background = '#1a1a2e';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(26, 26, 46, 0.2)';
-                    e.currentTarget.style.transform = 'scale(1)';
-                  }
+                  outlineColor: categoryColor,
                 }}
               >
                 {isActive && !isSoldOut ? (

@@ -172,15 +172,16 @@ export function AgeGate() {
           {/* Primary Button - Yes, I'm 18+ */}
           <button
             onClick={handleConfirmAge}
-            className="w-full transition-all duration-200"
+            className="w-full transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               padding: '14px',
               borderRadius: '12px',
-              background: '#1a1a2e',
+              background: 'var(--text-primary)',
               color: '#ffffff',
               fontSize: '15px',
               fontWeight: 600,
               cursor: 'pointer',
+              outlineColor: 'var(--accent)',
             }}
           >
             {t('confirm')}
@@ -189,16 +190,17 @@ export function AgeGate() {
           {/* Secondary Button - No, I'm under 18 */}
           <button
             onClick={handleUnderAge}
-            className="w-full transition-all duration-200"
+            className="w-full transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
             style={{
               padding: '14px',
               borderRadius: '12px',
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
-              color: '#6b7088',
+              color: 'var(--text-muted)',
               fontSize: '15px',
               fontWeight: 500,
               cursor: 'pointer',
+              outlineColor: 'var(--accent)',
             }}
           >
             {t('deny')}

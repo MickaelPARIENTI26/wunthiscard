@@ -120,18 +120,22 @@ export function Header({ user = null }: HeaderProps) {
             background: #ffffff;
             border: 1.5px solid #e0e0e4;
             border-radius: 12px;
-            color: #333333;
+            color: var(--text-secondary);
             font-size: 13px;
             font-weight: 600;
             transition: all 0.2s ease;
           }
           .header-login-btn:hover {
-            background: #f5f5f7;
+            background: var(--bg-alt);
             border-color: #d0d0d4;
+          }
+          .header-login-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
           }
           .header-signup-btn {
             padding: 8px 20px;
-            background: #1a1a2e;
+            background: var(--text-primary);
             border-radius: 12px;
             color: #ffffff;
             font-size: 13px;
@@ -140,6 +144,10 @@ export function Header({ user = null }: HeaderProps) {
           }
           .header-signup-btn:hover {
             background: #2a2a3e;
+          }
+          .header-signup-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
           }
         `}</style>
         <nav className="hidden items-center gap-1 lg:flex">

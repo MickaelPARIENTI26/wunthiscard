@@ -46,7 +46,7 @@ const variantStyles: Record<string, React.CSSProperties> = {
   },
   destructive: {
     background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-    color: 'var(--text-primary)',
+    color: '#ffffff',
     borderRadius: '10px',
     transition: 'all 0.3s ease',
   },

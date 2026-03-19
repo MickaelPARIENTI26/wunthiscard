@@ -62,7 +62,7 @@ interface CompetitionsContentProps {
 export function CompetitionsContent({
   competitions,
   pagination,
-  filters,
+  filters: _filters,
 }: CompetitionsContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();

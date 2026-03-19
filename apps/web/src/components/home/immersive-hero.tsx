@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -111,10 +111,11 @@ function CarouselCard({
 
 export function ImmersiveHero({ className }: ImmersiveHeroProps) {
   const t = useTranslations('immersiveHero');
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <section
-      className={cn('relative min-h-screen flex items-center overflow-hidden', className)}
+      className={cn('relative min-h-[100dvh] flex items-center overflow-hidden', className)}
       style={{
         background: '#FAFAFA',
       }}
@@ -193,7 +194,7 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
             top: '10%',
             left: '5%',
           }}
-          animate={{
+          animate={prefersReducedMotion ? {} : {
             y: [0, 40, 0],
             x: [0, 20, 0],
           }}
@@ -212,9 +213,9 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
           <div className="hero-content w-full lg:w-[55%] text-center lg:text-left">
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.1 }}
               className="mb-6"
             >
               <span
@@ -236,9 +237,9 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
 
             {/* Title */}
             <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.2 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-[64px] font-black tracking-tight mb-5 font-[family-name:var(--font-outfit)]"
               style={{ letterSpacing: '-2px', lineHeight: 1.05 }}
             >
@@ -249,26 +250,26 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
 
             {/* Subtitle with colored category names */}
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.3 }}
               className="text-base sm:text-lg md:text-xl max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed"
               style={{ color: '#6b7088' }}
             >
               PSA 10 graded cards from{' '}
-              <span style={{ color: '#F0B90B', fontWeight: 600 }}>Pokemon</span>,{' '}
-              <span style={{ color: '#EF4444', fontWeight: 600 }}>One Piece</span>,{' '}
-              <span style={{ color: '#22C55E', fontWeight: 600 }}>Football</span> &{' '}
-              <span style={{ color: '#3B82F6', fontWeight: 600 }}>Basketball</span>.
+              <span style={{ color: 'var(--accent-text)', fontWeight: 600 }}>Pokemon</span>,{' '}
+              <span style={{ color: '#DC2626', fontWeight: 600 }}>One Piece</span>,{' '}
+              <span style={{ color: '#15803D', fontWeight: 600 }}>Football</span> &{' '}
+              <span style={{ color: '#2563EB', fontWeight: 600 }}>Basketball</span>.
               <br className="hidden sm:block" />
               Every draw streamed live.
             </motion.p>
 
             {/* CTA Buttons */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.4 }}
               className="hero-buttons flex flex-col sm:flex-row gap-3 justify-center lg:justify-start mb-10"
             >
               {/* Primary Button - Dark */}
@@ -304,9 +305,9 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
 
             {/* Stat Chips */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: prefersReducedMotion ? 0 : 0.5 }}
               className="hero-chips flex flex-wrap gap-3 justify-center lg:justify-start"
             >
               {statChips.map((chip, index) => (
@@ -350,10 +351,10 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
             }}
           >
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="carousel-track"
+              transition={{ delay: prefersReducedMotion ? 0 : 0.4, duration: prefersReducedMotion ? 0 : 0.6 }}
+              className={prefersReducedMotion ? '' : 'carousel-track'}
               style={{
                 position: 'relative',
                 width: '160px',

@@ -243,6 +243,10 @@ export function SimpleTicketSelector({
         .ticket-other-input {
           -moz-appearance: textfield;
         }
+        .ticket-btn:focus-visible, .preset-btn:focus-visible, .other-btn:focus-visible, .checkout-btn:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
         .ticket-btn {
           transition: all 0.2s ease-out !important;
         }
@@ -311,12 +315,12 @@ export function SimpleTicketSelector({
       `}</style>
 
       {/* Select Tickets Label */}
-      <p style={{ fontSize: '14px', fontWeight: 600, color: '#1a1a2e' }}>
+      <p id="ticket-selector-label" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
         Select tickets
       </p>
 
       {/* Row 1: Buttons 1-10 */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-labelledby="ticket-selector-label">
         {quickButtons.map((num) => {
           const isSelected = quantity === num && isRow1Selected;
           const isDisabled = num > maxQuantity;
@@ -377,9 +381,9 @@ export function SimpleTicketSelector({
               {bonusForPreset > 0 && (
                 <span
                   style={{
-                    fontSize: '9px',
+                    fontSize: '11px',
                     fontWeight: 600,
-                    color: '#F0B90B',
+                    color: 'var(--accent-text)',
                     marginTop: '3px',
                   }}
                 >
@@ -402,7 +406,8 @@ export function SimpleTicketSelector({
                 value={otherValue}
                 onChange={handleOtherChange}
                 placeholder="Qty"
-                className="ticket-other-input"
+                aria-label={`Custom ticket quantity, 1 to ${maxQuantity}`}
+                className="ticket-other-input focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
                   width: '80px',
                   height: '44px',
@@ -420,10 +425,12 @@ export function SimpleTicketSelector({
               />
               <button
                 onClick={handleOtherClose}
+                aria-label="Close custom quantity input"
+                className="focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   border: 'none',
                   background: 'rgba(0, 0, 0, 0.06)',
                   color: 'var(--text-muted)',
@@ -432,9 +439,10 @@ export function SimpleTicketSelector({
                   justifyContent: 'center',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
+                  outlineColor: 'var(--accent)',
                 }}
               >
-                <X style={{ width: '14px', height: '14px' }} />
+                <X style={{ width: '16px', height: '16px' }} />
               </button>
             </div>
           ) : (
@@ -570,6 +578,7 @@ export function SimpleTicketSelector({
       {/* Error */}
       {reservationError && (
         <div
+          role="alert"
           style={{
             padding: '12px 16px',
             borderRadius: '12px',

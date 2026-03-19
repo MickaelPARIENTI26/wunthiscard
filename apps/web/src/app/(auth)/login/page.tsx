@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { LoginForm } from './login-form';
 
 export const metadata: Metadata = {
@@ -7,7 +8,9 @@ export const metadata: Metadata = {
   description: 'Sign in to your WinUCard account to enter competitions and win prizes.',
 };
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const t = await getTranslations('auth');
+
   return (
     <div>
       {/* Header */}
@@ -17,13 +20,13 @@ export default function LoginPage() {
           style={{
             fontSize: '29px',
             fontWeight: 700,
-            color: '#1a1a2e',
+            color: 'var(--text-primary)',
           }}
         >
-          Welcome back
+          {t('loginTitle')}
         </h1>
-        <p style={{ color: '#6b7088', fontSize: '14px' }}>
-          Sign in to your account to continue
+        <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
+          {t('loginSubtitle')}
         </p>
       </div>
 

@@ -28,6 +28,8 @@
   /* Primary accent — gold */
   --accent: #F0B90B;
   --accent-hover: #E8A000;
+  --accent-text: #946800;          /* WCAG AA on white (4.5:1+) */
+  --accent-text-large: #B07C00;   /* WCAG AA for large text (3:1+) */
   --accent-soft: rgba(240, 185, 11, 0.08);
   --accent-border: rgba(240, 185, 11, 0.2);
   --accent-glow: rgba(240, 185, 11, 0.25);
@@ -139,6 +141,8 @@
   --color-gold: var(--accent);
   --color-gold-light: var(--accent-hover);
   --color-gold-dark: #C9990A;
+  --color-gold-text: var(--accent-text);
+  --color-gold-text-large: var(--accent-text-large);
 }
 
 @layer base {
@@ -148,6 +152,12 @@
 
   html {
     scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -526,6 +536,12 @@
     box-shadow: 0 8px 32px rgba(37, 99, 235, 0.12);
   }
 
+  /* Competition card hover using CSS custom property */
+  .competition-card:hover {
+    border-color: color-mix(in srgb, var(--cat-color, var(--accent)) 25%, transparent) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 0 30px color-mix(in srgb, var(--cat-color, var(--accent)) 7%, transparent);
+  }
+
   /* Card with shadow */
   .card-shadow {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
@@ -681,4 +697,16 @@
 ::selection {
   background: rgba(240, 185, 11, 0.3);
   color: var(--text-primary);
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
