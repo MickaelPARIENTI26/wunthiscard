@@ -21,52 +21,19 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['entertainment', 'games', 'shopping'],
     icons: [
       {
-        src: '/icons/icon-72x72.png',
-        sizes: '72x72',
+        src: '/icons/icon-16x16.png',
+        sizes: '16x16',
         type: 'image/png',
-        purpose: 'maskable',
       },
       {
-        src: '/icons/icon-96x96.png',
-        sizes: '96x96',
+        src: '/icons/icon-32x32.png',
+        sizes: '32x32',
         type: 'image/png',
-        purpose: 'maskable',
       },
       {
-        src: '/icons/icon-128x128.png',
-        sizes: '128x128',
+        src: '/icons/apple-touch-icon.png',
+        sizes: '180x180',
         type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-144x144.png',
-        sizes: '144x144',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-152x152.png',
-        sizes: '152x152',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-192x192.png',
-        sizes: '192x192',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-384x384.png',
-        sizes: '384x384',
-        type: 'image/png',
-        purpose: 'maskable',
-      },
-      {
-        src: '/icons/icon-512x512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'maskable',
       },
       {
         src: '/icons/icon-512x512.png',
@@ -75,51 +42,5 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any',
       },
     ],
-    screenshots: [
-      {
-        src: '/screenshots/home-wide.png',
-        sizes: '1280x720',
-        type: 'image/png',
-        form_factor: 'wide',
-        label: 'WinUCard Homepage',
-      },
-      {
-        src: '/screenshots/home-narrow.png',
-        sizes: '750x1334',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'WinUCard Mobile Homepage',
-      },
-    ],
-    shortcuts: [
-      {
-        name: 'View Competitions',
-        short_name: 'Competitions',
-        description: 'Browse all active competitions',
-        url: '/competitions',
-        icons: [
-          {
-            src: '/icons/shortcut-competitions.png',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-        ],
-      },
-      {
-        name: 'My Tickets',
-        short_name: 'Tickets',
-        description: 'View your purchased tickets',
-        url: '/account/my-tickets',
-        icons: [
-          {
-            src: '/icons/shortcut-tickets.png',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-        ],
-      },
-    ],
-    related_applications: [],
-    prefer_related_applications: false,
   };
 }
