@@ -118,6 +118,8 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
       className={cn('relative min-h-[100dvh] flex items-center overflow-hidden', className)}
       style={{
         background: '#FAFAFA',
+        marginTop: '-66px',
+        paddingTop: '66px',
       }}
     >
       {/* CSS for carousel and responsive */}
