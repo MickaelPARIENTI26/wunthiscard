@@ -27,7 +27,6 @@ async function getCompetition(slug: string) {
       status: true,
       questionText: true,
       questionChoices: true,
-      questionAnswer: true,
       _count: {
         select: {
           tickets: {
@@ -72,7 +71,6 @@ async function getCompetition(slug: string) {
     availableTicketCount,
     questionText: competition.questionText,
     questionChoices: competition.questionChoices as string[],
-    questionAnswer: competition.questionAnswer,
   };
 }
 

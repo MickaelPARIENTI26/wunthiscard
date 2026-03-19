@@ -28,7 +28,8 @@ export function ReferralTracker() {
 
     const expires = new Date();
     expires.setDate(expires.getDate() + 30);
-    document.cookie = `ref_code=${encodeURIComponent(refCode.toUpperCase())};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+    const secure = window.location.protocol === 'https:' ? ';Secure' : '';
+    document.cookie = `ref_code=${encodeURIComponent(refCode.toUpperCase())};expires=${expires.toUTCString()};path=/;SameSite=Lax${secure}`;
   }, [searchParams]);
 
   return null;

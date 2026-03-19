@@ -1,20 +1,27 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { sendVerificationEmail } from '@/lib/email';
 import { rateLimits } from '@/lib/redis';
 import { randomBytes } from 'crypto';
 
+const resendSchema = z.object({
+  email: z.string().email('Invalid email address'),
+});
+
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
-
-    if (!email) {
+    const body = await request.json();
+    const validation = resendSchema.safeParse(body);
+    if (!validation.success) {
       return NextResponse.json(
         { error: 'Email is required' },
         { status: 400 }
       );
     }
+
+    const email = validation.data.email;
 
     // Rate limit by email to prevent email spam
     const emailLower = email.toLowerCase();

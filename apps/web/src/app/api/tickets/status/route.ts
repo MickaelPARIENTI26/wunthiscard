@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { getReservation } from '@/lib/redis';
+import { getReservation, rateLimits } from '@/lib/redis';
 
 const statusSchema = z.object({
   competitionId: z.string().min(1),
@@ -11,6 +11,17 @@ const statusSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit by IP to prevent probing
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               request.headers.get('x-real-ip') ?? 'unknown';
+    const { success: rateLimitOk } = await rateLimits.globalUnauth.limit(ip);
+    if (!rateLimitOk) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429 }
+      );
+    }
+
     const session = await auth();
     const userId = session?.user?.id;
 
