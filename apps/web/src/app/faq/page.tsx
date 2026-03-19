@@ -118,7 +118,7 @@ export default async function FaqPage() {
                         borderBottom: '1px solid #e8e8ec',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>{config.emoji}</span>
+                      <span style={{ fontSize: '24px' }} aria-hidden="true">{config.emoji}</span>
                       <h2
                         className="font-[family-name:var(--font-outfit)]"
                         style={{

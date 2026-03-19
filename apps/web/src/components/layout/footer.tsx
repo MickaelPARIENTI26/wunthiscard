@@ -39,7 +39,10 @@ export function Footer() {
       {/* CSS for hover effects and mobile styles */}
       <style>{`
         .footer-social-btn {
-          padding: 6px 14px;
+          padding: 10px 14px;
+          min-height: 44px;
+          display: inline-flex;
+          align-items: center;
           border-radius: 8px;
           background: #EDEDF0;
           color: #6b7088;

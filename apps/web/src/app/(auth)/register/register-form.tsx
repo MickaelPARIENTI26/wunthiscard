@@ -237,13 +237,14 @@ export function RegisterForm() {
             borderRadius: '10px',
           }}
         >
-          <UserPlus className="h-3.5 w-3.5 flex-shrink-0" style={{ color: '#F0B90B' }} />
+          <UserPlus className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--accent-text)' }} />
           <span>Invited by a friend — welcome aboard!</span>
         </div>
       )}
 
       {serverError && (
         <div
+          role="alert"
           style={{
             padding: '12px 16px',
             fontSize: '14px',
@@ -492,7 +493,7 @@ export function RegisterForm() {
               I agree to the{' '}
               <Link
                 href="/terms"
-                style={{ color: '#F0B90B', fontWeight: 500 }}
+                style={{ color: 'var(--accent-text)', fontWeight: 500 }}
                 target="_blank"
               >
                 Terms of Service
@@ -500,7 +501,7 @@ export function RegisterForm() {
               and{' '}
               <Link
                 href="/privacy"
-                style={{ color: '#F0B90B', fontWeight: 500 }}
+                style={{ color: 'var(--accent-text)', fontWeight: 500 }}
                 target="_blank"
               >
                 Privacy Policy
@@ -631,7 +632,7 @@ export function RegisterForm() {
         Already have an account?{' '}
         <Link
           href={callbackUrl !== '/' ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/login'}
-          style={{ fontWeight: 500, color: '#F0B90B' }}
+          style={{ fontWeight: 500, color: 'var(--accent-text)' }}
         >
           Login
         </Link>

@@ -14,15 +14,16 @@ export const metadata: Metadata = {
 };
 
 const categoryCards = [
-  { emoji: '🔥', gradient: 'linear-gradient(135deg, #FFF8E7, #FFE8A0)', borderColor: '#F0B90B', rotation: '-3deg' },
-  { emoji: '🏴‍☠️', gradient: 'linear-gradient(135deg, #FEE2E2, #FECACA)', borderColor: '#EF4444', rotation: '2deg' },
-  { emoji: '⚽', gradient: 'linear-gradient(135deg, #DCFCE7, #BBF7D0)', borderColor: '#22C55E', rotation: '-2deg' },
-  { emoji: '🏀', gradient: 'linear-gradient(135deg, #DBEAFE, #BFDBFE)', borderColor: '#3B82F6', rotation: '3deg' },
+  { emoji: '🔥', emojiLabel: 'fire', gradient: 'linear-gradient(135deg, #FFF8E7, #FFE8A0)', borderColor: '#F0B90B', rotation: '-3deg' },
+  { emoji: '🏴‍☠️', emojiLabel: 'pirate flag', gradient: 'linear-gradient(135deg, #FEE2E2, #FECACA)', borderColor: '#EF4444', rotation: '2deg' },
+  { emoji: '⚽', emojiLabel: 'football', gradient: 'linear-gradient(135deg, #DCFCE7, #BBF7D0)', borderColor: '#22C55E', rotation: '-2deg' },
+  { emoji: '🏀', emojiLabel: 'basketball', gradient: 'linear-gradient(135deg, #DBEAFE, #BFDBFE)', borderColor: '#3B82F6', rotation: '3deg' },
 ];
 
 const valueCards = [
   {
     emoji: '🎬',
+    emojiLabel: 'clapperboard',
     title: 'Fully Transparent',
     text: 'Every single draw is streamed live on TikTok. No pre-recorded videos, no hidden results. You can watch the winning ticket being selected in real time.',
     gradient: 'linear-gradient(135deg, #FFF5F5, #FEE2E2)',
@@ -30,6 +31,7 @@ const valueCards = [
   },
   {
     emoji: '⭐',
+    emojiLabel: 'star',
     title: 'Only Graded Cards',
     text: 'We only offer PSA graded cards. Every card is authenticated and verified before being listed. You know exactly what you\'re winning.',
     gradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
@@ -37,6 +39,7 @@ const valueCards = [
   },
   {
     emoji: '✉️',
+    emojiLabel: 'envelope',
     title: 'Free Postal Entry',
     text: 'Every competition offers a free postal entry route. No purchase necessary — we\'re fully compliant with UK competition law.',
     gradient: 'linear-gradient(135deg, #EFF4FF, #DBEAFE)',
@@ -194,7 +197,7 @@ export default function AboutPage() {
                       transform: `rotate(${card.rotation})`,
                     }}
                   >
-                    <span style={{ fontSize: '40px' }}>{card.emoji}</span>
+                    <span style={{ fontSize: '40px' }} role="img" aria-label={card.emojiLabel}>{card.emoji}</span>
                   </div>
                 ))}
               </div>
@@ -232,7 +235,7 @@ export default function AboutPage() {
                   border: `1.5px solid ${card.borderColor}`,
                 }}
               >
-                <span style={{ fontSize: '36px', display: 'block', marginBottom: '16px' }}>
+                <span style={{ fontSize: '36px', display: 'block', marginBottom: '16px' }} role="img" aria-label={card.emojiLabel}>
                   {card.emoji}
                 </span>
                 <h3

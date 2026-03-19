@@ -17,6 +17,7 @@ const steps = [
   {
     number: 1,
     emoji: '🔍',
+    emojiLabel: 'magnifying glass',
     title: 'Browse',
     description:
       'Explore our curated selection of premium collectible cards including rare Pokémon, One Piece TCG, sports cards, and signed memorabilia. Each competition displays the prize value, ticket price, total tickets available, and draw date so you can make an informed choice.',
@@ -28,6 +29,7 @@ const steps = [
   {
     number: 2,
     emoji: '✏️',
+    emojiLabel: 'pencil',
     title: 'Answer',
     description:
       'To comply with UK prize competition law, each entry requires a skill-based question. Answer correctly to validate your entry. Questions test genuine knowledge related to collectibles — challenging but fair for anyone with an interest in the hobby.',
@@ -39,6 +41,7 @@ const steps = [
   {
     number: 3,
     emoji: '🎟️',
+    emojiLabel: 'ticket',
     title: 'Enter',
     description:
       'Choose your lucky ticket numbers manually or let our system randomly select available numbers for you. The more tickets you purchase, the better your chances. Bonus tickets are included with larger purchases to give you even more opportunities to win.',
@@ -50,6 +53,7 @@ const steps = [
   {
     number: 4,
     emoji: '🏆',
+    emojiLabel: 'trophy',
     title: 'Win',
     description:
       'Once all tickets sell out or the draw date arrives, we conduct a transparent draw using certified Random Number Generation. The winning ticket is published publicly, and the lucky winner receives their prize via tracked, insured delivery with full documentation.',
@@ -124,7 +128,7 @@ export default function HowItWorksPage() {
 
                 {/* Emoji + Title */}
                 <div className="flex items-center gap-3 mb-4">
-                  <span style={{ fontSize: '28px' }}>{step.emoji}</span>
+                  <span style={{ fontSize: '28px' }} aria-hidden="true">{step.emoji}</span>
                   <h3
                     className="font-[family-name:var(--font-outfit)]"
                     style={{

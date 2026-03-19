@@ -13,10 +13,10 @@ interface CardCategoriesHeroProps {
 
 // Category data - using CSS variable values
 const categories = [
-  { key: 'pokemon', label: 'Pokémon', color: 'var(--cat-pokemon)', rawColor: '#F0B90B', emoji: '🔥', bgColor: '#FFF8E1' },
-  { key: 'onePiece', label: 'One Piece', color: 'var(--cat-onepiece)', rawColor: '#EF4444', emoji: '🏴‍☠️', bgColor: '#FFEBEE' },
-  { key: 'football', label: 'Football', color: 'var(--cat-football)', rawColor: '#22C55E', emoji: '⚽', bgColor: '#E8F5E9' },
-  { key: 'basketball', label: 'Basketball', color: 'var(--cat-basketball)', rawColor: '#3B82F6', emoji: '🏀', bgColor: '#E3F2FD' },
+  { key: 'pokemon', label: 'Pokémon', color: 'var(--cat-pokemon)', rawColor: '#F0B90B', emoji: '🔥', emojiLabel: 'fire', bgColor: '#FFF8E1' },
+  { key: 'onePiece', label: 'One Piece', color: 'var(--cat-onepiece)', rawColor: '#EF4444', emoji: '🏴‍☠️', emojiLabel: 'pirate flag', bgColor: '#FFEBEE' },
+  { key: 'football', label: 'Football', color: 'var(--cat-football)', rawColor: '#22C55E', emoji: '⚽', emojiLabel: 'football', bgColor: '#E8F5E9' },
+  { key: 'basketball', label: 'Basketball', color: 'var(--cat-basketball)', rawColor: '#3B82F6', emoji: '🏀', emojiLabel: 'basketball', bgColor: '#E3F2FD' },
 ];
 
 // Card display positions (rotation and offset)
@@ -77,7 +77,7 @@ function FloatingCard({
           <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent" />
 
           {/* Card content */}
-          <span className="text-4xl sm:text-5xl mb-2 relative z-10">{category.emoji}</span>
+          <span className="text-4xl sm:text-5xl mb-2 relative z-10" role="img" aria-label={category.emojiLabel}>{category.emoji}</span>
           <span
             className="text-xs sm:text-sm font-bold relative z-10"
             style={{ color: category.color }}

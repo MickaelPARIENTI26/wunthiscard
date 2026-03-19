@@ -12,6 +12,7 @@ const steps = [
   {
     number: 1,
     emoji: '🔍',
+    emojiLabel: 'magnifying glass',
     title: 'Browse',
     description: 'Explore our live competitions and choose the graded card you want to win.',
     bgGradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
@@ -23,6 +24,7 @@ const steps = [
   {
     number: 2,
     emoji: '🧠',
+    emojiLabel: 'brain',
     title: 'Answer',
     description: 'Answer a simple skill-based question to qualify for entry.',
     bgGradient: 'linear-gradient(135deg, #EFF4FF, #DBEAFE)',
@@ -34,6 +36,7 @@ const steps = [
   {
     number: 3,
     emoji: '🎟️',
+    emojiLabel: 'ticket',
     title: 'Enter',
     description: 'Purchase your tickets securely. Starting from just £14.99 each.',
     bgGradient: 'linear-gradient(135deg, #EEFFF4, #DCFCE7)',
@@ -45,6 +48,7 @@ const steps = [
   {
     number: 4,
     emoji: '🎬',
+    emojiLabel: 'clapperboard',
     title: 'Win',
     description: 'Watch the live draw streamed on TikTok. Fully transparent, every time.',
     bgGradient: 'linear-gradient(135deg, #FFF5F5, #FEE2E2)',
@@ -57,11 +61,11 @@ const steps = [
 
 // Trust badges data
 const trustBadges = [
-  { emoji: '🔒', text: 'Secure Payments' },
-  { emoji: '🎬', text: 'Live Draws' },
-  { emoji: '📦', text: 'Free Delivery' },
-  { emoji: '✉️', text: 'Free Postal Entry' },
-  { emoji: '⭐', text: 'PSA 10 Authenticated' },
+  { emoji: '🔒', emojiLabel: 'lock', text: 'Secure Payments' },
+  { emoji: '🎬', emojiLabel: 'clapperboard', text: 'Live Draws' },
+  { emoji: '📦', emojiLabel: 'package', text: 'Free Delivery' },
+  { emoji: '✉️', emojiLabel: 'envelope', text: 'Free Postal Entry' },
+  { emoji: '⭐', emojiLabel: 'star', text: 'PSA 10 Authenticated' },
 ];
 
 const containerVariants = {
@@ -153,7 +157,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
                 >
                   {/* Emoji Icon */}
                   <div style={{ fontSize: '40px', lineHeight: 1, marginBottom: '16px' }}>
-                    {step.emoji}
+                    <span role="img" aria-label={step.emojiLabel}>{step.emoji}</span>
                   </div>
 
                   {/* Step Number */}
@@ -217,7 +221,7 @@ export function HowItWorksPreview({ className }: HowItWorksPreviewProps) {
             className="flex items-center"
             style={{ gap: '8px' }}
           >
-            <span style={{ fontSize: '16px' }}>{badge.emoji}</span>
+            <span style={{ fontSize: '16px' }} aria-hidden="true">{badge.emoji}</span>
             <span
               style={{
                 fontSize: '13px',

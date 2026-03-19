@@ -158,6 +158,7 @@ export function LoginForm() {
     <div className="space-y-6">
       {displayError && (
         <div
+          role="alert"
           style={{
             padding: '12px 16px',
             fontSize: '14px',
@@ -220,7 +221,7 @@ export function LoginForm() {
               style={{
                 fontSize: '13px',
                 fontWeight: 500,
-                color: '#F0B90B',
+                color: 'var(--accent-text)',
               }}
             >
               {t('forgotPassword')}
@@ -373,7 +374,7 @@ export function LoginForm() {
         {t('noAccount')}{' '}
         <Link
           href={callbackUrl !== '/' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/register'}
-          style={{ fontWeight: 500, color: '#F0B90B' }}
+          style={{ fontWeight: 500, color: 'var(--accent-text)' }}
         >
           {t('register')}
         </Link>

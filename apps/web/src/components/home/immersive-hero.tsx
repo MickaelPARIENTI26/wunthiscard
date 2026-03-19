@@ -14,10 +14,10 @@ interface ImmersiveHeroProps {
 
 // Hero carousel cards - 4 categories
 const heroCards = [
-  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', color: '#F0B90B', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
-  { src: '/images/hero/luffy.webp', alt: 'PSA 10 Luffy Gear 5', emoji: '🏴‍☠️', color: '#DC2626', bg: 'linear-gradient(160deg, #FFE5E5, #FFBABA, #FF8A8A)' },
-  { src: '/images/hero/messi.webp', alt: 'PSA 10 Lionel Messi', emoji: '⚽', color: '#22C55E', bg: 'linear-gradient(160deg, #DCFCE7, #BBF7D0, #86EFAC)' },
-  { src: '/images/hero/michael-jordan.webp', alt: 'PSA 10 Michael Jordan', emoji: '🏀', color: '#F97316', bg: 'linear-gradient(160deg, #FFF1E6, #FFDCC7, #FFB88C)' },
+  { src: '/images/hero/charizard.webp', alt: 'PSA 10 Charizard 1st Edition', emoji: '🔥', emojiLabel: 'fire', color: '#F0B90B', bg: 'linear-gradient(160deg, #FFF3D6, #FFEAA0, #FFD54F)' },
+  { src: '/images/hero/luffy.webp', alt: 'PSA 10 Luffy Gear 5', emoji: '🏴‍☠️', emojiLabel: 'pirate flag', color: '#DC2626', bg: 'linear-gradient(160deg, #FFE5E5, #FFBABA, #FF8A8A)' },
+  { src: '/images/hero/messi.webp', alt: 'PSA 10 Lionel Messi', emoji: '⚽', emojiLabel: 'football', color: '#22C55E', bg: 'linear-gradient(160deg, #DCFCE7, #BBF7D0, #86EFAC)' },
+  { src: '/images/hero/michael-jordan.webp', alt: 'PSA 10 Michael Jordan', emoji: '🏀', emojiLabel: 'basketball', color: '#F97316', bg: 'linear-gradient(160deg, #FFF1E6, #FFDCC7, #FFB88C)' },
 ];
 
 // Stat chips data
@@ -102,7 +102,7 @@ function CarouselCard({
               right: '20%',
             }}
           />
-          <span style={{ fontSize: '48px', position: 'relative', zIndex: 1 }}>{card.emoji}</span>
+          <span style={{ fontSize: '48px', position: 'relative', zIndex: 1 }} role="img" aria-label={card.emojiLabel}>{card.emoji}</span>
         </div>
       )}
     </div>
@@ -223,7 +223,7 @@ export function ImmersiveHero({ className }: ImmersiveHeroProps) {
                 style={{
                   backgroundColor: 'rgba(34, 197, 94, 0.08)',
                   border: '1px solid rgba(34, 197, 94, 0.2)',
-                  color: '#22C55E',
+                  color: '#15803D',
                 }}
               >
                 {/* Pulsing green dot */}

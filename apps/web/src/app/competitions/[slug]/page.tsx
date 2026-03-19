@@ -731,7 +731,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     >
                       <div>
                         <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
-                          {medal ?? prize.position} {posLabel}
+                          {medal ? <span aria-hidden="true">{medal}</span> : prize.position} {posLabel}
                         </p>
                         <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                           {prize.title}
@@ -853,7 +853,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                       return (
                         <div key={idx} style={{ marginBottom: '8px' }}>
                           <p style={{ fontSize: '14px', fontWeight: 600, color: '#1a1a2e' }}>
-                            {medal ?? pos} {posLabel}
+                            {medal ? <span aria-hidden="true">{medal}</span> : pos} {posLabel}
                             {prize && <span style={{ color: '#6b7088' }}> — {prize.title} ({formatPrice(prize.value)})</span>}
                           </p>
                           <p style={{ fontSize: '13px', color: '#9a9eb0' }}>
@@ -919,7 +919,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               className="font-[family-name:var(--font-outfit)] mb-4 flex items-center gap-2"
               style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
             >
-              <span style={{ fontSize: '20px' }}>{CATEGORY_EMOJIS[category]}</span>
+              <span style={{ fontSize: '20px' }} aria-hidden="true">{CATEGORY_EMOJIS[category]}</span>
               About This Card
             </h2>
 

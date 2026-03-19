@@ -93,7 +93,7 @@ export function MediaGallery({
           justifyContent: 'center',
         }}
       >
-        <span style={{ fontSize: '80px' }}>{categoryEmoji}</span>
+        <span style={{ fontSize: '80px' }} role="img" aria-label={fallbackAlt}>{categoryEmoji}</span>
       </div>
     );
   }

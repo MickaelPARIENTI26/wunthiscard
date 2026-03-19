@@ -301,8 +301,8 @@ export function SimpleTicketSelector({
           disabled={quantity <= 1}
           aria-label="Decrease quantity"
           style={{
-            width: '40px',
-            height: '40px',
+            width: '44px',
+            height: '44px',
             borderRadius: '10px',
             border: '1.5px solid rgba(0,0,0,0.08)',
             background: '#ffffff',
@@ -330,7 +330,7 @@ export function SimpleTicketSelector({
           aria-label="Ticket quantity"
           style={{
             width: '64px',
-            height: '40px',
+            height: '44px',
             borderRadius: '10px',
             border: '1.5px solid rgba(0,0,0,0.08)',
             background: '#ffffff',
@@ -348,8 +348,8 @@ export function SimpleTicketSelector({
           disabled={quantity >= maxQuantity}
           aria-label="Increase quantity"
           style={{
-            width: '40px',
-            height: '40px',
+            width: '44px',
+            height: '44px',
             borderRadius: '10px',
             border: '1.5px solid rgba(0,0,0,0.08)',
             background: '#ffffff',
