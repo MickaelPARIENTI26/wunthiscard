@@ -109,13 +109,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       onMouseLeave?.(e);
     };
 
+    // Don't pass event handlers when asChild — they can't be forwarded to Server Components
+    const hoverProps = asChild ? {} : { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave };
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         style={inlineStyle}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        {...hoverProps}
         {...props}
       />
     );
