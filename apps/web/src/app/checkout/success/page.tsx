@@ -314,10 +314,16 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
 
                 {/* Bonus Tickets */}
                 {bonusTickets.length > 0 && (
-                  <div className="rounded-lg bg-green-50 dark:bg-green-950/20 p-4 border border-green-200 dark:border-green-900">
+                  <div
+                    className="rounded-lg p-4 border"
+                    style={{
+                      background: 'rgba(34, 197, 94, 0.1)',
+                      borderColor: 'rgba(34, 197, 94, 0.3)',
+                    }}
+                  >
                     <div className="flex items-center gap-2 mb-2">
-                      <Gift className="h-4 w-4 text-green-600" />
-                      <span className="font-medium text-green-700 dark:text-green-400">
+                      <Gift className="h-4 w-4" style={{ color: '#4ade80' }} />
+                      <span className="font-medium" style={{ color: '#4ade80' }}>
                         Bonus Tickets ({bonusTickets.length})
                       </span>
                     </div>
@@ -326,7 +332,10 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
                         <Badge
                           key={ticket.ticketNumber}
                           variant="outline"
-                          className="border-green-500 text-green-700 dark:text-green-400 dark:border-green-600"
+                          style={{
+                            borderColor: 'rgba(34, 197, 94, 0.5)',
+                            color: '#4ade80',
+                          }}
                         >
                           #{ticket.ticketNumber}
                         </Badge>
@@ -343,7 +352,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
                   <span>{paidTickets.length}</span>
                 </div>
                 {bonusTickets.length > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
+                  <div className="flex justify-between text-sm" style={{ color: '#4ade80' }}>
                     <span>Bonus tickets</span>
                     <span>+{bonusTickets.length} FREE</span>
                   </div>

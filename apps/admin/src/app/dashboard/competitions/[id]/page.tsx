@@ -12,6 +12,7 @@ import { auth } from '@/lib/auth';
 import type { CompetitionStatus } from '@winucard/database';
 import { CancelCompetitionDialog } from './cancel-competition-dialog';
 import { RevealMysteryButton } from './reveal-mystery-button';
+import { ParticipantsExport } from './participants-export';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
@@ -62,6 +63,39 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
     where: { competitionId: id, paymentStatus: 'SUCCEEDED' },
     _sum: { totalAmount: true },
   });
+
+  // Participant stats for export section
+  const [paidTicketCount, freeTicketCount, bonusTicketCount, ticketRange, uniqueParticipants] = await Promise.all([
+    prisma.ticket.count({
+      where: { competitionId: id, status: 'SOLD', isBonus: false, isFreeEntry: false },
+    }),
+    prisma.ticket.count({
+      where: { competitionId: id, status: 'FREE_ENTRY', isFreeEntry: true },
+    }),
+    prisma.ticket.count({
+      where: { competitionId: id, status: 'SOLD', isBonus: true },
+    }),
+    prisma.ticket.aggregate({
+      where: { competitionId: id, status: { in: ['SOLD', 'FREE_ENTRY'] }, userId: { not: null } },
+      _min: { ticketNumber: true },
+      _max: { ticketNumber: true },
+    }),
+    prisma.ticket.groupBy({
+      by: ['userId'],
+      where: { competitionId: id, status: { in: ['SOLD', 'FREE_ENTRY'] }, userId: { not: null } },
+    }),
+  ]);
+
+  const participantStats = {
+    uniqueParticipants: uniqueParticipants.length,
+    totalTickets: paidTicketCount + freeTicketCount + bonusTicketCount,
+    paidTickets: paidTicketCount,
+    freeTickets: freeTicketCount,
+    bonusTickets: bonusTicketCount,
+    totalRevenue: Number(totalRevenue._sum.totalAmount ?? 0),
+    ticketMin: ticketRange._min.ticketNumber,
+    ticketMax: ticketRange._max.ticketNumber,
+  };
 
   const progress = calculateProgress(soldTickets, competition.totalTickets);
   const questionChoices = competition.questionChoices as string[];
@@ -172,6 +206,8 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
           </CardContent>
         </Card>
       </div>
+
+      <ParticipantsExport competitionId={id} stats={participantStats} />
 
       {/* Mystery Card Section */}
       {competition.isMystery && (
