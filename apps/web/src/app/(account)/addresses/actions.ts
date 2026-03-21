@@ -33,7 +33,7 @@ export async function addAddress(
       return { success: false, error: validationResult.error.errors[0]?.message };
     }
 
-    const { label, line1, line2, city, county, postcode, country, isDefault } = validationResult.data;
+    const { label, line1, line2, city, postcode, country, isDefault } = validationResult.data;
 
     // If setting as default, unset any existing default
     if (isDefault) {
@@ -54,7 +54,6 @@ export async function addAddress(
         line1,
         line2: line2 || null,
         city,
-        county: county || null,
         postcode: postcode.toUpperCase(),
         country,
         isDefault,
@@ -72,6 +71,7 @@ export async function addAddress(
     });
 
     revalidatePath('/addresses');
+    revalidatePath('/profile');
 
     return { success: true };
   } catch (error) {
@@ -109,7 +109,7 @@ export async function updateAddress(
       return { success: false, error: 'Address not found' };
     }
 
-    const { label, line1, line2, city, county, postcode, country, isDefault } = validationResult.data;
+    const { label, line1, line2, city, postcode, country, isDefault } = validationResult.data;
 
     // If setting as default, unset any existing default
     if (isDefault && !existingAddress.isDefault) {
@@ -130,7 +130,6 @@ export async function updateAddress(
         line1,
         line2: line2 || null,
         city,
-        county: county || null,
         postcode: postcode.toUpperCase(),
         country,
         isDefault,
@@ -149,6 +148,7 @@ export async function updateAddress(
     });
 
     revalidatePath('/addresses');
+    revalidatePath('/profile');
 
     return { success: true };
   } catch (error) {
@@ -195,6 +195,7 @@ export async function deleteAddress(
     });
 
     revalidatePath('/addresses');
+    revalidatePath('/profile');
 
     return { success: true };
   } catch (error) {
@@ -251,6 +252,7 @@ export async function setDefaultAddress(
     });
 
     revalidatePath('/addresses');
+    revalidatePath('/profile');
 
     return { success: true };
   } catch (error) {

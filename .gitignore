@@ -6,6 +6,10 @@ node_modules/
 .next/
 out/
 
+# User uploads (dev only, R2 in prod)
+apps/web/public/uploads/avatars/
+!apps/web/public/uploads/.gitkeep
+
 # Environment variables
 .env
 .env.local

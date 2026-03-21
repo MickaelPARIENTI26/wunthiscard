@@ -2,8 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ProfileForm } from './profile-form';
-import { AddressList } from '../addresses/address-list';
-import { AddressForm } from '../addresses/address-form';
+import { AddressSection } from './address-section';
 
 export const metadata = {
   title: 'Profile | WinUCard',
@@ -50,7 +49,7 @@ export default async function ProfilePage() {
           Profile
         </h1>
         <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
-          Manage your personal information
+          Manage your personal information and delivery addresses
         </p>
       </div>
 
@@ -71,22 +70,19 @@ export default async function ProfilePage() {
         />
 
         {/* Right: Delivery Addresses */}
-        <div className="space-y-6">
-          <AddressList
-            addresses={addresses.map((addr) => ({
-              id: addr.id,
-              label: addr.label,
-              line1: addr.line1,
-              line2: addr.line2,
-              city: addr.city,
-              county: addr.county,
-              postcode: addr.postcode,
-              country: addr.country,
-              isDefault: addr.isDefault,
-            }))}
-          />
-          <AddressForm />
-        </div>
+        <AddressSection
+          addresses={addresses.map((addr) => ({
+            id: addr.id,
+            label: addr.label,
+            line1: addr.line1,
+            line2: addr.line2,
+            city: addr.city,
+            county: addr.county,
+            postcode: addr.postcode,
+            country: addr.country,
+            isDefault: addr.isDefault,
+          }))}
+        />
       </div>
     </div>
   );

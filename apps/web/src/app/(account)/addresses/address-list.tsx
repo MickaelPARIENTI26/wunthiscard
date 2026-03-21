@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { MapPin, Star, Pencil, Trash2, Loader2 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -27,6 +27,31 @@ interface Address {
   country: string;
   isDefault: boolean;
 }
+
+const COUNTRY_NAMES: Record<string, string> = {
+  GB: 'United Kingdom',
+  FR: 'France',
+  DE: 'Germany',
+  ES: 'Spain',
+  IT: 'Italy',
+  NL: 'Netherlands',
+  BE: 'Belgium',
+  PT: 'Portugal',
+  IE: 'Ireland',
+  AT: 'Austria',
+  CH: 'Switzerland',
+  SE: 'Sweden',
+  DK: 'Denmark',
+  NO: 'Norway',
+  FI: 'Finland',
+  PL: 'Poland',
+  CZ: 'Czech Republic',
+  GR: 'Greece',
+  US: 'United States',
+  CA: 'Canada',
+  AU: 'Australia',
+  JP: 'Japan',
+};
 
 interface AddressListProps {
   addresses: Address[];
@@ -60,89 +85,79 @@ export function AddressList({ addresses }: AddressListProps) {
   };
 
   if (addresses.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="mb-4 rounded-full bg-muted p-4">
-            <MapPin className="h-8 w-8 text-muted-foreground" />
-          </div>
-          <h3 className="mb-2 text-lg font-semibold">No addresses saved</h3>
-          <p className="max-w-sm text-muted-foreground">
-            Add a delivery address to speed up the checkout process when you win a prize.
-          </p>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   return (
     <>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-3">
         {addresses.map((address) => (
-          <Card key={address.id}>
-            <CardContent className="p-4">
-              <div className="mb-3 flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">
-                    {address.label ?? 'Address'}
-                  </span>
-                  {address.isDefault && (
-                    <Badge variant="secondary" className="gap-1">
-                      <Star className="h-3 w-3" />
-                      Default
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p>{address.line1}</p>
-                {address.line2 && <p>{address.line2}</p>}
-                <p>
-                  {address.city}
-                  {address.county && `, ${address.county}`}
-                </p>
-                <p className="font-medium text-foreground">{address.postcode}</p>
-                <p>{address.country === 'GB' ? 'United Kingdom' : address.country}</p>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {!address.isDefault && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSetDefault(address.id)}
-                    disabled={isSettingDefault === address.id}
-                  >
-                    {isSettingDefault === address.id ? (
-                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                    ) : (
-                      <Star className="mr-1 h-3 w-3" />
-                    )}
-                    Set Default
-                  </Button>
+          <div
+            key={address.id}
+            className="rounded-lg border p-4"
+            style={{
+              borderColor: address.isDefault ? 'rgba(240, 185, 11, 0.3)' : 'var(--border-subtle)',
+              background: address.isDefault ? 'rgba(240, 185, 11, 0.03)' : 'transparent',
+            }}
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  {address.label ?? 'Address'}
+                </span>
+                {address.isDefault && (
+                  <Badge variant="secondary" className="gap-1 text-xs">
+                    <Star className="h-3 w-3" />
+                    Default
+                  </Badge>
                 )}
+              </div>
+              <div className="flex gap-1">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
+                  className="h-7 w-7 p-0"
                   onClick={() => setEditAddress(address)}
+                  title="Edit"
                 >
-                  <Pencil className="mr-1 h-3 w-3" />
-                  Edit
+                  <Pencil className="h-3.5 w-3.5" />
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
+                  className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                   onClick={() => setDeleteId(address.id)}
-                  className="text-destructive hover:text-destructive"
+                  title="Delete"
                 >
-                  <Trash2 className="mr-1 h-3 w-3" />
-                  Delete
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            <div className="space-y-0.5 text-sm text-muted-foreground">
+              <p>{address.line1}</p>
+              {address.line2 && <p>{address.line2}</p>}
+              <p>{address.city}, {address.postcode}</p>
+              <p>{COUNTRY_NAMES[address.country] ?? address.country}</p>
+            </div>
+
+            {!address.isDefault && (
+              <Button
+                variant="link"
+                size="sm"
+                className="mt-2 h-auto p-0 text-xs"
+                onClick={() => handleSetDefault(address.id)}
+                disabled={isSettingDefault === address.id}
+              >
+                {isSettingDefault === address.id ? (
+                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                ) : (
+                  <Star className="mr-1 h-3 w-3" />
+                )}
+                Set as default
+              </Button>
+            )}
+          </div>
         ))}
       </div>
 
