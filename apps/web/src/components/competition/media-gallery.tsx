@@ -300,7 +300,7 @@ export function MediaGallery({
                   zIndex: 10,
                 }}
               >
-                <ChevronLeft style={{ width: '18px', height: '18px', color: '#1a1a2e' }} />
+                <ChevronLeft style={{ width: '18px', height: '18px', color: 'var(--ink)' }} />
               </button>
             )}
 
@@ -327,7 +327,7 @@ export function MediaGallery({
                   zIndex: 10,
                 }}
               >
-                <ChevronRight style={{ width: '18px', height: '18px', color: '#1a1a2e' }} />
+                <ChevronRight style={{ width: '18px', height: '18px', color: 'var(--ink)' }} />
               </button>
             )}
           </>

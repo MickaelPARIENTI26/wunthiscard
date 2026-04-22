@@ -1,362 +1,157 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { HowItWorksPreview } from '@/components/home/how-it-works-preview';
+import { Chip } from '@/components/ui/chip';
+import { Eyebrow } from '@/components/ui/eyebrow';
+import { TrustStrip } from '@/components/home/trust-strip';
+import { HomeCTABand } from '@/components/home/home-cta-band';
 
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia. Our mission, values, and commitment to fair competitions.',
+    'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia.',
   openGraph: {
     title: 'About Us | WinUCard',
-    description:
-      'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia.',
+    description: 'Real cards. Real winners. Zero BS.',
   },
 };
 
-const categoryCards = [
-  { emoji: '🔥', emojiLabel: 'fire', gradient: 'linear-gradient(135deg, #FFF8E7, #FFE8A0)', borderColor: '#F0B90B', rotation: '-3deg' },
-  { emoji: '🏴‍☠️', emojiLabel: 'pirate flag', gradient: 'linear-gradient(135deg, #FEE2E2, #FECACA)', borderColor: '#EF4444', rotation: '2deg' },
-  { emoji: '⚽', emojiLabel: 'football', gradient: 'linear-gradient(135deg, #DCFCE7, #BBF7D0)', borderColor: '#22C55E', rotation: '-2deg' },
-  { emoji: '🏀', emojiLabel: 'basketball', gradient: 'linear-gradient(135deg, #DBEAFE, #BFDBFE)', borderColor: '#3B82F6', rotation: '3deg' },
-];
-
-const valueCards = [
-  {
-    emoji: '🎬',
-    emojiLabel: 'clapperboard',
-    title: 'Fully Transparent',
-    text: 'Every single draw is streamed live on TikTok. No pre-recorded videos, no hidden results. You can watch the winning ticket being selected in real time.',
-    gradient: 'linear-gradient(135deg, #FFF5F5, #FEE2E2)',
-    borderColor: 'rgba(239,68,68,0.1)',
-  },
-  {
-    emoji: '⭐',
-    emojiLabel: 'star',
-    title: 'Only Graded Cards',
-    text: 'We only offer PSA graded cards. Every card is authenticated and verified before being listed. You know exactly what you\'re winning.',
-    gradient: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
-    borderColor: 'rgba(232,160,0,0.1)',
-  },
-  {
-    emoji: '✉️',
-    emojiLabel: 'envelope',
-    title: 'Free Postal Entry',
-    text: 'Every competition offers a free postal entry route. No purchase necessary — we\'re fully compliant with UK competition law.',
-    gradient: 'linear-gradient(135deg, #EFF4FF, #DBEAFE)',
-    borderColor: 'rgba(37,99,235,0.1)',
-  },
-];
-
 const stats = [
-  { value: '100%', label: 'Live Draws', color: '#EF4444' },
-  { value: 'PSA 10', label: 'Graded Only', color: '#E8A000' },
-  { value: 'Free', label: 'Postal Entry', color: '#2563EB' },
-  { value: '24h', label: 'Winner Notification', color: '#16A34A' },
+  { v: '£500K+', l: 'Prizes Paid', c: 'var(--accent)' },
+  { v: '482', l: 'Cards Won', c: 'var(--hot)' },
+  { v: '100%', l: 'Live TikTok Draws', c: 'var(--pop)' },
+  { v: 'PSA 10', l: 'Every Card Graded', c: 'var(--warn)' },
+];
+
+const pillars = [
+  {
+    mark: '01 / Transparency',
+    title: 'Every draw, live.',
+    body: "No pre-recorded videos. No \"trust us\". Every single draw is streamed on TikTok Live with a certified RNG rolling on-screen. The winning ticket is posted publicly — alongside the entrant's first name and city.",
+    foot: { text: "Watch last week's →", href: '/winners', label: 'winners' },
+  },
+  {
+    mark: '02 / Provenance',
+    title: 'Only PSA 10.',
+    body: "If it isn't PSA-graded, it isn't on WinUCard. Every card is authenticated, encapsulated, and cross-referenced by cert number before we list it. You win exactly what you saw — with full documentation and a chain of custody.",
+    foot: { text: 'View our', href: '/competitions', label: 'live comps' },
+  },
+  {
+    mark: '03 / Access',
+    title: 'Free postal entry, always.',
+    body: "UK law requires a free route. We don't just comply — we make it easy: handwritten postcard, one per comp per day, same odds as paid entries. If you can't pay, you can still play.",
+    foot: { text: 'Full rules →', href: '/competition-rules', label: 'Comp Rules' },
+  },
 ];
 
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen" style={{ background: '#ffffff' }}>
-      {/* Styles for hover effects */}
-      <style>{`
-        .value-card {
-          padding: 32px;
-          border-radius: 20px;
-          transition: all 0.3s ease;
-        }
-        .value-card:hover {
-          transform: translateY(-4px);
-        }
-        .cta-btn-primary {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 14px 32px;
-          border-radius: 14px;
-          background: #1a1a2e;
-          color: #ffffff;
-          font-size: 15px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-        }
-        .cta-btn-primary:hover {
-          background: #2a2a3e;
-          transform: translateY(-2px);
-        }
-        .cta-btn-secondary {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 14px 32px;
-          border-radius: 14px;
-          background: rgba(255,255,255,0.7);
-          border: 1.5px solid rgba(232,160,0,0.3);
-          color: #1a1a2e;
-          font-size: 15px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-          backdrop-filter: blur(8px);
-        }
-        .cta-btn-secondary:hover {
-          background: rgba(255,255,255,0.9);
-          border-color: rgba(232,160,0,0.5);
-          transform: translateY(-2px);
-        }
-      `}</style>
-
-      {/* ══════ SECTION 1 — Hero (fond blanc) ══════ */}
-      <section style={{ padding: '80px 40px 60px', background: '#ffffff' }}>
-        <div className="container mx-auto text-center" style={{ maxWidth: '1000px' }}>
-          <h1
-            className="font-[family-name:var(--font-outfit)] mb-4"
-            style={{
-              fontSize: '46px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            About WinUCard
-          </h1>
-          <p
-            style={{
-              fontSize: '17px',
-              color: '#6b7088',
-              maxWidth: '500px',
-              margin: '0 auto',
-            }}
-          >
-            The UK's premium skill-based card competition platform.
-          </p>
-        </div>
-      </section>
-
-      {/* ══════ SECTION 2 — Notre mission (fond #F7F7FA) ══════ */}
-      <section style={{ padding: '80px 40px', background: '#F7F7FA' }}>
-        <div
-          className="container mx-auto"
-          style={{ maxWidth: '1000px' }}
-        >
-          <div className="flex flex-col lg:flex-row items-center gap-12">
-            {/* Left column - Text (60%) */}
-            <div className="lg:w-[60%]">
-              <span
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: '#F0B90B',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                }}
-              >
-                Our Mission
-              </span>
-              <h2
-                className="font-[family-name:var(--font-outfit)] mt-3 mb-5"
-                style={{
-                  fontSize: '28px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                  lineHeight: 1.3,
-                }}
-              >
-                Giving Every Collector a Chance to Win
-              </h2>
-              <p
-                style={{
-                  fontSize: '15px',
-                  color: '#333344',
-                  lineHeight: 1.75,
-                }}
-              >
-                WinUCard was created with one goal: making rare, high-value graded cards accessible
-                to everyone. We believe you shouldn't need thousands of pounds to own a PSA 10 gem
-                mint card. Through our skill-based competitions, collectors across the UK can enter
-                for a fraction of the card's value and have a real chance of winning.
-              </p>
-            </div>
-
-            {/* Right column - Category cards (40%) */}
-            <div className="lg:w-[40%] flex justify-center">
-              <div
-                className="grid grid-cols-2 gap-3"
-                style={{ width: 'fit-content' }}
-              >
-                {categoryCards.map((card, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      width: '120px',
-                      height: '160px',
-                      borderRadius: '14px',
-                      background: card.gradient,
-                      border: `2px solid ${card.borderColor}20`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transform: `rotate(${card.rotation})`,
-                    }}
-                  >
-                    <span style={{ fontSize: '40px' }} role="img" aria-label={card.emojiLabel}>{card.emoji}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════ SECTION 3 — Nos valeurs (fond blanc) ══════ */}
-      <section style={{ padding: '80px 40px', background: '#ffffff' }}>
-        <div className="container mx-auto" style={{ maxWidth: '1000px' }}>
-          <div className="text-center mb-12">
-            <h2
-              className="font-[family-name:var(--font-outfit)] mb-3"
+    <main>
+      {/* Editorial hero */}
+      <section className="mx-auto px-5 sm:px-8" style={{ maxWidth: '1440px', padding: '80px 32px 48px' }}>
+        <div className="about-hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '48px', alignItems: 'center' }}>
+          <div>
+            <div
+              className="inline-flex items-center gap-2.5"
               style={{
-                fontSize: '28px',
-                fontWeight: 700,
-                color: '#1a1a2e',
+                padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
+                borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px',
+                letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '28px',
               }}
             >
-              Why WinUCard?
-            </h2>
-            <p style={{ fontSize: '15px', color: '#6b7088' }}>
-              What sets us apart from other competition platforms.
+              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} /> About WinUCard
+            </div>
+            <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(36px, 8vw, 124px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9 }}>
+              Real cards.<br />
+              <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '7px', textUnderlineOffset: '8px' }}>Real winners.</span><br />
+              <Chip color="accent" className="mt-2">Zero BS.</Chip>
+            </h1>
+          </div>
+
+          {/* Manifesto quote card */}
+          <div
+            className="relative"
+            style={{
+              background: 'var(--surface)', border: '1.5px solid var(--ink)',
+              borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
+              padding: '34px 36px', fontSize: '18px', lineHeight: 1.55,
+            }}
+          >
+            <div style={{ fontFamily: 'var(--display)', fontSize: '140px', fontWeight: 700, lineHeight: 0.4, color: 'var(--accent)', position: 'absolute', top: '40px', left: '18px', pointerEvents: 'none' }}>
+              &ldquo;
+            </div>
+            <p style={{ position: 'relative', paddingLeft: '40px' }}>
+              We started WinUCard because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £9.99 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
             </p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {valueCards.map((card, index) => (
-              <div
-                key={index}
-                className="value-card"
-                style={{
-                  background: card.gradient,
-                  border: `1.5px solid ${card.borderColor}`,
-                }}
-              >
-                <span style={{ fontSize: '36px', display: 'block', marginBottom: '16px' }} role="img" aria-label={card.emojiLabel}>
-                  {card.emoji}
-                </span>
-                <h3
-                  className="font-[family-name:var(--font-outfit)]"
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 700,
-                    color: '#1a1a2e',
-                    marginBottom: '12px',
-                  }}
-                >
-                  {card.title}
-                </h3>
-                <p
-                  style={{
-                    fontSize: '14px',
-                    color: '#6b7088',
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {card.text}
-                </p>
-              </div>
-            ))}
+            <div style={{ marginTop: '18px', paddingLeft: '40px', fontFamily: 'var(--mono)', fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 600 }}>
+              — The WinUCard team
+            </div>
           </div>
         </div>
+
+        {/* Responsive */}
+        <style>{`
+          @media (max-width: 900px) {
+            .about-hero-grid { grid-template-columns: 1fr !important; }
+          }
+        `}</style>
       </section>
 
-      {/* ══════ SECTION 4 — Les chiffres (fond #F7F7FA) ══════ */}
-      <section style={{ padding: '80px 40px', background: '#F7F7FA' }}>
-        <div className="container mx-auto" style={{ maxWidth: '1000px' }}>
-          <h2
-            className="font-[family-name:var(--font-outfit)] text-center mb-12"
-            style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            WinUCard in Numbers
-          </h2>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 text-center">
-            {stats.map((stat, index) => (
-              <div key={index}>
-                <p
-                  className="font-[family-name:var(--font-outfit)]"
-                  style={{
-                    fontSize: '36px',
-                    fontWeight: 800,
-                    color: stat.color,
-                  }}
-                >
-                  {stat.value}
-                </p>
-                <p
-                  style={{
-                    fontSize: '13px',
-                    color: '#6b7088',
-                    marginTop: '4px',
-                  }}
-                >
-                  {stat.label}
-                </p>
-              </div>
-            ))}
+      {/* Stats band */}
+      <section className="about-stats">
+        {stats.map((s) => (
+          <div key={s.l} className="about-stat">
+            <div style={{ fontFamily: 'var(--display)', fontSize: 'clamp(40px, 5vw, 68px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1, marginBottom: '10px', color: s.c }}>
+              {s.v}
+            </div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>
+              {s.l}
+            </div>
           </div>
-        </div>
+        ))}
       </section>
 
-      {/* ══════ SECTION 5 — Comment ça marche (composant réutilisable) ══════ */}
-      <HowItWorksPreview />
-
-      {/* ══════ SECTION 6 — CTA (gradient doré) ══════ */}
-      <section
-        style={{
-          padding: '80px 40px',
-          background: 'linear-gradient(135deg, #FFF8E7, #FFF0CC, #FFECB3, #FFF3D6)',
-        }}
-      >
-        <div className="container mx-auto text-center" style={{ maxWidth: '600px' }}>
-          <h2
-            className="font-[family-name:var(--font-outfit)] mb-4"
-            style={{
-              fontSize: '32px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            Ready to Enter?
-          </h2>
-          <p
-            style={{
-              fontSize: '15px',
-              color: '#555',
-              marginBottom: '32px',
-            }}
-          >
-            Create your free account and browse our live competitions.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register" className="cta-btn-primary">
-              Sign Up Free
-            </Link>
-            <Link href="/competitions" className="cta-btn-secondary">
-              View Competitions
-            </Link>
+      {/* Pillars */}
+      <section className="drop-section">
+        <div className="flex flex-wrap items-end justify-between gap-8 mb-10">
+          <div>
+            <Eyebrow>What We Stand For</Eyebrow>
+            <h2 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginTop: '12px' }}>
+              Three{' '}
+              <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '5px', textUnderlineOffset: '6px' }}>rules</span>.
+            </h2>
           </div>
-
-          <p
-            style={{
-              fontSize: '12px',
-              color: '#8a8a8a',
-              marginTop: '24px',
-            }}
-          >
-            18+ Only. Free postal entry available. Terms apply.
+          <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '360px', lineHeight: 1.5 }}>
+            We say no to a lot of things so we can say yes to the ones that matter.
           </p>
         </div>
+
+        <div className="about-pillars">
+          {pillars.map((p) => (
+            <article
+              key={p.mark}
+              className="flex flex-col gap-3.5 transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[var(--shadow-lg)]"
+              style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '30px 28px 24px' }}
+            >
+              <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700 }}>
+                {p.mark}
+              </span>
+              <h3 style={{ fontFamily: 'var(--display)', fontSize: '30px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.05 }}>
+                {p.title}
+              </h3>
+              <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', lineHeight: 1.6, flex: 1 }}>
+                {p.body}
+              </p>
+              <div style={{ paddingTop: '14px', borderTop: '1px dashed var(--line-2)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 700 }}>
+                {p.foot.text} <Link href={p.foot.href} style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>{p.foot.label}</Link>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
+
+      <TrustStrip />
+      <HomeCTABand />
     </main>
   );
 }

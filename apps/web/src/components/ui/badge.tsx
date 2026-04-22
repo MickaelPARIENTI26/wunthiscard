@@ -31,9 +31,9 @@ export interface BadgeProps
 
 const variantStyles: Record<string, React.CSSProperties> = {
   default: { backgroundColor: '#FFD700', color: '#0f0f1a' },
-  secondary: { backgroundColor: '#1f1f35', color: '#f5f5f5' },
-  destructive: { backgroundColor: '#dc2626', color: '#f5f5f5' },
-  outline: { backgroundColor: 'transparent', color: '#f5f5f5', borderColor: '#2a2a4a' },
+  secondary: { backgroundColor: '#1f1f35', color: 'var(--ink)' },
+  destructive: { backgroundColor: '#dc2626', color: 'var(--ink)' },
+  outline: { backgroundColor: 'transparent', color: 'var(--ink)', borderColor: '#2a2a4a' },
   success: { backgroundColor: '#22c55e', color: '#ffffff' },
   warning: { backgroundColor: '#eab308', color: '#ffffff' },
 };

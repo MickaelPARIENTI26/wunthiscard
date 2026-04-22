@@ -8,7 +8,7 @@ interface LiveCountdownProps {
   categoryColor?: string;
 }
 
-export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCountdownProps) {
+export function LiveCountdown({ targetDate, categoryColor = 'var(--accent)' }: LiveCountdownProps) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
   const [isUrgent, setIsUrgent] = useState(false);
   const [isCritical, setIsCritical] = useState(false);
@@ -115,7 +115,7 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.03)',
                 fontSize: '24px',
                 fontWeight: 800,
-                color: isCritical ? '#EF4444' : isUrgent ? '#F59E0B' : '#1a1a2e',
+                color: isCritical ? 'var(--hot)' : isUrgent ? 'var(--warn)' : 'var(--ink)',
                 transform: block.isPulsing ? 'scale(1.08)' : 'scale(1)',
                 transition: 'transform 0.15s ease-out',
               }}
@@ -125,7 +125,7 @@ export function LiveCountdown({ targetDate, categoryColor = '#F0B90B' }: LiveCou
             <p
               style={{
                 fontSize: '10px',
-                color: isCritical ? '#EF4444' : isUrgent ? '#F59E0B' : '#9a9eb0',
+                color: isCritical ? 'var(--hot)' : isUrgent ? 'var(--warn)' : 'var(--ink-faint)',
                 marginTop: '6px',
                 fontWeight: 600,
                 letterSpacing: '0.5px',

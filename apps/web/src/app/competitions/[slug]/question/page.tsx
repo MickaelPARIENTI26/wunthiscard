@@ -1,7 +1,6 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { QuestionForm } from './question-form';
 
@@ -16,9 +15,10 @@ async function getCompetition(slug: string) {
       id: true,
       slug: true,
       title: true,
+      mainImageUrl: true,
+      category: true,
       questionText: true,
       questionChoices: true,
-      // Note: questionAnswer is NOT selected - validation is server-side only
       ticketPrice: true,
       status: true,
     },
@@ -38,69 +38,82 @@ async function getCompetition(slug: string) {
   };
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<PageParams>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
   const { slug } = await params;
   const competition = await getCompetition(slug);
-
-  if (!competition) {
-    return {
-      title: 'Competition Not Found',
-    };
-  }
-
+  if (!competition) return { title: 'Competition Not Found' };
   return {
     title: `Skill Question - ${competition.title}`,
-    description: `Answer the skill question to proceed with your ticket purchase for ${competition.title}`,
+    description: `Answer the skill question for ${competition.title}`,
   };
 }
 
-export default async function QuestionPage({
-  params,
-}: {
-  params: Promise<PageParams>;
-}) {
+export default async function QuestionPage({ params }: { params: Promise<PageParams> }) {
   const { slug } = await params;
-
   const competition = await getCompetition(slug);
+  if (!competition) notFound();
 
-  if (!competition) {
-    notFound();
-  }
+  const formatCategory = (cat: string) => cat.replace(/_/g, ' ').replace(/^SPORTS /i, '');
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-4 sm:py-6">
-        {/* Back Navigation */}
-        <Link
-          href={`/competitions/${slug}/tickets`}
-          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to Ticket Selection
+    <main>
+      {/* Back link */}
+      <div className="comp-back">
+        <Link href={`/competitions/${slug}`} className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
+          ← Back to Competition
         </Link>
-
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-6 text-center">
-            <h1 className="text-2xl font-bold sm:text-3xl">Skill Question</h1>
-            <p className="mt-2 text-muted-foreground">
-              As required by UK law, please answer the following skill-based question to proceed.
-            </p>
-          </div>
-
-          <QuestionForm
-            competitionId={competition.id}
-            competitionSlug={competition.slug}
-            competitionTitle={competition.title}
-            questionText={competition.questionText}
-            questionChoices={competition.questionChoices}
-            ticketPrice={competition.ticketPrice}
-          />
-        </div>
       </div>
+
+      {/* Enter head — compact hero bar */}
+      <section className="enter-head">
+        <div className="enter-head-card">
+          <img src={competition.mainImageUrl} alt={competition.title} />
+        </div>
+        <div className="enter-head-body">
+          <div className="enter-head-kicker">Enter · {formatCategory(competition.category)}</div>
+          <h1 className="enter-head-title">{competition.title}</h1>
+          <div className="enter-head-meta">
+            <span>Auto Pick</span>
+            <span>·</span>
+            <span>Total <b>£{(competition.ticketPrice / 100).toFixed(2)}</b></span>
+          </div>
+        </div>
+        <div className="enter-tracker">
+          <div className="enter-tracker-step done">
+            <span className="enter-tracker-num">✓</span>
+            <span className="enter-tracker-t">Tickets</span>
+          </div>
+          <div className="enter-tracker-step active">
+            <span className="enter-tracker-num">2</span>
+            <span className="enter-tracker-t">Skill Q</span>
+          </div>
+          <div className="enter-tracker-step">
+            <span className="enter-tracker-num">3</span>
+            <span className="enter-tracker-t">Details</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Step 02 — Skill Question */}
+      <section className="enter-step">
+        <div className="enter-step-head">
+          <span className="step-num" style={{ background: 'var(--warn)' }}>02</span>
+          <div>
+            <div className="step-kicker">Step 02 · Skill question</div>
+            <h2 className="step-title">Answer correctly to validate your entry.</h2>
+          </div>
+          <Link href={`/competitions/${slug}`} className="btn btn-ghost">← Change tickets</Link>
+        </div>
+
+        <QuestionForm
+          competitionId={competition.id}
+          competitionSlug={competition.slug}
+          competitionTitle={competition.title}
+          questionText={competition.questionText}
+          questionChoices={competition.questionChoices}
+          ticketPrice={competition.ticketPrice}
+        />
+      </section>
     </main>
   );
 }

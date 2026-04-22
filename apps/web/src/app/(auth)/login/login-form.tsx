@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
@@ -23,10 +22,10 @@ const inputStyle = {
   width: '100%',
   padding: '12px 16px',
   fontSize: '14px',
-  background: '#F5F5F7',
+  background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '12px',
-  color: '#1a1a2e',
+  borderRadius: '10px',
+  color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
 };
@@ -36,7 +35,6 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const error = searchParams.get('error');
-  const t = useTranslations('auth');
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -64,7 +62,7 @@ export function LoginForm() {
       // Check rate limit first
       const rateLimitCheck = await checkLoginRateLimit();
       if (!rateLimitCheck.allowed) {
-        setServerError(t('tooManyAttempts'));
+        setServerError('Too many login attempts. Please try again later.');
         return;
       }
 
@@ -72,7 +70,7 @@ export function LoginForm() {
       if (TURNSTILE_SITE_KEY && turnstileToken) {
         const captchaResult = await verifyLoginCaptcha(turnstileToken);
         if (!captchaResult.success) {
-          setServerError(t('captchaFailed'));
+          setServerError('Captcha verification failed. Please try again.');
           turnstileRef.current?.reset();
           setTurnstileToken(null);
           return;
@@ -95,15 +93,15 @@ export function LoginForm() {
 
         // Map custom errors from auth.ts
         if (result.error.includes('AccountBanned')) {
-          setServerError(t('accountBanned'));
+          setServerError('Your account has been suspended. Please contact support.');
         } else if (result.error.includes('AccountLocked')) {
-          setServerError(t('accountLocked'));
+          setServerError('Your account has been temporarily locked. Please try again later.');
         } else if (result.error.includes('OAuthAccountOnly')) {
-          setServerError(t('oauthAccountOnly'));
+          setServerError('This account uses Google Sign-In. Please click "Sign in with Google" below.');
         } else if (result.error.includes('TooManyRequests')) {
-          setServerError(t('tooManyAttempts'));
+          setServerError('Too many login attempts. Please try again later.');
         } else if (result.error === 'CredentialsSignin') {
-          setServerError(t('invalidCredentials'));
+          setServerError('Invalid email or password. Please try again.');
         } else {
           setServerError(result.error);
         }
@@ -116,7 +114,7 @@ export function LoginForm() {
       router.push(callbackUrl);
       router.refresh();
     } catch {
-      setServerError(t('unexpectedError'));
+      setServerError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -127,7 +125,7 @@ export function LoginForm() {
     try {
       await signIn('google', { callbackUrl });
     } catch {
-      setServerError(t('googleSignInError'));
+      setServerError('Failed to sign in with Google. Please try again.');
       setIsGoogleLoading(false);
     }
   };
@@ -136,19 +134,19 @@ export function LoginForm() {
     if (!errorCode) return null;
     switch (errorCode) {
       case 'OAuthAccountNotLinked':
-        return t('oauthAccountNotLinked');
+        return 'This email is already associated with another sign-in method.';
       case 'OAuthAccountOnly':
-        return t('oauthAccountOnly');
+        return 'This account uses Google Sign-In. Please click "Sign in with Google" below.';
       case 'EmailNotVerified':
-        return t('emailNotVerifiedMessage');
+        return 'Please verify your email to access all features.';
       case 'AccountLocked':
-        return t('accountLocked');
+        return 'Your account has been temporarily locked. Please try again later.';
       case 'AccountBanned':
-        return t('accountBanned');
+        return 'Your account has been suspended. Please contact support.';
       case 'TooManyRequests':
-        return t('tooManyAttempts');
+        return 'Too many login attempts. Please try again later.';
       default:
-        return t('signInError');
+        return 'An error occurred during sign in. Please try again.';
     }
   };
 
@@ -165,7 +163,7 @@ export function LoginForm() {
             color: '#DC2626',
             background: 'rgba(220, 38, 38, 0.08)',
             border: '1px solid rgba(220, 38, 38, 0.2)',
-            borderRadius: '12px',
+            borderRadius: '10px',
           }}
         >
           {displayError}
@@ -176,9 +174,9 @@ export function LoginForm() {
         <div className="space-y-2">
           <label
             htmlFor="email"
-            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
           >
-            {t('email')}
+            Email
           </label>
           {(() => {
             const { onBlur: registerOnBlur, ...emailRegister } = register('email');
@@ -186,13 +184,13 @@ export function LoginForm() {
               <input
                 id="email"
                 type="email"
-                placeholder={t('emailPlaceholder')}
+                placeholder="Enter your email"
                 autoComplete="email"
                 disabled={isLoading || isGoogleLoading}
                 style={inputStyle}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#F0B90B';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+                  e.currentTarget.style.borderColor = 'var(--accent)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
@@ -212,9 +210,9 @@ export function LoginForm() {
           <div className="flex items-center justify-between">
             <label
               htmlFor="password"
-              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
             >
-              {t('password')}
+              Password
             </label>
             <Link
               href="/forgot-password"
@@ -224,7 +222,7 @@ export function LoginForm() {
                 color: 'var(--accent-text)',
               }}
             >
-              {t('forgotPassword')}
+              Forgot password?
             </Link>
           </div>
           {(() => {
@@ -233,13 +231,13 @@ export function LoginForm() {
               <input
                 id="password"
                 type="password"
-                placeholder={t('passwordPlaceholder')}
+                placeholder="Enter your password"
                 autoComplete="current-password"
                 disabled={isLoading || isGoogleLoading}
                 style={inputStyle}
                 onFocus={(e) => {
-                  e.currentTarget.style.borderColor = '#F0B90B';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+                  e.currentTarget.style.borderColor = 'var(--accent)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
                 }}
                 onBlur={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
@@ -276,8 +274,8 @@ export function LoginForm() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '12px',
-            background: '#1a1a2e',
+            borderRadius: '10px',
+            background: 'var(--ink)',
             color: '#ffffff',
             fontSize: '15px',
             fontWeight: 600,
@@ -288,10 +286,10 @@ export function LoginForm() {
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              {t('signingIn')}
+              Signing in...
             </>
           ) : (
-            t('signIn')
+            'Sign in'
           )}
         </button>
       </form>
@@ -304,15 +302,15 @@ export function LoginForm() {
               className="absolute inset-0 flex items-center"
               style={{ top: '50%', transform: 'translateY(-50%)' }}
             >
-              <span style={{ width: '100%', height: '1px', background: '#e0e0e4' }} />
+              <span style={{ width: '100%', height: '1px', background: 'var(--line)' }} />
             </div>
             <div className="relative flex justify-center">
               <span
                 style={{
-                  background: '#ffffff',
+                  background: 'var(--surface)',
                   padding: '0 12px',
                   fontSize: '12px',
-                  color: '#6b7088',
+                  color: 'var(--ink-dim)',
                   textTransform: 'uppercase',
                 }}
               >
@@ -328,10 +326,10 @@ export function LoginForm() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '12px',
+              borderRadius: '10px',
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
-              color: '#1a1a2e',
+              color: 'var(--ink)',
               fontSize: '15px',
               fontWeight: 500,
               cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
@@ -341,7 +339,7 @@ export function LoginForm() {
             {isGoogleLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                {t('connecting')}
+                Connecting...
               </>
             ) : (
               <>
@@ -363,20 +361,20 @@ export function LoginForm() {
                     fill="#EA4335"
                   />
                 </svg>
-                {t('signInWithGoogle')}
+                Sign in with Google
               </>
             )}
           </button>
         </>
       )}
 
-      <p className="text-center" style={{ fontSize: '14px', color: '#6b7088' }}>
-        {t('noAccount')}{' '}
+      <p className="text-center" style={{ fontSize: '14px', color: 'var(--ink-dim)' }}>
+        Don&apos;t have an account?{' '}
         <Link
           href={callbackUrl !== '/' ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/register'}
           style={{ fontWeight: 500, color: 'var(--accent-text)' }}
         >
-          {t('register')}
+          Register
         </Link>
       </p>
     </div>

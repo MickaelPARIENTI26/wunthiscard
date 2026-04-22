@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 const AGE_VERIFIED_COOKIE = 'age_verified';
@@ -35,7 +34,6 @@ function getCookie(name: string): string | null {
 }
 
 export function AgeGate() {
-  const t = useTranslations('ageGate');
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -97,7 +95,7 @@ export function AgeGate() {
           isAnimating ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
         style={{
-          background: '#ffffff',
+          background: 'var(--surface)',
           borderRadius: '24px',
           padding: '40px',
           boxShadow: '0 24px 64px rgba(0, 0, 0, 0.12)',
@@ -113,8 +111,8 @@ export function AgeGate() {
                 width: '40px',
                 height: '40px',
                 borderRadius: '12px',
-                background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
-                boxShadow: '0 4px 12px rgba(240, 185, 11, 0.3)',
+                background: 'var(--accent)',
+                boxShadow: '2px 2px 0 var(--ink)',
               }}
             >
               <span
@@ -122,7 +120,7 @@ export function AgeGate() {
                   color: '#ffffff',
                   fontSize: '18px',
                   fontWeight: 800,
-                  fontFamily: 'var(--font-outfit)',
+                  fontFamily: 'var(--sans)',
                 }}
               >
                 W
@@ -130,12 +128,12 @@ export function AgeGate() {
             </div>
             {/* Text */}
             <span
-              className="font-[family-name:var(--font-outfit)]"
+              className="font-sans"
               style={{
                 fontSize: '22px',
                 fontWeight: 700,
                 letterSpacing: '-0.5px',
-                color: '#1a1a2e',
+                color: 'var(--ink)',
               }}
             >
               WinUCard
@@ -146,14 +144,14 @@ export function AgeGate() {
         {/* Title */}
         <h1
           id="age-gate-title"
-          className="font-[family-name:var(--font-outfit)] mb-3"
+          className="font-sans mb-3"
           style={{
             fontSize: '24px',
             fontWeight: 700,
-            color: '#1a1a2e',
+            color: 'var(--ink)',
           }}
         >
-          {t('title')}
+          Age Verification
         </h1>
 
         {/* Description */}
@@ -161,11 +159,11 @@ export function AgeGate() {
           className="mb-8"
           style={{
             fontSize: '15px',
-            color: '#6b7088',
+            color: 'var(--ink-dim)',
             lineHeight: 1.6,
           }}
         >
-          {t('message')}
+          You must be 18 years or older to enter this website. WinUCard is a skill-based competition platform. Please confirm your age to continue.
         </p>
 
         {/* Buttons */}
@@ -185,7 +183,7 @@ export function AgeGate() {
               outlineColor: 'var(--accent)',
             }}
           >
-            {t('confirm')}
+            Yes, I&apos;m 18 or over
           </button>
 
           {/* Secondary Button - No, I'm under 18 */}
@@ -204,7 +202,7 @@ export function AgeGate() {
               outlineColor: 'var(--accent)',
             }}
           >
-            {t('deny')}
+            No, I&apos;m under 18
           </button>
         </div>
 
@@ -213,11 +211,11 @@ export function AgeGate() {
           className="mt-6"
           style={{
             fontSize: '12px',
-            color: '#9a9eb0',
+            color: 'var(--ink-faint)',
             lineHeight: 1.5,
           }}
         >
-          {t('legal')}
+          By entering this site, you agree to our Terms &amp; Conditions and confirm you are of legal age.
         </p>
       </div>
     </div>

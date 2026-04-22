@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Star, Pencil, Trash2, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Star, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -96,8 +95,8 @@ export function AddressList({ addresses }: AddressListProps) {
             key={address.id}
             className="rounded-lg border p-4"
             style={{
-              borderColor: address.isDefault ? 'rgba(240, 185, 11, 0.3)' : 'var(--border-subtle)',
-              background: address.isDefault ? 'rgba(240, 185, 11, 0.03)' : 'transparent',
+              borderColor: address.isDefault ? 'rgba(0, 199, 106, 0.3)' : 'var(--border-subtle)',
+              background: address.isDefault ? 'rgba(0, 199, 106, 0.03)' : 'transparent',
             }}
           >
             <div className="mb-2 flex items-center justify-between">

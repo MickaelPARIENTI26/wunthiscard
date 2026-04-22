@@ -22,8 +22,8 @@ const SelectTrigger = React.forwardRef<
       className
     )}
     style={{
-      backgroundColor: 'var(--color-input, #1a1a2e)',
-      color: '#f5f5f5',
+      backgroundColor: 'var(--color-input, var(--surface))',
+      color: 'var(--ink)',
       borderColor: 'var(--color-border, #2a2a4a)',
       ...style,
     }}
@@ -79,8 +79,8 @@ const SelectContent = React.forwardRef<
         className
       )}
       style={{
-        backgroundColor: '#1a1a2e',
-        color: '#f5f5f5',
+        backgroundColor: 'var(--ink)',
+        color: 'var(--ink)',
         borderColor: '#2a2a4a',
       }}
       position={position}
@@ -124,7 +124,7 @@ const SelectItem = React.forwardRef<
       'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       className
     )}
-    style={{ color: '#f5f5f5' }}
+    style={{ color: 'var(--ink)' }}
     {...props}
   >
     <span className="absolute right-2 flex h-3.5 w-3.5 items-center justify-center">

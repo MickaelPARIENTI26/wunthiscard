@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
 import { ArrowRight, Flame, Anchor, Dribbble, Trophy, Sparkles, Layers, Hexagon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -72,7 +71,6 @@ export function CompetitionCard({
   className,
   index = 0,
 }: CompetitionCardProps) {
-  const t = useTranslations('competitions');
   const isActive = status === 'ACTIVE';
   const isSoldOut = status === 'SOLD_OUT';
   const isUpcoming = status === 'UPCOMING';
@@ -171,7 +169,7 @@ export function CompetitionCard({
             <div
               className="absolute top-4 left-4 px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider z-10"
               style={{
-                background: '#ffffff',
+                background: 'var(--surface)',
                 border: `1px solid ${categoryColor}30`,
                 color: categoryColor,
               }}
@@ -255,7 +253,7 @@ export function CompetitionCard({
                 <div
                   className="px-3 py-1.5 rounded-lg text-[11px] font-bold"
                   style={{
-                    background: '#ffffff',
+                    background: 'var(--surface)',
                     border: '1px solid rgba(59, 130, 246, 0.3)',
                     color: '#3B82F6',
                   }}
@@ -266,7 +264,7 @@ export function CompetitionCard({
                 <div
                   className="px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1.5"
                   style={{
-                    background: '#ffffff',
+                    background: 'var(--surface)',
                     border: `1px solid ${isHotSelling ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`,
                     color: isHotSelling ? '#EF4444' : '#22C55E',
                   }}
@@ -291,11 +289,11 @@ export function CompetitionCard({
           <div className="flex-1 flex flex-col" style={{ padding: '18px 22px 24px' }}>
             {/* Title */}
             <h3
-              className="font-semibold line-clamp-2 mb-3 min-h-[2.5rem] font-[family-name:var(--font-outfit)]"
+              className="font-semibold line-clamp-2 mb-3 min-h-[2.5rem] font-sans"
               style={{
                 fontSize: '15px',
                 fontWeight: 600,
-                color: '#1a1a2e',
+                color: 'var(--ink)',
               }}
             >
               {title}
@@ -303,11 +301,11 @@ export function CompetitionCard({
 
             {/* Prize Value */}
             <p
-              className="font-[family-name:var(--font-outfit)] mb-4"
+              className="font-sans mb-4"
               style={{
                 fontSize: '30px',
                 fontWeight: 800,
-                color: '#1a1a2e',
+                color: 'var(--ink)',
               }}
             >
               {isMystery && !isRevealed && (
@@ -349,20 +347,20 @@ export function CompetitionCard({
               </div>
               {/* Stats */}
               <div className="flex justify-between mt-2">
-                <span style={{ fontSize: '11px', color: '#6b7088' }}>
+                <span style={{ fontSize: '11px', color: 'var(--ink-dim)' }}>
                   {isFree ? (
                     totalTickets
                       ? `${soldTickets} / ${totalTickets} participants`
                       : `${soldTickets} participants`
                   ) : (
-                    <>{soldTickets} / {totalTickets} {t('sold')}</>
+                    <>{soldTickets} / {totalTickets} sold</>
                   )}
                 </span>
-                <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
+                <span style={{ fontSize: '11px', color: 'var(--ink-faint)' }}>
                   {isFree ? (
                     totalTickets ? `${totalTickets - soldTickets} spots left` : 'Unlimited'
                   ) : (
-                    <>{(totalTickets ?? 0) - soldTickets} {t('ticketsLeft')}</>
+                    <>{(totalTickets ?? 0) - soldTickets} tickets left</>
                   )}
                 </span>
               </div>
@@ -387,15 +385,15 @@ export function CompetitionCard({
                   </span>
                 ) : (
                   <>
-                    <span style={{ fontSize: '15px', fontWeight: 700, color: '#1a1a2e' }}>
+                    <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--ink)' }}>
                       {new Intl.NumberFormat('en-GB', {
                         style: 'currency',
                         currency: 'GBP',
                         minimumFractionDigits: 2,
                       }).format(ticketPrice)}
                     </span>
-                    <span style={{ fontSize: '11px', color: '#9a9eb0' }}>
-                      {t('perTicket')}
+                    <span style={{ fontSize: '11px', color: 'var(--ink-faint)' }}>
+                      per ticket
                     </span>
                   </>
                 )}
@@ -417,20 +415,20 @@ export function CompetitionCard({
                   borderRadius: 'var(--radius-md)',
                   fontSize: '14px',
                   boxShadow: isActive && !isSoldOut
-                    ? (isFree ? '0 4px 16px rgba(22, 163, 74, 0.3)' : '0 4px 16px rgba(26, 26, 46, 0.2)')
+                    ? (isFree ? '0 4px 16px rgba(22, 163, 74, 0.3)' : 'var(--shadow-sm)')
                     : 'none',
                   outlineColor: categoryColor,
                 }}
               >
                 {isActive && !isSoldOut ? (
                   <>
-                    {isFree ? 'Enter for Free' : isMystery && !isRevealed ? 'Enter the Mystery' : t('enterNow')}
+                    {isFree ? 'Enter for Free' : isMystery && !isRevealed ? 'Enter the Mystery' : 'Enter Now'}
                     <ArrowRight className="w-4 h-4" />
                   </>
                 ) : isSoldOut ? (
-                  t('soldOut')
+                  'Sold Out'
                 ) : (
-                  t('viewDetails')
+                  'View Details'
                 )}
               </button>
             </div>

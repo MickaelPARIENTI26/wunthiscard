@@ -2,8 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,7 +15,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { MobileMenu } from './mobile-menu';
-import { LanguageSwitcher } from '@/components/common/language-switcher';
 
 interface HeaderProps {
   user?: {
@@ -26,18 +24,18 @@ interface HeaderProps {
   } | null;
 }
 
+const navLinks = [
+  { href: '/competitions', label: 'Competitions' },
+  { href: '/how-it-works', label: 'How It Works' },
+  { href: '/faq', label: 'FAQ' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
 export function Header({ user = null }: HeaderProps) {
   const router = useRouter();
-  const t = useTranslations();
+  const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-
-  const navLinks = [
-    { href: '/competitions', label: t('nav.competitions') },
-    { href: '/how-it-works', label: t('nav.howItWorks') },
-    { href: '/faq', label: t('nav.faq') },
-    { href: '/about', label: t('nav.about') },
-    { href: '/contact', label: t('nav.contact') },
-  ];
 
   const handleLogout = () => {
     router.push('/logout');
@@ -53,139 +51,82 @@ export function Header({ user = null }: HeaderProps) {
   };
 
   return (
-    <header
-      className="fixed top-0 w-full"
+    <nav
+      className="sticky top-0 z-50"
       style={{
-        height: '66px',
-        zIndex: 100,
-        background: 'rgba(255, 255, 255, 0.92)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+        background: 'rgba(242, 240, 236, 0.92)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
+        borderBottom: '1.5px solid var(--ink)',
       }}
     >
-      <div className="container mx-auto flex h-full items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          {/* Gold square with W */}
-          <div
-            className="flex items-center justify-center"
-            style={{
-              width: '34px',
-              height: '34px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
-            }}
-          >
-            <span
-              style={{
-                color: '#ffffff',
-                fontSize: '16px',
-                fontWeight: 800,
-                fontFamily: 'var(--font-outfit)',
-              }}
-            >
-              W
-            </span>
-          </div>
-          {/* Text */}
+      <div
+        className="mx-auto flex items-center justify-between py-3 px-5 sm:py-3.5 sm:px-8"
+        style={{ maxWidth: '1440px', gap: '32px' }}
+      >
+        {/* Brand */}
+        <Link
+          href="/"
+          className="flex items-center gap-2.5"
+          style={{ fontFamily: 'var(--display)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.03em' }}
+        >
+          {/* Green square with star */}
           <span
-            className="font-[family-name:var(--font-outfit)]"
+            className="grid place-items-center"
             style={{
-              fontSize: '20px',
+              width: 34,
+              height: 34,
+              background: 'var(--accent)',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '8px',
+              boxShadow: '2px 2px 0 var(--ink)',
               fontWeight: 700,
-              letterSpacing: '-0.5px',
-              color: 'var(--text-primary)',
+              fontSize: '18px',
+              color: 'var(--ink)',
             }}
           >
-            WinUCard
+            ★
           </span>
+          WinUCard
         </Link>
 
-        {/* Desktop Navigation */}
-        <style>{`
-          .header-nav-link {
-            position: relative;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-muted);
-            transition: color 0.2s ease;
-          }
-          .header-nav-link:hover {
-            color: var(--text-primary);
-          }
-          .header-login-btn {
-            padding: 8px 16px;
-            background: #ffffff;
-            border: 1.5px solid #e0e0e4;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-          }
-          .header-login-btn:hover {
-            background: var(--bg-alt);
-            border-color: #d0d0d4;
-          }
-          .header-login-btn:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-          }
-          .header-signup-btn {
-            padding: 8px 20px;
-            background: var(--text-primary);
-            border-radius: 12px;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-          }
-          .header-signup-btn:hover {
-            background: #2a2a3e;
-          }
-          .header-signup-btn:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-          }
-        `}</style>
-        <nav className="hidden items-center gap-1 lg:flex">
+        {/* Desktop nav links */}
+        <div className="hidden lg:flex items-center" style={{ gap: '24px', fontSize: '14px', fontWeight: 500 }}>
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="header-nav-link"
+              className="transition-colors duration-150"
+              style={{
+                padding: '6px 0',
+                borderBottom: `2px solid ${pathname.startsWith(link.href) ? 'var(--ink)' : 'transparent'}`,
+                color: pathname.startsWith(link.href) ? 'var(--ink)' : undefined,
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--hot)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = ''; }}
             >
               {link.label}
             </Link>
           ))}
-        </nav>
+        </div>
 
-        {/* Right side actions */}
-        <div className="flex items-center gap-3">
-          {/* Language Switcher */}
-          <div className="hidden sm:block">
-            <LanguageSwitcher />
-          </div>
-
-          {/* Desktop: User menu or Login/Register */}
-          <div className="hidden lg:flex lg:items-center lg:gap-3">
+        {/* Right side */}
+        <div className="flex items-center gap-2">
+          {/* Desktop auth CTAs or avatar */}
+          <div className="hidden lg:flex lg:items-center lg:gap-2">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-10 w-10 rounded-full p-0 ring-2 ring-transparent transition-all hover:ring-primary/50"
+                    size="icon"
+                    className="relative h-10 w-10 rounded-full p-0"
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.avatarUrl} alt={user.name} />
                       <AvatarFallback
                         className="font-semibold"
-                        style={{
-                          background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
-                          color: '#ffffff',
-                        }}
+                        style={{ background: 'var(--accent)', color: 'var(--ink)' }}
                       >
                         {getInitials(user.name)}
                       </AvatarFallback>
@@ -196,93 +137,53 @@ export function Header({ user = null }: HeaderProps) {
                   className="w-56"
                   align="end"
                   forceMount
-                  style={{
-                    background: '#ffffff',
-                    border: '1px solid #e8e8ec',
-                  }}
+                  style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow-sm)' }}
                 >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        {user.name}
-                      </p>
-                      <p className="text-xs leading-none text-muted-foreground">
-                        {user.email}
-                      </p>
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none" style={{ color: 'var(--ink-faint)' }}>{user.email}</p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-border/50" />
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      {t('common.profile')}
-                    </Link>
+                    <Link href="/profile" className="cursor-pointer"><User className="mr-2 h-4 w-4" />Profile</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/my-tickets" className="cursor-pointer">
-                      <Ticket className="mr-2 h-4 w-4" />
-                      {t('common.myTickets')}
-                    </Link>
+                    <Link href="/my-tickets" className="cursor-pointer"><Ticket className="mr-2 h-4 w-4" />My Tickets</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/my-wins" className="cursor-pointer">
-                      <Trophy className="mr-2 h-4 w-4 text-primary" />
-                      {t('common.myWins')}
-                    </Link>
+                    <Link href="/my-wins" className="cursor-pointer"><Trophy className="mr-2 h-4 w-4" />My Wins</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/referrals" className="cursor-pointer">
-                      <Gift className="mr-2 h-4 w-4" />
-                      Referrals
-                    </Link>
+                    <Link href="/referrals" className="cursor-pointer"><Gift className="mr-2 h-4 w-4" />Referrals</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer">
-                      <Settings className="mr-2 h-4 w-4" />
-                      {t('common.settings')}
-                    </Link>
+                    <Link href="/settings" className="cursor-pointer"><Settings className="mr-2 h-4 w-4" />Settings</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-border/50" />
-                  <DropdownMenuItem
-                    className="cursor-pointer text-destructive focus:text-destructive"
-                    onClick={handleLogout}
-                  >
-                    {t('common.logout')}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="cursor-pointer text-[var(--hot)]" onClick={handleLogout}>
+                    Log Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
-                {/* Login Button */}
-                <button
-                  onClick={() => router.push('/login')}
-                  className="header-login-btn"
-                >
-                  {t('common.login')}
-                </button>
-
-                {/* Sign Up Button */}
-                <button
-                  onClick={() => router.push('/register')}
-                  className="header-signup-btn"
-                >
-                  {t('common.register')}
-                </button>
+                <Button variant="ghost" size="sm" onClick={() => router.push('/login')}>Log In</Button>
+                <Button variant="primary" size="sm" onClick={() => router.push('/register')}>Sign Up</Button>
               </>
             )}
           </div>
 
-          {/* Mobile: Hamburger menu */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden relative"
+          {/* Mobile hamburger */}
+          <button
+            className="lg:hidden grid place-items-center"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
-            style={{ color: 'var(--text-muted)' }}
+            style={{ width: 40, height: 40, borderRadius: '8px' }}
           >
             <Menu className="h-5 w-5" />
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -293,6 +194,6 @@ export function Header({ user = null }: HeaderProps) {
         user={user}
         navLinks={navLinks}
       />
-    </header>
+    </nav>
   );
 }

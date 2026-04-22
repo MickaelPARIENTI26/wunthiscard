@@ -335,16 +335,16 @@ export function CheckoutClient({
         style={{
           minHeight: 'var(--btn-height-lg)',
           padding: '0 24px',
-          borderRadius: 'var(--radius-lg)',
-          background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
-          color: '#ffffff',
+          background: 'var(--ink)',
+          color: 'var(--bg)',
           fontSize: '16px',
           fontWeight: 600,
           cursor: isProcessing || !qcmPassed ? 'not-allowed' : 'pointer',
           opacity: isProcessing || !qcmPassed ? 0.6 : 1,
-          transition: 'all 0.3s',
-          boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
-          outlineColor: 'var(--accent)',
+          transition: 'all 0.15s',
+          border: '1.5px solid var(--ink)',
+          borderRadius: '12px',
+          boxShadow: 'var(--shadow)',
         }}
       >
         {isProcessing ? (
@@ -368,7 +368,7 @@ export function CheckoutClient({
           transition: left 0.6s ease;
         }
         .checkout-btn:hover:not(:disabled)::after { left: 100%; }
-        .checkout-btn:hover:not(:disabled) { box-shadow: 0 12px 36px rgba(26, 26, 46, 0.3) !important; }
+        .checkout-btn:hover:not(:disabled) { box-shadow: var(--shadow-lg) !important; }
       `}</style>
 
       {/* Security Note */}

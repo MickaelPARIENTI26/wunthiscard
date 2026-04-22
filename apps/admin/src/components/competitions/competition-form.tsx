@@ -38,6 +38,15 @@ interface Prize {
   grade: string;
 }
 
+function updatePrize(prizes: Prize[], index: number, field: keyof Prize, value: string | number): Prize[] {
+  const updated = [...prizes];
+  const existing = updated[index];
+  if (existing) {
+    updated[index] = { ...existing, [field]: value };
+  }
+  return updated;
+}
+
 // Zod validation schema for competition form
 const competitionFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
@@ -620,11 +629,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                             <Input
                               placeholder="e.g. Charizard PSA 10"
                               value={prize.title}
-                              onChange={(e) => {
-                                const updated = [...prizes];
-                                updated[index] = { ...updated[index], title: e.target.value };
-                                setPrizes(updated);
-                              }}
+                              onChange={(e) => setPrizes(updatePrize(prizes, index, 'title', e.target.value))}
                             />
                           </div>
                           <div className="space-y-1">
@@ -636,8 +641,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                               placeholder="500.00"
                               value={prize.value || ''}
                               onChange={(e) => {
-                                const updated = [...prizes];
-                                updated[index] = { ...updated[index], value: parseFloat(e.target.value) || 0 };
+                                const updated = updatePrize(prizes, index, 'value', parseFloat(e.target.value) || 0);
                                 setPrizes(updated);
                                 const total = updated.reduce((sum, p) => sum + (p.value || 0), 0);
                                 setValue('prizeValue', total);
@@ -650,11 +654,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                               type="url"
                               placeholder="https://..."
                               value={prize.imageUrl}
-                              onChange={(e) => {
-                                const updated = [...prizes];
-                                updated[index] = { ...updated[index], imageUrl: e.target.value };
-                                setPrizes(updated);
-                              }}
+                              onChange={(e) => setPrizes(updatePrize(prizes, index, 'imageUrl', e.target.value))}
                             />
                           </div>
                           <div className="space-y-1">
@@ -662,11 +662,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                             <Input
                               placeholder="PSA # or BGS #"
                               value={prize.certification}
-                              onChange={(e) => {
-                                const updated = [...prizes];
-                                updated[index] = { ...updated[index], certification: e.target.value };
-                                setPrizes(updated);
-                              }}
+                              onChange={(e) => setPrizes(updatePrize(prizes, index, 'certification', e.target.value))}
                             />
                           </div>
                           <div className="space-y-1 md:col-span-2">
@@ -674,11 +670,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                             <Input
                               placeholder="PSA 10, BGS 9.5, etc."
                               value={prize.grade}
-                              onChange={(e) => {
-                                const updated = [...prizes];
-                                updated[index] = { ...updated[index], grade: e.target.value };
-                                setPrizes(updated);
-                              }}
+                              onChange={(e) => setPrizes(updatePrize(prizes, index, 'grade', e.target.value))}
                             />
                           </div>
                         </div>

@@ -630,18 +630,18 @@ export function GuestCheckoutForm({
             disabled={isLoading}
             onClick={handleSubmit(onSubmit)}
             style={{
-              minHeight: 'var(--btn-height-lg)',
+              minHeight: '56px',
               padding: '0 24px',
-              borderRadius: 'var(--radius-btn)',
-              background: 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
-              color: '#ffffff',
+              borderRadius: '12px',
+              background: 'var(--ink)',
+              color: 'var(--bg)',
               fontSize: '16px',
               fontWeight: 600,
               cursor: isLoading ? 'not-allowed' : 'pointer',
               opacity: isLoading ? 0.6 : 1,
-              transition: 'all 0.3s',
-              boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
-              outlineColor: 'var(--accent)',
+              transition: 'all 0.15s',
+              border: '1.5px solid var(--ink)',
+              boxShadow: 'var(--shadow)',
             }}
           >
             {isLoading ? (

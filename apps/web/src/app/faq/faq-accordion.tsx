@@ -27,14 +27,14 @@ export function FaqAccordion({ items }: FaqAccordionProps) {
         <AccordionItem
           key={item.id}
           value={item.id}
-          className="border-b border-[#e8e8ec] last:border-b-0"
+          className="border-b border-[var(--line)] last:border-b-0"
         >
           <AccordionTrigger
             className="text-left px-6 py-4 hover:no-underline"
             style={{
               fontSize: '15px',
               fontWeight: 600,
-              color: '#1a1a2e',
+              color: 'var(--ink)',
             }}
           >
             {item.question}

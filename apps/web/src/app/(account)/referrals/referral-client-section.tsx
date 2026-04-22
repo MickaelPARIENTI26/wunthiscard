@@ -8,7 +8,7 @@ interface ReferralClientSectionProps {
   referralCode: string;
 }
 
-export function ReferralClientSection({ referralLink, referralCode }: ReferralClientSectionProps) {
+export function ReferralClientSection({ referralLink, referralCode: _referralCode }: ReferralClientSectionProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -44,10 +44,10 @@ export function ReferralClientSection({ referralLink, referralCode }: ReferralCl
             flex: 1,
             padding: '10px 14px',
             borderRadius: '10px',
-            border: '1px solid rgba(0, 0, 0, 0.08)',
-            background: '#F7F7FA',
+            border: '1.5px solid var(--ink)',
+            background: 'var(--bg-2)',
             fontSize: '14px',
-            color: '#1a1a2e',
+            color: 'var(--ink)',
             outline: 'none',
           }}
         />
@@ -57,7 +57,7 @@ export function ReferralClientSection({ referralLink, referralCode }: ReferralCl
             padding: '10px 20px',
             borderRadius: '10px',
             border: 'none',
-            background: copied ? '#16A34A' : 'linear-gradient(135deg, #1a1a2e, #2a2e4e)',
+            background: copied ? 'var(--accent)' : 'var(--ink)',
             color: '#ffffff',
             fontSize: '14px',
             fontWeight: 600,
@@ -133,7 +133,7 @@ export function ReferralClientSection({ referralLink, referralCode }: ReferralCl
             gap: '6px',
             padding: '8px 16px',
             borderRadius: '10px',
-            background: '#6b7088',
+            background: 'var(--ink-dim)',
             color: '#ffffff',
             fontSize: '13px',
             fontWeight: 600,

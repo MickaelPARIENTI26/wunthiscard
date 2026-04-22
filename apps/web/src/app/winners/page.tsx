@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
-import { Trophy, Calendar, Ticket, ArrowRight, Filter } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { prisma } from '@/lib/db';
-import { Card, CardContent } from '@/components/ui/card';
+import { Suspense } from 'react';
 import { WinnersFilter } from './winners-filter';
 import { WinnersPagination } from './winners-pagination';
+import { HomeCTABand } from '@/components/home/home-cta-band';
 import { formatDate, formatPrice } from '@winucard/shared/utils';
 
 export const metadata: Metadata = {
@@ -110,163 +110,108 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
     await Promise.all([getWinners(category, page), getCategories()]);
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 to-background px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <div className="mb-4 flex justify-center">
-            <Trophy className="h-12 w-12 text-primary" />
-          </div>
-          <h1 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl" style={{ color: '#f5f5f5' }}>
-            Our Winners
-          </h1>
-          <p className="mx-auto max-w-2xl text-lg text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Real prizes, real winners. Check out the lucky collectors who have
-            won amazing cards and memorabilia through WinUCard.
-          </p>
+    <main>
+      {/* Page Header */}
+      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
+        <div className="inline-flex items-center gap-2.5 mb-4" style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>
+          Hall of Fame
         </div>
-      </section>
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
+          Our Winners
+        </h1>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '500px', lineHeight: 1.5 }}>
+          Real winners, real cards, real wins. Every draw verified on TikTok Live.
+        </p>
+      </header>
 
-      {/* Filter Section */}
-      <section className="border-b px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground" style={{ color: '#a0a0a0' }}>
-              <Filter className="h-4 w-4" />
-              <span>
-                Showing {winners.length} of {totalCount} winner
-                {totalCount !== 1 ? 's' : ''}
-              </span>
+      {/* Stats + Winners */}
+      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+        <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '1100px' }}>
+          {/* Stats cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-8">
+            <div style={{ background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Total prizes</div>
+              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>£2.4M</div>
             </div>
-            <WinnersFilter
-              categories={categories}
-              categoryDisplayNames={categoryDisplayNames}
-              currentCategory={category}
-            />
+            <div style={{ background: 'var(--hot)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Cards won</div>
+              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
+            </div>
+            <div style={{ background: 'var(--ink)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--accent)' }}>Happy winners</div>
+              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Winners Grid */}
-      <section className="px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
+          {/* Filter */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>
+              Showing {winners.length} of {totalCount} winner{totalCount !== 1 ? 's' : ''}
+            </span>
+            <Suspense fallback={null}>
+              <WinnersFilter
+                categories={categories}
+                categoryDisplayNames={categoryDisplayNames}
+                currentCategory={category}
+              />
+            </Suspense>
+          </div>
+
+          {/* Winners table */}
           {winners.length > 0 ? (
-            <>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {winners.map((win) => (
-                  <Card
-                    key={win.id}
-                    className="overflow-hidden transition-shadow hover:shadow-lg"
-                  >
-                    <div className="relative aspect-square bg-muted">
-                      {win.competition.mainImageUrl ? (
-                        <Image
-                          src={win.competition.mainImageUrl}
-                          alt={win.competition.title}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center">
-                          <Trophy className="h-16 w-16 text-muted-foreground/30" />
-                        </div>
-                      )}
-                      <div className="absolute right-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
-                        {categoryDisplayNames[win.competition.category] ||
-                          win.competition.category}
-                      </div>
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="mb-2 line-clamp-2 font-semibold" style={{ color: '#f5f5f5' }}>
-                        {win.competition.title}
-                      </h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                          <Trophy className="h-4 w-4 text-primary" />
-                          <span>
-                            Won by{' '}
-                            <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
-                              {win.user
-                                ? anonymizeWinnerInitials(
-                                    win.user.firstName,
-                                    win.user.lastName
-                                  )
-                                : 'Lucky Winner'}
-                            </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                          <Ticket className="h-4 w-4" />
-                          <span>
-                            Ticket #{win.ticketNumber} - Prize value{' '}
-                            <span className="font-medium text-foreground" style={{ color: '#f5f5f5' }}>
-                              {formatPrice(
-                                Number(win.competition.prizeValue)
-                              )}
-                            </span>
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                          <Calendar className="h-4 w-4" />
-                          <span>{formatDate(win.createdAt)}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+            <div style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
+              {/* Table header */}
+              <div className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '16px 24px', borderBottom: '1.5px solid var(--ink)', background: 'var(--ink)', color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+                <span>Date</span><span>Winner</span><span>Prize</span><span>Ticket</span><span style={{ textAlign: 'right' }}>Value</span>
               </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="mt-12">
-                  <WinnersPagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    category={category}
-                  />
+              {/* Rows */}
+              {winners.map((win, i) => (
+                <div key={win.id} className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '14px 24px', borderBottom: i < winners.length - 1 ? '1px dashed var(--line-2)' : 'none', alignItems: 'center', fontSize: '14px' }}>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--ink-dim)' }}>{formatDate(win.createdAt)}</span>
+                  <span>
+                    <b>{win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Lucky Winner'}</b>
+                  </span>
+                  <span>{win.competition.title}</span>
+                  <span style={{ fontFamily: 'var(--mono)', fontSize: '12px' }}>#{win.ticketNumber}</span>
+                  <span style={{ textAlign: 'right', fontFamily: 'var(--display)', fontWeight: 700, letterSpacing: '-0.01em' }}>{formatPrice(Number(win.competition.prizeValue))}</span>
                 </div>
-              )}
-            </>
+              ))}
+              {/* Mobile cards */}
+              {winners.map((win) => (
+                <div key={`m-${win.id}`} className="sm:hidden" style={{ padding: '16px 20px', borderBottom: '1px dashed var(--line-2)' }}>
+                  <div className="flex justify-between items-start mb-2">
+                    <b>{win.competition.title}</b>
+                    <span style={{ fontFamily: 'var(--display)', fontWeight: 700 }}>{formatPrice(Number(win.competition.prizeValue))}</span>
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
+                    Won by {win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Winner'} · Ticket #{win.ticketNumber} · {formatDate(win.createdAt)}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="rounded-lg border bg-card p-12 text-center">
-              <Trophy className="mx-auto mb-4 h-16 w-16 text-muted-foreground/30" />
-              <h3 className="mb-2 text-lg font-semibold" style={{ color: '#f5f5f5' }}>No Winners Yet</h3>
-              <p className="mb-6 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-                {category
-                  ? 'No winners in this category yet. Be the first!'
-                  : 'Our first winners will be announced soon. Enter a competition to be in with a chance!'}
+            <div className="text-center" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
+              <Trophy className="mx-auto mb-4 h-16 w-16" style={{ color: 'var(--ink-faint)' }} />
+              <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Winners Yet</h3>
+              <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '24px' }}>
+                {category ? 'No winners in this category yet. Be the first!' : 'Our first winners will be announced soon.'}
               </p>
-              <Link
-                href="/competitions"
-                className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-              >
+              <Link href="/competitions" className="inline-flex items-center gap-2 font-semibold" style={{ padding: '11px 18px', background: 'var(--ink)', color: 'var(--bg)', border: '1.5px solid var(--ink)', borderRadius: '10px', boxShadow: 'var(--shadow-sm)' }}>
                 View Competitions
               </Link>
+            </div>
+          )}
+
+          {totalPages > 1 && (
+            <div className="mt-12">
+              <WinnersPagination currentPage={currentPage} totalPages={totalPages} category={category} />
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-primary/5 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl" style={{ color: '#f5f5f5' }}>
-            You Could Be Next!
-          </h2>
-          <p className="mb-8 text-muted-foreground" style={{ color: '#a0a0a0' }}>
-            Browse our current competitions and enter for your chance to win
-            amazing collectible cards and memorabilia.
-          </p>
-          <Link
-            href="/competitions"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90"
-          >
-            Browse Competitions
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+      {/* CTA */}
+      <HomeCTABand />
     </main>
   );
 }

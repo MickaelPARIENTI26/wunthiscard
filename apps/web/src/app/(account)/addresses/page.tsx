@@ -23,11 +23,15 @@ export default async function AddressesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold md:text-3xl">Addresses</h1>
-        <p className="mt-1 text-muted-foreground">
-          Manage your delivery addresses
-        </p>
+      <div className="flex flex-wrap justify-between items-center gap-4">
+        <div>
+          <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+            Delivery Addresses
+          </h1>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
+            Manage your delivery addresses
+          </p>
+        </div>
       </div>
 
       <AddressList

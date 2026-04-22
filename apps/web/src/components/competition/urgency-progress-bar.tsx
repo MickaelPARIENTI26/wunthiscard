@@ -43,7 +43,7 @@ export function UrgencyProgressBar({
 
       {/* Labels */}
       <div className="flex justify-between items-center mb-2">
-        <span style={{ fontSize: '13px', color: '#6b7088' }}>
+        <span style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
           {isLastFew ? (
             <span style={{ color: '#EF4444', fontWeight: 700 }}>
               Last {ticketsRemaining} tickets!
@@ -57,7 +57,7 @@ export function UrgencyProgressBar({
           <span
             style={{
               fontSize: '13px',
-              color: isAlmostGone ? '#EF4444' : '#6b7088',
+              color: isAlmostGone ? 'var(--hot)' : 'var(--ink-dim)',
               fontWeight: isAlmostGone ? 700 : 400,
             }}
           >

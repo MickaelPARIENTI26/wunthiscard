@@ -93,18 +93,18 @@ const inputStyle = {
   width: '100%',
   padding: '12px 16px',
   fontSize: '14px',
-  background: '#F5F5F7',
+  background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '12px',
-  color: '#1a1a2e',
+  borderRadius: '10px',
+  color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
 };
 
 // Focus/blur handlers for input styling
 const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-  e.currentTarget.style.borderColor = '#F0B90B';
-  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+  e.currentTarget.style.borderColor = 'var(--accent)';
+  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
 };
 
 const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -231,9 +231,9 @@ export function RegisterForm() {
           style={{
             padding: '10px 14px',
             fontSize: '13px',
-            color: 'var(--text-muted, #6b7088)',
-            background: 'rgba(240, 185, 11, 0.06)',
-            border: '1px solid rgba(240, 185, 11, 0.2)',
+            color: 'var(--ink-dim)',
+            background: 'rgba(0, 199, 106, 0.06)',
+            border: '1px solid rgba(0, 199, 106, 0.2)',
             borderRadius: '10px',
           }}
         >
@@ -251,7 +251,7 @@ export function RegisterForm() {
             color: '#DC2626',
             background: 'rgba(220, 38, 38, 0.08)',
             border: '1px solid rgba(220, 38, 38, 0.2)',
-            borderRadius: '12px',
+            borderRadius: '10px',
           }}
         >
           {serverError}
@@ -263,7 +263,7 @@ export function RegisterForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="firstName"
-              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
             >
               First name
             </label>
@@ -291,7 +291,7 @@ export function RegisterForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="lastName"
-              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
             >
               Last name
             </label>
@@ -320,7 +320,7 @@ export function RegisterForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="email"
-            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
           >
             Email
           </label>
@@ -348,7 +348,7 @@ export function RegisterForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="password"
-            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
           >
             Password
           </label>
@@ -373,7 +373,7 @@ export function RegisterForm() {
           {password && (
             <div className="space-y-2 mt-2">
               <div className="flex items-center justify-between" style={{ fontSize: '12px' }}>
-                <span style={{ color: '#6b7088' }}>Password strength</span>
+                <span style={{ color: 'var(--ink-dim)' }}>Password strength</span>
                 <span style={{ color: getPasswordStrengthColor(passwordStrength), fontWeight: 500 }}>
                   {getPasswordStrengthLabel(passwordStrength)}
                 </span>
@@ -382,7 +382,7 @@ export function RegisterForm() {
                 style={{
                   height: '4px',
                   borderRadius: '2px',
-                  background: '#e8e8ec',
+                  background: 'var(--line)',
                   overflow: 'hidden',
                 }}
               >
@@ -402,7 +402,7 @@ export function RegisterForm() {
                   <li
                     key={req.label}
                     className="flex items-center gap-1.5"
-                    style={{ color: req.met ? '#22C55E' : '#6b7088' }}
+                    style={{ color: req.met ? 'var(--accent)' : 'var(--ink-dim)' }}
                   >
                     {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                     {req.label}
@@ -420,7 +420,7 @@ export function RegisterForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="confirmPassword"
-            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
           >
             Confirm Password
           </label>
@@ -448,7 +448,7 @@ export function RegisterForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="dateOfBirth"
-            style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
           >
             Date of Birth
           </label>
@@ -468,7 +468,7 @@ export function RegisterForm() {
               />
             );
           })()}
-          <p style={{ fontSize: '12px', color: '#6b7088' }}>You must be at least 18 years old</p>
+          <p style={{ fontSize: '12px', color: 'var(--ink-dim)' }}>You must be at least 18 years old</p>
           {errors.dateOfBirth && (
             <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.dateOfBirth.message}</p>
           )}
@@ -486,7 +486,7 @@ export function RegisterForm() {
                 width: '18px',
                 height: '18px',
                 marginTop: '2px',
-                accentColor: '#F0B90B',
+                accentColor: 'var(--accent)',
               }}
             />
             <span style={{ fontSize: '13px', color: '#555', lineHeight: 1.5 }}>
@@ -534,8 +534,8 @@ export function RegisterForm() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '12px',
-            background: '#1a1a2e',
+            borderRadius: '10px',
+            background: 'var(--ink)',
             color: '#ffffff',
             fontSize: '15px',
             fontWeight: 600,
@@ -562,15 +562,15 @@ export function RegisterForm() {
               className="absolute inset-0 flex items-center"
               style={{ top: '50%', transform: 'translateY(-50%)' }}
             >
-              <span style={{ width: '100%', height: '1px', background: '#e0e0e4' }} />
+              <span style={{ width: '100%', height: '1px', background: 'var(--line)' }} />
             </div>
             <div className="relative flex justify-center">
               <span
                 style={{
-                  background: '#ffffff',
+                  background: 'var(--surface)',
                   padding: '0 12px',
                   fontSize: '12px',
-                  color: '#6b7088',
+                  color: 'var(--ink-dim)',
                   textTransform: 'uppercase',
                 }}
               >
@@ -586,10 +586,10 @@ export function RegisterForm() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '12px',
+              borderRadius: '10px',
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
-              color: '#1a1a2e',
+              color: 'var(--ink)',
               fontSize: '15px',
               fontWeight: 500,
               cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',
@@ -628,7 +628,7 @@ export function RegisterForm() {
         </>
       )}
 
-      <p className="text-center" style={{ fontSize: '14px', color: '#6b7088' }}>
+      <p className="text-center" style={{ fontSize: '14px', color: 'var(--ink-dim)' }}>
         Already have an account?{' '}
         <Link
           href={callbackUrl !== '/' ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/login'}

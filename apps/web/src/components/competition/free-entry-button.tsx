@@ -70,8 +70,8 @@ export function FreeEntryButton({
             minHeight: 'var(--btn-height-lg)',
             padding: '0 24px',
             borderRadius: 'var(--radius-btn)',
-            background: '#E0E0E4',
-            color: '#9a9eb0',
+            background: 'var(--bg-3)',
+            color: 'var(--ink-faint)',
             fontSize: '16px',
             fontWeight: 600,
             cursor: 'not-allowed',
@@ -122,14 +122,14 @@ export function FreeEntryButton({
           minHeight: 'var(--btn-height-lg)',
           padding: '0 24px',
           borderRadius: 'var(--radius-btn)',
-          background: '#1a1a2e',
+          background: 'var(--ink)',
           color: '#ffffff',
           fontSize: '16px',
           fontWeight: 600,
           cursor: isSubmitting || isLoading ? 'not-allowed' : 'pointer',
           opacity: isSubmitting || isLoading ? 0.7 : 1,
           transition: 'all 0.3s',
-          boxShadow: '0 8px 28px rgba(26, 26, 46, 0.2)',
+          boxShadow: 'var(--shadow)',
         }}
       >
         {isSubmitting ? (

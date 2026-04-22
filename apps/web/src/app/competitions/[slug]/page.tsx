@@ -1,17 +1,13 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, Trophy, Calendar, Award, Play } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
 import { FreeEntryButton } from '@/components/competition/free-entry-button';
-import { FreeEntryAccordion } from '@/components/competition/free-entry-accordion';
-import { UrgencyBanner } from '@/components/competition/urgency-banner';
-import { MediaGallery, type MediaItem } from '@/components/competition/media-gallery';
-import { LiveCountdown } from '@/components/competition/live-countdown';
-import { UrgencyProgressBar } from '@/components/competition/urgency-progress-bar';
-import { SafeHtml } from '@/components/common/safe-html';
+import { InlineCountdown } from '@/components/common/inline-countdown';
+import { TrustStrip } from '@/components/home/trust-strip';
 import type { CompetitionCategory, CompetitionPrize } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
 
@@ -28,15 +24,15 @@ const CATEGORY_LABELS: Record<CompetitionCategory, string> = {
 };
 
 const CATEGORY_COLORS: Record<CompetitionCategory, string> = {
-  POKEMON: '#F0B90B',
-  ONE_PIECE: '#DC2626',
-  SPORTS_BASKETBALL: '#F97316',
-  SPORTS_FOOTBALL: '#22C55E',
-  SPORTS_OTHER: '#3B82F6',
-  MEMORABILIA: '#8B5CF6',
+  POKEMON: '#ffb80a',
+  ONE_PIECE: '#ff3d57',
+  SPORTS_BASKETBALL: '#0a5fff',
+  SPORTS_FOOTBALL: '#00c76a',
+  SPORTS_OTHER: '#0a5fff',
+  MEMORABILIA: '#b37cff',
   YUGIOH: '#6366F1',
-  MTG: '#1a1a2e',
-  OTHER: '#6b7088',
+  MTG: '#0d0d0d',
+  OTHER: '#8a8a8a',
 };
 
 const CATEGORY_EMOJIS: Record<CompetitionCategory, string> = {
@@ -223,7 +219,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
   const category = competition.category as CompetitionCategory;
   const categoryColor = CATEGORY_COLORS[category];
-  const categoryBgColor = CATEGORY_BG_COLORS[category];
+  const _categoryBgColor = CATEGORY_BG_COLORS[category];
   const isFree = competition.isFree;
   const hasTotalTickets = competition.totalTickets !== null;
   const soldPercentage = hasTotalTickets
@@ -250,916 +246,215 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
     maximumFractionDigits: 0,
   }).format(competition.prizeValue);
 
-  // Build media array from galleryUrls and videoUrl
-  const mediaItems: MediaItem[] = [];
 
-  // Add main image first if it exists
-  if (competition.mainImageUrl) {
-    mediaItems.push({
-      type: 'image',
-      src: competition.mainImageUrl,
-      alt: `${competition.title} - Main image`,
-    });
-  }
-
-  // Add gallery images
-  if (competition.galleryUrls && competition.galleryUrls.length > 0) {
-    competition.galleryUrls.forEach((url, index) => {
-      mediaItems.push({
-        type: 'image',
-        src: url,
-        alt: `${competition.title} - Image ${index + 2}`,
-      });
-    });
-  }
-
-  // Add video at the end if it exists
-  if (competition.videoUrl) {
-    mediaItems.push({
-      type: 'video',
-      src: competition.videoUrl,
-      thumbnail: competition.mainImageUrl || undefined,
-    });
-  }
+  const gameClass = category.toLowerCase().replace(/_/g, '-').replace('sports-', '');
+  const psa = competition.grade ?? 'PSA 10';
 
   return (
-    <main
-      className="min-h-screen relative overflow-hidden"
-      style={{
-        background: `linear-gradient(180deg, rgba(${categoryBgColor},0.04) 0%, #ffffff 40%, #ffffff 100%)`,
-        paddingTop: '100px',
-      }}
-    >
-      {/* Background ambiance blobs - ultra subtle */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '-100px',
-          right: '-100px',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: `rgba(${categoryBgColor},0.05)`,
-          filter: 'blur(80px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '200px',
-          left: '-150px',
-          width: '350px',
-          height: '350px',
-          borderRadius: '50%',
-          background: `rgba(${categoryBgColor},0.03)`,
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+    <main>
+      {/* Back */}
+      <div className="comp-back">
+        <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
+          ← Back to Competitions
+        </Link>
+      </div>
 
-      <div className="container mx-auto px-4 relative z-10" style={{ maxWidth: '1100px' }}>
-        {/* Main Content - 2 Column Layout */}
-        <div className="flex flex-col lg:flex-row gap-10">
-          {/* Left Column - Media Gallery (45%) */}
-          <div className="lg:w-[45%]">
-            {/* Media Gallery or Mystery Visual */}
-            {isMysteryUnrevealed ? (
-              <div
-                style={{
-                  aspectRatio: '3/4',
-                  background: `linear-gradient(160deg, ${categoryColor}30, ${categoryColor}, ${categoryColor}30)`,
-                  borderRadius: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <style>{`
-                  @keyframes mysteryDetailPulse {
-                    0%, 100% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                  }
-                `}</style>
-                <span
-                  style={{
-                    color: '#ffffff',
-                    fontSize: '120px',
-                    fontWeight: 900,
-                    textShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                    animation: 'mysteryDetailPulse 3s ease-in-out infinite',
-                    userSelect: 'none',
-                  }}
-                >
-                  ?
-                </span>
+      {/* HERO */}
+      <section className="comp-hero">
+        <div className="comp-hero-grid">
+          {/* LEFT: Card visual */}
+          <div className="comp-hero-visual">
+            <div className={`comp-hero-frame game-${gameClass}`}>
+              <div className="comp-hero-marquee">
+                ★ LIVE DRAW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE DRAW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE DRAW ★
               </div>
-            ) : (
-              <MediaGallery
-                media={mediaItems}
-                fallbackImage={competition.mainImageUrl}
-                fallbackAlt={competition.title}
+              <div className="comp-hero-imgwrap">
+                {competition.mainImageUrl && (
+                  <img src={competition.mainImageUrl} alt={competition.title} className="comp-hero-img" />
+                )}
+              </div>
+              <div className="comp-hero-badges">
+                <span className={`comp-game ${gameClass}`} style={{ position: 'static' }}>{CATEGORY_LABELS[category]}</span>
+                <span className="comp-hero-psa">{psa}</span>
+              </div>
+            </div>
+
+            {/* Meta card below image */}
+            <div className="comp-hero-meta-card">
+              <p className="comp-desc">{competition.descriptionShort}</p>
+              <div className="comp-stats-mini">
+                <div>
+                  <div className="comp-value-label">Card value</div>
+                  <div className="comp-stats-mini-v">{formattedPrizeValue}</div>
+                </div>
+                <div>
+                  <div className="comp-value-label">Participants</div>
+                  <div className="comp-stats-mini-v">{competition.soldTickets.toLocaleString('en-GB')}</div>
+                </div>
+                <div>
+                  <div className="comp-value-label">Per ticket</div>
+                  <div className="comp-stats-mini-v">{isFree ? 'FREE' : formatPrice(competition.ticketPrice)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Title + progress + inline ticket picker */}
+          <div className="comp-hero-info">
+            <div
+              className="inline-flex items-center gap-2.5"
+              style={{ padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)', borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '14px' }}
+            >
+              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+              {isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'} · #WUC-{String(competition.soldTickets).padStart(5, '0')}
+            </div>
+
+            <h1 className="comp-detail-title">
+              {isMysteryUnrevealed ? `Mystery ${CATEGORY_LABELS[category]} Card` : competition.title}
+            </h1>
+
+            {/* Progress + countdown */}
+            {hasTotalTickets && (
+              <div className="comp-progress-combo">
+                <div className="comp-progress-head">
+                  <span>
+                    <b style={{ fontFamily: 'var(--display)', fontSize: '22px', letterSpacing: '-0.02em' }}>{ticketsRemaining.toLocaleString('en-GB')}</b>
+                    <span style={{ color: 'var(--ink-dim)', fontSize: '13px', marginLeft: '6px' }}>/ {competition.totalTickets!.toLocaleString('en-GB')} tickets left</span>
+                  </span>
+                  <span className="comp-progress-pct">{soldPercentage}% sold</span>
+                </div>
+                <div className="comp-hero-bar">
+                  <div className="comp-hero-bar-fill" style={{ width: `${Math.max(soldPercentage, 3)}%` }} />
+                </div>
+                <div className="comp-progress-end">
+                  <span className="comp-progress-end-l">Draw ends in</span>
+                  <span className="comp-progress-end-v">
+                    <InlineCountdown targetDate={competition.drawDate} />
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Inline Step 01: ticket picker (active comps only) */}
+            {isActive && !isFree && (
+              <SimpleTicketSelector
+                competitionId={competition.id}
+                competitionSlug={competition.slug}
+                ticketPrice={competition.ticketPrice}
+                maxTicketsPerUser={competition.maxTicketsPerUser}
+                availableTicketCount={availableTicketCount}
+                userTicketCount={userTicketCount}
                 categoryColor={categoryColor}
-                categoryEmoji={CATEGORY_EMOJIS[category]}
+                referralFreeTickets={referralFreeTickets}
               />
             )}
 
-            {/* Back Link */}
-            <Link
-              href="/competitions"
-              className="mt-4 inline-flex items-center gap-1 transition-colors hover:text-[#1a1a2e]"
-              style={{ fontSize: '14px', color: '#6b7088' }}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Back to Competitions
-            </Link>
-          </div>
-
-          {/* Right Column - Details (55%) */}
-          <div className="lg:w-[55%] space-y-5">
-            {/* Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Category Badge - Floating effect */}
-              <span
-                style={{
-                  padding: '5px 14px',
-                  borderRadius: '8px',
-                  background: categoryColor,
-                  color: '#ffffff',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  boxShadow: `0 4px 12px ${categoryColor}40`,
-                }}
-              >
-                {CATEGORY_LABELS[category]}
-              </span>
-
-              {/* Mystery Badge */}
-              {isMysteryUnrevealed && (
-                <span
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '8px',
-                    background: '#8B5CF6',
-                    color: '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)',
-                  }}
-                >
-                  Mystery Card
-                </span>
-              )}
-              {isMysteryRevealed && (
-                <span
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '8px',
-                    background: '#16A34A',
-                    color: '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  REVEALED
-                </span>
-              )}
-
-              {/* Free Entry Badge */}
-              {isFree && (
-                <span
-                  style={{
-                    padding: '6px 16px',
-                    borderRadius: '8px',
-                    background: '#16A34A',
-                    color: '#ffffff',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  FREE ENTRY
-                </span>
-              )}
-
-              {/* Status Badge - Live with pulsing dot */}
-              {isActive && (
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '5px 14px',
-                    borderRadius: '8px',
-                    background: 'rgba(22, 163, 74, 0.1)',
-                    color: '#16A34A',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    boxShadow: '0 4px 12px rgba(22, 163, 74, 0.2)',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: '#16A34A',
-                      animation: 'livePulse 1.5s ease-in-out infinite',
-                    }}
-                  />
-                  Live
-                </span>
-              )}
-              {isUpcoming && (
-                <span
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '8px',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    color: '#3B82F6',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                  }}
-                >
-                  Coming Soon
-                </span>
-              )}
-              {isSoldOut && (
-                <span
-                  style={{
-                    padding: '5px 14px',
-                    borderRadius: '8px',
-                    background: 'rgba(249, 115, 22, 0.1)',
-                    color: '#F97316',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                  }}
-                >
-                  Sold Out
-                </span>
-              )}
-            </div>
-
-            {/* Title */}
-            <h1
-              className="font-[family-name:var(--font-outfit)]"
-              style={{ fontSize: '26px', fontWeight: 700, color: '#1a1a2e', lineHeight: 1.3 }}
-            >
-              {isMysteryUnrevealed
-                ? `Mystery ${CATEGORY_LABELS[category]} Card`
-                : competition.title}
-            </h1>
-
-            {/* Prize Value - WOW effect */}
-            <div>
-              {isMysteryUnrevealed ? (
-                <>
-                  <p
-                    className="font-[family-name:var(--font-outfit)]"
-                    style={{
-                      fontSize: '42px',
-                      fontWeight: 900,
-                      color: '#1a1a2e',
-                      lineHeight: 1.1,
-                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
-                    }}
-                  >
-                    Guaranteed minimum: {competition.minimumValue != null
-                      ? formatPrice(competition.minimumValue)
-                      : formattedPrizeValue}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '14px',
-                      fontStyle: 'italic',
-                      color: 'var(--text-muted)',
-                      marginTop: '8px',
-                    }}
-                  >
-                    The real card could be worth much more.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p
-                    className="font-[family-name:var(--font-outfit)]"
-                    style={{
-                      fontSize: '42px',
-                      fontWeight: 900,
-                      color: '#1a1a2e',
-                      lineHeight: 1.1,
-                      textShadow: '0 2px 4px rgba(0, 0, 0, 0.06)',
-                    }}
-                  >
-                    {formattedPrizeValue}
-                  </p>
-                  <p
-                    style={{
-                      fontSize: '11px',
-                      color: categoryColor,
-                      textTransform: 'uppercase',
-                      letterSpacing: '1.5px',
-                      marginTop: '4px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {isMultiDraw ? 'Total Value' : 'Card Value'}
-                  </p>
-                </>
-              )}
-            </div>
-
-            {/* Mystery Teaser */}
-            {isMysteryUnrevealed && competition.teaser && (
-              <div
-                style={{
-                  background: '#F7F7FA',
-                  fontStyle: 'italic',
-                  fontSize: '14px',
-                  padding: '16px',
-                  borderRadius: '12px',
-                  color: '#555',
-                  lineHeight: 1.6,
-                }}
-              >
-                {competition.teaser}
-              </div>
+            {/* Free entry button */}
+            {isActive && isFree && (
+              <FreeEntryButton
+                competitionId={competition.id}
+                competitionSlug={competition.slug}
+                userTicketCount={userTicketCount}
+                maxTicketsPerUser={competition.maxTicketsPerUser}
+              />
             )}
 
-            {/* Progress Bar with Urgency / Participant Count */}
-            {!isCompleted && !isCancelled && (
-              isFree ? (
-                hasTotalTickets ? (
-                  <UrgencyProgressBar
-                    soldPercentage={soldPercentage}
-                    ticketsRemaining={ticketsRemaining}
-                    categoryColor={categoryColor}
-                  />
-                ) : (
-                  <p style={{ fontSize: '14px', color: '#6b7088' }}>
-                    {competition.soldTickets.toLocaleString('en-GB')} participant{competition.soldTickets !== 1 ? 's' : ''}
-                  </p>
-                )
-              ) : (
-                <UrgencyProgressBar
-                  soldPercentage={soldPercentage}
-                  ticketsRemaining={ticketsRemaining}
-                  categoryColor={categoryColor}
-                />
-              )
-            )}
-
-            {/* Info Grid - Premium style */}
-            <div
-              className="grid grid-cols-3"
-              style={{
-                background: '#ffffff',
-                borderRadius: '16px',
-                border: '1.5px solid rgba(0, 0, 0, 0.06)',
-                boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
-                overflow: 'hidden',
-              }}
-            >
-              <div style={{ padding: '16px 20px' }}>
-                <p
-                  style={{
-                    fontSize: '10px',
-                    color: categoryColor,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.5px',
-                    marginBottom: '4px',
-                    fontWeight: 600,
-                  }}
-                >
-                  {isFree ? 'Price' : 'Ticket Price'}
-                </p>
-                <p style={{ fontSize: '16px', fontWeight: 800, color: isFree ? '#16A34A' : '#1a1a2e' }}>
-                  {isFree ? 'FREE' : formatPrice(competition.ticketPrice)}
-                </p>
-              </div>
-              <div
-                style={{
-                  padding: '16px 20px',
-                  borderLeft: '1px solid rgba(0, 0, 0, 0.06)',
-                  borderRight: '1px solid rgba(0, 0, 0, 0.06)',
-                }}
-              >
-                <p
-                  style={{
-                    fontSize: '10px',
-                    color: categoryColor,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.5px',
-                    marginBottom: '4px',
-                    fontWeight: 600,
-                  }}
-                >
-                  {isFree ? 'Participants' : 'Tickets Left'}
-                </p>
-                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
-                  {isFree
-                    ? hasTotalTickets
-                      ? `${competition.soldTickets.toLocaleString('en-GB')}/${competition.totalTickets!.toLocaleString('en-GB')}`
-                      : competition.soldTickets.toLocaleString('en-GB')
-                    : `${ticketsRemaining.toLocaleString('en-GB')}/${competition.totalTickets!.toLocaleString('en-GB')}`}
-                </p>
-              </div>
-              <div style={{ padding: '16px 20px' }}>
-                <p
-                  style={{
-                    fontSize: '10px',
-                    color: categoryColor,
-                    textTransform: 'uppercase',
-                    letterSpacing: '1.5px',
-                    marginBottom: '4px',
-                    fontWeight: 600,
-                  }}
-                >
-                  Draw Date
-                </p>
-                <p style={{ fontSize: '16px', fontWeight: 800, color: '#1a1a2e' }}>
-                  {new Date(competition.drawDate).toLocaleDateString('en-GB', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-
-            {/* Countdown - Live with animations */}
-            {(isActive || isUpcoming) && (
-              <LiveCountdown targetDate={new Date(competition.drawDate)} categoryColor={categoryColor} />
-            )}
-
-            {/* Urgency Banner */}
-            {isActive && (
-              <UrgencyBanner drawDate={competition.drawDate} status={competition.status} />
-            )}
-
-            {/* Multi-Draw Prizes Section */}
-            {isMultiDraw && (
-              <div
-                style={{
-                  background: '#ffffff',
-                  border: '1.5px solid rgba(0, 0, 0, 0.06)',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                }}
-              >
-                {competition.prizes.map((prize: CompetitionPrize, index: number) => {
-                  const medal = index === 0 ? '\u{1F947}' : index === 1 ? '\u{1F948}' : index === 2 ? '\u{1F949}' : null;
-                  const posLabel = `${prize.position}${prize.position === 1 ? 'st' : prize.position === 2 ? 'nd' : prize.position === 3 ? 'rd' : 'th'} Prize`;
-                  const isLast = index === competition.prizes.length - 1;
-                  return (
-                    <div
-                      key={prize.position}
-                      style={{
-                        padding: '12px 16px',
-                        borderBottom: isLast ? 'none' : '1px solid rgba(0, 0, 0, 0.06)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <div>
-                        <p style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)' }}>
-                          {medal ? <span aria-hidden="true">{medal}</span> : prize.position} {posLabel}
-                        </p>
-                        <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                          {prize.title}
-                        </p>
-                      </div>
-                      <p style={{ fontSize: '14px', fontWeight: 700, color: categoryColor }}>
-                        {formatPrice(prize.value)}
-                      </p>
-                    </div>
-                  );
-                })}
-                <div
-                  style={{
-                    background: '#F7F7FA',
-                    padding: '10px 16px',
-                  }}
-                >
-                  <p style={{ fontSize: '13px', fontWeight: 600 }}>
-                    Total value: {formatPrice(totalPrizesValue)} — {competition.prizes.length} winners
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Active Competition - Ticket Selector or Free Entry */}
-            {isActive && (
-              isFree ? (
-                <FreeEntryButton
-                  competitionId={competition.id}
-                  competitionSlug={slug}
-                  userTicketCount={userTicketCount}
-                  maxTicketsPerUser={competition.maxTicketsPerUser}
-                />
-              ) : (
-                <SimpleTicketSelector
-                  competitionId={competition.id}
-                  competitionSlug={slug}
-                  ticketPrice={competition.ticketPrice}
-                  maxTicketsPerUser={competition.maxTicketsPerUser}
-                  availableTicketCount={availableTicketCount}
-                  userTicketCount={userTicketCount}
-                  categoryColor={categoryColor}
-                  referralFreeTickets={referralFreeTickets}
-                />
-              )
-            )}
-
-            {/* Upcoming */}
+            {/* Non-active states */}
             {isUpcoming && (
-              <div className="space-y-3">
-                <button
-                  disabled
-                  className="w-full flex items-center justify-center gap-2"
-                  style={{
-                    padding: '16px',
-                    borderRadius: '14px',
-                    background: '#F7F7FA',
-                    color: '#6b7088',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    cursor: 'not-allowed',
-                  }}
-                >
-                  Coming Soon
-                </button>
-              </div>
-            )}
-
-            {/* Sold Out */}
-            {isSoldOut && (
-              <button
-                disabled
-                className="w-full flex items-center justify-center gap-2"
-                style={{
-                  padding: '16px',
-                  borderRadius: '14px',
-                  background: '#F7F7FA',
-                  color: '#6b7088',
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  cursor: 'not-allowed',
-                }}
-              >
-                Sold Out - Draw Pending
+              <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
+                Coming Soon
               </button>
             )}
-
-            {/* Completed */}
-            {isCompleted && (
-              <div
-                style={{
-                  background: '#F7F7FA',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  textAlign: 'center',
-                }}
-              >
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <Trophy style={{ width: '24px', height: '24px', color: categoryColor }} />
-                  <p style={{ fontSize: '18px', fontWeight: 700, color: '#1a1a2e' }}>
-                    Competition Completed
-                  </p>
-                </div>
-                {isMystery && (
-                  <p style={{ fontSize: '12px', fontWeight: 600, color: '#8B5CF6', marginBottom: '8px' }}>
-                    Was a Mystery
-                  </p>
-                )}
-                {isMultiDraw && competition.wins.length > 0 ? (
-                  <div style={{ marginTop: '12px', textAlign: 'left' }}>
-                    {competition.wins.map((win: { ticketNumber: number; prizePosition: number | null; user: { firstName: string; lastName: string | null } | null }, idx: number) => {
-                      const medal = idx === 0 ? '\u{1F947}' : idx === 1 ? '\u{1F948}' : idx === 2 ? '\u{1F949}' : null;
-                      const pos = win.prizePosition ?? idx + 1;
-                      const posLabel = `${pos}${pos === 1 ? 'st' : pos === 2 ? 'nd' : pos === 3 ? 'rd' : 'th'} Prize`;
-                      const prize = competition.prizes.find((p: CompetitionPrize) => p.position === pos);
-                      const winnerName = win.user
-                        ? `${win.user.firstName} ${win.user.lastName?.charAt(0) ?? ''}.`
-                        : 'Lucky Winner';
-                      return (
-                        <div key={idx} style={{ marginBottom: '8px' }}>
-                          <p style={{ fontSize: '14px', fontWeight: 600, color: '#1a1a2e' }}>
-                            {medal ? <span aria-hidden="true">{medal}</span> : pos} {posLabel}
-                            {prize && <span style={{ color: '#6b7088' }}> — {prize.title} ({formatPrice(prize.value)})</span>}
-                          </p>
-                          <p style={{ fontSize: '13px', color: '#9a9eb0' }}>
-                            Winner: Ticket <span style={{ fontWeight: 700, color: categoryColor }}>#{win.ticketNumber}</span> — {winnerName}
-                          </p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <>
-                    <p style={{ fontSize: '14px', color: '#6b7088' }}>
-                      Winning ticket:{' '}
-                      <span style={{ fontWeight: 700, color: categoryColor }}>
-                        #{competition.winningTicketNumber}
-                      </span>
-                    </p>
-                    {competition.winnerDisplayName && (
-                      <p style={{ fontSize: '14px', color: '#9a9eb0', marginTop: '4px' }}>
-                        Winner: {competition.winnerDisplayName}
-                      </p>
-                    )}
-                  </>
-                )}
+            {isSoldOut && (
+              <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
+                Sold Out — Draw Pending
+              </button>
+            )}
+            {isCompleted && competition.winningTicketNumber && (
+              <div style={{ background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+                <Trophy style={{ width: '24px', height: '24px', margin: '0 auto 8px' }} />
+                <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Completed</p>
+                <p style={{ fontSize: '14px', color: 'var(--ink-dim)', marginTop: '4px' }}>
+                  Winning ticket: <b style={{ fontWeight: 700, color: 'var(--ink)' }}>#{competition.winningTicketNumber}</b>
+                  {competition.winnerDisplayName && <> — {competition.winnerDisplayName}</>}
+                </p>
               </div>
             )}
-
-            {/* Cancelled */}
             {isCancelled && (
-              <div
-                style={{
-                  background: 'rgba(220, 38, 38, 0.08)',
-                  border: '1px solid rgba(220, 38, 38, 0.2)',
-                  borderRadius: '16px',
-                  padding: '24px',
-                  textAlign: 'center',
-                }}
-              >
-                <p style={{ fontSize: '18px', fontWeight: 700, color: '#DC2626' }}>
-                  This competition was cancelled
-                </p>
-                <p style={{ fontSize: '14px', color: '#6b7088', marginTop: '4px' }}>
-                  All participants have been fully refunded.
-                </p>
+              <div style={{ background: 'var(--hot)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+                <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Cancelled</p>
+                <p style={{ fontSize: '14px', marginTop: '4px', opacity: 0.8 }}>All participants have been fully refunded.</p>
               </div>
             )}
+
+            {/* Trust row */}
+            <div className="comp-meta-row">
+              <span>🔒 Secure checkout</span>
+              <span>✉ Free postal entry</span>
+              <span>📺 Live TikTok draw</span>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Below the Fold - Additional Info */}
-        <div className="grid gap-6 lg:grid-cols-2 mt-12 pb-16">
-          {/* About This Card */}
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid rgba(0, 0, 0, 0.06)',
-              borderLeft: `3px solid ${categoryColor}`,
-              borderRadius: '20px',
-              padding: '32px',
-            }}
-          >
-            <h2
-              className="font-[family-name:var(--font-outfit)] mb-4 flex items-center gap-2"
-              style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
-            >
-              <span style={{ fontSize: '20px' }} aria-hidden="true">{CATEGORY_EMOJIS[category]}</span>
-              About This Card
-            </h2>
+      {/* ABOUT THIS CARD — full-bleed gray background */}
+      <section style={{ background: 'var(--bg-2)', borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '80px 32px' }}>
+          {/* Section header */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px', gap: '32px', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink)', fontWeight: 700, marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ width: '20px', height: '2px', background: 'var(--ink)', display: 'block' }} />
+                About the Card
+              </div>
+              <h2 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, maxWidth: '720px' }}>
+                What you&apos;ll be <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '5px', textUnderlineOffset: '6px' }}>winning</span>.
+              </h2>
+            </div>
+            <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '360px', lineHeight: 1.5 }}>
+              Everything graded, authenticated, and ready to ship to your door.
+            </p>
+          </div>
 
-            {isMysteryUnrevealed ? (
-              <>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Category</span>
-                    <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{CATEGORY_LABELS[category]}</span>
-                  </div>
-                  {competition.grade && (
-                    <div className="flex justify-between items-center">
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
-                      <span
-                        style={{
-                          padding: '3px 10px',
-                          borderRadius: '6px',
-                          background: '#F0B90B',
-                          color: '#ffffff',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {competition.grade}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Minimum value</span>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#1a1a2e' }}>
-                      {competition.minimumValue != null
-                        ? formatPrice(competition.minimumValue)
-                        : formattedPrizeValue}
-                    </span>
-                  </div>
-                </div>
-                <p style={{ fontSize: '14px', color: '#6b7088', marginTop: '16px', lineHeight: 1.6 }}>
-                  The card will be revealed LIVE during the draw on TikTok.
-                </p>
-              </>
-            ) : (
-              <>
-                {competition.descriptionLong ? (
-                  <SafeHtml
-                    html={competition.descriptionLong}
-                    className="prose prose-sm max-w-none"
-                    style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}
-                  />
-                ) : (
-                  <p style={{ fontSize: '15px', color: '#555', lineHeight: 1.7 }}>
-                    {competition.descriptionShort || 'No description available.'}
-                  </p>
-                )}
-
-                {/* Card Details */}
-                <div className="mt-6 space-y-3">
+          {/* Card container — white card with border + shadow holding both columns */}
+          <div style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '14px', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
+            <div className="comp-about-grid" style={{ padding: '28px' }}>
+              {/* Left: Card details list */}
+              <div>
+                <ul className="about-card-details">
                   {competition.certificationNumber && (
-                    <div className="flex justify-between">
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
-                        Certification
-                      </span>
-                      <span style={{ fontSize: '14px', color: '#1a1a2e' }}>
-                        {competition.certificationNumber}
-                      </span>
-                    </div>
+                    <li><span className="about-card-k">Cert</span><span className="about-card-v">{competition.certificationNumber}</span></li>
                   )}
                   {competition.grade && (
-                    <div className="flex justify-between items-center">
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Grade</span>
-                      <span
-                        style={{
-                          padding: '3px 10px',
-                          borderRadius: '6px',
-                          background: '#F0B90B',
-                          color: '#ffffff',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                        }}
-                      >
-                        {competition.grade}
-                      </span>
-                    </div>
+                    <li><span className="about-card-k">Grade</span><span className="about-card-v">{competition.grade}</span></li>
                   )}
                   {competition.condition && (
-                    <div className="flex justify-between">
-                      <span style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>
-                        Condition
-                      </span>
-                      <span style={{ fontSize: '14px', color: '#1a1a2e' }}>{competition.condition}</span>
-                    </div>
+                    <li><span className="about-card-k">Condition</span><span className="about-card-v">{competition.condition}</span></li>
                   )}
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Draw Details */}
-          <div
-            style={{
-              background: '#ffffff',
-              border: '1px solid rgba(0, 0, 0, 0.06)',
-              borderLeft: `3px solid ${categoryColor}`,
-              borderRadius: '20px',
-              padding: '32px',
-            }}
-          >
-            <h2
-              className="font-[family-name:var(--font-outfit)] mb-4"
-              style={{ fontSize: '20px', fontWeight: 700, color: '#1a1a2e' }}
-            >
-              Draw Details
-            </h2>
-
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Calendar style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
-                <div>
-                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Draw Date</p>
-                  <p style={{ fontSize: '14px', color: '#1a1a2e' }}>
-                    {new Date(competition.drawDate).toLocaleDateString('en-GB', {
-                      weekday: 'long',
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
+                  <li><span className="about-card-k">Category</span><span className="about-card-v">{CATEGORY_LABELS[category]}</span></li>
+                  <li><span className="about-card-k">Draw Date</span><span className="about-card-v">{new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span></li>
+                  <li><span className="about-card-k">Draw Type</span><span className="about-card-v">Certified RNG · Live on TikTok</span></li>
+                </ul>
               </div>
 
-              {!isMysteryUnrevealed && competition.certificationNumber && (
-                <div className="flex items-start gap-3">
-                  <Award style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
-                  <div>
-                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Certification</p>
-                    <p style={{ fontSize: '14px', color: '#1a1a2e' }}>
-                      {competition.certificationNumber}
-                      {competition.grade && (
-                        <span
-                          style={{
-                            marginLeft: '8px',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            background: categoryColor,
-                            color: '#ffffff',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                          }}
-                        >
-                          {competition.grade}
-                        </span>
-                      )}
-                    </p>
-                  </div>
+              {/* Right: Free postal entry card (green) */}
+              <div className="postal-card">
+                <div className="postal-kicker">Free postal entry</div>
+                <p>Send a handwritten postcard with your name, email, and answer to the skill question:</p>
+                <div className="postal-addr">
+                  WinUCard Ltd — Free Entry<br/>
+                  Unit 14 Skyline House<br/>
+                  200 Union St<br/>
+                  London SE1 0LX
                 </div>
-              )}
-
-              <div className="flex items-start gap-3">
-                <Play style={{ width: '18px', height: '18px', color: '#6b7088', marginTop: '2px' }} />
-                <div>
-                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#6b7088' }}>Status</p>
-                  {isActive ? (
-                    <span
-                      className="live-badge-pulse"
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '3px 10px',
-                        borderRadius: '6px',
-                        background: '#16A34A',
-                        color: '#ffffff',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          background: '#ffffff',
-                          animation: 'livePulse 1.5s ease-in-out infinite',
-                        }}
-                      />
-                      Live
-                    </span>
-                  ) : (
-                    <span
-                      style={{
-                        padding: '3px 10px',
-                        borderRadius: '6px',
-                        background: isCompleted
-                          ? 'rgba(107, 112, 136, 0.1)'
-                          : 'rgba(59, 130, 246, 0.1)',
-                        color: isCompleted ? '#6b7088' : '#3B82F6',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {isCompleted ? 'Completed' : isUpcoming ? 'Upcoming' : 'Pending'}
-                    </span>
-                  )}
-                </div>
+                <span className="postal-note">One entry per person per comp · Full <Link href="/competition-rules">rules</Link></span>
               </div>
-            </div>
-
-            {/* CSS for Live badge pulse */}
-            <style>{`
-              @keyframes livePulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.4; }
-              }
-            `}</style>
-
-            {/* RNG Disclaimer */}
-            <div
-              style={{
-                marginTop: '20px',
-                padding: '16px',
-                background: '#F7F7FA',
-                borderRadius: '12px',
-              }}
-            >
-              <p style={{ fontSize: '13px', color: '#6b7088', lineHeight: 1.6 }}>
-                The winning ticket will be selected using a certified Random Number Generator (RNG).
-                The draw will be livestreamed on TikTok for full transparency.
-              </p>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Free Entry Section - Subtle Accordion (hidden for free competitions) */}
-        {!isFree && (
-          <div style={{ marginBottom: '48px' }}>
-            <FreeEntryAccordion />
-          </div>
-        )}
-      </div>
+      <TrustStrip />
     </main>
   );
 }

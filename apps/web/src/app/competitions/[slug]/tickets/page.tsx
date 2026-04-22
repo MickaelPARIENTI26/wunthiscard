@@ -55,7 +55,7 @@ async function getCompetition(slug: string) {
   }
 
   const unavailableCount = competition._count.tickets;
-  const availableTicketCount = competition.totalTickets - unavailableCount;
+  const availableTicketCount = (competition.totalTickets ?? 0) - unavailableCount;
 
   return {
     id: competition.id,
@@ -123,20 +123,23 @@ export default async function TicketSelectionPage({
   }
 
   return (
-    <main className="min-h-screen bg-background pb-36 lg:pb-8">
-      <div className="container mx-auto px-4 py-4 sm:py-6">
-        {/* Back Navigation */}
-        <Link
-          href={`/competitions/${slug}`}
-          className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
+    <main className="min-h-screen pb-36 lg:pb-8">
+      {/* Back link */}
+      <div className="mx-auto px-5 sm:px-8" style={{ maxWidth: '1440px', padding: '12px 32px' }}>
+        <Link href={`/competitions/${slug}`} className="drop-back-link">
           <ChevronLeft className="h-4 w-4" />
           Back to Competition
         </Link>
+      </div>
 
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold sm:text-3xl">Select Your Tickets</h1>
-          <p className="mt-2 text-muted-foreground">{competition.title}</p>
+      <div className="drop-section" style={{ paddingTop: '16px' }}>
+        <div className="text-center mb-12">
+          <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 700, letterSpacing: '-0.04em', margin: '0 0 12px' }}>
+            Select Your Tickets
+          </h1>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '16px' }}>
+            How many tickets do you want for <b>{competition.title}</b>?
+          </p>
         </div>
 
         <Suspense fallback={<TicketSelectorSkeleton />}>
@@ -146,7 +149,7 @@ export default async function TicketSelectionPage({
             competitionTitle={competition.title}
             competitionImageUrl={competition.mainImageUrl}
             ticketPrice={competition.ticketPrice}
-            totalTickets={competition.totalTickets}
+            totalTickets={competition.totalTickets ?? 0}
             maxTicketsPerUser={competition.maxTicketsPerUser}
             availableTicketCount={competition.availableTicketCount}
             userTicketCount={userTicketCount}

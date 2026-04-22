@@ -2,12 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, XCircle, HelpCircle, Clock, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
 
@@ -219,185 +215,122 @@ export function QuestionForm({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--accent)' }} />
+      </div>
     );
   }
 
-  // Show error for expired reservation
   if (error && !reservation) {
     return (
-      <Card className="border-destructive">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <XCircle className="h-6 w-6 text-destructive" />
-          </div>
-          <CardTitle>Reservation Expired</CardTitle>
-          <CardDescription>{error}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button className="w-full" onClick={handleBackToTickets}>
-            Select Tickets Again
-          </Button>
-        </CardContent>
-      </Card>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+        <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Reservation Expired</h3>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>{error}</p>
+        <button onClick={handleBackToTickets} className="btn btn-primary btn-xl">Select Tickets Again →</button>
+      </div>
     );
   }
 
   // Show blocked state
   if (result?.blocked) {
     return (
-      <Card className="border-destructive">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <XCircle className="h-6 w-6 text-destructive" />
-          </div>
-          <CardTitle>Too Many Incorrect Attempts</CardTitle>
-          <CardDescription>{result.message}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => router.push(`/competitions/${competitionSlug}`)}
-          >
-            Back to Competition
-          </Button>
-        </CardContent>
-      </Card>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚫</div>
+        <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Too Many Incorrect Attempts</h3>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>{result.message}</p>
+        <button onClick={() => router.push(`/competitions/${competitionSlug}`)} className="btn btn-ghost btn-xl">Back to Competition</button>
+      </div>
     );
   }
 
 
+  const letters = ['A', 'B', 'C', 'D'];
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-2 text-muted-foreground mb-2">
-          <HelpCircle className="h-4 w-4" />
-          <span className="text-sm">Skill-based entry question</span>
+    <div>
+      {/* Reservation timer */}
+      {reservation && countdown && (
+        <div style={{ padding: '10px 14px', background: countdown === 'expired' ? 'var(--hot)' : 'var(--warn)', color: 'var(--ink)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow-sm)', marginBottom: '20px' }}>
+          {countdown === 'expired' ? 'Timer expired — submit now to keep your tickets' : `⏱ Tickets reserved for ${countdown}`}
         </div>
-        <CardTitle className="text-lg">{questionText}</CardTitle>
-        {result && !result.correct && result.attemptsRemaining !== undefined && (
-          <CardDescription className="text-destructive">
-            Incorrect answer. {result.attemptsRemaining} attempt{result.attemptsRemaining !== 1 ? 's' : ''} remaining.
-          </CardDescription>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Reservation timer */}
-        {reservation && countdown && (
-          <Alert className={cn(
-            countdown === 'expired'
-              ? 'border-orange-500 bg-orange-50 dark:bg-orange-950/20'
-              : 'border-amber-500 bg-amber-50 dark:bg-amber-950/20'
-          )}>
-            <Clock className={cn('h-4 w-4', countdown === 'expired' ? 'text-orange-600' : 'text-amber-600')} />
-            <AlertDescription className={countdown === 'expired' ? 'text-orange-800 dark:text-orange-200' : 'text-amber-800 dark:text-amber-200'}>
-              {countdown === 'expired' ? (
-                <>Timer expired — <span className="font-bold">submit now</span> to try to keep your tickets</>
-              ) : (
-                <>Tickets reserved for <span className="font-bold">{countdown}</span></>
-              )}
-            </AlertDescription>
-          </Alert>
-        )}
+      )}
 
-        {/* Error message */}
-        {error && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+      {/* Error */}
+      {error && (
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', marginBottom: '20px' }}>
+          {error}
+        </div>
+      )}
 
-        {/* Answer Options */}
-        <div className="space-y-2">
-          {questionChoices.map((choice, index) => (
+      {/* Skill prompt card */}
+      <div className="skill-prompt">
+        <span className="skill-prompt-icon">?</span>
+        <p>{questionText}</p>
+      </div>
+
+      {/* Answer options — 2x2 grid */}
+      <div className="skill-opts">
+        {questionChoices.map((choice, index) => {
+          const selected = selectedAnswer === index;
+          const isCorrect = result?.correct && selected;
+          const isWrong = result && !result.correct && selected;
+          const state = isCorrect ? 'correct' : isWrong ? 'wrong' : selected ? 'selected' : '';
+          const locked = isSubmitting || (result?.correct);
+          return (
             <button
               key={index}
-              onClick={() => !isSubmitting && setSelectedAnswer(index)}
-              disabled={isSubmitting}
-              className={cn(
-                'w-full cursor-pointer rounded-lg border p-4 text-left transition-all',
-                selectedAnswer === index
-                  ? 'border-primary bg-primary/5'
-                  : 'border-border hover:border-primary/50 hover:bg-accent',
-                isSubmitting && 'opacity-50 cursor-not-allowed'
-              )}
+              onClick={() => !locked && setSelectedAnswer(index)}
+              className={`skill-opt ${state}`}
+              disabled={!!locked}
             >
-              <div className="flex items-center gap-3">
-                <span
-                  className={cn(
-                    'flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium',
-                    selectedAnswer === index
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
-                  )}
-                >
-                  {String.fromCharCode(65 + index)}
-                </span>
-                <span>{choice}</span>
-              </div>
+              <span className="skill-letter">{letters[index]}</span>
+              <span>{choice}</span>
+              {isCorrect && <span className="skill-check">✓</span>}
+              {isWrong && <span className="skill-check">✕</span>}
             </button>
-          ))}
+          );
+        })}
+      </div>
+
+      {/* Wrong answer message */}
+      {result && !result.correct && !result.blocked && (
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', marginBottom: '16px' }}>
+          {result.message || `Incorrect. ${result.attemptsRemaining} attempt${result.attemptsRemaining !== 1 ? 's' : ''} left.`}
         </div>
+      )}
 
-        {/* Error Message for wrong answer */}
-        {result && !result.correct && !result.blocked && (
-          <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-            <AlertCircle className="h-4 w-4" />
-            {result.message}
-          </div>
+      {/* Turnstile */}
+      {TURNSTILE_SITE_KEY && (
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onError={() => setTurnstileToken(null)}
+          onExpire={() => setTurnstileToken(null)}
+          options={{ size: 'invisible', theme: 'auto' }}
+        />
+      )}
+
+      {/* Footer: hint + action button */}
+      <div className="enter-step-foot">
+        <span className="skill-hint">UK law · 3 attempts · fair trivia about the card</span>
+        {result && !result.correct && !result.blocked ? (
+          <button onClick={handleTryAgain} className="btn btn-primary btn-xl">
+            Try again · {result.attemptsRemaining} left →
+          </button>
+        ) : result?.correct ? (
+          <span className="skill-ok-lg">✓ Correct — redirecting to checkout…</span>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            disabled={selectedAnswer === null || isSubmitting}
+            className={`btn ${selectedAnswer === null ? 'btn-mute' : 'btn-hot'} btn-xl`}
+          >
+            {isSubmitting ? 'Checking...' : 'Submit answer →'}
+          </button>
         )}
-
-        {/* Cloudflare Turnstile - invisible mode */}
-        {TURNSTILE_SITE_KEY && (
-          <Turnstile
-            ref={turnstileRef}
-            siteKey={TURNSTILE_SITE_KEY}
-            onSuccess={setTurnstileToken}
-            onError={() => setTurnstileToken(null)}
-            onExpire={() => setTurnstileToken(null)}
-            options={{
-              size: 'invisible',
-              theme: 'auto',
-            }}
-          />
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex gap-3">
-          {result && !result.correct && !result.blocked ? (
-            <Button className="flex-1" onClick={handleTryAgain}>
-              Try Again
-            </Button>
-          ) : (
-            <Button
-              className="flex-1"
-              onClick={handleSubmit}
-              disabled={selectedAnswer === null || isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Checking...
-                </>
-              ) : (
-                'Submit Answer'
-              )}
-            </Button>
-          )}
-        </div>
-
-        {/* Info Text */}
-        <p className="text-center text-xs text-muted-foreground">
-          UK law requires a skill-based question for prize competitions.
-          You have 3 attempts to answer correctly.
-        </p>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { PrintButton } from '@/components/common/print-button';
-import { LegalLanguageBanner } from '@/components/legal/legal-language-banner';
+import { LegalPage } from '@/components/legal/legal-page';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy',
@@ -99,70 +98,8 @@ export default function CookiesPage() {
   const lastUpdated = '10 February 2026';
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <Link
-            href="/"
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            &larr; Back to Home
-          </Link>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Cookie Policy
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Last updated: {lastUpdated}
-          </p>
-        </div>
-
-        {/* Language banner for non-English users */}
-        <LegalLanguageBanner />
-
-        <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-          {/* Table of Contents - Desktop Sidebar */}
-          <nav className="hidden lg:block print:hidden">
-            <div className="sticky top-8">
-              <h2 className="mb-4 text-sm font-semibold text-foreground">
-                Table of Contents
-              </h2>
-              <ul className="space-y-2 text-sm">
-                {tableOfContents.map((item) => (
-                  <li key={item.id}>
-                    <a
-                      href={`#${item.id}`}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      {item.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </nav>
-
-          {/* Table of Contents - Mobile Collapsible */}
-          <details className="mb-6 rounded-lg border border-border bg-card p-4 lg:hidden print:hidden">
-            <summary className="cursor-pointer font-semibold text-foreground">
-              Table of Contents
-            </summary>
-            <ul className="mt-4 space-y-2 text-sm">
-              {tableOfContents.map((item) => (
-                <li key={item.id}>
-                  <a
-                    href={`#${item.id}`}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    {item.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </details>
-
-          {/* Content */}
-          <article className="prose prose-gray max-w-none dark:prose-invert print:max-w-full">
+    <LegalPage title="Cookie Policy" lastUpdated={`Last updated: ${lastUpdated}`} toc={tableOfContents}>
+      <div>
             <p className="lead">
               This Cookie Policy explains how WinUCard Ltd uses cookies and
               similar technologies when you visit our website. By using our
@@ -468,14 +405,7 @@ export default function CookiesPage() {
                 .
               </p>
             </section>
-          </article>
-        </div>
-
-        {/* Print Button */}
-        <div className="mt-12 border-t border-border pt-8 print:hidden">
-          <PrintButton />
-        </div>
-      </main>
-    </div>
+      </div>
+    </LegalPage>
   );
 }

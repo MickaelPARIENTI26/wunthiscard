@@ -3,14 +3,11 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import type Stripe from 'stripe';
-import { CheckCircle, Gift, Ticket, ArrowRight, Share2, Home } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { formatPrice } from '@winucard/shared/utils';
 
 export const metadata: Metadata = {
@@ -224,18 +221,16 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
 
   if (!order) {
     return (
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-12">
-          <div className="mx-auto max-w-lg text-center">
-            <h1 className="text-2xl font-bold">Order Not Found</h1>
-            <p className="mt-2 text-muted-foreground">
-              We could not find your order. Please check your email for confirmation.
-            </p>
-            <Button asChild className="mt-6">
-              <Link href="/">Return Home</Link>
-            </Button>
-          </div>
-        </div>
+      <main>
+        <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
+          <h1 style={{ fontFamily: 'var(--display)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>Order Not Found</h1>
+          <p style={{ color: 'var(--ink-dim)', marginBottom: '24px' }}>
+            We could not find your order. Please check your email for confirmation.
+          </p>
+          <Button variant="primary" size="lg" asChild>
+            <Link href="/">Return Home</Link>
+          </Button>
+        </section>
       </main>
     );
   }
@@ -248,169 +243,84 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
       : Number(order.totalAmount);
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 sm:py-12">
-        <div className="mx-auto max-w-2xl">
-          {/* Success Header */}
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-950">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-green-600">Purchase Successful!</h1>
-            <p className="mt-2 text-muted-foreground">
-              Thank you for your purchase. Good luck!
-            </p>
-          </div>
-
-          {/* Order Details Card */}
-          <Card className="mb-6">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>Order Confirmation</CardTitle>
-                  <CardDescription>Order #{order.orderNumber}</CardDescription>
-                </div>
-                <Badge variant="secondary" className="bg-green-100 text-green-700">
-                  Confirmed
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Competition Info */}
-              <div className="flex gap-4">
-                <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
-                  <Image
-                    src={order.competition.mainImageUrl}
-                    alt={order.competition.title}
-                    fill
-                    className="object-cover"
-                    sizes="80px"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium">{order.competition.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Draw: {formatDate(order.competition.drawDate)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Tickets */}
-              <div className="space-y-4">
-                {/* Paid Tickets */}
-                <div className="rounded-lg bg-muted/50 p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Ticket className="h-4 w-4 text-primary" />
-                    <span className="font-medium">Your Tickets ({paidTickets.length})</span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {paidTickets.map((ticket) => (
-                      <Badge key={ticket.ticketNumber} variant="outline">
-                        #{ticket.ticketNumber}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Bonus Tickets */}
-                {bonusTickets.length > 0 && (
-                  <div
-                    className="rounded-lg p-4 border"
-                    style={{
-                      background: 'rgba(34, 197, 94, 0.1)',
-                      borderColor: 'rgba(34, 197, 94, 0.3)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Gift className="h-4 w-4" style={{ color: '#4ade80' }} />
-                      <span className="font-medium" style={{ color: '#4ade80' }}>
-                        Bonus Tickets ({bonusTickets.length})
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {bonusTickets.map((ticket) => (
-                        <Badge
-                          key={ticket.ticketNumber}
-                          variant="outline"
-                          style={{
-                            borderColor: 'rgba(34, 197, 94, 0.5)',
-                            color: '#4ade80',
-                          }}
-                        >
-                          #{ticket.ticketNumber}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Summary */}
-              <div className="border-t pt-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Paid tickets</span>
-                  <span>{paidTickets.length}</span>
-                </div>
-                {bonusTickets.length > 0 && (
-                  <div className="flex justify-between text-sm" style={{ color: '#4ade80' }}>
-                    <span>Bonus tickets</span>
-                    <span>+{bonusTickets.length} FREE</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total entries</span>
-                  <span className="font-bold">{order.tickets.length}</span>
-                </div>
-                <div className="flex justify-between mt-2 pt-2 border-t">
-                  <span className="font-medium">Amount Paid</span>
-                  <span className="text-lg font-bold">{formatPrice(totalAmount)}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actions */}
-          <div className="space-y-3">
-            <Button asChild size="lg" className="w-full">
-              <Link href="/my-tickets">
-                <Ticket className="mr-2 h-5 w-5" />
-                View My Tickets
-              </Link>
-            </Button>
-
-            <div className="grid grid-cols-2 gap-3">
-              <Button asChild variant="outline">
-                <Link href={`/competitions/${order.competition.slug}`}>
-                  View Competition
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/">
-                  <Home className="mr-2 h-4 w-4" />
-                  Home
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* Share */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-muted-foreground mb-3">
-              Share your entry with friends!
-            </p>
-            <Button variant="ghost" size="sm">
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
-          </div>
-
-          {/* Email Note */}
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            A confirmation email has been sent to {session.user.email}
-          </p>
+    <main>
+      <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
+        {/* Celebration */}
+        <div style={{ fontSize: '80px', marginBottom: '20px' }}>🎉</div>
+        <div
+          className="inline-flex items-center gap-2.5 justify-center"
+          style={{
+            padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
+            borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px',
+            letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '20px',
+          }}
+        >
+          <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+          ENTRY CONFIRMED
         </div>
-      </div>
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 6vw, 64px)', fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 0.95, margin: '20px 0' }}>
+          You&apos;re <span className="inline-block bg-[var(--ink)] text-[var(--accent)] px-[0.18em] pb-[2px] rounded-[12px] rotate-[-2deg] font-bold">in</span>.
+        </h1>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '17px', lineHeight: 1.6, marginBottom: '32px' }}>
+          We&apos;ve emailed your confirmation with your ticket numbers. The draw is live — watch on our socials or right here when the countdown hits zero.
+        </p>
+
+        {/* Order summary card */}
+        <div className="drop-card" style={{ textAlign: 'left', marginBottom: '32px' }}>
+          {/* Competition info */}
+          <div className="flex gap-4 mb-4 pb-4" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden" style={{ borderRadius: '8px', border: '1.5px solid var(--ink)' }}>
+              <Image src={order.competition.mainImageUrl} alt={order.competition.title} fill className="object-cover" sizes="80px" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-sm">{order.competition.title}</h3>
+              <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                Draw: {formatDate(order.competition.drawDate)}
+              </p>
+            </div>
+          </div>
+
+          {/* Order details */}
+          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+            <span style={{ color: 'var(--ink-dim)' }}>Order ID</span>
+            <b>#{order.orderNumber}</b>
+          </div>
+          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+            <span style={{ color: 'var(--ink-dim)' }}>Tickets</span>
+            <b>{paidTickets.length}{bonusTickets.length > 0 ? ` + ${bonusTickets.length} bonus` : ''}</b>
+          </div>
+          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+            <span style={{ color: 'var(--ink-dim)' }}>Ticket numbers</span>
+            <b style={{ fontFamily: 'var(--mono)', fontSize: '12px' }}>
+              {paidTickets.map(t => `#${t.ticketNumber}`).join(', ')}
+              {bonusTickets.length > 0 && (
+                <span style={{ color: 'var(--accent)' }}>
+                  {', '}{bonusTickets.map(t => `#${t.ticketNumber}`).join(', ')}
+                </span>
+              )}
+            </b>
+          </div>
+          <div className="flex justify-between py-3">
+            <span style={{ color: 'var(--ink-dim)' }}>Total paid</span>
+            <b>{formatPrice(totalAmount)}</b>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex flex-wrap gap-2.5 justify-center">
+          <Button variant="hot" size="xl" asChild>
+            <Link href="/my-tickets">View my tickets →</Link>
+          </Button>
+          <Button variant="ghost" size="xl" asChild>
+            <Link href="/competitions">Browse more</Link>
+          </Button>
+        </div>
+
+        {/* Email note */}
+        <p style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '24px' }}>
+          Confirmation sent to {session.user.email}
+        </p>
+      </section>
     </main>
   );
 }

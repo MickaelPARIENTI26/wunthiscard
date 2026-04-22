@@ -1,333 +1,172 @@
 import type { Metadata } from 'next';
-import { Mail, MapPin, Clock } from 'lucide-react';
-import { ContactForm } from './contact-form';
+import Link from 'next/link';
+import { Chip } from '@/components/ui/chip';
+import { Eyebrow } from '@/components/ui/eyebrow';
+import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
-  description:
-    'Get in touch with WinUCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
+  description: 'Get in touch with the WinUCard team. We reply to every message within 24 hours.',
   openGraph: {
     title: 'Contact Us | WinUCard',
-    description:
-      'Get in touch with WinUCard. Contact us for questions about competitions, payments, delivery, or partnership enquiries.',
+    description: 'Talk to a human. Our team replies from London — not a call centre.',
   },
 };
 
-const socialLinks = [
-  { name: 'TikTok', href: 'https://tiktok.com/@winucard' },
-  { name: 'Instagram', href: 'https://instagram.com/winucard' },
-  { name: 'YouTube', href: 'https://youtube.com/@winucard' },
-  { name: 'Discord', href: 'https://discord.gg/winucard' },
+const infoRows = [
+  { label: 'Email', value: 'hello@winucard.com', meta: 'General enquiries + support' },
+  { label: 'Press', value: 'press@winucard.com', meta: 'Media, partnerships, PR' },
+  { label: 'Postal / HQ', value: 'WinUCard Ltd\nUnit 14 Skyline House\n200 Union Street\nLondon SE1 0LX', meta: 'Also the address for free postal entries.' },
+  { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
+];
+
+const topics = ['Entry / ticket', 'Delivery', 'Account', 'Press', 'Other'];
+const socials = [
+  { href: 'https://tiktok.com/@winucard', label: 'TikTok' },
+  { href: 'https://instagram.com/winucard', label: 'Instagram' },
+  { href: 'https://youtube.com/@winucard', label: 'YouTube' },
+  { href: 'https://discord.gg/winucard', label: 'Discord' },
 ];
 
 export default function ContactPage() {
   return (
-    <main className="min-h-screen" style={{ background: '#ffffff' }}>
-      {/* Hero Mini */}
-      <section
-        style={{
-          padding: '80px 40px 40px',
-          background: '#ffffff',
-        }}
-      >
-        <div className="container mx-auto text-center">
-          <h1
-            className="font-[family-name:var(--font-outfit)] mb-3"
-            style={{
-              fontSize: '46px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            Contact Us
-          </h1>
-          <p style={{ color: '#6b7088', fontSize: '15px', maxWidth: '500px', margin: '0 auto' }}>
-            Have a question or need help? We are here for you.
-          </p>
+    <main>
+      {/* Editorial hero */}
+      <section className="px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', paddingBottom: '40px' }}>
+        <div
+          className="inline-flex items-center gap-2.5"
+          style={{
+            padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px',
+            background: 'var(--surface)', boxShadow: '2px 2px 0 var(--ink)',
+            fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em',
+            textTransform: 'uppercase', fontWeight: 600, marginBottom: '22px',
+          }}
+        >
+          <span className="live-dot" /> Support · Average reply &lt; 24h
         </div>
+
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(32px, 7vw, 108px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.94, margin: '0 0 18px' }}>
+          Talk to a <Chip color="accent">human</Chip>.
+        </h1>
+
+        <p style={{ fontSize: '17px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '620px', margin: '0 auto' }}>
+          Question about a draw, a prize, your account, or the free postal route? Our team replies from the WinUCard HQ in London — not a call centre.
+        </p>
       </section>
 
-      {/* Main Content - 2 Column Layout */}
-      <section style={{ background: '#F7F7FA', padding: '48px 0 80px' }}>
-        <div
-          className="container mx-auto px-4"
-          style={{ maxWidth: '1000px' }}
-        >
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Left Column - Info Card */}
-            <div
-              style={{
-                background: '#ffffff',
-                borderRadius: '20px',
-                border: '1px solid #e8e8ec',
-                padding: '40px 32px',
-                height: 'fit-content',
-              }}
-            >
-              <h2
-                className="font-[family-name:var(--font-outfit)] mb-6"
-                style={{
-                  fontSize: '22px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                }}
-              >
-                Get in Touch
-              </h2>
+      {/* Contact grid */}
+      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+        <div className="drop-section">
+          <div className="contact-grid">
+            {/* Left: editorial info list */}
+            <aside style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '32px' }}>
+              <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', marginBottom: '24px', paddingBottom: '14px', borderBottom: '1.5px solid var(--ink)' }}>
+                Reach us
+              </h3>
 
-              {/* Contact Info Items */}
-              <div className="space-y-6">
-                {/* Email */}
-                <div className="flex items-start gap-4">
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #FFF8E7, #FFF0CC)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Mail style={{ width: '20px', height: '20px', color: '#E8A000' }} />
+              {infoRows.map((row) => (
+                <div key={row.label} className="contact-info-row">
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700, marginBottom: '6px' }}>
+                    {row.label}
                   </div>
-                  <div>
-                    <h3
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        color: '#1a1a2e',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      Email
-                    </h3>
-                    <a
-                      href="mailto:hello@winucard.com"
-                      style={{
-                        fontSize: '14px',
-                        color: '#6b7088',
-                      }}
-                    >
-                      hello@winucard.com
-                    </a>
+                  <div style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.45, marginBottom: '4px', whiteSpace: 'pre-line' }}>
+                    {row.value}
+                  </div>
+                  <div style={{ fontSize: '13px', color: 'var(--ink-dim)', lineHeight: 1.4 }}>
+                    {row.meta}
                   </div>
                 </div>
+              ))}
 
-                {/* Address */}
-                <div className="flex items-start gap-4">
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #EEF4FF, #DBEAFE)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <MapPin style={{ width: '20px', height: '20px', color: '#2563EB' }} />
-                  </div>
-                  <div>
-                    <h3
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        color: '#1a1a2e',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      Address
-                    </h3>
-                    <address
-                      style={{
-                        fontSize: '14px',
-                        color: '#6b7088',
-                        fontStyle: 'normal',
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      WinUCard Ltd
-                      <br />
-                      [Address Line 1]
-                      <br />
-                      [City, Postcode]
-                      <br />
-                      United Kingdom
-                    </address>
-                  </div>
+              {/* Socials */}
+              <div style={{ paddingTop: '18px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700 }}>
+                  Socials
                 </div>
-
-                {/* Response Time */}
-                <div className="flex items-start gap-4">
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #ECFDF5, #D1FAE5)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Clock style={{ width: '20px', height: '20px', color: '#16A34A' }} />
-                  </div>
-                  <div>
-                    <h3
-                      style={{
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        color: '#1a1a2e',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      Response Time
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: '14px',
-                        color: '#6b7088',
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      We aim to respond within 24-48 hours during business days.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div
-                style={{
-                  height: '1px',
-                  background: '#e8e8ec',
-                  margin: '28px 0',
-                }}
-              />
-
-              {/* Social Links */}
-              <div>
-                <style>{`
-                  .contact-social-btn {
-                    padding: 8px 16px;
-                    border-radius: 10px;
-                    background: #F7F7FA;
-                    color: #6b7088;
-                    font-size: 13px;
-                    font-weight: 500;
-                    transition: all 0.2s ease;
-                  }
-                  .contact-social-btn:hover {
-                    background: #E8A000;
-                    color: #ffffff;
-                  }
-                `}</style>
-                <h3
-                  style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#1a1a2e',
-                    marginBottom: '12px',
-                  }}
-                >
-                  Follow Us
-                </h3>
                 <div className="flex flex-wrap gap-2">
-                  {socialLinks.map((social) => (
+                  {socials.map((s) => (
                     <a
-                      key={social.name}
-                      href={social.href}
+                      key={s.label}
+                      href={s.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="contact-social-btn"
+                      style={{
+                        padding: '10px 14px', minHeight: '44px', border: '1.5px solid var(--ink)', borderRadius: '999px',
+                        fontSize: '12px', fontWeight: 600, background: 'var(--surface)',
+                        boxShadow: '1.5px 1.5px 0 var(--ink)',
+                      }}
                     >
-                      {social.name}
+                      {s.label}
                     </a>
                   ))}
                 </div>
               </div>
-            </div>
+            </aside>
 
-            {/* Right Column - Contact Form */}
-            <div
+            {/* Right: form */}
+            <form
               style={{
-                background: '#ffffff',
-                borderRadius: '20px',
-                border: '1px solid #e8e8ec',
-                padding: '40px 32px',
+                background: 'var(--surface)', border: '1.5px solid var(--ink)',
+                borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
+                padding: '34px 36px', display: 'flex', flexDirection: 'column', gap: '20px',
               }}
+              action="#"
             >
-              <h2
-                className="font-[family-name:var(--font-outfit)] mb-6"
-                style={{
-                  fontSize: '22px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                }}
-              >
-                Send a Message
-              </h2>
+              <div style={{ marginBottom: '6px' }}>
+                <Eyebrow>Send a message</Eyebrow>
+                <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.1, marginTop: '8px' }}>
+                  We reply to every single one.
+                </h3>
+              </div>
 
-              <ContactForm />
-            </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div>
+                  <label className="drop-field-label">Full name *</label>
+                  <input className="drop-input" placeholder="Alex Taylor" />
+                </div>
+                <div>
+                  <label className="drop-field-label">Email *</label>
+                  <input type="email" className="drop-input" placeholder="you@domain.com" />
+                </div>
+              </div>
+
+              <div>
+                <label className="drop-field-label">Topic *</label>
+                <div className="contact-topics">
+                  {topics.map((t, i) => (
+                    <label key={t} className="contact-topic">
+                      <input type="radio" name="topic" defaultChecked={i === 0} />
+                      <span>{t}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="drop-field-label">Message *</label>
+                <textarea className="drop-input" rows={6} placeholder="What's up?" style={{ resize: 'vertical' }} />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4" style={{ paddingTop: '10px' }}>
+                <Button variant="hot" size="xl">Send message →</Button>
+                <span style={{ fontSize: '12px', color: 'var(--ink-dim)' }}>
+                  By sending you agree to our <Link href="/privacy" style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>privacy policy</Link>.
+                </span>
+              </div>
+            </form>
           </div>
         </div>
       </section>
 
-      {/* FAQ Prompt */}
-      <section
-        style={{
-          background: '#ffffff',
-          padding: '56px 40px',
-          borderTop: '1px solid #e8e8ec',
-        }}
-      >
-        <div className="container mx-auto text-center" style={{ maxWidth: '500px' }}>
-          <h2
-            className="font-[family-name:var(--font-outfit)] mb-3"
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            Looking for Quick Answers?
-          </h2>
-          <p
-            style={{
-              fontSize: '14px',
-              color: '#6b7088',
-              marginBottom: '24px',
-            }}
-          >
-            Check out our FAQ section for answers to common questions.
-          </p>
-          <style>{`
-            .contact-faq-btn {
-              display: inline-block;
-              padding: 12px 28px;
-              border-radius: 12px;
-              background: #F7F7FA;
-              border: 1px solid #e8e8ec;
-              color: #1a1a2e;
-              font-size: 14px;
-              font-weight: 600;
-              transition: all 0.2s ease;
-            }
-            .contact-faq-btn:hover {
-              background: #EDEDF0;
-            }
-          `}</style>
-          <a href="/faq" className="contact-faq-btn">
-            View FAQ
-          </a>
-        </div>
+      {/* Quick answers CTA */}
+      <section className="drop-section" style={{ textAlign: 'center', paddingBottom: '80px' }}>
+        <h2 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '10px' }}>
+          Looking for quick answers?
+        </h2>
+        <p style={{ color: 'var(--ink-dim)', marginBottom: '20px' }}>Check the FAQ for the most common questions.</p>
+        <Button variant="ghost" size="lg" asChild>
+          <Link href="/faq">View FAQ</Link>
+        </Button>
       </section>
     </main>
   );

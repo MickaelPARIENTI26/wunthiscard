@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Ticket, Calendar, ArrowRight, Trophy } from 'lucide-react';
+import { Calendar, Trophy } from 'lucide-react';
 
 export const metadata = {
   title: 'My Tickets | WinUCard',
@@ -115,34 +115,27 @@ export default async function MyTicketsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1
-          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
-        >
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           My Tickets
         </h1>
-        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
-          View all your competition entries
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
+          You have {tickets.length} ticket{tickets.length !== 1 ? 's' : ''} across {entries.length} competition{entries.length !== 1 ? 's' : ''}.
         </p>
       </div>
 
       {entries.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="mb-4 rounded-full bg-muted p-4">
-              <Ticket className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold">No tickets yet</h3>
-            <p className="mb-6 max-w-sm text-muted-foreground">
-              You have not entered any competitions yet. Browse our live competitions and get your tickets!
-            </p>
-            <Button asChild>
-              <Link href="/competitions">
-                Browse Competitions
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-16 text-center" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+          <div style={{ fontSize: '64px', marginBottom: '16px' }}>🎟</div>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>No tickets yet</h3>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '14px', maxWidth: '320px', marginBottom: '24px' }}>
+            You haven&apos;t entered any competitions yet. Browse our live competitions and get your tickets!
+          </p>
+          <Button asChild variant="hot" size="xl">
+            <Link href="/competitions">
+              Browse Competitions →
+            </Link>
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4">
           {entries.map(({ competition, ticketNumbers }) => {
@@ -154,8 +147,8 @@ export default async function MyTicketsPage() {
                 key={competition.id}
                 className="overflow-hidden"
                 style={{
-                  border: isWinner ? '2px solid #F0B90B' : undefined,
-                  boxShadow: isWinner ? '0 0 20px rgba(240, 185, 11, 0.2)' : undefined,
+                  border: isWinner ? '2px solid var(--accent)' : undefined,
+                  boxShadow: isWinner ? '0 0 20px rgba(0, 199, 106, 0.2)' : undefined,
                 }}
               >
                 <CardContent className="p-0">
@@ -184,7 +177,7 @@ export default async function MyTicketsPage() {
                             <Badge
                             className="gap-1"
                             style={{
-                              background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
+                              background: 'var(--accent)',
                               color: 'var(--text-primary)',
                               border: 'none',
                             }}
@@ -235,10 +228,10 @@ export default async function MyTicketsPage() {
                               className="inline-flex h-8 min-w-[2.5rem] items-center justify-center rounded-md px-2 text-sm font-medium"
                               style={{
                                 background: num === winningTicket
-                                  ? 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)'
-                                  : 'rgba(240, 185, 11, 0.1)',
-                                color: num === winningTicket ? '#0c0f17' : '#F0B90B',
-                                boxShadow: num === winningTicket ? '0 0 12px rgba(240, 185, 11, 0.4)' : 'none',
+                                  ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)'
+                                  : 'rgba(0, 199, 106, 0.15)',
+                                color: num === winningTicket ? 'var(--ink)' : 'var(--accent)',
+                                boxShadow: num === winningTicket ? '0 0 12px rgba(0, 199, 106, 0.4)' : 'none',
                               }}
                             >
                               #{num}

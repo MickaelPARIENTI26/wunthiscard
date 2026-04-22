@@ -6,27 +6,41 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  [
+    'inline-flex items-center justify-center gap-1.5 whitespace-nowrap font-semibold',
+    'border-[1.5px] border-[var(--ink)] rounded-[10px]',
+    'shadow-[var(--shadow-sm)] transition-all duration-150 ease-out',
+    'hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_var(--ink)]',
+    'active:translate-x-0 active:translate-y-0 active:shadow-[0_0_0_var(--ink)]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2',
+    'disabled:pointer-events-none disabled:opacity-50',
+    'cursor-pointer [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
+  ].join(' '),
   {
     variants: {
       variant: {
-        default: 'shadow',
-        destructive: 'shadow-sm',
-        outline: 'border shadow-sm',
-        secondary: 'shadow-sm',
-        ghost: '',
-        link: 'underline-offset-4 hover:underline',
+        primary: 'bg-[var(--ink)] text-[var(--bg)]',
+        hot: 'bg-[var(--hot)] text-white',
+        ghost: 'bg-[var(--surface)] text-[var(--ink)]',
+        accent: 'bg-[var(--accent)] text-[var(--ink)]',
+        // Legacy aliases — map old variants to Drop equivalents
+        default: 'bg-[var(--ink)] text-[var(--bg)]',
+        outline: 'bg-[var(--surface)] text-[var(--ink)]',
+        secondary: 'bg-[var(--bg-2)] text-[var(--ink)]',
+        destructive: 'bg-[var(--hot)] text-white',
+        link: 'bg-transparent text-[var(--ink)] !border-0 !shadow-none hover:!shadow-none hover:translate-x-0 hover:translate-y-0 underline-offset-4 hover:underline',
       },
       size: {
-        default: 'h-11 px-6 py-2',
-        sm: 'h-9 px-4 text-xs',
-        lg: 'h-12 px-8',
-        icon: 'h-11 w-11',
+        sm: 'px-[18px] py-[11px] text-[13px]',
+        default: 'px-[18px] py-[11px] text-[13px]',
+        lg: 'px-[22px] py-[14px] text-[14px]',
+        xl: 'px-[28px] py-[16px] text-[15px] rounded-[12px] shadow-[var(--shadow)] hover:shadow-[var(--shadow-lg)]',
+        icon: 'h-10 w-10 p-0',
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'primary',
+      size: 'sm',
     },
   }
 );
@@ -37,89 +51,13 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-// Inline style fallbacks for button variants with CSS transitions
-const variantStyles: Record<string, React.CSSProperties> = {
-  default: {
-    background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%)',
-    color: 'var(--text-primary)',
-    borderRadius: '10px',
-    boxShadow: '0 4px 16px rgba(240, 185, 11, 0.25)',
-    transition: 'all 0.3s ease',
-  },
-  destructive: {
-    background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)',
-    color: '#ffffff',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
-  },
-  outline: {
-    backgroundColor: 'transparent',
-    color: 'var(--text-primary)',
-    border: '1px solid var(--border-light)',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
-  },
-  secondary: {
-    backgroundColor: 'var(--bg-surface)',
-    color: 'var(--text-primary)',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
-  },
-  ghost: {
-    backgroundColor: 'transparent',
-    color: 'var(--text-muted)',
-    borderRadius: '10px',
-    transition: 'all 0.3s ease',
-  },
-  link: {
-    backgroundColor: 'transparent',
-    color: 'var(--accent)',
-    transition: 'all 0.3s ease',
-  },
-};
-
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size, asChild = false, style, onMouseEnter, onMouseLeave, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
-    const inlineStyle = { ...variantStyles[variant ?? 'default'], ...style };
-
-    const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (variant === 'default') {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.boxShadow = '0 6px 24px rgba(240, 185, 11, 0.35)';
-      } else if (variant === 'outline') {
-        e.currentTarget.style.borderColor = 'var(--border-hover)';
-        e.currentTarget.style.backgroundColor = 'var(--bg-card-hover)';
-      } else if (variant === 'ghost') {
-        e.currentTarget.style.backgroundColor = 'var(--bg-card)';
-        e.currentTarget.style.color = 'var(--text-primary)';
-      }
-      onMouseEnter?.(e);
-    };
-
-    const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (variant === 'default') {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 4px 16px rgba(240, 185, 11, 0.25)';
-      } else if (variant === 'outline') {
-        e.currentTarget.style.borderColor = 'var(--border-light)';
-        e.currentTarget.style.backgroundColor = 'transparent';
-      } else if (variant === 'ghost') {
-        e.currentTarget.style.backgroundColor = 'transparent';
-        e.currentTarget.style.color = 'var(--text-muted)';
-      }
-      onMouseLeave?.(e);
-    };
-
-    // Don't pass event handlers when asChild — they can't be forwarded to Server Components
-    const hoverProps = asChild ? {} : { onMouseEnter: handleMouseEnter, onMouseLeave: handleMouseLeave };
-
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        style={inlineStyle}
-        {...hoverProps}
         {...props}
       />
     );

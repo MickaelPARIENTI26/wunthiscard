@@ -2,125 +2,97 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/my-tickets', label: 'My Tickets', icon: Ticket },
-  { href: '/my-wins', label: 'My Wins', icon: Trophy },
-  { href: '/referrals', label: 'Referrals', icon: Gift },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/profile', label: 'Profile', icon: '👤' },
+  { href: '/my-tickets', label: 'My Tickets', icon: '🎟' },
+  { href: '/my-wins', label: 'My Wins', icon: '🏆' },
+  { href: '/addresses', label: 'Addresses', icon: '📍' },
+  { href: '/referrals', label: 'Referrals', icon: '🎁' },
+  { href: '/settings', label: 'Settings', icon: '⚙️' },
 ];
 
-interface AccountLayoutProps {
-  children: React.ReactNode;
-}
-
-export default function AccountLayout({ children }: AccountLayoutProps) {
+export default function AccountLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        background: `
-          radial-gradient(ellipse 50% 40% at 20% 20%, rgba(240, 185, 11, 0.03), transparent 60%),
-          linear-gradient(180deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%)
-        `,
-      }}
-    >
-      <div className="container mx-auto px-4 py-6 md:py-8">
-        {/* Mobile tabs navigation */}
-        <nav className="mb-6 overflow-x-auto md:hidden">
-          <div
-            className="flex min-w-max gap-1 rounded-xl p-1"
+    <div className="drop-section" style={{ paddingTop: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '32px', maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Desktop sidebar */}
+        <aside className="hidden md:block">
+          <nav
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border-subtle)',
+              background: 'var(--surface)',
+              border: '1.5px solid var(--ink)',
+              borderRadius: 'var(--radius)',
+              boxShadow: 'var(--shadow)',
+              padding: '8px',
+              position: 'sticky',
+              top: '90px',
             }}
           >
             {navItems.map((item) => {
-              const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={cn(
-                    'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-300'
-                  )}
+                  className="flex items-center gap-2.5 transition-colors duration-150"
                   style={{
-                    background: isActive ? 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)' : 'transparent',
-                    color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-                    boxShadow: isActive ? '0 2px 8px rgba(240, 185, 11, 0.25)' : 'none',
+                    padding: '11px 14px',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    background: isActive ? 'var(--ink)' : 'transparent',
+                    color: isActive ? 'var(--accent)' : 'var(--ink)',
                   }}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span className="whitespace-nowrap">{item.label}</span>
+                  <span>{item.icon}</span>{item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Mobile tabs */}
+        <nav className="md:hidden col-span-full overflow-x-auto mb-2">
+          <div className="flex gap-2 min-w-max">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center gap-1.5 whitespace-nowrap"
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: '999px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    background: isActive ? 'var(--ink)' : 'var(--surface)',
+                    color: isActive ? 'var(--accent)' : 'var(--ink)',
+                    border: '1.5px solid var(--ink)',
+                    boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
+                  }}
+                >
+                  <span>{item.icon}</span>{item.label}
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        <div className="flex gap-8">
-          {/* Desktop sidebar navigation */}
-          <aside className="hidden w-64 shrink-0 md:block">
-            <div
-              className="sticky top-8 rounded-xl p-4"
-              style={{
-                background: 'var(--bg-base)',
-                border: '1px solid var(--border-subtle)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.06)',
-              }}
-            >
-              <h2
-                className="mb-4 text-lg font-semibold font-[family-name:var(--font-outfit)]"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                My Account
-              </h2>
-              <nav className="flex flex-col gap-1">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300"
-                      style={{
-                        background: isActive ? 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)' : 'transparent',
-                        color: isActive ? 'var(--text-primary)' : 'var(--text-muted)',
-                        boxShadow: isActive ? '0 2px 8px rgba(240, 185, 11, 0.25)' : 'none',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = 'var(--bg-card-hover)';
-                          e.currentTarget.style.color = 'var(--text-primary)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.color = 'var(--text-muted)';
-                        }
-                      }}
-                    >
-                      <Icon className="h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          </aside>
-
-          {/* Main content area */}
-          <main className="min-w-0 flex-1">{children}</main>
-        </div>
+        {/* Content */}
+        <main className="min-w-0">{children}</main>
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .drop-section > div:first-child {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

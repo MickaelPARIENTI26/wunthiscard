@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CompetitionCard } from '@/components/competition/competition-card';
+import { CompCard } from '@/components/home/comp-card';
 
 interface Competition {
   id: string;
@@ -170,17 +170,16 @@ export function CompetitionsContent({
       */}
 
       {/* Results count */}
-      <div className="text-center mb-8" style={{ color: '#6b7088', fontSize: '14px' }}>
+      <div className="mb-6" style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>
         Showing {competitions.length} of {pagination.totalCount} competitions
       </div>
 
       {/* Competitions Grid — sorted by urgency */}
       {competitions.length > 0 ? (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {sortedCompetitions.map((competition, index) => (
-            <CompetitionCard
+        <div className="comp-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+          {sortedCompetitions.map((competition) => (
+            <CompCard
               key={competition.id}
-              id={competition.id}
               slug={competition.slug}
               title={competition.title}
               mainImageUrl={competition.mainImageUrl}
@@ -189,33 +188,24 @@ export function CompetitionsContent({
               ticketPrice={competition.ticketPrice}
               totalTickets={competition.totalTickets}
               soldTickets={competition.soldTickets}
-              drawDate={competition.drawDate}
               status={competition.status}
-              isFree={competition.isFree}
-              isMystery={competition.isMystery}
-              isRevealed={competition.isRevealed}
-              drawType={competition.drawType}
-              prizeCount={competition.prizeCount}
-              index={index}
             />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 text-6xl">🎴</div>
-          <h3 className="mb-2 text-lg font-semibold" style={{ color: '#1a1a2e' }}>
-            No competitions found
-          </h3>
-          <p className="mb-6" style={{ color: '#6b7088' }}>
+          <h3 className="mb-2 text-lg font-semibold">No competitions found</h3>
+          <p className="mb-6" style={{ color: 'var(--ink-dim)' }}>
             Try adjusting your filters to find more competitions
           </p>
           <button
             onClick={() => router.push('/competitions')}
-            className="px-6 py-3 rounded-xl font-medium transition-all duration-300"
+            className="font-semibold transition-all duration-150"
             style={{
-              background: '#ffffff',
-              color: '#1a1a2e',
-              border: '1px solid #e8e8ec',
+              padding: '11px 18px', fontSize: '13px', borderRadius: '10px',
+              background: 'var(--surface)', border: '1.5px solid var(--ink)',
+              boxShadow: 'var(--shadow-sm)',
             }}
           >
             Clear Filters
@@ -230,26 +220,23 @@ export function CompetitionsContent({
             disabled={!pagination.hasPrev}
             onClick={() => handlePageChange(pagination.page - 1)}
             aria-label="Previous page"
-            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300"
+            className="flex items-center justify-center w-10 h-10 transition-all duration-150"
             style={{
-              background: '#ffffff',
-              border: '1px solid #e8e8ec',
-              color: pagination.hasPrev ? '#1a1a2e' : '#d0d0d4',
+              background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '10px',
+              boxShadow: 'var(--shadow-sm)',
+              color: pagination.hasPrev ? 'var(--ink)' : 'var(--ink-faint)',
               cursor: pagination.hasPrev ? 'pointer' : 'not-allowed',
+              opacity: pagination.hasPrev ? 1 : 0.5,
             }}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             {generatePageNumbers(pagination.page, pagination.totalPages).map((pageNum, index) => {
               if (pageNum === 'ellipsis') {
                 return (
-                  <span
-                    key={`ellipsis-${index}`}
-                    className="flex h-10 w-10 items-center justify-center"
-                    style={{ color: '#6b7088' }}
-                  >
+                  <span key={`ellipsis-${index}`} className="flex h-10 w-10 items-center justify-center" style={{ color: 'var(--ink-faint)' }}>
                     ...
                   </span>
                 );
@@ -261,11 +248,13 @@ export function CompetitionsContent({
                   onClick={() => handlePageChange(pageNum as number)}
                   aria-label={`Page ${pageNum}`}
                   aria-current={isCurrentPage ? 'page' : undefined}
-                  className="flex items-center justify-center w-10 h-10 rounded-xl font-medium transition-all duration-300"
+                  className="flex items-center justify-center w-10 h-10 font-semibold transition-all duration-150"
                   style={{
-                    background: isCurrentPage ? '#1a1a2e' : '#ffffff',
-                    color: isCurrentPage ? '#ffffff' : '#1a1a2e',
-                    border: isCurrentPage ? 'none' : '1px solid #e8e8ec',
+                    background: isCurrentPage ? 'var(--ink)' : 'var(--surface)',
+                    color: isCurrentPage ? 'var(--bg)' : 'var(--ink)',
+                    border: '1.5px solid var(--ink)',
+                    borderRadius: '10px',
+                    boxShadow: isCurrentPage ? 'var(--shadow)' : 'var(--shadow-sm)',
                   }}
                 >
                   {pageNum}
@@ -278,12 +267,13 @@ export function CompetitionsContent({
             disabled={!pagination.hasNext}
             onClick={() => handlePageChange(pagination.page + 1)}
             aria-label="Next page"
-            className="flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300"
+            className="flex items-center justify-center w-10 h-10 transition-all duration-150"
             style={{
-              background: '#ffffff',
-              border: '1px solid #e8e8ec',
-              color: pagination.hasNext ? '#1a1a2e' : '#d0d0d4',
+              background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '10px',
+              boxShadow: 'var(--shadow-sm)',
+              color: pagination.hasNext ? 'var(--ink)' : 'var(--ink-faint)',
               cursor: pagination.hasNext ? 'pointer' : 'not-allowed',
+              opacity: pagination.hasNext ? 1 : 0.5,
             }}
           >
             <ChevronRight className="h-4 w-4" />

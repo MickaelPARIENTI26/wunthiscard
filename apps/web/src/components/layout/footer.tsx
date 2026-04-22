@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-// Social button data with text labels
 const socialButtons = [
   { href: 'https://tiktok.com/@winucard', label: 'TikTok' },
   { href: 'https://instagram.com/winucard', label: 'Instagram' },
@@ -24,298 +23,137 @@ const legalLinks = [
   { href: '/terms', label: 'Terms & Conditions' },
   { href: '/privacy', label: 'Privacy Policy' },
   { href: '/cookies', label: 'Cookie Policy' },
+  { href: '/competition-rules', label: 'Competition Rules' },
 ];
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer
-      style={{
-        background: '#F5F5F7',
-        borderTop: '1px solid #E8E8EC',
-      }}
-    >
-      {/* CSS for hover effects and mobile styles */}
-      <style>{`
-        .footer-social-btn {
-          padding: 10px 14px;
-          min-height: 44px;
-          display: inline-flex;
-          align-items: center;
-          border-radius: 8px;
-          background: #EDEDF0;
-          color: #6b7088;
-          font-size: 11px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-        }
-        .footer-social-btn:hover {
-          background: #E8A000;
-          color: #ffffff;
-        }
-        .footer-link {
-          color: #6b7088;
-          font-size: 13px;
-          transition: color 0.2s ease;
-        }
-        .footer-link:hover {
-          color: #E8A000;
-        }
-
-        /* Mobile footer styles */
-        @media (max-width: 768px) {
-          .footer-main-container {
-            padding: 28px 20px 16px !important;
-          }
-          .footer-grid {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 24px !important;
-          }
-          .footer-logo-section {
-            text-align: center !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-          }
-          .footer-logo-link {
-            margin-bottom: 12px !important;
-          }
-          .footer-description {
-            font-size: 11px !important;
-            margin-bottom: 12px !important;
-          }
-          .footer-social-row {
-            justify-content: center !important;
-          }
-          .footer-links-grid {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 20px !important;
-            width: 100% !important;
-            text-align: center !important;
-          }
-          .footer-links-column h3 {
-            font-size: 11px !important;
-            margin-bottom: 12px !important;
-          }
-          .footer-links-column ul {
-            gap: 8px !important;
-          }
-          .footer-links-column .footer-link {
-            font-size: 12px !important;
-          }
-          .footer-bottom-bar {
-            padding: 16px 20px !important;
-          }
-          .footer-bottom-content {
-            justify-content: center !important;
-          }
-          .footer-trust-badges {
-            display: none !important;
-          }
-          .footer-copyright-full {
-            display: none !important;
-          }
-          .footer-copyright-short {
-            display: block !important;
-          }
-        }
-        @media (min-width: 769px) {
-          .footer-copyright-short {
-            display: none !important;
-          }
-        }
-      `}</style>
-
-      {/* Main footer content */}
+    <footer style={{ borderTop: '1.5px solid var(--ink)' }}>
       <div
-        className="container mx-auto footer-main-container"
-        style={{ padding: '56px 40px 32px' }}
+        className="mx-auto px-5 sm:px-8"
+        style={{ maxWidth: '1440px', paddingTop: '40px', paddingBottom: '24px' }}
       >
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-5 footer-grid">
-          {/* Column 1: Logo & Description */}
-          <div className="lg:col-span-2 footer-logo-section">
-            {/* Logo */}
-            <Link href="/" className="inline-flex items-center gap-2.5 mb-5 footer-logo-link">
-              {/* Gold square with W */}
-              <div
-                className="flex items-center justify-center"
-                style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #F0B90B 0%, #E8A000 100%)',
-                }}
-              >
-                <span
-                  style={{
-                    color: '#ffffff',
-                    fontSize: '16px',
-                    fontWeight: 800,
-                    fontFamily: 'var(--font-outfit)',
-                  }}
-                >
-                  W
-                </span>
-              </div>
-              {/* Text */}
-              <span
-                className="font-[family-name:var(--font-outfit)]"
-                style={{
-                  fontSize: '20px',
-                  fontWeight: 700,
-                  letterSpacing: '-0.5px',
-                  color: 'var(--text-primary)',
-                }}
-              >
-                WinUCard
-              </span>
-            </Link>
-
-            <p
-              className="footer-description"
-              style={{
-                color: '#8a8ea0',
-                fontSize: '12px',
-                lineHeight: 1.7,
-                maxWidth: '280px',
-                marginBottom: '20px',
-              }}
+        {/* Mobile: compact layout */}
+        <div className="sm:hidden">
+          {/* Brand + socials centred */}
+          <div className="text-center mb-6">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 justify-center"
+              style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '10px' }}
             >
-              UK&apos;s premium skill-based card competition platform. Must be 18+. Please play responsibly.
+              <span
+                className="grid place-items-center"
+                style={{ width: 24, height: 24, background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: '5px', boxShadow: '1.5px 1.5px 0 var(--ink)', fontWeight: 700, fontSize: '13px', color: 'var(--ink)' }}
+              >★</span>
+              WinUCard
+            </Link>
+            <p style={{ color: 'var(--ink-dim)', fontSize: '11px', lineHeight: 1.5, marginBottom: '12px' }}>
+              UK&apos;s premium skill-based card competition platform. 18+.
             </p>
-
-            {/* Social Buttons */}
-            <div className="flex flex-wrap items-center gap-2 footer-social-row">
-              {socialButtons.map((social) => (
-                <a
-                  key={social.href}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer-social-btn"
-                >
-                  {social.label}
-                </a>
+            <div className="flex flex-wrap gap-1.5 justify-center">
+              {socialButtons.map((s) => (
+                <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer"
+                  style={{ padding: '4px 10px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '11px', fontWeight: 600, background: 'var(--surface)', boxShadow: '1px 1px 0 var(--ink)' }}
+                >{s.label}</a>
               ))}
             </div>
           </div>
 
-          {/* Links Grid (3 columns on mobile) */}
-          <div className="contents md:contents footer-links-grid">
-            {/* Column 2: Platform */}
-            <div className="footer-links-column">
-              <h3
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  marginBottom: '16px',
-                }}
-              >
-                Platform
-              </h3>
-              <ul className="space-y-3">
-                {platformLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="footer-link">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Column 3: Support */}
-            <div className="footer-links-column">
-              <h3
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  marginBottom: '16px',
-                }}
-              >
-                Support
-              </h3>
-              <ul className="space-y-3">
-                {supportLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="footer-link">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Column 4: Legal */}
-            <div className="footer-links-column">
-              <h3
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#1a1a2e',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  marginBottom: '16px',
-                }}
-              >
-                Legal
-              </h3>
-              <ul className="space-y-3">
-                {legalLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="footer-link">
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          {/* 3 link columns side by side */}
+          <div className="grid grid-cols-3 gap-4 mb-6" style={{ borderTop: '1px dashed var(--line-2)', paddingTop: '16px' }}>
+            <FooterColumnCompact title="Platform" links={platformLinks} />
+            <FooterColumnCompact title="Support" links={supportLinks} />
+            <FooterColumnCompact title="Legal" links={legalLinks} />
           </div>
+        </div>
+
+        {/* Desktop: full 4-col layout */}
+        <div className="hidden sm:block">
+          <div className="footer-grid" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '48px', marginBottom: '36px' }}>
+            <div>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2.5"
+                style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}
+              >
+                <span
+                  className="grid place-items-center"
+                  style={{ width: 28, height: 28, background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: '6px', boxShadow: '2px 2px 0 var(--ink)', fontWeight: 700, fontSize: '15px', color: 'var(--ink)' }}
+                >★</span>
+                WinUCard
+              </Link>
+              <p style={{ color: 'var(--ink-dim)', fontSize: '13px', lineHeight: 1.55, maxWidth: '280px', marginBottom: '18px' }}>
+                UK&apos;s premium skill-based card competition platform. Must be 18+. Please play responsibly.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {socialButtons.map((social) => (
+                  <a key={social.href} href={social.href} target="_blank" rel="noopener noreferrer"
+                    className="transition-colors duration-150 hover:bg-[var(--bg-2)]"
+                    style={{ padding: '6px 12px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--surface)', boxShadow: '1.5px 1.5px 0 var(--ink)' }}
+                  >{social.label}</a>
+                ))}
+              </div>
+            </div>
+            <FooterColumn title="Platform" links={platformLinks} />
+            <FooterColumn title="Support" links={supportLinks} />
+            <FooterColumn title="Legal" links={legalLinks} />
+          </div>
+        </div>
+
+        {/* Bottom strip */}
+        <div
+          className="flex flex-wrap items-center justify-between gap-3"
+          style={{ borderTop: '1.5px dashed var(--ink)', paddingTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--ink-faint)', textTransform: 'uppercase' }}
+        >
+          <span>© {new Date().getFullYear()} WinUCard Ltd.</span>
+          <span>🔒 SSL · ⚑ UK Registered</span>
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div
-        className="container mx-auto footer-bottom-bar"
-        style={{
-          borderTop: '1px solid #E0E0E4',
-          marginTop: '0',
-          padding: '20px 40px',
-        }}
-      >
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 footer-bottom-content">
-          {/* Copyright - Full version (desktop) */}
-          <p className="footer-copyright-full" style={{ color: '#9a9eb0', fontSize: '12px' }}>
-            © {currentYear} WinUCard Ltd. All rights reserved.
-          </p>
-          {/* Copyright - Short version (mobile) */}
-          <p className="footer-copyright-short" style={{ color: '#9a9eb0', fontSize: '12px', display: 'none' }}>
-            © {currentYear} WinUCard Ltd.
-          </p>
-
-          {/* Trust badges */}
-          <div className="flex items-center gap-4 footer-trust-badges">
-            <span className="inline-flex items-center gap-1.5" style={{ color: '#9a9eb0', fontSize: '12px' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              SSL Secured
-            </span>
-            <span className="inline-flex items-center gap-1.5" style={{ color: '#9a9eb0', fontSize: '12px' }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-              UK Registered
-            </span>
-          </div>
-        </div>
-      </div>
+      <style>{`
+        @media (min-width: 640px) and (max-width: 960px) {
+          .footer-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+      `}</style>
     </footer>
+  );
+}
+
+function FooterColumn({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div>
+      <h5 style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink)', marginBottom: '14px', fontWeight: 700 }}>
+        {title}
+      </h5>
+      <ul className="flex flex-col" style={{ gap: '10px' }}>
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link href={link.href} className="transition-colors duration-150 hover:text-[var(--ink)]" style={{ fontSize: '14px', color: 'var(--ink-dim)' }}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function FooterColumnCompact({ title, links }: { title: string; links: { href: string; label: string }[] }) {
+  return (
+    <div>
+      <h5 style={{ fontFamily: 'var(--mono)', fontSize: '9px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink)', marginBottom: '8px', fontWeight: 700 }}>
+        {title}
+      </h5>
+      <ul className="flex flex-col" style={{ gap: '6px' }}>
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link href={link.href} style={{ fontSize: '12px', color: 'var(--ink-dim)' }}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

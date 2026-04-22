@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // Configure allowed tags and attributes for rich text content
 const DEFAULT_CONFIG = {
@@ -30,6 +30,7 @@ const DEFAULT_CONFIG = {
 interface SafeHtmlProps {
   html: string;
   className?: string;
+  style?: React.CSSProperties;
   as?: 'div' | 'span' | 'article' | 'section';
 }
 
@@ -38,7 +39,7 @@ interface SafeHtmlProps {
  * Uses DOMPurify to sanitize HTML before rendering
  * DOMPurify is loaded client-side only since it requires DOM
  */
-export function SafeHtml({ html, className, as: Component = 'div' }: SafeHtmlProps) {
+export function SafeHtml({ html, className, style, as: Component = 'div' }: SafeHtmlProps) {
   const [sanitizedHtml, setSanitizedHtml] = useState('');
   const [isClient, setIsClient] = useState(false);
 
@@ -61,12 +62,13 @@ export function SafeHtml({ html, className, as: Component = 'div' }: SafeHtmlPro
 
   // Show nothing during SSR to prevent hydration mismatch
   if (!isClient) {
-    return <Component className={className} />;
+    return <Component className={className} style={style} />;
   }
 
   return (
     <Component
       className={className}
+      style={style}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );

@@ -36,12 +36,10 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1
-          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
-        >
-          Settings
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+          Account Settings
         </h1>
-        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
           Manage your account settings and security
         </p>
       </div>

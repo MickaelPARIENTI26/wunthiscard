@@ -96,6 +96,9 @@ async function getCompetitions(searchParams: SearchParams) {
     };
   }
 
+  // Exclude competitions whose draw date has passed
+  where.drawDate = { gt: new Date() };
+
   // For "ending soon", filter by draw date within next 48 hours
   if (status === 'ending-soon') {
     const now = new Date();
@@ -243,34 +246,26 @@ export default async function CompetitionsPage({
   const data = await getCompetitions(params);
 
   return (
-    <main className="min-h-screen" style={{ background: '#ffffff' }}>
-      {/* Hero Mini */}
-      <section
-        style={{
-          padding: '80px 40px 40px',
-          background: '#ffffff',
-        }}
-      >
-        <div className="container mx-auto text-center">
-          <h1
-            className="font-[family-name:var(--font-outfit)] mb-3"
-            style={{
-              fontSize: '46px',
-              fontWeight: 700,
-              color: '#1a1a2e',
-            }}
-          >
-            All Competitions
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>
-            Browse all our live and upcoming competitions.
-          </p>
+    <main>
+      {/* Page Header */}
+      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
+        <div
+          className="inline-flex items-center gap-2.5 mb-4"
+          style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}
+        >
+          Prize Draws
         </div>
-      </section>
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
+          All Competitions
+        </h1>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '400px', lineHeight: 1.5 }}>
+          Browse all our live and upcoming competitions. Tickets from £2.99.
+        </p>
+      </header>
 
       {/* Competitions Content */}
-      <section style={{ background: '#F7F7FA', padding: '40px 0 80px' }}>
-        <div className="container mx-auto px-4">
+      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+        <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '1440px' }}>
           <Suspense fallback={<CompetitionsLoading />}>
             <CompetitionsContent
               competitions={data.competitions}

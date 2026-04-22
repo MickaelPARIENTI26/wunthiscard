@@ -10,8 +10,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<'tex
           className
         )}
         style={{
-          backgroundColor: 'var(--color-input, #1a1a2e)',
-          color: '#f5f5f5',
+          backgroundColor: 'var(--color-input, var(--surface))',
+          color: 'var(--ink)',
           borderColor: 'var(--color-border, #2a2a4a)',
           ...style,
         }}

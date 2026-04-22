@@ -302,7 +302,7 @@ export async function updateCompetition(id: string, formData: FormData) {
       condition,
       provenance,
       questionText,
-      questionChoices,
+      questionChoices: questionChoices as string[],
       questionAnswer: isNaN(questionAnswer) ? existing.questionAnswer : questionAnswer,
       metaTitle: metaTitle || title,
       metaDescription: metaDescription || descriptionShort,

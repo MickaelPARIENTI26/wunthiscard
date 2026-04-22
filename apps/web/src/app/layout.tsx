@@ -1,8 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit } from 'next/font/google';
-import { GeistSans } from 'geist/font/sans';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateHomePageSchema } from '@/lib/structured-data';
@@ -12,13 +9,21 @@ import { AuthHeader } from '@/components/layout/auth-header';
 import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Toaster } from '@/components/ui/toaster';
+import { Suspense } from 'react';
 import { ReferralTracker } from '@/components/common/referral-tracker';
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-outfit',
-  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-space-grotesk',
+  weight: ['400', '500', '600', '700'],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-jetbrains-mono',
+  weight: ['400', '500', '600'],
 });
 
 /**
@@ -29,7 +34,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#ffffff',
+  themeColor: '#f2f0ec',
   colorScheme: 'light',
 };
 
@@ -128,39 +133,34 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className={`${GeistSans.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`} data-scroll-behavior="smooth">
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
       </head>
-      <body className="min-h-screen antialiased flex flex-col" style={{ fontFamily: "var(--font-geist-sans), 'Inter', -apple-system, sans-serif", paddingTop: '66px' }}>
-        <NextIntlClientProvider messages={messages}>
-          <SessionProvider>
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold"
-              style={{ background: 'var(--accent)', color: '#ffffff' }}
-            >
-              Skip to main content
-            </a>
-            <AuthHeader />
-            <main id="main-content" className="flex-1">{children}</main>
-            <Footer />
-            <CookieConsentBanner />
-            <Toaster />
-            <AgeGate />
-            <ReferralTracker />
-          </SessionProvider>
-        </NextIntlClientProvider>
+      <body className="min-h-screen antialiased flex flex-col" style={{ fontFamily: "var(--sans)" }}>
+        <SessionProvider>
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold"
+            style={{ background: 'var(--accent)', color: '#ffffff' }}
+          >
+            Skip to main content
+          </a>
+          <AuthHeader />
+          <main id="main-content" className="flex-1">{children}</main>
+          <Footer />
+          <CookieConsentBanner />
+          <Toaster />
+          <AgeGate />
+          <Suspense fallback={null}><ReferralTracker /></Suspense>
+        </SessionProvider>
       </body>
     </html>
   );

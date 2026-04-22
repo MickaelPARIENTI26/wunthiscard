@@ -16,14 +16,14 @@ export function FreeEntryAccordion() {
           padding: '0',
           background: 'transparent',
           border: 'none',
-          color: isOpen ? '#6b7088' : '#9a9eb0',
+          color: isOpen ? 'var(--ink-dim)' : 'var(--ink-faint)',
           fontSize: '12px',
           fontWeight: 400,
           cursor: 'pointer',
           transition: 'color 0.2s',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#6b7088';
+          e.currentTarget.style.color = 'var(--ink-dim)';
           const chevron = e.currentTarget.querySelector('.chevron-icon') as HTMLElement;
           if (chevron && !isOpen) {
             chevron.style.transform = 'translateX(2px)';
@@ -31,7 +31,7 @@ export function FreeEntryAccordion() {
         }}
         onMouseLeave={(e) => {
           if (!isOpen) {
-            e.currentTarget.style.color = '#9a9eb0';
+            e.currentTarget.style.color = 'var(--ink-faint)';
           }
           const chevron = e.currentTarget.querySelector('.chevron-icon') as HTMLElement;
           if (chevron && !isOpen) {
@@ -64,13 +64,13 @@ export function FreeEntryAccordion() {
           style={{
             marginTop: '8px',
             padding: '16px 20px',
-            background: '#F7F7FA',
+            background: 'var(--bg-2)',
             borderRadius: '12px',
             border: '1px solid rgba(0, 0, 0, 0.06)',
           }}
         >
           {/* Description */}
-          <p style={{ fontSize: '13px', color: '#6b7088', lineHeight: 1.6, marginBottom: '10px', margin: 0 }}>
+          <p style={{ fontSize: '13px', color: 'var(--ink-dim)', lineHeight: 1.6, marginBottom: '10px', margin: 0 }}>
             Send a handwritten postcard with your full name, email address, and competition name to:
           </p>
 
@@ -79,12 +79,12 @@ export function FreeEntryAccordion() {
             style={{
               margin: '10px 0',
               padding: '12px 16px',
-              background: '#ffffff',
+              background: 'var(--surface)',
               borderRadius: '8px',
               border: '1px solid rgba(0, 0, 0, 0.06)',
             }}
           >
-            <p style={{ fontSize: '13px', fontWeight: 600, color: '#1a1a2e', lineHeight: 1.5, margin: 0 }}>
+            <p style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', lineHeight: 1.5, margin: 0 }}>
               WinUCard Ltd<br />
               123 Competition Street<br />
               London, EC1A 1BB<br />
@@ -93,7 +93,7 @@ export function FreeEntryAccordion() {
           </div>
 
           {/* Additional Info */}
-          <p style={{ fontSize: '11px', color: '#9a9eb0', margin: 0 }}>
+          <p style={{ fontSize: '11px', color: 'var(--ink-faint)', margin: 0 }}>
             One entry per postcard. Must arrive before the draw date.
           </p>
         </div>

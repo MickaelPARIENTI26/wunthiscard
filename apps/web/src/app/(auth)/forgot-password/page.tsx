@@ -14,10 +14,10 @@ const inputStyle = {
   width: '100%',
   padding: '12px 16px',
   fontSize: '14px',
-  background: '#F5F5F7',
+  background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '12px',
-  color: '#1a1a2e',
+  borderRadius: '10px',
+  color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
 };
@@ -77,18 +77,18 @@ export default function ForgotPasswordPage() {
             <CheckCircle style={{ width: '28px', height: '28px', color: '#22C55E' }} />
           </div>
           <h1
-            className="font-[family-name:var(--font-outfit)] mb-2"
+            className="font-sans mb-2"
             style={{
               fontSize: '29px',
               fontWeight: 700,
-              color: '#1a1a2e',
+              color: 'var(--ink)',
             }}
           >
             Check your email
           </h1>
-          <p style={{ color: '#6b7088', fontSize: '14px' }}>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
             We&apos;ve sent a password reset link to{' '}
-            <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{submittedEmail}</span>
+            <span style={{ fontWeight: 600, color: 'var(--ink)' }}>{submittedEmail}</span>
           </p>
         </div>
 
@@ -97,12 +97,12 @@ export default function ForgotPasswordPage() {
           className="flex items-start gap-3"
           style={{
             padding: '16px',
-            background: '#F7F7FA',
-            borderRadius: '12px',
+            background: 'var(--bg-2)',
+            borderRadius: '10px',
             marginBottom: '24px',
           }}
         >
-          <Mail style={{ width: '20px', height: '20px', color: '#6b7088', flexShrink: 0, marginTop: '2px' }} />
+          <Mail style={{ width: '20px', height: '20px', color: 'var(--ink-dim)', flexShrink: 0, marginTop: '2px' }} />
           <div style={{ fontSize: '14px', color: '#555' }}>
             <p>The link will expire in 1 hour.</p>
             <p style={{ marginTop: '4px' }}>
@@ -122,10 +122,10 @@ export default function ForgotPasswordPage() {
             className="w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '12px',
+              borderRadius: '10px',
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
-              color: '#1a1a2e',
+              color: 'var(--ink)',
               fontSize: '15px',
               fontWeight: 500,
               cursor: 'pointer',
@@ -139,8 +139,8 @@ export default function ForgotPasswordPage() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '12px',
-              color: '#6b7088',
+              borderRadius: '10px',
+              color: 'var(--ink-dim)',
               fontSize: '14px',
               fontWeight: 500,
             }}
@@ -158,16 +158,16 @@ export default function ForgotPasswordPage() {
       {/* Header */}
       <div className="text-center mb-6">
         <h1
-          className="font-[family-name:var(--font-outfit)] mb-2"
+          className="font-sans mb-2"
           style={{
             fontSize: '29px',
             fontWeight: 700,
-            color: '#1a1a2e',
+            color: 'var(--ink)',
           }}
         >
           Reset your password
         </h1>
-        <p style={{ color: '#6b7088', fontSize: '14px' }}>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
           Enter your email address and we&apos;ll send you a link to reset your password
         </p>
       </div>
@@ -182,7 +182,7 @@ export default function ForgotPasswordPage() {
               color: '#DC2626',
               background: 'rgba(220, 38, 38, 0.08)',
               border: '1px solid rgba(220, 38, 38, 0.2)',
-              borderRadius: '12px',
+              borderRadius: '10px',
             }}
           >
             {serverError}
@@ -193,7 +193,7 @@ export default function ForgotPasswordPage() {
           <div className="space-y-2">
             <label
               htmlFor="email"
-              style={{ fontSize: '14px', fontWeight: 500, color: '#1a1a2e' }}
+              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
             >
               Email
             </label>
@@ -208,8 +208,8 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading}
                   style={inputStyle}
                   onFocus={(e) => {
-                    e.currentTarget.style.borderColor = '#F0B90B';
-                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(240, 185, 11, 0.1)';
+                    e.currentTarget.style.borderColor = 'var(--accent)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
                   }}
                   onBlur={(e) => {
                     e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
@@ -231,8 +231,8 @@ export default function ForgotPasswordPage() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '12px',
-              background: '#1a1a2e',
+              borderRadius: '10px',
+              background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '15px',
               fontWeight: 600,
@@ -256,8 +256,8 @@ export default function ForgotPasswordPage() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '12px',
-            color: '#6b7088',
+            borderRadius: '10px',
+            color: 'var(--ink-dim)',
             fontSize: '14px',
             fontWeight: 500,
           }}

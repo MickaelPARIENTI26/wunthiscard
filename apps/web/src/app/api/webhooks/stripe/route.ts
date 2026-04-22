@@ -270,7 +270,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   // Failure here should never block payment confirmation
   try {
     const buyer = await prisma.user.findUnique({
-      where: { id: order.userId },
+      where: { id: order.userId ?? undefined },
       select: { referredById: true },
     });
 

@@ -86,31 +86,25 @@ export default async function MyWinsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1
-          className="text-2xl font-bold md:text-3xl font-[family-name:var(--font-outfit)] text-gradient-gold"
-        >
-          My Wins
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+          My Wins {wins.length > 0 && <span style={{ fontSize: '22px', color: 'var(--ink-dim)' }}>· {wins.length} card{wins.length !== 1 ? 's' : ''} won</span>}
         </h1>
-        <p className="mt-1" style={{ color: 'var(--text-muted)' }}>
-          View all your competition wins
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
+          All cards shipped with tracked insurance.
         </p>
       </div>
 
       {wins.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="mb-4 rounded-full bg-muted p-4">
-              <Trophy className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="mb-2 text-lg font-semibold">No wins yet</h3>
-            <p className="mb-6 max-w-sm text-muted-foreground">
-              No wins yet - keep trying! Every ticket is a chance to win amazing collectibles.
-            </p>
-            <Button asChild>
-              <Link href="/competitions">Browse Competitions</Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-16 text-center" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+          <div style={{ fontSize: '64px', marginBottom: '16px' }}>🏆</div>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>No wins yet</h3>
+          <p style={{ color: 'var(--ink-dim)', fontSize: '14px', maxWidth: '320px', marginBottom: '24px' }}>
+            Keep entering — every ticket is a shot at a grail card!
+          </p>
+          <Button asChild variant="hot" size="xl">
+            <Link href="/competitions">Enter a competition →</Link>
+          </Button>
+        </div>
       ) : (
         <div className="space-y-4">
           {wins.map((win) => {
@@ -130,7 +124,7 @@ export default async function MyWinsPage() {
                         sizes="(max-width: 640px) 100vw, 160px"
                       />
                       <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: 'rgba(12, 15, 23, 0.6)' }}>
-                        <Trophy className="h-10 w-10" style={{ color: '#F0B90B' }} />
+                        <Trophy className="h-10 w-10" style={{ color: 'var(--accent)' }} />
                       </div>
                     </div>
 
