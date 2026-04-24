@@ -123,7 +123,7 @@ async function testRegistration(): Promise<{ userId: string; verificationToken: 
       return null;
     }
 
-    if (!createdUser.passwordHash.includes(':')) {
+    if (!createdUser.passwordHash || !createdUser.passwordHash.includes(':')) {
       logResult('Registration', 'FAIL', 'Password hash format incorrect');
       return null;
     }
@@ -350,6 +350,10 @@ async function testViewCompetitions(): Promise<string | null> {
     if (!activeCompetition) {
       logResult('View Competitions', 'WARN', 'No ACTIVE competition found, using first available');
       const comp = competitions[0];
+      if (!comp) {
+        logResult('View Competitions', 'FAIL', 'No competitions available');
+        return null;
+      }
       logResult('View Competitions', 'PASS', `Found ${competitions.length} competitions`, {
         firstCompetition: {
           id: comp.id,
@@ -428,7 +432,7 @@ async function testViewCompetitionDetail(competitionId: string): Promise<{ avail
     });
 
     const soldTickets = competition._count.tickets;
-    const calculatedAvailable = competition.totalTickets - soldTickets;
+    const calculatedAvailable = (competition.totalTickets ?? 0) - soldTickets;
 
     // Verify available ticket count is consistent
     if (Math.abs(availableTickets - calculatedAvailable) > 5) {
@@ -445,7 +449,7 @@ async function testViewCompetitionDetail(competitionId: string): Promise<{ avail
       availableTickets,
       maxPerUser: competition.maxTicketsPerUser,
       hasSkillQuestion: !!competition.questionText,
-      questionOptionsCount: competition.questionOptions ? (competition.questionOptions as string[]).length : 0,
+      questionChoicesCount: competition.questionChoices ? (competition.questionChoices as string[]).length : 0,
     });
 
     return {
@@ -472,7 +476,7 @@ async function testSkillQuestion(competitionId: string, correctAnswer: number): 
       where: { id: competitionId },
       select: {
         questionText: true,
-        questionOptions: true,
+        questionChoices: true,
         questionAnswer: true,
         status: true,
       },
@@ -518,7 +522,7 @@ async function testSkillQuestion(competitionId: string, correctAnswer: number): 
 
     logResult('Skill Question', 'PASS', 'Correct answer accepted', {
       questionText: competition.questionText.substring(0, 50) + '...',
-      optionsCount: (competition.questionOptions as string[])?.length || 0,
+      optionsCount: (competition.questionChoices as string[])?.length || 0,
       correctAnswer: competition.questionAnswer,
     });
 
@@ -726,8 +730,9 @@ async function testViewMyTickets(userId: string, expectedTicketNumbers: number[]
 
     // Group by competition
     const byCompetition = tickets.reduce<Record<string, number[]>>((acc, t) => {
-      acc[t.competition.title] = acc[t.competition.title] || [];
-      acc[t.competition.title].push(t.ticketNumber);
+      const title = t.competition.title;
+      acc[title] ??= [];
+      acc[title].push(t.ticketNumber);
       return acc;
     }, {});
 
