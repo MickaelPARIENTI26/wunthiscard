@@ -53,6 +53,13 @@ export function calculateBonusTickets(
 }
 
 /**
+ * Calculate total price for tickets
+ */
+export function calculateTotalPrice(ticketCount: number, ticketPrice: number): number {
+  return ticketCount * ticketPrice;
+}
+
+/**
  * Generate a unique order number
  */
 export function generateOrderNumber(prefix = 'WTC'): string {
