@@ -15,7 +15,6 @@ export const BONUS_TIERS = [
 
 // Limits
 export const MAX_TICKETS_PER_USER_PER_COMPETITION = 50;
-export const DEFAULT_MAX_TICKETS_PER_USER_FREE = 1;
 
 // Referral system
 export const REFERRAL_TICKETS_REQUIRED = 10; // Tickets bought by referees to earn 1 free ticket
@@ -73,24 +72,6 @@ export const COMPETITION_STATUSES = {
   DRAWING: { label: 'Drawing', color: 'purple' },
   COMPLETED: { label: 'Completed', color: 'slate' },
   CANCELLED: { label: 'Cancelled', color: 'red' },
-} as const;
-
-// Payment statuses
-export const PAYMENT_STATUSES = {
-  PENDING: { label: 'Pending', color: 'yellow' },
-  PROCESSING: { label: 'Processing', color: 'blue' },
-  SUCCEEDED: { label: 'Succeeded', color: 'green' },
-  FAILED: { label: 'Failed', color: 'red' },
-  REFUNDED: { label: 'Refunded', color: 'purple' },
-  CANCELLED: { label: 'Cancelled', color: 'gray' },
-} as const;
-
-// Delivery statuses
-export const DELIVERY_STATUSES = {
-  PENDING: 'Awaiting Claim',
-  CLAIMED: 'Claimed',
-  SHIPPED: 'Shipped',
-  DELIVERED: 'Delivered',
 } as const;
 
 // Minimum age requirement (UK law)

@@ -41,19 +41,50 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
-          Your Profile
+    <div>
+      {/* Drop-style profile hero */}
+      <div
+        style={{
+          marginBottom: '32px',
+          paddingBottom: '22px',
+          borderBottom: '1.5px solid var(--ink)',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-faint)',
+            fontWeight: 700,
+            marginBottom: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+        >
+          <span className="live-dot" /> Your account · {user.firstName}
+        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--display)',
+            fontSize: 'clamp(36px, 5vw, 56px)',
+            fontWeight: 700,
+            letterSpacing: '-0.035em',
+            lineHeight: 0.95,
+            marginBottom: '10px',
+          }}
+        >
+          Your <span className="chip">profile</span>.
         </h1>
-        <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
-          Manage your personal information and delivery addresses
+        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '640px' }}>
+          Keep your details fresh so we can send your wins straight to your door.
         </p>
       </div>
 
       {/* Two-column layout: Personal Info (left) + Addresses (right) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Left: Personal Information */}
         <ProfileForm
           user={{
             id: user.id,
@@ -67,7 +98,6 @@ export default async function ProfilePage() {
           }}
         />
 
-        {/* Right: Delivery Addresses */}
         <AddressSection
           addresses={addresses.map((addr) => ({
             id: addr.id,

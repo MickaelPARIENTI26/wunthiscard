@@ -4,27 +4,17 @@ import { useActionState } from 'react';
 import { useEffect, useRef } from 'react';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { submitContactForm, type ContactFormState } from './actions';
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const subjects = [
-  { value: 'general', label: 'General Enquiry' },
-  { value: 'competition', label: 'Competition Question' },
-  { value: 'payment', label: 'Payment Issue' },
-  { value: 'delivery', label: 'Delivery & Shipping' },
-  { value: 'account', label: 'Account Help' },
-  { value: 'partnership', label: 'Partnership Enquiry' },
+  { value: 'general', label: 'General enquiry' },
+  { value: 'competition', label: 'Competition question' },
+  { value: 'payment', label: 'Payment issue' },
+  { value: 'delivery', label: 'Delivery & shipping' },
+  { value: 'account', label: 'Account help' },
+  { value: 'partnership', label: 'Partnership enquiry' },
   { value: 'other', label: 'Other' },
 ];
 
@@ -34,14 +24,10 @@ const initialState: ContactFormState = {
 };
 
 export function ContactForm() {
-  const [state, formAction, isPending] = useActionState(
-    submitContactForm,
-    initialState
-  );
+  const [state, formAction, isPending] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
 
-  // Reset form and captcha on successful submission
   useEffect(() => {
     if (state.success && formRef.current) {
       formRef.current.reset();
@@ -49,7 +35,6 @@ export function ContactForm() {
     }
   }, [state.success]);
 
-  // Reset captcha on error
   useEffect(() => {
     if (!state.success && state.message) {
       turnstileRef.current?.reset();
@@ -57,148 +42,152 @@ export function ContactForm() {
   }, [state.success, state.message]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-6">
-      {/* Success Message */}
+    <form ref={formRef} action={formAction}>
       {state.success && (
-        <div className="flex items-start gap-3 rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-950">
-          <CheckCircle className="h-5 w-5 shrink-0 text-green-600 dark:text-green-400" />
-          <p className="text-sm text-green-800 dark:text-green-200">
-            {state.message}
-          </p>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '10px',
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--accent)',
+            color: 'var(--ink)',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            boxShadow: 'var(--shadow-sm)',
+            fontSize: '13.5px',
+            fontWeight: 600,
+          }}
+        >
+          <CheckCircle className="h-5 w-5 shrink-0" />
+          <p>{state.message}</p>
         </div>
       )}
 
-      {/* Error Message */}
       {!state.success && state.message && !state.errors && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
-          <AlertCircle className="h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
-          <p className="text-sm text-red-800 dark:text-red-200">
-            {state.message}
-          </p>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '10px',
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--hot)',
+            color: '#fff',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            boxShadow: 'var(--shadow-sm)',
+            fontSize: '13.5px',
+            fontWeight: 600,
+          }}
+        >
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <p>{state.message}</p>
         </div>
       )}
 
-      {/* Name Field */}
-      <div className="space-y-2">
-        <Label htmlFor="name">
-          Name <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="name"
-          name="name"
-          type="text"
-          placeholder="Your full name"
-          required
-          disabled={isPending}
-          aria-describedby={state.errors?.name ? 'name-error' : undefined}
-          className={state.errors?.name ? 'border-red-500' : ''}
-        />
-        {state.errors?.name && (
-          <p id="name-error" className="text-sm text-red-500">
-            {state.errors.name[0]}
-          </p>
-        )}
-      </div>
+      <div className="billing-grid">
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="name">
+            Name <span style={{ color: 'var(--hot)' }}>*</span>
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Your full name"
+            required
+            disabled={isPending}
+            className={`input ${state.errors?.name ? 'input-error' : ''}`}
+          />
+          {state.errors?.name && <span className="field-error">{state.errors.name[0]}</span>}
+        </div>
 
-      {/* Email Field */}
-      <div className="space-y-2">
-        <Label htmlFor="email">
-          Email <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="your@email.com"
-          required
-          disabled={isPending}
-          aria-describedby={state.errors?.email ? 'email-error' : undefined}
-          className={state.errors?.email ? 'border-red-500' : ''}
-        />
-        {state.errors?.email && (
-          <p id="email-error" className="text-sm text-red-500">
-            {state.errors.email[0]}
-          </p>
-        )}
-      </div>
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="email">
+            Email <span style={{ color: 'var(--hot)' }}>*</span>
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="your@email.com"
+            required
+            disabled={isPending}
+            className={`input ${state.errors?.email ? 'input-error' : ''}`}
+          />
+          {state.errors?.email && <span className="field-error">{state.errors.email[0]}</span>}
+        </div>
 
-      {/* Subject Field */}
-      <div className="space-y-2">
-        <Label htmlFor="subject">
-          Subject <span className="text-red-500">*</span>
-        </Label>
-        <Select name="subject" required disabled={isPending}>
-          <SelectTrigger
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="subject">
+            Subject <span style={{ color: 'var(--hot)' }}>*</span>
+          </label>
+          <select
             id="subject"
-            aria-describedby={state.errors?.subject ? 'subject-error' : undefined}
-            className={state.errors?.subject ? 'border-red-500' : ''}
+            name="subject"
+            required
+            disabled={isPending}
+            defaultValue=""
+            className={`select ${state.errors?.subject ? 'input-error' : ''}`}
           >
-            <SelectValue placeholder="Select a subject" />
-          </SelectTrigger>
-          <SelectContent>
+            <option value="" disabled>
+              Select a subject
+            </option>
             {subjects.map((subject) => (
-              <SelectItem key={subject.value} value={subject.value}>
+              <option key={subject.value} value={subject.value}>
                 {subject.label}
-              </SelectItem>
+              </option>
             ))}
-          </SelectContent>
-        </Select>
-        {state.errors?.subject && (
-          <p id="subject-error" className="text-sm text-red-500">
-            {state.errors.subject[0]}
-          </p>
-        )}
+          </select>
+          {state.errors?.subject && <span className="field-error">{state.errors.subject[0]}</span>}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="message">
+            Message <span style={{ color: 'var(--hot)' }}>*</span>
+          </label>
+          <textarea
+            id="message"
+            name="message"
+            placeholder="How can we help you?"
+            rows={6}
+            required
+            disabled={isPending}
+            className={`textarea ${state.errors?.message ? 'input-error' : ''}`}
+          />
+          {state.errors?.message && <span className="field-error">{state.errors.message[0]}</span>}
+        </div>
       </div>
 
-      {/* Message Field */}
-      <div className="space-y-2">
-        <Label htmlFor="message">
-          Message <span className="text-red-500">*</span>
-        </Label>
-        <Textarea
-          id="message"
-          name="message"
-          placeholder="How can we help you?"
-          rows={5}
-          required
-          disabled={isPending}
-          aria-describedby={state.errors?.message ? 'message-error' : undefined}
-          className={state.errors?.message ? 'border-red-500' : ''}
-        />
-        {state.errors?.message && (
-          <p id="message-error" className="text-sm text-red-500">
-            {state.errors.message[0]}
-          </p>
-        )}
-      </div>
-
-      {/* Cloudflare Turnstile - invisible mode */}
       {TURNSTILE_SITE_KEY && (
         <Turnstile
           ref={turnstileRef}
           siteKey={TURNSTILE_SITE_KEY}
-          options={{
-            size: 'invisible',
-            theme: 'auto',
-          }}
+          options={{ size: 'invisible', theme: 'auto' }}
         />
       )}
 
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isPending}
-        className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-primary px-8 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-      >
-        {isPending ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Sending...
-          </>
-        ) : (
-          'Send Message'
-        )}
-      </button>
+      <div style={{ marginTop: '20px' }}>
+        <button
+          type="submit"
+          disabled={isPending}
+          className={`btn ${isPending ? 'btn-mute' : 'btn-hot'} btn-xl btn-block`}
+        >
+          {isPending ? (
+            <>
+              <Loader2
+                className="h-4 w-4 animate-spin"
+                style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}
+              />
+              Sending...
+            </>
+          ) : (
+            <>Send message →</>
+          )}
+        </button>
+      </div>
     </form>
   );
 }

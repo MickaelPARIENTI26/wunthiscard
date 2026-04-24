@@ -280,12 +280,13 @@ export function QuestionForm({
           return (
             <button
               key={index}
+              type="button"
               onClick={() => !locked && setSelectedAnswer(index)}
               className={`skill-opt ${state}`}
               disabled={!!locked}
             >
               <span className="skill-letter">{letters[index]}</span>
-              <span>{choice}</span>
+              <span className="skill-text">{choice}</span>
               {isCorrect && <span className="skill-check">✓</span>}
               {isWrong && <span className="skill-check">✕</span>}
             </button>

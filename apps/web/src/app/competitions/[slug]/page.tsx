@@ -35,18 +35,6 @@ const CATEGORY_COLORS: Record<CompetitionCategory, string> = {
   OTHER: '#8a8a8a',
 };
 
-const CATEGORY_EMOJIS: Record<CompetitionCategory, string> = {
-  POKEMON: '🔥',
-  ONE_PIECE: '🏴‍☠️',
-  SPORTS_BASKETBALL: '🏀',
-  SPORTS_FOOTBALL: '⚽',
-  SPORTS_OTHER: '🏆',
-  MEMORABILIA: '🏆',
-  YUGIOH: '🎴',
-  MTG: '🃏',
-  OTHER: '🎴',
-};
-
 // Background tint colors for subtle page ambiance
 const CATEGORY_BG_COLORS: Record<CompetitionCategory, string> = {
   POKEMON: '232,160,0',      // #E8A000 - golden
@@ -231,12 +219,6 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
   const isMystery = competition.isMystery;
   const isMysteryUnrevealed = isMystery && !competition.isRevealed;
-  const isMysteryRevealed = isMystery && competition.isRevealed;
-
-  const isMultiDraw = competition.drawType === 'multi' && competition.prizes.length > 1;
-  const totalPrizesValue = isMultiDraw
-    ? competition.prizes.reduce((sum: number, p: CompetitionPrize) => sum + p.value, 0)
-    : 0;
 
   // Format prize value without decimals
   const formattedPrizeValue = new Intl.NumberFormat('en-GB', {

@@ -6,71 +6,56 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { z } from 'zod';
-import { Loader2, Gift, ArrowRight, ChevronDown, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { formatPrice, calculateBonusTickets } from '@winucard/shared/utils';
+import { calculateBonusTickets } from '@winucard/shared/utils';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
-// Countries list (UK first, then alphabetical)
 const COUNTRIES = [
-  { code: 'GB', name: 'United Kingdom', phoneCode: '+44' },
-  { code: 'IE', name: 'Ireland', phoneCode: '+353' },
-  { code: 'FR', name: 'France', phoneCode: '+33' },
-  { code: 'DE', name: 'Germany', phoneCode: '+49' },
-  { code: 'ES', name: 'Spain', phoneCode: '+34' },
-  { code: 'IT', name: 'Italy', phoneCode: '+39' },
-  { code: 'NL', name: 'Netherlands', phoneCode: '+31' },
-  { code: 'BE', name: 'Belgium', phoneCode: '+32' },
-  { code: 'PT', name: 'Portugal', phoneCode: '+351' },
-  { code: 'AT', name: 'Austria', phoneCode: '+43' },
-  { code: 'CH', name: 'Switzerland', phoneCode: '+41' },
-  { code: 'SE', name: 'Sweden', phoneCode: '+46' },
-  { code: 'NO', name: 'Norway', phoneCode: '+47' },
-  { code: 'DK', name: 'Denmark', phoneCode: '+45' },
-  { code: 'FI', name: 'Finland', phoneCode: '+358' },
-  { code: 'PL', name: 'Poland', phoneCode: '+48' },
-  { code: 'US', name: 'United States', phoneCode: '+1' },
-  { code: 'CA', name: 'Canada', phoneCode: '+1' },
-  { code: 'AU', name: 'Australia', phoneCode: '+61' },
+  { code: 'GB', name: 'United Kingdom', phoneCode: '+44', flag: '🇬🇧' },
+  { code: 'IE', name: 'Ireland', phoneCode: '+353', flag: '🇮🇪' },
+  { code: 'FR', name: 'France', phoneCode: '+33', flag: '🇫🇷' },
+  { code: 'DE', name: 'Germany', phoneCode: '+49', flag: '🇩🇪' },
+  { code: 'ES', name: 'Spain', phoneCode: '+34', flag: '🇪🇸' },
+  { code: 'IT', name: 'Italy', phoneCode: '+39', flag: '🇮🇹' },
+  { code: 'NL', name: 'Netherlands', phoneCode: '+31', flag: '🇳🇱' },
+  { code: 'BE', name: 'Belgium', phoneCode: '+32', flag: '🇧🇪' },
+  { code: 'PT', name: 'Portugal', phoneCode: '+351', flag: '🇵🇹' },
+  { code: 'AT', name: 'Austria', phoneCode: '+43', flag: '🇦🇹' },
+  { code: 'CH', name: 'Switzerland', phoneCode: '+41', flag: '🇨🇭' },
+  { code: 'SE', name: 'Sweden', phoneCode: '+46', flag: '🇸🇪' },
+  { code: 'NO', name: 'Norway', phoneCode: '+47', flag: '🇳🇴' },
+  { code: 'DK', name: 'Denmark', phoneCode: '+45', flag: '🇩🇰' },
+  { code: 'FI', name: 'Finland', phoneCode: '+358', flag: '🇫🇮' },
+  { code: 'PL', name: 'Poland', phoneCode: '+48', flag: '🇵🇱' },
+  { code: 'US', name: 'United States', phoneCode: '+1', flag: '🇺🇸' },
+  { code: 'CA', name: 'Canada', phoneCode: '+1', flag: '🇨🇦' },
+  { code: 'AU', name: 'Australia', phoneCode: '+61', flag: '🇦🇺' },
 ];
 
-// Form validation schema
-const guestCheckoutSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(50).trim(),
-  lastName: z.string().min(1, 'Last name is required').max(50).trim(),
-  email: z.string().email('Invalid email address').toLowerCase().trim(),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-  country: z.string().min(1, 'Country is required'),
-  postcode: z.string().min(1, 'Postcode is required').max(20).trim(),
-  address: z.string().min(1, 'Address is required').max(200).trim(),
-  city: z.string().min(1, 'Town/City is required').max(100).trim(),
-  phone: z.string().min(6, 'Phone number is required').max(20).trim(),
-  acceptTerms: z.literal(true, {
-    errorMap: () => ({ message: 'You must accept the terms and confirm you are 18+' }),
-  }),
-  acceptMarketing: z.boolean().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const guestCheckoutSchema = z
+  .object({
+    firstName: z.string().min(1, 'First name is required').max(50).trim(),
+    lastName: z.string().min(1, 'Last name is required').max(50).trim(),
+    email: z.string().email('Invalid email address').toLowerCase().trim(),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+    country: z.string().min(1, 'Country is required'),
+    postcode: z.string().min(1, 'Postcode is required').max(20).trim(),
+    address: z.string().min(1, 'Address is required').max(200).trim(),
+    city: z.string().min(1, 'Town/City is required').max(100).trim(),
+    phone: z.string().min(6, 'Phone number is required').max(20).trim(),
+    acceptTerms: z.boolean().refine((v) => v === true, {
+      message: 'You must accept the terms and confirm you are 18+',
+    }),
+    acceptMarketing: z.boolean().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type GuestCheckoutInput = z.infer<typeof guestCheckoutSchema>;
 
@@ -86,8 +71,6 @@ interface GuestCheckoutFormProps {
 export function GuestCheckoutForm({
   competitionId,
   competitionSlug,
-  competitionTitle,
-  mainImageUrl,
   ticketPrice,
   ticketCount: initialTicketCount,
 }: GuestCheckoutFormProps) {
@@ -98,26 +81,23 @@ export function GuestCheckoutForm({
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptMarketing, setAcceptMarketing] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState('GB');
+  const [selectedPhoneCountry, setSelectedPhoneCountry] = useState('GB');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [ticketCount, setTicketCount] = useState(initialTicketCount);
   const [qcmPassed, setQcmPassed] = useState(false);
   const turnstileRef = useRef<TurnstileInstance>(null);
 
-  // Load ticket count and QCM status from sessionStorage
   useEffect(() => {
     const pendingQuantityStored = sessionStorage.getItem(`pending_quantity_${competitionId}`);
     const qcmPassedStored = sessionStorage.getItem(`qcm_passed_${competitionId}`);
 
-    // Check if QCM was passed
     if (qcmPassedStored === 'true') {
       setQcmPassed(true);
     } else {
-      // QCM not passed, redirect to question page
       router.push(`/competitions/${competitionSlug}/question`);
       return;
     }
 
-    // Check for pending quantity
     if (pendingQuantityStored) {
       try {
         const pending = JSON.parse(pendingQuantityStored);
@@ -125,7 +105,7 @@ export function GuestCheckoutForm({
           setTicketCount(pending.quantity);
         }
       } catch {
-        // Invalid data, use default
+        /* ignore */
       }
     }
 
@@ -135,8 +115,9 @@ export function GuestCheckoutForm({
   const bonusTickets = calculateBonusTickets(ticketCount);
   const totalEntries = ticketCount + bonusTickets;
   const totalPrice = ticketCount * ticketPrice;
+  const totalPriceLabel = (totalPrice / 100).toFixed(2);
 
-  const selectedCountryData = COUNTRIES.find(c => c.code === selectedCountry);
+  const selectedPhoneCountryData = COUNTRIES.find((c) => c.code === selectedPhoneCountry);
 
   const {
     register,
@@ -156,7 +137,7 @@ export function GuestCheckoutForm({
       address: '',
       city: '',
       phone: '',
-      acceptTerms: undefined,
+      acceptTerms: false,
       acceptMarketing: true,
     },
   });
@@ -168,9 +149,7 @@ export function GuestCheckoutForm({
 
   const handleTermsChange = (checked: boolean) => {
     setAcceptTerms(checked);
-    setValue('acceptTerms', checked ? true : (undefined as unknown as true), {
-      shouldValidate: true,
-    });
+    setValue('acceptTerms', checked, { shouldValidate: true });
   };
 
   const handleMarketingChange = (checked: boolean) => {
@@ -183,28 +162,22 @@ export function GuestCheckoutForm({
     setServerError(null);
 
     try {
-      // Step 1: Register the user
       const registerResponse = await fetch('/api/auth/register-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...data,
-          turnstileToken,
-          competitionId,
-        }),
+        body: JSON.stringify({ ...data, turnstileToken, competitionId }),
       });
 
       const registerData = await registerResponse.json();
 
       if (!registerResponse.ok) {
-        setServerError(registerData.error || 'Registration failed. Please try again.');
+        setServerError(registerData.error ?? 'Registration failed. Please try again.');
         turnstileRef.current?.reset();
         setTurnstileToken(null);
         setIsLoading(false);
         return;
       }
 
-      // Step 2: Auto-login
       const signInResult = await signIn('credentials', {
         email: data.email,
         password: data.password,
@@ -217,32 +190,32 @@ export function GuestCheckoutForm({
         return;
       }
 
-      // Step 3: Reserve tickets (now that user is authenticated)
       const reserveResponse = await fetch('/api/tickets/reserve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          competitionId,
-          quantity: ticketCount,
-        }),
+        body: JSON.stringify({ competitionId, quantity: ticketCount }),
       });
 
       const reserveData = await reserveResponse.json();
 
       if (!reserveResponse.ok) {
-        setServerError(reserveData.error || 'Failed to reserve tickets. Please try again.');
+        setServerError(reserveData.error ?? 'Failed to reserve tickets. Please try again.');
         setIsLoading(false);
         return;
       }
 
-      // Store reservation in sessionStorage
-      sessionStorage.setItem(`tickets_${competitionId}`, JSON.stringify(reserveData.ticketNumbers));
-      sessionStorage.setItem(`reservation_${competitionId}`, JSON.stringify({
-        ticketNumbers: reserveData.ticketNumbers,
-        expiresAt: reserveData.expiresAt,
-      }));
+      sessionStorage.setItem(
+        `tickets_${competitionId}`,
+        JSON.stringify(reserveData.ticketNumbers),
+      );
+      sessionStorage.setItem(
+        `reservation_${competitionId}`,
+        JSON.stringify({
+          ticketNumbers: reserveData.ticketNumbers,
+          expiresAt: reserveData.expiresAt,
+        }),
+      );
 
-      // Step 4: Create checkout session
       const checkoutResponse = await fetch('/api/checkout/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -255,12 +228,11 @@ export function GuestCheckoutForm({
       const checkoutData = await checkoutResponse.json();
 
       if (!checkoutResponse.ok) {
-        setServerError(checkoutData.error || 'Failed to create checkout session');
+        setServerError(checkoutData.error ?? 'Failed to create checkout session');
         setIsLoading(false);
         return;
       }
 
-      // Redirect to Stripe Checkout
       if (checkoutData.checkoutUrl) {
         window.location.href = checkoutData.checkoutUrl;
       } else {
@@ -273,391 +245,341 @@ export function GuestCheckoutForm({
     }
   };
 
-  // Show loading state while initializing
   if (isInitializing) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--accent)' }} />
+      </div>
     );
   }
 
-  // Show error if QCM not passed (should redirect, but fallback)
   if (!qcmPassed) {
     return (
-      <Card className="border-destructive">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <AlertCircle className="h-6 w-6 text-destructive" />
-          </div>
-          <CardTitle>Question Not Answered</CardTitle>
-          <CardDescription>
-            You need to answer the skill question before checkout.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            className="w-full"
-            onClick={() => router.push(`/competitions/${competitionSlug}/question`)}
-          >
-            Answer Question
-          </Button>
-        </CardContent>
-      </Card>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
+        <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>
+          Question Not Answered
+        </h3>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>
+          You need to answer the skill question before checkout.
+        </p>
+        <button
+          onClick={() => router.push(`/competitions/${competitionSlug}/question`)}
+          className="btn btn-primary btn-xl"
+        >
+          Answer Question →
+        </button>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 items-start justify-between">
-      {/* Left Column - Billing Form */}
-      <div className="w-full lg:flex-1">
-        {/* Header with Login Link */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
-          <h1 className="text-xl font-bold tracking-tight">BILLING INFORMATION</h1>
-          <p className="text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link
-              href={`/login?callbackUrl=${encodeURIComponent(`/competitions/${competitionSlug}/checkout`)}`}
-              className="font-medium text-primary hover:underline"
-            >
-              Connect now
-            </Link>
-          </p>
-        </div>
-
-        {serverError && (
-          <div className="mb-6 p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
-            {serverError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">FIRST NAME</Label>
-              <Input
-                id="firstName"
-                placeholder=""
-                autoComplete="given-name"
-                disabled={isLoading}
-                className={`h-11 ${errors.firstName ? 'border-destructive' : ''}`}
-                {...register('firstName')}
-              />
-              {errors.firstName && (
-                <p className="text-xs text-destructive">{errors.firstName.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">LAST NAME</Label>
-              <Input
-                id="lastName"
-                placeholder=""
-                autoComplete="family-name"
-                disabled={isLoading}
-                className={`h-11 ${errors.lastName ? 'border-destructive' : ''}`}
-                {...register('lastName')}
-              />
-              {errors.lastName && (
-                <p className="text-xs text-destructive">{errors.lastName.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Country & Postcode Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="country">COUNTRY/REGION</Label>
-              <Select value={selectedCountry} onValueChange={handleCountryChange}>
-                <SelectTrigger className={`h-11 ${errors.country ? 'border-destructive' : ''}`}>
-                  <SelectValue placeholder="Select country" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COUNTRIES.map((country) => (
-                    <SelectItem key={country.code} value={country.code}>
-                      {country.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.country && (
-                <p className="text-xs text-destructive">{errors.country.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="postcode">ZIP CODE</Label>
-              <Input
-                id="postcode"
-                placeholder=""
-                autoComplete="postal-code"
-                disabled={isLoading}
-                className={`h-11 ${errors.postcode ? 'border-destructive' : ''}`}
-                {...register('postcode')}
-              />
-              {errors.postcode && (
-                <p className="text-xs text-destructive">{errors.postcode.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Address & City Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="address">ADDRESS</Label>
-              <Input
-                id="address"
-                placeholder="house number & street name"
-                autoComplete="street-address"
-                disabled={isLoading}
-                className={`h-11 ${errors.address ? 'border-destructive' : ''}`}
-                {...register('address')}
-              />
-              {errors.address && (
-                <p className="text-xs text-destructive">{errors.address.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="city">TOWN/CITY</Label>
-              <Input
-                id="city"
-                placeholder=""
-                autoComplete="address-level2"
-                disabled={isLoading}
-                className={`h-11 ${errors.city ? 'border-destructive' : ''}`}
-                {...register('city')}
-              />
-              {errors.city && (
-                <p className="text-xs text-destructive">{errors.city.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Phone & Email Row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone">PHONE*</Label>
-              <div className="flex">
-                <div className="flex items-center gap-2 px-3 h-11 border border-r-0 rounded-l-md bg-muted/50 text-sm">
-                  <span className="text-lg">{selectedCountry === 'GB' ? '🇬🇧' : '🌍'}</span>
-                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-muted-foreground">{selectedCountryData?.phoneCode || '+44'}</span>
-                </div>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder=""
-                  autoComplete="tel"
-                  disabled={isLoading}
-                  className={`h-11 rounded-l-none ${errors.phone ? 'border-destructive' : ''}`}
-                  {...register('phone')}
-                />
-              </div>
-              {errors.phone && (
-                <p className="text-xs text-destructive">{errors.phone.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">EMAIL</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder=""
-                autoComplete="email"
-                disabled={isLoading}
-                className={`h-11 ${errors.email ? 'border-destructive' : ''}`}
-                {...register('email')}
-              />
-              <p className="text-xs text-muted-foreground">
-                A confirmation email will be sent after checkout.
-              </p>
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Password Row (for account creation) */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">PASSWORD</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a password"
-                autoComplete="new-password"
-                disabled={isLoading}
-                className={`h-11 ${errors.password ? 'border-destructive' : ''}`}
-                {...register('password')}
-              />
-              {errors.password && (
-                <p className="text-xs text-destructive">{errors.password.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">CONFIRM PASSWORD</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm password"
-                autoComplete="new-password"
-                disabled={isLoading}
-                className={`h-11 ${errors.confirmPassword ? 'border-destructive' : ''}`}
-                {...register('confirmPassword')}
-              />
-              {errors.confirmPassword && (
-                <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Cloudflare Turnstile - invisible mode */}
-          {TURNSTILE_SITE_KEY && (
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={TURNSTILE_SITE_KEY}
-              onSuccess={setTurnstileToken}
-              onError={() => setTurnstileToken(null)}
-              onExpire={() => setTurnstileToken(null)}
-              options={{
-                size: 'invisible',
-                theme: 'auto',
-              }}
-            />
-          )}
-        </form>
-      </div>
-
-      {/* Right Column - Order Summary */}
-      <div className="w-full lg:w-[380px] lg:flex-shrink-0 lg:sticky lg:top-4 h-fit">
-        <div className="rounded-2xl border bg-card p-5 space-y-4">
-          <h2 className="text-lg font-bold text-center">ORDER SUMMARY</h2>
-
-          {/* Product Info */}
-          <div className="flex gap-3">
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
-              <Image
-                src={mainImageUrl}
-                alt={competitionTitle}
-                fill
-                className="object-cover"
-                sizes="80px"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-sm line-clamp-2">{competitionTitle}</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                {ticketCount} TICKETS
-              </p>
-            </div>
-          </div>
-
-          {/* Total */}
-          <div className="flex justify-between items-center py-3 border-t">
-            <span className="text-muted-foreground">total :</span>
-            <span className="text-xl font-bold">{formatPrice(totalPrice)}</span>
-          </div>
-
-          {/* Bonus Tickets */}
-          {bonusTickets > 0 && (
-            <div className="flex items-center justify-center gap-2 text-green-500 text-sm font-medium">
-              <Gift className="h-4 w-4" />
-              +{bonusTickets} FREE bonus tickets ({totalEntries} total entries)
-            </div>
-          )}
-
-          {/* Coupon Code */}
-          <div className="flex gap-2">
-            <Input placeholder="Have a coupon ?" className="flex-1" />
-            <Button variant="secondary" className="px-6">
-              ADD
-            </Button>
-          </div>
-
-          {/* Age Disclaimer */}
-          <p className="text-[11px] text-muted-foreground italic leading-snug">
-            By entering this competition, you confirm you are 18 or older. Age verification may be required if you win.
-          </p>
-
-          {/* Terms Checkbox */}
-          <div className="space-y-2">
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="acceptTerms"
-                checked={acceptTerms}
-                onCheckedChange={handleTermsChange}
-                disabled={isLoading}
-                className="mt-0.5"
-              />
-              <label
-                htmlFor="acceptTerms"
-                className="text-xs leading-snug cursor-pointer"
-              >
-                I confirm that I am at least 18 years old, and I have read and agree to the{' '}
-                <Link href="/terms" className="underline hover:text-primary" target="_blank">
-                  terms & conditions
-                </Link>
-                , including the non-refundable ticket policy.
-              </label>
-            </div>
-            {errors.acceptTerms && (
-              <p className="text-xs text-destructive">{errors.acceptTerms.message}</p>
-            )}
-
-            {/* Marketing Checkbox */}
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="acceptMarketing"
-                checked={acceptMarketing}
-                onCheckedChange={handleMarketingChange}
-                disabled={isLoading}
-                className="mt-0.5"
-              />
-              <label
-                htmlFor="acceptMarketing"
-                className="text-xs leading-snug cursor-pointer"
-              >
-                I agree to receive email updates & news.
-              </label>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2"
-            disabled={isLoading}
-            onClick={handleSubmit(onSubmit)}
-            style={{
-              minHeight: '56px',
-              padding: '0 24px',
-              borderRadius: '12px',
-              background: 'var(--ink)',
-              color: 'var(--bg)',
-              fontSize: '16px',
-              fontWeight: 600,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              opacity: isLoading ? 0.6 : 1,
-              transition: 'all 0.15s',
-              border: '1.5px solid var(--ink)',
-              boxShadow: 'var(--shadow)',
-            }}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      {/* Login hint */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '18px',
+          flexWrap: 'wrap',
+          gap: '8px',
+        }}
+      >
+        <span
+          style={{
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            letterSpacing: '0.15em',
+            textTransform: 'uppercase',
+            color: 'var(--ink-faint)',
+            fontWeight: 700,
+          }}
+        >
+          Create account · pay · win
+        </span>
+        <span style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
+          Already have an account?{' '}
+          <Link
+            href={`/login?callbackUrl=${encodeURIComponent(`/competitions/${competitionSlug}/checkout`)}`}
+            style={{ fontWeight: 700, color: 'var(--ink)', textDecoration: 'underline' }}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                Proceed to checkout
-                <ArrowRight className="h-5 w-5" />
-              </>
-            )}
-          </button>
+            Log in
+          </Link>
+        </span>
+      </div>
+
+      {serverError && (
+        <div
+          style={{
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--hot)',
+            color: '#fff',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          {serverError}
+        </div>
+      )}
+
+      {/* Billing grid */}
+      <div className="billing-grid">
+        <div className="field">
+          <label className="field-label" htmlFor="firstName">First name</label>
+          <input
+            id="firstName"
+            className={`input ${errors.firstName ? 'input-error' : ''}`}
+            autoComplete="given-name"
+            disabled={isLoading}
+            {...register('firstName')}
+          />
+          {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="lastName">Last name</label>
+          <input
+            id="lastName"
+            className={`input ${errors.lastName ? 'input-error' : ''}`}
+            autoComplete="family-name"
+            disabled={isLoading}
+            {...register('lastName')}
+          />
+          {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            className={`input ${errors.email ? 'input-error' : ''}`}
+            placeholder="you@domain.com"
+            autoComplete="email"
+            disabled={isLoading}
+            {...register('email')}
+          />
+          <span className="field-hint">A confirmation email will be sent after checkout.</span>
+          {errors.email && <span className="field-error">{errors.email.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="phone">Phone</label>
+          <div className="phone-row">
+            <select
+              aria-label="Phone country code"
+              className="phone-cc phone-cc-select"
+              value={selectedPhoneCountry}
+              onChange={(e) => setSelectedPhoneCountry(e.target.value)}
+              disabled={isLoading}
+            >
+              {COUNTRIES.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.flag} {country.phoneCode}
+                </option>
+              ))}
+            </select>
+            <input
+              id="phone"
+              type="tel"
+              className={`input ${errors.phone ? 'input-error' : ''}`}
+              autoComplete="tel"
+              disabled={isLoading}
+              placeholder={selectedPhoneCountryData?.phoneCode ?? ''}
+              {...register('phone')}
+            />
+          </div>
+          {errors.phone && <span className="field-error">{errors.phone.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="country">Country</label>
+          <select
+            id="country"
+            className="select"
+            value={selectedCountry}
+            onChange={(e) => handleCountryChange(e.target.value)}
+            disabled={isLoading}
+          >
+            {COUNTRIES.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+          {errors.country && <span className="field-error">{errors.country.message}</span>}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="address">Address</label>
+          <input
+            id="address"
+            className={`input ${errors.address ? 'input-error' : ''}`}
+            placeholder="Flat / house · street"
+            autoComplete="street-address"
+            disabled={isLoading}
+            {...register('address')}
+          />
+          {errors.address && <span className="field-error">{errors.address.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="city">City</label>
+          <input
+            id="city"
+            className={`input ${errors.city ? 'input-error' : ''}`}
+            autoComplete="address-level2"
+            disabled={isLoading}
+            {...register('city')}
+          />
+          {errors.city && <span className="field-error">{errors.city.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="postcode">Postcode</label>
+          <input
+            id="postcode"
+            className={`input ${errors.postcode ? 'input-error' : ''}`}
+            autoComplete="postal-code"
+            disabled={isLoading}
+            {...register('postcode')}
+          />
+          {errors.postcode && <span className="field-error">{errors.postcode.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            className={`input ${errors.password ? 'input-error' : ''}`}
+            placeholder="Create a password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register('password')}
+          />
+          {errors.password && <span className="field-error">{errors.password.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="confirmPassword">Confirm password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            className={`input ${errors.confirmPassword ? 'input-error' : ''}`}
+            placeholder="Confirm password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && (
+            <span className="field-error">{errors.confirmPassword.message}</span>
+          )}
         </div>
       </div>
-    </div>
+
+      {/* Checkboxes */}
+      <div className="billing-checks">
+        <label className="check-row">
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={acceptTerms}
+            onChange={(e) => handleTermsChange(e.target.checked)}
+            disabled={isLoading}
+          />
+          <span>
+            I confirm I am at least <b>18 years old</b> and agree to the{' '}
+            <Link href="/terms" target="_blank">terms</Link> and{' '}
+            <Link href="/competition-rules" target="_blank">competition rules</Link>, including the
+            non-refundable ticket policy.
+          </span>
+        </label>
+        {errors.acceptTerms && <span className="field-error">{errors.acceptTerms.message}</span>}
+
+        <label className="check-row">
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={acceptMarketing}
+            onChange={(e) => handleMarketingChange(e.target.checked)}
+            disabled={isLoading}
+          />
+          <span>Email me draw updates and new drops.</span>
+        </label>
+      </div>
+
+      {/* Bonus banner above pay panel */}
+      {bonusTickets > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 14px',
+            marginTop: '18px',
+            background: 'var(--accent)',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            boxShadow: 'var(--shadow-sm)',
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--ink)',
+            fontWeight: 700,
+          }}
+        >
+          🎁 +{bonusTickets} bonus tickets · {totalEntries} total entries
+        </div>
+      )}
+
+      {/* Pay panel */}
+      <div className="enter-pay-panel">
+        <div className="enter-pay-total">
+          <span>Total</span>
+          <b>£{totalPriceLabel}</b>
+        </div>
+        <div className="enter-pay-chips">
+          <span>🔒 Pay with</span>
+          <span className="pay-chip">Card</span>
+        </div>
+      </div>
+
+      {TURNSTILE_SITE_KEY && (
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onError={() => setTurnstileToken(null)}
+          onExpire={() => setTurnstileToken(null)}
+          options={{ size: 'invisible', theme: 'auto' }}
+        />
+      )}
+
+      {/* Foot */}
+      <div className="enter-step-foot">
+        <span className="skill-hint">You&apos;ll receive confirmation by email immediately.</span>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className={`btn ${isLoading ? 'btn-mute' : 'btn-hot'} btn-xl`}
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="h-5 w-5 animate-spin" style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }} />
+              Processing...
+            </>
+          ) : (
+            <>Complete entry · £{totalPriceLabel} →</>
+          )}
+        </button>
+      </div>
+    </form>
   );
 }

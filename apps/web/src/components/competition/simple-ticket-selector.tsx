@@ -3,39 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { ArrowRight, Loader2, Clock, Minus, Plus, Gift } from 'lucide-react';
-import { formatPrice } from '@winucard/shared/utils';
-
-// Default ticket packs
-const DEFAULT_PACKS = [
-  { name: 'Starter', tickets: 5, bonus: 0, badge: null },
-  { name: 'Popular', tickets: 10, bonus: 1, badge: 'Most Popular' as const },
-  { name: 'Best Value', tickets: 20, bonus: 3, badge: 'Best Value' as const },
-  { name: 'Ultimate', tickets: 50, bonus: 5, badge: null },
-];
-
-type PackBadge = 'Most Popular' | 'Best Value' | null;
-
-interface TicketPack {
-  name: string;
-  tickets: number;
-  bonus: number;
-  badge: PackBadge;
-}
-
-function getBonusForQuantity(quantity: number, packs: TicketPack[]): number {
-  // Find the best matching pack for the exact quantity
-  const exactPack = packs.find(p => p.tickets === quantity);
-  if (exactPack) return exactPack.bonus;
-  // For custom quantities, find the highest applicable bonus
-  let bonus = 0;
-  for (const pack of packs) {
-    if (quantity >= pack.tickets) {
-      bonus = pack.bonus;
-    }
-  }
-  return bonus;
-}
+import { calculateBonusTickets } from '@winucard/shared/utils';
 
 interface SimpleTicketSelectorProps {
   competitionId: string;
@@ -56,15 +24,13 @@ export function SimpleTicketSelector({
   availableTicketCount,
   userTicketCount = 0,
   categoryColor: _categoryColor,
-  referralFreeTickets = 0,
+  referralFreeTickets: _referralFreeTickets = 0,
 }: SimpleTicketSelectorProps) {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
   const isAuthenticated = !!session?.user;
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedPack, setSelectedPack] = useState<string | null>(null);
-  const [useReferralTicket, setUseReferralTicket] = useState(false);
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservation, setReservation] = useState<{
@@ -74,16 +40,13 @@ export function SimpleTicketSelector({
   const [countdown, setCountdown] = useState<string>('');
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const packs = DEFAULT_PACKS;
-
   // Effective max considers user's existing tickets
   const remainingAllowance = maxTicketsPerUser - userTicketCount;
   const maxQuantity = Math.min(remainingAllowance, availableTicketCount, 100);
 
-  const bonusTickets = getBonusForQuantity(quantity, packs);
-  const totalTickets = quantity + bonusTickets;
+  const bonusTickets = calculateBonusTickets(quantity);
+  const useReferralTicket = false;
   const paidTickets = useReferralTicket ? Math.max(quantity - 1, 0) : quantity;
-  const totalPrice = paidTickets * ticketPrice;
 
   // Format countdown timer
   const formatCountdown = (ms: number): string => {
@@ -143,14 +106,6 @@ export function SimpleTicketSelector({
   const handleQuantityChange = (newQty: number) => {
     const clamped = Math.max(1, Math.min(newQty, maxQuantity));
     setQuantity(clamped);
-    setSelectedPack(null); // Deselect pack when manually changing
-    setReservationError(null);
-  };
-
-  const handlePackSelect = (pack: TicketPack) => {
-    if (pack.tickets > maxQuantity) return;
-    setQuantity(pack.tickets);
-    setSelectedPack(pack.name);
     setReservationError(null);
   };
 
@@ -213,8 +168,7 @@ export function SimpleTicketSelector({
 
   const price = ticketPrice / 100; // pence to pounds
   const bundles = [1, 5, 10, 25, 50, 100];
-  const BONUS_FOR = (n: number) => n >= 50 ? 10 : n >= 25 ? 4 : n >= 10 ? 2 : 0;
-  const bonus = BONUS_FOR(quantity);
+  const bonus = bonusTickets;
   const displayTotal = (paidTickets * ticketPrice / 100).toFixed(2);
 
   return (
@@ -230,7 +184,7 @@ export function SimpleTicketSelector({
       {/* Qty tiles */}
       <div className="qty-grid qty-grid-6">
         {bundles.map(b => {
-          const bb = BONUS_FOR(b);
+          const bb = calculateBonusTickets(b);
           const active = quantity === b;
           const disabled = b > maxQuantity;
           return (

@@ -4,10 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, Clock, CreditCard, Gift, Loader2, AlertCircle, Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Gift, Loader2 } from 'lucide-react';
 import { formatPrice, calculateBonusTickets } from '@winucard/shared/utils';
 
 interface CheckoutClientProps {
@@ -38,8 +35,8 @@ export function CheckoutClient({
   const bonusTickets = calculateBonusTickets(ticketCount);
   const totalEntries = ticketCount + bonusTickets;
   const totalPrice = ticketCount * ticketPrice;
+  const totalPriceLabel = (totalPrice / 100).toFixed(2);
 
-  // Format countdown timer
   const formatCountdown = useCallback((ms: number): string => {
     if (ms <= 0) return '0:00';
     const totalSeconds = Math.floor(ms / 1000);
@@ -48,14 +45,12 @@ export function CheckoutClient({
     return minutes + ':' + seconds.toString().padStart(2, '0');
   }, []);
 
-  // Load data from sessionStorage and create reservation if needed
   useEffect(() => {
     const stored = sessionStorage.getItem('tickets_' + competitionId);
     const reservationStored = sessionStorage.getItem('reservation_' + competitionId);
     const pendingQuantityStored = sessionStorage.getItem('pending_quantity_' + competitionId);
     const qcmPassedStored = sessionStorage.getItem('qcm_passed_' + competitionId);
 
-    // Must have QCM passed
     if (qcmPassedStored !== 'true') {
       router.push('/competitions/' + competitionSlug + '/question');
       return;
@@ -63,9 +58,6 @@ export function CheckoutClient({
 
     setQcmPassed(true);
 
-    // If we have reservation data with ticket numbers, use it
-    // Even if it appears expired locally, we still keep the data
-    // The backend will attempt to recreate the reservation using ticket numbers
     if (stored && reservationStored) {
       const res = JSON.parse(reservationStored);
       setSelectedTickets(JSON.parse(stored));
@@ -74,45 +66,37 @@ export function CheckoutClient({
       return;
     }
 
-    // For anonymous users who just logged in: check for pending quantity
     if (pendingQuantityStored) {
       const pending = JSON.parse(pendingQuantityStored);
       createReservation(pending.quantity);
       return;
     }
 
-    // For authenticated users with existing tickets but expired reservation
     if (stored) {
       const tickets = JSON.parse(stored) as number[];
       createReservation(tickets.length);
       return;
     }
 
-    // No tickets or quantity selected, redirect back
     router.push('/competitions/' + competitionSlug + '/tickets');
   }, [competitionId, competitionSlug, router]);
 
-  // Create reservation with quantity (server assigns random ticket numbers)
   const createReservation = async (quantity: number) => {
     try {
       const response = await fetch('/api/tickets/reserve', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          competitionId,
-          quantity,
-        }),
+        body: JSON.stringify({ competitionId, quantity }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Failed to reserve tickets. Please select tickets again.');
+        setError(data.error ?? 'Failed to reserve tickets. Please select tickets again.');
         setIsLoading(false);
         return;
       }
 
-      // Store new reservation with assigned ticket numbers
       const newReservation = {
         ticketNumbers: data.ticketNumbers,
         expiresAt: data.expiresAt,
@@ -130,15 +114,12 @@ export function CheckoutClient({
     }
   };
 
-  // Countdown timer
   useEffect(() => {
     if (!reservation) return;
 
     const updateCountdown = () => {
       const remaining = reservation.expiresAt - Date.now();
       if (remaining <= 0) {
-        // Timer expired but don't block - let them try to checkout anyway
-        // Backend will attempt to recreate reservation using ticket numbers
         setCountdown('expired');
       } else {
         setCountdown(formatCountdown(remaining));
@@ -163,7 +144,6 @@ export function CheckoutClient({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           competitionId,
-          // Include ticket numbers so backend can recreate reservation if expired
           ticketNumbers: selectedTickets.length > 0 ? selectedTickets : undefined,
         }),
       });
@@ -171,12 +151,11 @@ export function CheckoutClient({
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Failed to create checkout session');
+        setError(data.error ?? 'Failed to create checkout session');
         setIsProcessing(false);
         return;
       }
 
-      // Redirect to Stripe Checkout
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
@@ -191,201 +170,314 @@ export function CheckoutClient({
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
+        <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'var(--accent)' }} />
+      </div>
     );
   }
 
   if (!reservation) {
     return (
-      <Card className="border-destructive">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <AlertCircle className="h-6 w-6 text-destructive" />
-          </div>
-          <CardTitle>Session Expired</CardTitle>
-          <CardDescription>
-            {error || 'Your ticket reservation has expired. Please select tickets again.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={() => router.push('/competitions/' + competitionSlug + '/tickets')}
-          >
-            Select Tickets Again
-          </Button>
-        </CardContent>
-      </Card>
+      <div
+        style={{
+          textAlign: 'center',
+          padding: '32px',
+          background: 'var(--surface)',
+          border: '1.5px solid var(--ink)',
+          borderRadius: 'var(--radius)',
+          boxShadow: 'var(--shadow)',
+        }}
+      >
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⏱</div>
+        <h3
+          style={{
+            fontFamily: 'var(--display)',
+            fontSize: '22px',
+            fontWeight: 700,
+            marginBottom: '8px',
+          }}
+        >
+          Session expired
+        </h3>
+        <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>
+          {error ?? 'Your ticket reservation has expired. Please select tickets again.'}
+        </p>
+        <button
+          onClick={() => router.push('/competitions/' + competitionSlug + '/tickets')}
+          className="btn btn-primary btn-xl"
+        >
+          Select tickets again →
+        </button>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Back Navigation */}
-      <Link
-        href={'/competitions/' + competitionSlug + '/question'}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Question
-      </Link>
+    <div>
+      {/* Timer + error row */}
+      {countdown === 'expired' ? (
+        <div
+          style={{
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--hot)',
+            color: '#fff',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          ⏱ Timer expired — complete checkout now to try to keep your tickets
+        </div>
+      ) : countdown ? (
+        <div
+          style={{
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--warn)',
+            color: 'var(--ink)',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: 'var(--shadow-sm)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <span>⏱ Tickets reserved</span>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: '16px', fontWeight: 700 }}>
+            {countdown}
+          </span>
+        </div>
+      ) : null}
 
-      <div className="text-center">
-        <h1 className="text-2xl font-bold sm:text-3xl">Complete Your Purchase</h1>
-        <p className="mt-2 text-muted-foreground">{competitionTitle}</p>
-      </div>
-
-      {/* Reservation Timer */}
-      {countdown && countdown !== 'expired' && (
-        <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-          <Clock className="h-4 w-4 text-amber-600" />
-          <AlertDescription className="text-amber-800 dark:text-amber-200">
-            Complete checkout within <span className="font-bold text-lg">{countdown}</span>
-          </AlertDescription>
-        </Alert>
-      )}
-      {countdown === 'expired' && (
-        <Alert className="border-orange-500 bg-orange-50 dark:bg-orange-950/20">
-          <Clock className="h-4 w-4 text-orange-600" />
-          <AlertDescription className="text-orange-800 dark:text-orange-200">
-            Timer expired — <span className="font-bold">complete checkout now</span> to try to keep your tickets
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Error Message */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
+        <div
+          style={{
+            padding: '12px 16px',
+            marginBottom: '18px',
+            background: 'var(--hot)',
+            color: '#fff',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          {error}
+        </div>
       )}
 
-      {/* Order Summary Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Order Summary</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Competition Info */}
-          <div className="flex gap-4">
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
-              <Image
-                src={mainImageUrl}
-                alt={competitionTitle}
-                fill
-                className="object-cover"
-                sizes="80px"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-medium truncate">{competitionTitle}</h3>
-              <p className="text-sm text-muted-foreground">
-                {ticketCount} ticket{ticketCount !== 1 ? 's' : ''} selected
-              </p>
-            </div>
-          </div>
-
-          {/* Ticket Numbers */}
-          <div className="rounded-lg bg-muted/50 p-3">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Your ticket numbers:</p>
-            <p className="text-sm font-medium">
-              #{selectedTickets.sort((a, b) => a - b).join(', #')}
-            </p>
-          </div>
-
-          {/* Price Breakdown */}
-          <div className="space-y-2 border-t pt-4">
-            <div className="flex justify-between text-sm">
-              <span>{ticketCount} ticket{ticketCount !== 1 ? 's' : ''} x {formatPrice(ticketPrice)}</span>
-              <span>{formatPrice(totalPrice)}</span>
-            </div>
-            {bonusTickets > 0 && (
-              <div className="flex justify-between text-sm text-green-600">
-                <span className="flex items-center gap-1">
-                  <Gift className="h-4 w-4" />
-                  Bonus tickets
-                </span>
-                <span>+{bonusTickets} FREE</span>
-              </div>
-            )}
-            <div className="flex justify-between border-t pt-2 text-lg font-bold">
-              <span>Total</span>
-              <span>{formatPrice(totalPrice)}</span>
-            </div>
-            {bonusTickets > 0 && (
-              <p className="text-center text-sm text-green-600">
-                {totalEntries} total entries!
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Button */}
-      <button
-        className="w-full flex items-center justify-center gap-2 checkout-btn focus-visible:outline-2 focus-visible:outline-offset-2"
-        onClick={handleCheckout}
-        disabled={isProcessing || !qcmPassed}
+      {/* Order summary card */}
+      <div
         style={{
-          minHeight: 'var(--btn-height-lg)',
-          padding: '0 24px',
-          background: 'var(--ink)',
-          color: 'var(--bg)',
-          fontSize: '16px',
-          fontWeight: 600,
-          cursor: isProcessing || !qcmPassed ? 'not-allowed' : 'pointer',
-          opacity: isProcessing || !qcmPassed ? 0.6 : 1,
-          transition: 'all 0.15s',
+          background: 'var(--surface)',
           border: '1.5px solid var(--ink)',
-          borderRadius: '12px',
+          borderRadius: 'var(--radius)',
           boxShadow: 'var(--shadow)',
+          padding: '22px',
+          marginBottom: '20px',
         }}
       >
-        {isProcessing ? (
-          <>
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Redirecting to payment...
-          </>
-        ) : (
-          <>
-            <CreditCard className="h-5 w-5" />
-            Pay {formatPrice(totalPrice)}
-          </>
-        )}
-      </button>
-      <style>{`
-        .checkout-btn { position: relative; overflow: hidden; }
-        .checkout-btn::after {
-          content: ''; position: absolute; top: 0; left: -100%;
-          width: 100%; height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transition: left 0.6s ease;
-        }
-        .checkout-btn:hover:not(:disabled)::after { left: 100%; }
-        .checkout-btn:hover:not(:disabled) { box-shadow: var(--shadow-lg) !important; }
-      `}</style>
+        <div
+          style={{
+            display: 'flex',
+            gap: '14px',
+            paddingBottom: '16px',
+            marginBottom: '16px',
+            borderBottom: '1.5px dashed var(--line-2)',
+          }}
+        >
+          <div
+            style={{
+              position: 'relative',
+              width: '72px',
+              height: '92px',
+              flexShrink: 0,
+              overflow: 'hidden',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '8px',
+              boxShadow: '2px 2px 0 var(--ink)',
+            }}
+          >
+            <Image src={mainImageUrl} alt={competitionTitle} fill className="object-cover" sizes="72px" />
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div
+              style={{
+                fontFamily: 'var(--mono)',
+                fontSize: '10px',
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: 'var(--ink-faint)',
+                fontWeight: 700,
+                marginBottom: '4px',
+              }}
+            >
+              Your order
+            </div>
+            <h3
+              style={{
+                fontFamily: 'var(--display)',
+                fontSize: '16px',
+                fontWeight: 700,
+                letterSpacing: '-0.01em',
+                lineHeight: 1.25,
+                marginBottom: '6px',
+              }}
+            >
+              {competitionTitle}
+            </h3>
+            <p style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
+              {ticketCount} ticket{ticketCount !== 1 ? 's' : ''}
+              {bonusTickets > 0 ? ` + ${bonusTickets} bonus` : ''}
+            </p>
+          </div>
+        </div>
 
-      {/* Security Note */}
-      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-        <Lock className="h-3 w-3" />
-        <span>Secure payment powered by Stripe</span>
+        {/* Ticket numbers */}
+        <div
+          style={{
+            padding: '12px 14px',
+            background: 'var(--bg-2)',
+            border: '1px dashed var(--line-2)',
+            borderRadius: '8px',
+            marginBottom: '14px',
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '10px',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-faint)',
+              fontWeight: 700,
+              marginBottom: '6px',
+            }}
+          >
+            Ticket numbers
+          </div>
+          <p style={{ fontSize: '13px', fontWeight: 600, fontFamily: 'var(--mono)' }}>
+            #{selectedTickets.sort((a, b) => a - b).join(', #')}
+          </p>
+        </div>
+
+        {/* Price breakdown */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13.5px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 500 }}>
+            <span style={{ color: 'var(--ink-dim)' }}>
+              {ticketCount} × {formatPrice(ticketPrice)}
+            </span>
+            <span style={{ fontWeight: 600 }}>{formatPrice(totalPrice)}</span>
+          </div>
+          {bonusTickets > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: 'var(--accent-2)',
+                fontWeight: 600,
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Gift className="h-4 w-4" />
+                Bonus tickets
+              </span>
+              <span>+{bonusTickets} FREE</span>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Terms */}
-      <p className="text-center text-xs text-muted-foreground">
+      {/* Bonus banner */}
+      {bonusTickets > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '10px 14px',
+            marginBottom: '10px',
+            background: 'var(--accent)',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            boxShadow: 'var(--shadow-sm)',
+            fontFamily: 'var(--mono)',
+            fontSize: '11px',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: 'var(--ink)',
+            fontWeight: 700,
+          }}
+        >
+          🎁 +{bonusTickets} bonus tickets · {totalEntries} total entries
+        </div>
+      )}
+
+      {/* Pay panel */}
+      <div className="enter-pay-panel">
+        <div className="enter-pay-total">
+          <span>Total</span>
+          <b>£{totalPriceLabel}</b>
+        </div>
+        <div className="enter-pay-chips">
+          <span>🔒 Pay with</span>
+          <span className="pay-chip">Card</span>
+        </div>
+      </div>
+
+      {/* Foot */}
+      <div className="enter-step-foot">
+        <span className="skill-hint">Secure payment powered by Stripe · SSL encrypted</span>
+        <button
+          onClick={handleCheckout}
+          disabled={isProcessing || !qcmPassed}
+          className={`btn ${isProcessing ? 'btn-mute' : 'btn-hot'} btn-xl`}
+        >
+          {isProcessing ? (
+            <>
+              <Loader2
+                className="h-5 w-5 animate-spin"
+                style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }}
+              />
+              Redirecting...
+            </>
+          ) : (
+            <>Pay £{totalPriceLabel} →</>
+          )}
+        </button>
+      </div>
+
+      {/* Terms note */}
+      <p
+        style={{
+          textAlign: 'center',
+          fontSize: '11px',
+          color: 'var(--ink-faint)',
+          marginTop: '18px',
+        }}
+      >
         By completing this purchase, you agree to our{' '}
-        <Link href="/terms" className="underline hover:text-foreground">
-          Terms of Service
+        <Link
+          href="/terms"
+          style={{ color: 'var(--ink)', textDecoration: 'underline', fontWeight: 700 }}
+        >
+          Terms
         </Link>{' '}
         and{' '}
-        <Link href="/privacy" className="underline hover:text-foreground">
-          Privacy Policy
+        <Link
+          href="/privacy"
+          style={{ color: 'var(--ink)', textDecoration: 'underline', fontWeight: 700 }}
+        >
+          Privacy
         </Link>
         .
       </p>

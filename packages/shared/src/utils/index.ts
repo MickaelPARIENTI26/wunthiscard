@@ -53,13 +53,6 @@ export function calculateBonusTickets(
 }
 
 /**
- * Calculate total price for tickets
- */
-export function calculateTotalPrice(ticketCount: number, ticketPrice: number): number {
-  return ticketCount * ticketPrice;
-}
-
-/**
  * Generate a unique order number
  */
 export function generateOrderNumber(prefix = 'WTC'): string {
@@ -79,13 +72,6 @@ export function generateSlug(text: string): string {
     .replace(/[^\w\s-]/g, '')
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
-}
-
-/**
- * Anonymize a name for public display (e.g., "John D.")
- */
-export function anonymizeName(firstName: string, lastName: string): string {
-  return `${firstName} ${lastName.charAt(0)}.`;
 }
 
 /**
@@ -148,17 +134,3 @@ export function calculateProgress(sold: number, total: number | null): number {
   return Math.round((sold / total) * 100);
 }
 
-/**
- * Truncate text with ellipsis
- */
-export function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength - 3) + '...';
-}
-
-/**
- * Sleep utility for delays
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}

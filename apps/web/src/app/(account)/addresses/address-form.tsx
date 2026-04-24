@@ -5,10 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Loader2, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { addAddress } from './actions';
 
 const addressSchema = z.object({
@@ -22,6 +18,31 @@ const addressSchema = z.object({
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
+
+const COUNTRIES: { code: string; name: string }[] = [
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'FR', name: 'France' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'CZ', name: 'Czech Republic' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'JP', name: 'Japan' },
+];
 
 export function AddressForm() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -56,9 +77,9 @@ export function AddressForm() {
 
     try {
       const result = await addAddress({
-        label: data.label || undefined,
+        label: data.label ?? undefined,
         line1: data.line1,
-        line2: data.line2 || undefined,
+        line2: data.line2 ?? undefined,
         city: data.city,
         postcode: data.postcode.toUpperCase(),
         country: data.country,
@@ -81,183 +102,228 @@ export function AddressForm() {
 
   if (!isExpanded) {
     return (
-      <Button
-        variant="outline"
+      <button
+        type="button"
         onClick={() => setIsExpanded(true)}
-        className="w-full gap-2 border-dashed"
+        style={{
+          width: '100%',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          padding: '14px',
+          background: 'var(--surface)',
+          color: 'var(--ink)',
+          border: '1.5px dashed var(--ink)',
+          borderRadius: '10px',
+          fontFamily: 'var(--mono)',
+          fontSize: '11px',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          fontWeight: 700,
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+        }}
+        className="hover:shadow-[var(--shadow-sm)]"
       >
         <Plus className="h-4 w-4" />
-        Add New Address
-      </Button>
+        Add new address
+      </button>
     );
   }
 
   return (
     <div
-      className="rounded-lg border p-4 space-y-4"
-      style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-surface)' }}
+      style={{
+        padding: '18px',
+        background: 'var(--bg-2)',
+        border: '1.5px solid var(--ink)',
+        borderRadius: 'var(--radius)',
+        boxShadow: 'var(--shadow-sm)',
+      }}
     >
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-          New Address
-        </h4>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0"
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '14px',
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '10px',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-faint)',
+              fontWeight: 700,
+            }}
+          >
+            New address
+          </div>
+        </div>
+        <button
+          type="button"
           onClick={() => {
             reset();
             setIsExpanded(false);
           }}
+          aria-label="Cancel"
+          style={{
+            width: '28px',
+            height: '28px',
+            display: 'grid',
+            placeItems: 'center',
+            background: 'var(--surface)',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '6px',
+            cursor: 'pointer',
+          }}
         >
-          <X className="h-4 w-4" />
-        </Button>
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        {/* Label */}
-        <div className="space-y-1.5">
-          <Label htmlFor="label" className="text-xs">Label (optional)</Label>
-          <Input
-            id="label"
-            placeholder="e.g., Home, Office"
-            {...register('label')}
-          />
-        </div>
-
-        {/* Address Line 1 */}
-        <div className="space-y-1.5">
-          <Label htmlFor="line1" className="text-xs">Address Line 1</Label>
-          <Input
-            id="line1"
-            placeholder="Street address"
-            {...register('line1')}
-            aria-invalid={!!errors.line1}
-          />
-          {errors.line1 && (
-            <p className="text-xs text-destructive">{errors.line1.message}</p>
-          )}
-        </div>
-
-        {/* Address Line 2 */}
-        <div className="space-y-1.5">
-          <Label htmlFor="line2" className="text-xs">Address Line 2 (optional)</Label>
-          <Input
-            id="line2"
-            placeholder="Apartment, suite, unit, etc."
-            {...register('line2')}
-          />
-        </div>
-
-        {/* City and Postcode */}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="city" className="text-xs">City</Label>
-            <Input
-              id="city"
-              placeholder="City"
-              {...register('city')}
-              aria-invalid={!!errors.city}
-            />
-            {errors.city && (
-              <p className="text-xs text-destructive">{errors.city.message}</p>
-            )}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="billing-grid">
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="label">
+              Label (optional)
+            </label>
+            <input id="label" className="input" placeholder="e.g., Home, Office" {...register('label')} />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="postcode" className="text-xs">Postcode / ZIP</Label>
-            <Input
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="line1">
+              Address line 1
+            </label>
+            <input
+              id="line1"
+              className={`input ${errors.line1 ? 'input-error' : ''}`}
+              placeholder="Street address"
+              {...register('line1')}
+            />
+            {errors.line1 && <span className="field-error">{errors.line1.message}</span>}
+          </div>
+
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="line2">
+              Address line 2 (optional)
+            </label>
+            <input
+              id="line2"
+              className="input"
+              placeholder="Apartment, suite, unit"
+              {...register('line2')}
+            />
+          </div>
+
+          <div className="field">
+            <label className="field-label" htmlFor="city">
+              City
+            </label>
+            <input
+              id="city"
+              className={`input ${errors.city ? 'input-error' : ''}`}
+              {...register('city')}
+            />
+            {errors.city && <span className="field-error">{errors.city.message}</span>}
+          </div>
+
+          <div className="field">
+            <label className="field-label" htmlFor="postcode">
+              Postcode / ZIP
+            </label>
+            <input
               id="postcode"
+              className={`input ${errors.postcode ? 'input-error' : ''}`}
               placeholder="e.g., SW1A 1AA"
               {...register('postcode')}
-              aria-invalid={!!errors.postcode}
             />
-            {errors.postcode && (
-              <p className="text-xs text-destructive">{errors.postcode.message}</p>
-            )}
+            {errors.postcode && <span className="field-error">{errors.postcode.message}</span>}
+          </div>
+
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="country">
+              Country
+            </label>
+            <select id="country" className="select" {...register('country')}>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {errors.country && <span className="field-error">{errors.country.message}</span>}
           </div>
         </div>
 
-        {/* Country */}
-        <div className="space-y-1.5">
-          <Label htmlFor="country" className="text-xs">Country</Label>
-          <select
-            id="country"
-            {...register('country')}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <option value="">Select a country</option>
-            <option value="GB">United Kingdom</option>
-            <option value="FR">France</option>
-            <option value="DE">Germany</option>
-            <option value="ES">Spain</option>
-            <option value="IT">Italy</option>
-            <option value="NL">Netherlands</option>
-            <option value="BE">Belgium</option>
-            <option value="PT">Portugal</option>
-            <option value="IE">Ireland</option>
-            <option value="AT">Austria</option>
-            <option value="CH">Switzerland</option>
-            <option value="SE">Sweden</option>
-            <option value="DK">Denmark</option>
-            <option value="NO">Norway</option>
-            <option value="FI">Finland</option>
-            <option value="PL">Poland</option>
-            <option value="CZ">Czech Republic</option>
-            <option value="GR">Greece</option>
-            <option value="US">United States</option>
-            <option value="CA">Canada</option>
-            <option value="AU">Australia</option>
-            <option value="JP">Japan</option>
-          </select>
-          {errors.country && (
-            <p className="text-xs text-destructive">{errors.country.message}</p>
-          )}
-        </div>
-
-        {/* Set as default */}
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="isDefault"
+        <label className="check-row" style={{ marginTop: '12px' }}>
+          <input
+            type="checkbox"
+            className="checkbox"
             checked={isDefault}
-            onCheckedChange={(checked) => setValue('isDefault', checked === true)}
+            onChange={(e) => setValue('isDefault', e.target.checked)}
           />
-          <Label htmlFor="isDefault" className="cursor-pointer text-xs font-normal">
-            Set as default delivery address
-          </Label>
-        </div>
+          <span>Set as default delivery address</span>
+        </label>
 
-        {/* Message */}
         {message && (
           <div
-            className={`rounded-md p-3 text-sm ${
-              message.type === 'success'
-                ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                : 'bg-destructive/10 text-destructive'
-            }`}
+            style={{
+              marginTop: '14px',
+              padding: '10px 14px',
+              background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
+              color: message.type === 'success' ? 'var(--ink)' : '#fff',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: 600,
+              boxShadow: 'var(--shadow-sm)',
+            }}
             role="alert"
           >
             {message.text}
           </div>
         )}
 
-        {/* Actions */}
-        <div className="flex justify-end gap-2 pt-1">
-          <Button
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            gap: '8px',
+            marginTop: '16px',
+          }}
+        >
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={() => {
               reset();
               setIsExpanded(false);
             }}
+            className="btn btn-ghost"
           >
             Cancel
-          </Button>
-          <Button type="submit" size="sm" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Add Address
-          </Button>
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`btn ${isSubmitting ? 'btn-mute' : 'btn-primary'}`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2
+                  className="h-4 w-4 animate-spin"
+                  style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}
+                />
+                Adding...
+              </>
+            ) : (
+              <>Add address →</>
+            )}
+          </button>
         </div>
       </form>
     </div>

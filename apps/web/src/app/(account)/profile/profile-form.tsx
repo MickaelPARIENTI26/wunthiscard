@@ -6,11 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Camera, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { updateProfile } from './actions';
 
 const profileSchema = z.object({
@@ -82,7 +77,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Client-side validation
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
       setMessage({ type: 'error', text: 'Only JPG, PNG, GIF and WebP files are allowed.' });
@@ -119,7 +113,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
       setMessage({ type: 'error', text: 'Failed to upload photo' });
     } finally {
       setIsUploading(false);
-      // Reset the file input
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -129,150 +122,230 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <div className="flex items-center gap-4">
-          <div className="relative">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={avatarUrl} alt={`${user.firstName} ${user.lastName}`} />
-              <AvatarFallback className="text-lg">{initials}</AvatarFallback>
-            </Avatar>
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-              style={{ borderColor: 'var(--bg-surface)' }}
-              title="Upload photo"
-            >
-              {isUploading ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Camera className="h-3.5 w-3.5" />
-              )}
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={handleAvatarUpload}
-              className="hidden"
-              aria-label="Upload profile photo"
-            />
+    <div
+      style={{
+        background: 'var(--surface)',
+        border: '1.5px solid var(--ink)',
+        borderRadius: 'var(--radius)',
+        boxShadow: 'var(--shadow)',
+        padding: '28px',
+      }}
+    >
+      {/* Header with avatar */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '18px',
+          paddingBottom: '20px',
+          marginBottom: '24px',
+          borderBottom: '1.5px dashed var(--line-2)',
+        }}
+      >
+        <div style={{ position: 'relative', flexShrink: 0 }}>
+          <div
+            style={{
+              width: '72px',
+              height: '72px',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '50%',
+              boxShadow: '3px 3px 0 var(--ink)',
+              overflow: 'hidden',
+              display: 'grid',
+              placeItems: 'center',
+              background: 'var(--accent)',
+              color: 'var(--ink)',
+              fontFamily: 'var(--display)',
+              fontSize: '26px',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={`${user.firstName} ${user.lastName}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              initials
+            )}
           </div>
-          <div>
-            <CardTitle className="text-lg">Personal Information</CardTitle>
-            <p className="text-sm text-muted-foreground">{user.email}</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            aria-label="Upload photo"
+            style={{
+              position: 'absolute',
+              bottom: '-4px',
+              right: '-4px',
+              width: '28px',
+              height: '28px',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '50%',
+              background: 'var(--ink)',
+              color: 'var(--accent)',
+              display: 'grid',
+              placeItems: 'center',
+              cursor: isUploading ? 'not-allowed' : 'pointer',
+              opacity: isUploading ? 0.6 : 1,
+              boxShadow: '2px 2px 0 var(--ink)',
+            }}
+          >
+            {isUploading ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Camera className="h-3.5 w-3.5" />
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            onChange={handleAvatarUpload}
+            style={{ display: 'none' }}
+            aria-label="Upload profile photo"
+          />
         </div>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name fields */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                {...register('firstName')}
-                aria-invalid={!!errors.firstName}
-              />
-              {errors.firstName && (
-                <p className="text-sm text-destructive">{errors.firstName.message}</p>
-              )}
-            </div>
+        <div style={{ minWidth: 0 }}>
+          <div
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '10px',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-faint)',
+              fontWeight: 700,
+              marginBottom: '4px',
+            }}
+          >
+            Personal information
+          </div>
+          <h2
+            style={{
+              fontFamily: 'var(--display)',
+              fontSize: '22px',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              marginBottom: '4px',
+            }}
+          >
+            {user.firstName} {user.lastName}
+          </h2>
+          <p style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>{user.email}</p>
+        </div>
+      </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                {...register('lastName')}
-                aria-invalid={!!errors.lastName}
-              />
-              {errors.lastName && (
-                <p className="text-sm text-destructive">{errors.lastName.message}</p>
-              )}
-            </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="billing-grid">
+          <div className="field">
+            <label className="field-label" htmlFor="firstName">First name</label>
+            <input
+              id="firstName"
+              className={`input ${errors.firstName ? 'input-error' : ''}`}
+              {...register('firstName')}
+            />
+            {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
           </div>
 
-          {/* Phone */}
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
+          <div className="field">
+            <label className="field-label" htmlFor="lastName">Last name</label>
+            <input
+              id="lastName"
+              className={`input ${errors.lastName ? 'input-error' : ''}`}
+              {...register('lastName')}
+            />
+            {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
+          </div>
+
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="phone">Phone number</label>
+            <input
               id="phone"
               type="tel"
+              className={`input ${errors.phone ? 'input-error' : ''}`}
               placeholder="+44 7700 900000"
               {...register('phone')}
-              aria-invalid={!!errors.phone}
             />
-            {errors.phone && (
-              <p className="text-sm text-destructive">{errors.phone.message}</p>
-            )}
+            {errors.phone && <span className="field-error">{errors.phone.message}</span>}
           </div>
 
-          {/* Instagram */}
-          <div className="space-y-1.5">
-            <Label htmlFor="instagram">Instagram</Label>
-            <div className="flex">
-              <span
-                className="inline-flex items-center rounded-l-md border border-r-0 bg-muted px-3 text-sm text-muted-foreground"
-                style={{ borderColor: 'var(--border-light)' }}
-              >
-                @
-              </span>
-              <Input
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="instagram">Instagram</label>
+            <div className="phone-row">
+              <div className="phone-cc">@</div>
+              <input
                 id="instagram"
+                className={`input ${errors.instagram ? 'input-error' : ''}`}
                 placeholder="winucard"
-                className="rounded-l-none"
                 {...register('instagram')}
-                aria-invalid={!!errors.instagram}
               />
             </div>
-            {errors.instagram && (
-              <p className="text-sm text-destructive">{errors.instagram.message}</p>
-            )}
+            {errors.instagram && <span className="field-error">{errors.instagram.message}</span>}
           </div>
 
-          {/* Date of Birth */}
-          <div className="space-y-1.5">
-            <Label htmlFor="dateOfBirth">Date of Birth</Label>
-            <Input
+          <div className="field billing-full">
+            <label className="field-label" htmlFor="dateOfBirth">Date of birth</label>
+            <input
               id="dateOfBirth"
               type="date"
+              className={`input ${errors.dateOfBirth ? 'input-error' : ''}`}
               {...register('dateOfBirth')}
-              aria-invalid={!!errors.dateOfBirth}
             />
-            {errors.dateOfBirth && (
-              <p className="text-sm text-destructive">{errors.dateOfBirth.message}</p>
+            <span className="field-hint">You must be 18 or older to participate.</span>
+            {errors.dateOfBirth && <span className="field-error">{errors.dateOfBirth.message}</span>}
+          </div>
+        </div>
+
+        {message && (
+          <div
+            style={{
+              padding: '12px 16px',
+              marginTop: '12px',
+              background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
+              color: message.type === 'success' ? 'var(--ink)' : '#fff',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '10px',
+              fontSize: '13px',
+              fontWeight: 600,
+              boxShadow: 'var(--shadow-sm)',
+            }}
+            role="alert"
+          >
+            {message.text}
+          </div>
+        )}
+
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginTop: '20px',
+            paddingTop: '20px',
+            borderTop: '1px dashed var(--line-2)',
+          }}
+        >
+          <button
+            type="submit"
+            disabled={isSubmitting || !isDirty}
+            className={`btn ${isSubmitting || !isDirty ? 'btn-mute' : 'btn-primary'} btn-xl`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2
+                  className="h-4 w-4 animate-spin"
+                  style={{ display: 'inline-block', marginRight: 8, verticalAlign: 'middle' }}
+                />
+                Saving...
+              </>
+            ) : (
+              <>Save changes →</>
             )}
-            <p className="text-xs text-muted-foreground">
-              You must be 18 or older to participate
-            </p>
-          </div>
-
-          {/* Message */}
-          {message && (
-            <div
-              className={`rounded-md p-3 text-sm ${
-                message.type === 'success'
-                  ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
-                  : 'bg-destructive/10 text-destructive'
-              }`}
-              role="alert"
-            >
-              {message.text}
-            </div>
-          )}
-
-          {/* Submit button */}
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSubmitting || !isDirty}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

@@ -75,10 +75,9 @@ export async function createCompetition(formData: FormData) {
     throw new Error('Invalid question choices format');
   }
 
-  let parsedPrizes = prizes;
   if (typeof prizes === 'string') {
     try {
-      parsedPrizes = JSON.parse(prizes);
+      JSON.parse(prizes);
     } catch {
       throw new Error('Invalid prizes format');
     }

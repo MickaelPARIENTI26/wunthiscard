@@ -195,7 +195,6 @@ function SlotReel({
   isSpinning: boolean;
   isStopped: boolean;
 }) {
-  const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const [displayDigit, setDisplayDigit] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 

@@ -1,7 +1,6 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AddressList } from '../addresses/address-list';
 import { AddressForm } from '../addresses/address-form';
 
@@ -23,26 +22,78 @@ interface AddressSectionProps {
 
 export function AddressSection({ addresses }: AddressSectionProps) {
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-            <MapPin className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <div>
-            <CardTitle className="text-lg">Delivery Addresses</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              {addresses.length === 0
-                ? 'Add an address for prize delivery'
-                : `${addresses.length} address${addresses.length > 1 ? 'es' : ''} saved`}
-            </p>
-          </div>
+    <div
+      style={{
+        background: 'var(--surface)',
+        border: '1.5px solid var(--ink)',
+        borderRadius: 'var(--radius)',
+        boxShadow: 'var(--shadow)',
+        padding: '28px',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          paddingBottom: '20px',
+          marginBottom: '24px',
+          borderBottom: '1.5px dashed var(--line-2)',
+        }}
+      >
+        <div
+          style={{
+            width: '48px',
+            height: '48px',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '12px',
+            background: 'var(--warn)',
+            boxShadow: '3px 3px 0 var(--ink)',
+            display: 'grid',
+            placeItems: 'center',
+            flexShrink: 0,
+          }}
+        >
+          <MapPin className="h-5 w-5" style={{ color: 'var(--ink)' }} />
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--mono)',
+              fontSize: '10px',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--ink-faint)',
+              fontWeight: 700,
+              marginBottom: '4px',
+            }}
+          >
+            Where we ship
+          </div>
+          <h2
+            style={{
+              fontFamily: 'var(--display)',
+              fontSize: '22px',
+              fontWeight: 700,
+              letterSpacing: '-0.02em',
+              lineHeight: 1.1,
+              marginBottom: '4px',
+            }}
+          >
+            Delivery addresses
+          </h2>
+          <p style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
+            {addresses.length === 0
+              ? 'Add an address for prize delivery'
+              : `${addresses.length} address${addresses.length > 1 ? 'es' : ''} saved`}
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
         <AddressList addresses={addresses} />
         <AddressForm />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

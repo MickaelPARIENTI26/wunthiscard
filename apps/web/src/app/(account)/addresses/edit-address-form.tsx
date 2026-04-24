@@ -5,10 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { updateAddress } from './actions';
 
 const addressSchema = z.object({
@@ -22,6 +18,31 @@ const addressSchema = z.object({
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
+
+const COUNTRIES: { code: string; name: string }[] = [
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'FR', name: 'France' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'AT', name: 'Austria' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'CZ', name: 'Czech Republic' },
+  { code: 'GR', name: 'Greece' },
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'JP', name: 'Japan' },
+];
 
 interface Address {
   id: string;
@@ -72,9 +93,9 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
 
     try {
       const result = await updateAddress(address.id, {
-        label: data.label || undefined,
+        label: data.label ?? undefined,
         line1: data.line1,
-        line2: data.line2 || undefined,
+        line2: data.line2 ?? undefined,
         city: data.city,
         postcode: data.postcode,
         country: data.country,
@@ -94,131 +115,134 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* Label */}
-      <div className="space-y-2">
-        <Label htmlFor="edit-label">Label (optional)</Label>
-        <Input
-          id="edit-label"
-          placeholder="e.g., Home, Office"
-          {...register('label')}
-        />
-      </div>
-
-      {/* Address Line 1 */}
-      <div className="space-y-2">
-        <Label htmlFor="edit-line1">Address Line 1</Label>
-        <Input
-          id="edit-line1"
-          placeholder="Street address"
-          {...register('line1')}
-          aria-invalid={!!errors.line1}
-        />
-        {errors.line1 && (
-          <p className="text-sm text-destructive">{errors.line1.message}</p>
-        )}
-      </div>
-
-      {/* Address Line 2 */}
-      <div className="space-y-2">
-        <Label htmlFor="edit-line2">Address Line 2 (optional)</Label>
-        <Input
-          id="edit-line2"
-          placeholder="Apartment, suite, unit, etc."
-          {...register('line2')}
-        />
-      </div>
-
-      {/* City and County */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="edit-city">City</Label>
-          <Input
-            id="edit-city"
-            placeholder="City"
-            {...register('city')}
-            aria-invalid={!!errors.city}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="billing-grid">
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="edit-label">
+            Label (optional)
+          </label>
+          <input
+            id="edit-label"
+            className="input"
+            placeholder="e.g., Home, Office"
+            {...register('label')}
           />
-          {errors.city && (
-            <p className="text-sm text-destructive">{errors.city.message}</p>
-          )}
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="edit-postcode">Postcode / ZIP</Label>
-          <Input
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="edit-line1">
+            Address line 1
+          </label>
+          <input
+            id="edit-line1"
+            className={`input ${errors.line1 ? 'input-error' : ''}`}
+            placeholder="Street address"
+            {...register('line1')}
+          />
+          {errors.line1 && <span className="field-error">{errors.line1.message}</span>}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="edit-line2">
+            Address line 2 (optional)
+          </label>
+          <input
+            id="edit-line2"
+            className="input"
+            placeholder="Apartment, suite, unit"
+            {...register('line2')}
+          />
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="edit-city">
+            City
+          </label>
+          <input
+            id="edit-city"
+            className={`input ${errors.city ? 'input-error' : ''}`}
+            {...register('city')}
+          />
+          {errors.city && <span className="field-error">{errors.city.message}</span>}
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="edit-postcode">
+            Postcode / ZIP
+          </label>
+          <input
             id="edit-postcode"
+            className={`input ${errors.postcode ? 'input-error' : ''}`}
             placeholder="e.g., SW1A 1AA"
             {...register('postcode')}
-            aria-invalid={!!errors.postcode}
           />
-          {errors.postcode && (
-            <p className="text-sm text-destructive">{errors.postcode.message}</p>
-          )}
+          {errors.postcode && <span className="field-error">{errors.postcode.message}</span>}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="edit-country">
+            Country
+          </label>
+          <select id="edit-country" className="select" {...register('country')}>
+            {COUNTRIES.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Country */}
-      <div className="space-y-2">
-        <Label htmlFor="edit-country">Country</Label>
-        <select
-          id="edit-country"
-          {...register('country')}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <option value="GB">United Kingdom</option>
-          <option value="FR">France</option>
-          <option value="DE">Germany</option>
-          <option value="ES">Spain</option>
-          <option value="IT">Italy</option>
-          <option value="NL">Netherlands</option>
-          <option value="BE">Belgium</option>
-          <option value="PT">Portugal</option>
-          <option value="IE">Ireland</option>
-          <option value="AT">Austria</option>
-          <option value="CH">Switzerland</option>
-          <option value="SE">Sweden</option>
-          <option value="DK">Denmark</option>
-          <option value="NO">Norway</option>
-          <option value="FI">Finland</option>
-          <option value="PL">Poland</option>
-          <option value="CZ">Czech Republic</option>
-          <option value="GR">Greece</option>
-          <option value="US">United States</option>
-          <option value="CA">Canada</option>
-          <option value="AU">Australia</option>
-          <option value="JP">Japan</option>
-        </select>
-      </div>
-
-      {/* Set as default */}
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="edit-isDefault"
+      <label className="check-row" style={{ marginTop: '12px' }}>
+        <input
+          type="checkbox"
+          className="checkbox"
           checked={isDefault}
-          onCheckedChange={(checked) => setValue('isDefault', checked === true)}
+          onChange={(e) => setValue('isDefault', e.target.checked)}
         />
-        <Label htmlFor="edit-isDefault" className="cursor-pointer text-sm font-normal">
-          Set as default delivery address
-        </Label>
-      </div>
+        <span>Set as default delivery address</span>
+      </label>
 
-      {/* Error message */}
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+        <div
+          style={{
+            marginTop: '14px',
+            padding: '10px 14px',
+            background: 'var(--hot)',
+            color: '#fff',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            fontSize: '13px',
+            fontWeight: 600,
+            boxShadow: 'var(--shadow-sm)',
+          }}
+          role="alert"
+        >
           {error}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '16px' }}>
+        <button type="button" onClick={onCancel} className="btn btn-ghost">
           Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Changes
-        </Button>
+        </button>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`btn ${isSubmitting ? 'btn-mute' : 'btn-primary'}`}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2
+                className="h-4 w-4 animate-spin"
+                style={{ display: 'inline-block', marginRight: 6, verticalAlign: 'middle' }}
+              />
+              Saving...
+            </>
+          ) : (
+            <>Save changes →</>
+          )}
+        </button>
       </div>
     </form>
   );
