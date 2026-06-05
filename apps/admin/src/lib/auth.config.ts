@@ -18,6 +18,7 @@ const SESSION_DURATION_DEFAULT = 8 * 60 * 60; // 8 hours for ADMIN/SUPER_ADMIN
 const SESSION_DURATION_DRAW_MASTER = 4 * 60 * 60; // 4 hours for DRAW_MASTER
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
+  trustHost: true, // Required for NextAuth v5 behind the Vercel proxy (avoids UntrustedHost)
   pages: {
     signIn: '/login',
     error: '/login',

@@ -56,32 +56,41 @@ REDIS_URL=...
 UPSTASH_REDIS_REST_URL=...
 UPSTASH_REDIS_REST_TOKEN=...
 
-# Auth
-NEXTAUTH_SECRET=<generate-new-secret>
-NEXTAUTH_URL=https://winucard.com
+# Auth (NextAuth v5 — note: AUTH_* names, NOT the v4 NEXTAUTH_* names)
+AUTH_SECRET=<generate-new-secret, min 32 chars: `openssl rand -base64 32`>
+AUTH_URL=https://winucard.com          # admin: https://admin.winucard.com
+AUTH_TRUST_HOST=true                   # required behind the Vercel proxy
 
 # Google OAuth (optional)
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED=true
 
+# Captcha (Cloudflare Turnstile) — required in production
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=...
+TURNSTILE_SECRET_KEY=...
+
 # Stripe (LIVE keys)
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_PUBLISHABLE_KEY=pk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 
-# Email (Resend)
+# Email (Resend) — code reads FROM_EMAIL (NOT EMAIL_FROM)
 RESEND_API_KEY=re_...
-EMAIL_FROM=noreply@winucard.com
+FROM_EMAIL=noreply@winucard.com        # must be on a Resend-verified domain
 
-# Storage (Cloudflare R2)
+# Storage (Cloudflare R2) — all five required; uploads hard-fail without them
 R2_ACCOUNT_ID=...
 R2_ACCESS_KEY_ID=...
 R2_SECRET_ACCESS_KEY=...
 R2_BUCKET_NAME=winucard-images
-R2_PUBLIC_URL=...
+R2_PUBLIC_URL=https://<bucket>.r2.dev   # or your custom CDN domain
 
-# Monitoring
+# Admin bootstrap (used once by `npm run db:bootstrap`)
+ADMIN_EMAIL=admin@winucard.com
+ADMIN_PASSWORD=<strong-password, min 12 chars>
+
+# Monitoring (optional — Sentry not yet wired in code)
 SENTRY_DSN=...
 
 # Environment
@@ -90,10 +99,14 @@ NODE_ENV=production
 
 ### Database Setup
 
-- [ ] Create production database (Neon recommended)
-- [ ] Run migrations: `npx prisma migrate deploy`
+- [ ] Create production database (Neon recommended) — use a **pooled** connection
+      string (PgBouncer, port 6543, `?pgbouncer=true&connection_limit=1`) for the
+      app, and a direct connection (port 5432) for migrations.
+- [ ] Run migrations: `npm run db:migrate:deploy` (alias for `prisma migrate deploy`)
 - [ ] Verify schema matches development
-- [ ] Create SUPER_ADMIN user manually via SQL or seed
+- [ ] Bootstrap the first admin + base settings (idempotent, non-destructive):
+      `ADMIN_EMAIL=... ADMIN_PASSWORD=... npm run db:bootstrap`
+- [ ] ⚠️ Do NOT run `npm run db:seed` against production — it is destructive (wipes data)
 
 ### Stripe Setup
 

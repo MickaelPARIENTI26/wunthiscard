@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
+import { sendPasswordResetEmail } from '@/lib/email';
 
 interface ForgotPasswordResult {
   success: boolean;
@@ -94,15 +95,15 @@ export async function requestPasswordReset(
       },
     });
 
-    // TODO: Send password reset email using Resend
-    // const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
-    // await sendPasswordResetEmail({
-    //   to: normalizedEmail,
-    //   firstName: user.firstName,
-    //   resetUrl,
-    // });
+    // Send the password reset email. Errors are logged but not surfaced, to
+    // preserve the anti-enumeration contract (always return success).
+    try {
+      await sendPasswordResetEmail(normalizedEmail, resetToken, user.firstName);
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+    }
 
-    // Log reset token in development only
+    // Surface the token in development only for manual testing.
     if (process.env.NODE_ENV === 'development') {
       console.log(`[DEV] Password reset token for ${normalizedEmail}: ${resetToken}`);
     }

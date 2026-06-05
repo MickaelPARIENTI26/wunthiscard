@@ -11,6 +11,15 @@ async function hashPassword(password: string): Promise<string> {
 }
 
 async function main() {
+  // SAFETY: this seed is DESTRUCTIVE (wipes ~14 tables). It must never run
+  // against a production database. Use `db:bootstrap` for prod baseline data.
+  if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DESTRUCTIVE_SEED !== 'true') {
+    throw new Error(
+      'Refusing to run the destructive dev seed in production. Use `npm run db:bootstrap` instead, ' +
+        'or set ALLOW_DESTRUCTIVE_SEED=true if you really intend to wipe the database.',
+    );
+  }
+
   console.log('🌱 Seeding database...');
 
   // Clean existing data

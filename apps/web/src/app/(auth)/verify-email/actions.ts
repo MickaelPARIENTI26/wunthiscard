@@ -2,6 +2,7 @@
 
 import { randomBytes } from 'crypto';
 import { prisma } from '@winucard/database';
+import { sendVerificationEmail } from '@/lib/email';
 
 interface VerifyEmailResult {
   success: boolean;
@@ -201,15 +202,15 @@ export async function resendVerificationEmail(email: string): Promise<ResendResu
       },
     });
 
-    // TODO: Send verification email using Resend
-    // const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
-    // await sendVerificationEmail({
-    //   to: normalizedEmail,
-    //   firstName: user.firstName,
-    //   verificationUrl,
-    // });
+    // Send the verification email. Errors are logged but not surfaced, to
+    // preserve the anti-enumeration contract (always return success).
+    try {
+      await sendVerificationEmail(normalizedEmail, verificationToken, user.firstName);
+    } catch (emailError) {
+      console.error('Failed to resend verification email:', emailError);
+    }
 
-    // Log verification token in development only
+    // Surface the token in development only for manual testing.
     if (process.env.NODE_ENV === 'development') {
       console.log(`[DEV] Verification token for ${normalizedEmail}: ${verificationToken}`);
     }

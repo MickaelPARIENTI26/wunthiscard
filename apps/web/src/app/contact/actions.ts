@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
-import { verifyTurnstileToken } from '@/lib/turnstile';
+import { verifyTurnstileRequired } from '@/lib/turnstile';
 
 const contactFormSchema = z.object({
   name: z
@@ -72,16 +72,14 @@ export async function submitContactForm(
     };
   }
 
-  // Verify Turnstile captcha
-  const turnstileToken = formData.get('cf-turnstile-response') as string;
-  if (turnstileToken) {
-    const captchaResult = await verifyTurnstileToken(turnstileToken, ip);
-    if (!captchaResult.success) {
-      return {
-        success: false,
-        message: captchaResult.error || 'Captcha verification failed. Please try again.',
-      };
-    }
+  // Verify Turnstile captcha — required whenever Turnstile is configured.
+  const turnstileToken = formData.get('cf-turnstile-response') as string | null;
+  const captchaResult = await verifyTurnstileRequired(turnstileToken, ip);
+  if (!captchaResult.success) {
+    return {
+      success: false,
+      message: captchaResult.error || 'Captcha verification failed. Please try again.',
+    };
   }
 
   const rawData = {

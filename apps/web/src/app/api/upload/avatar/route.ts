@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { uploadObject } from '@/lib/storage';
 import { randomBytes } from 'crypto';
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -42,16 +41,12 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Generate unique filename
+    // Generate unique object key
     const ext = file.type.split('/')[1] === 'jpeg' ? 'jpg' : file.type.split('/')[1];
-    const filename = `${session.user.id}-${randomBytes(8).toString('hex')}.${ext}`;
+    const key = `avatars/${session.user.id}-${randomBytes(8).toString('hex')}.${ext}`;
 
-    // Store locally in dev (R2 in production)
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'avatars');
-    await mkdir(uploadDir, { recursive: true });
-    await writeFile(join(uploadDir, filename), buffer);
-
-    const avatarUrl = `/uploads/avatars/${filename}`;
+    // Upload to R2 (production) or local public/uploads (development).
+    const { url: avatarUrl } = await uploadObject(key, buffer, file.type);
 
     // Update user avatar in database
     await prisma.user.update({

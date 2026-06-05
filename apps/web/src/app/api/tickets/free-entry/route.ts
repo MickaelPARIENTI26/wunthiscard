@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
+import { sendFreeEntryConfirmationEmail } from '@/lib/email';
 
 const freeEntrySchema = z.object({
   competitionId: z.string().min(1),
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Check if user is verified and not banned
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { emailVerified: true, isBanned: true },
+      select: { emailVerified: true, isBanned: true, email: true, firstName: true },
     });
 
     if (!user) {
@@ -76,6 +77,8 @@ export async function POST(request: NextRequest) {
       where: { id: competitionId },
       select: {
         id: true,
+        title: true,
+        drawDate: true,
         status: true,
         isFree: true,
         totalTickets: true,
@@ -211,6 +214,20 @@ export async function POST(request: NextRequest) {
         ipAddress: ip,
       },
     });
+
+    // Send free-entry confirmation email — same treatment as the paid route,
+    // required for UK compliance (free route must be handled identically).
+    // Non-blocking: a send failure must not void a valid entry.
+    try {
+      await sendFreeEntryConfirmationEmail(user.email, user.firstName, {
+        competitionTitle: competition.title,
+        ticketNumber,
+        drawDate: competition.drawDate,
+        entryMethod: 'email',
+      });
+    } catch (emailError) {
+      console.error('Failed to send free-entry confirmation email:', emailError);
+    }
 
     return NextResponse.json({
       success: true,

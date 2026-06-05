@@ -6,8 +6,9 @@ import { prisma } from '@winucard/database';
 import { registerSchema, type RegisterInput } from '@winucard/shared/validators';
 import { MAX_REFERRALS_PER_USER } from '@winucard/shared';
 import { rateLimits } from '@/lib/redis';
-import { verifyTurnstileToken } from '@/lib/turnstile';
+import { verifyTurnstileRequired } from '@/lib/turnstile';
 import { hashPassword } from '@/lib/password';
+import { sendVerificationEmail } from '@/lib/email';
 
 interface RegisterResult {
   success: boolean;
@@ -50,15 +51,14 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
       };
     }
 
-    // Verify Turnstile captcha if token provided
-    if (input.turnstileToken) {
-      const captchaResult = await verifyTurnstileToken(input.turnstileToken, ip);
-      if (!captchaResult.success) {
-        return {
-          success: false,
-          error: captchaResult.error || 'Captcha verification failed. Please try again.',
-        };
-      }
+    // Verify Turnstile captcha — required whenever Turnstile is configured.
+    // A missing token no longer silently bypasses the check.
+    const captchaResult = await verifyTurnstileRequired(input.turnstileToken, ip);
+    if (!captchaResult.success) {
+      return {
+        success: false,
+        error: captchaResult.error || 'Captcha verification failed. Please try again.',
+      };
     }
 
     // Validate input with Zod
@@ -186,15 +186,17 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
       return user;
     });
 
-    // TODO: Send verification email using Resend
-    // await sendVerificationEmail({
-    //   to: email,
-    //   firstName,
-    //   verificationToken,
-    // });
-
-    // Log verification token in development only
-    if (process.env.NODE_ENV === 'development') {
+    // Send verification email (required in production for account activation).
+    // Failure to send must not roll back the already-created account — the user
+    // can request a resend — so we catch and log instead of throwing.
+    if (isProduction) {
+      try {
+        await sendVerificationEmail(email, verificationToken, firstName);
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+      }
+    } else {
+      // Development: surface the token so the flow can be tested without email.
       console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
     }
 

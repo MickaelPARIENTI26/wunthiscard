@@ -53,9 +53,10 @@ export async function POST(request: NextRequest) {
     const token = randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // Delete any existing tokens for this user
+    // Delete only existing EMAIL_VERIFICATION tokens — must NOT touch the
+    // user's PASSWORD_RESET tokens, which share this table.
     await prisma.verificationToken.deleteMany({
-      where: { identifier: user.email },
+      where: { identifier: user.email, type: 'EMAIL_VERIFICATION' },
     });
 
     // Create new token
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
         identifier: user.email,
         token,
         expires,
+        type: 'EMAIL_VERIFICATION',
       },
     });
 

@@ -6,7 +6,9 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['**/*.test.ts', '**/*.spec.ts'],
-    exclude: ['node_modules', '.next', 'dist', '**/e2e/**'],
+    // Exclude git worktrees under .claude/ — they mirror the same test files and
+    // would otherwise be double-counted in the run total.
+    exclude: ['node_modules', '.next', 'dist', '**/e2e/**', '.claude/**'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       exclude: ['node_modules', '.next', 'dist', '**/*.d.ts', '**/*.test.ts', '**/*.spec.ts'],
