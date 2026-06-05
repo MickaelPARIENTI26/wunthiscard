@@ -62,7 +62,7 @@ export default async function QuestionPage({ params }: { params: Promise<PagePar
         style={{
           maxWidth: '1200px',
           margin: '0 auto',
-          padding: '16px 32px 0',
+          padding: '16px clamp(20px, 5vw, 32px) 0',
         }}
       >
         <Link

@@ -60,8 +60,8 @@ export function Footer() {
             </div>
           </div>
 
-          {/* 3 link columns side by side */}
-          <div className="grid grid-cols-3 gap-4 mb-6" style={{ borderTop: '1px dashed var(--line-2)', paddingTop: '16px' }}>
+          {/* Link columns: 2-up on very narrow phones, 3-up from 420px */}
+          <div className="grid grid-cols-2 min-[420px]:grid-cols-3 gap-4 mb-6" style={{ borderTop: '1px dashed var(--line-2)', paddingTop: '16px' }}>
             <FooterColumnCompact title="Platform" links={platformLinks} />
             <FooterColumnCompact title="Support" links={supportLinks} />
             <FooterColumnCompact title="Legal" links={legalLinks} />

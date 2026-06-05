@@ -66,7 +66,7 @@ export default async function CheckoutPage({
   const enterHead = (
     <>
       {/* Back link */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px 32px 0' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px clamp(20px, 5vw, 32px) 0' }}>
         <Link
           href={`/competitions/${slug}`}
           style={{

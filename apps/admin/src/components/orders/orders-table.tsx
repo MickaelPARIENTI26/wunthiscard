@@ -254,7 +254,7 @@ export function OrdersTable({ orders, competitions, currentPage, totalPages, tot
           value={searchParams.get('status') || 'all'}
           onValueChange={(value) => updateSearchParams('status', value === 'all' ? '' : value)}
         >
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="w-full sm:w-[150px]">
             <SelectValue placeholder="Filter status" />
           </SelectTrigger>
           <SelectContent>
@@ -269,7 +269,7 @@ export function OrdersTable({ orders, competitions, currentPage, totalPages, tot
           value={searchParams.get('competition') || 'all'}
           onValueChange={(value) => updateSearchParams('competition', value === 'all' ? '' : value)}
         >
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder="Filter competition" />
           </SelectTrigger>
           <SelectContent>

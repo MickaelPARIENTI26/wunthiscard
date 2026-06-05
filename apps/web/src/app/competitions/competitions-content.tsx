@@ -176,7 +176,7 @@ export function CompetitionsContent({
 
       {/* Competitions Grid — sorted by urgency */}
       {competitions.length > 0 ? (
-        <div className="comp-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
+        <div className="comp-grid">
           {sortedCompetitions.map((competition) => (
             <CompCard
               key={competition.id}

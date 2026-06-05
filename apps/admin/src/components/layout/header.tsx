@@ -45,19 +45,19 @@ export function Header({ user }: HeaderProps) {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b bg-background px-6">
-      <div className="flex items-center gap-4">
-        <div className="relative">
+    <header className="flex h-16 items-center justify-between border-b bg-background px-3 sm:px-6">
+      <div className="flex items-center gap-4 min-w-0 flex-1">
+        <div className="relative w-full max-w-[160px] sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search..."
-            className="w-64 pl-9"
+            className="w-full pl-9"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />

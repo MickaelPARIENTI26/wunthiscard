@@ -84,7 +84,7 @@ export default function HowItWorksPage() {
             {steps.map((s) => (
               <article key={s.n} className="hiw-step">
                 <aside className="hiw-step-num" style={{ background: s.swatch }}>
-                  <span style={{ fontFamily: 'var(--display)', fontSize: '104px', fontWeight: 700, letterSpacing: '-0.06em', color: 'var(--ink)', position: 'relative', lineHeight: 1 }}>
+                  <span style={{ fontFamily: 'var(--display)', fontSize: 'clamp(48px, 15vw, 104px)', fontWeight: 700, letterSpacing: '-0.06em', color: 'var(--ink)', position: 'relative', lineHeight: 1 }}>
                     {s.n}
                   </span>
                 </aside>
@@ -92,7 +92,7 @@ export default function HowItWorksPage() {
                   <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700, marginBottom: '8px' }}>
                     Step {s.n} · {s.t}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--display)', fontSize: '34px', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 12px' }}>
+                  <h3 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(22px, 5vw, 34px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 12px' }}>
                     {s.lead}
                   </h3>
                   <p style={{ color: 'var(--ink-dim)', fontSize: '15px', lineHeight: 1.6, marginBottom: '14px' }}>
