@@ -13,7 +13,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
         borderColor: 'rgba(255, 255, 255, 0.06)',
         borderRadius: '20px',
         boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 24px rgba(0, 0, 0, 0.2)',
-        color: 'var(--text-primary)',
+        color: 'var(--ink)',
         ...style,
       }}
       {...props}
@@ -34,7 +34,7 @@ const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivE
     <div
       ref={ref}
       className={cn('font-semibold leading-none tracking-tight', className)}
-      style={{ color: 'var(--text-primary)', ...style }}
+      style={{ color: 'var(--ink)', ...style }}
       {...props}
     />
   )
@@ -46,7 +46,7 @@ const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HT
     <div
       ref={ref}
       className={cn('text-sm', className)}
-      style={{ color: 'var(--text-muted)', ...style }}
+      style={{ color: 'var(--ink-dim)', ...style }}
       {...props}
     />
   )

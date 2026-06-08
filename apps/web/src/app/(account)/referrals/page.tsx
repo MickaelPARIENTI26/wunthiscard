@@ -88,7 +88,7 @@ export default async function ReferralsPage() {
         <div style={{ marginBottom: '32px' }}>
           <h2
             className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '12px' }}
+            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '12px' }}
           >
             Your referral link
           </h2>
@@ -106,7 +106,7 @@ export default async function ReferralsPage() {
         >
           <h2
             className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}
+            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '8px' }}
           >
             How it works
           </h2>
@@ -122,7 +122,7 @@ export default async function ReferralsPage() {
         <div>
           <h2
             className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}
+            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}
           >
             Your stats
           </h2>

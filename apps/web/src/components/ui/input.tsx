@@ -12,19 +12,19 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
         )}
         style={{
           backgroundColor: 'var(--bg-input)',
-          color: 'var(--text-secondary)',
-          border: '1px solid var(--border-light)',
+          color: 'var(--ink-dim)',
+          border: '1px solid var(--line)',
           borderRadius: '10px',
           outline: 'none',
           transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
           ...style,
         }}
         onFocus={(e) => {
-          e.currentTarget.style.borderColor = 'var(--accent-border)';
-          e.currentTarget.style.boxShadow = '0 0 0 3px var(--accent-soft)';
+          e.currentTarget.style.borderColor = 'var(--accent)';
+          e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.2)';
         }}
         onBlur={(e) => {
-          e.currentTarget.style.borderColor = 'var(--border-light)';
+          e.currentTarget.style.borderColor = 'var(--line)';
           e.currentTarget.style.boxShadow = 'none';
         }}
         ref={ref}

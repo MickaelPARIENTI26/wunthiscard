@@ -130,8 +130,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         side="right"
         className="flex w-full flex-col sm:max-w-sm border-l"
         style={{
-          background: 'linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-base) 100%)',
-          borderColor: 'var(--border-subtle)',
+          background: 'linear-gradient(180deg, var(--surface) 0%, var(--bg-base) 100%)',
+          borderColor: 'var(--line)',
         }}
       >
         <SheetHeader className="text-left">
@@ -164,8 +164,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
             <div
               className="flex items-center gap-3 rounded-xl p-4"
               style={{
-                background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
-                border: '1px solid var(--border-light)',
+                background: 'linear-gradient(135deg, var(--bg-2) 0%, var(--surface) 100%)',
+                border: '1px solid var(--line)',
               }}
             >
               <Avatar className="h-12 w-12 ring-2 ring-primary/30">
@@ -272,7 +272,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           <div
             className="pt-6"
             style={{
-              borderTop: '1px solid var(--border-light)',
+              borderTop: '1px solid var(--line)',
             }}
           >
             <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
@@ -287,8 +287,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   rel="noopener noreferrer"
                   className="group flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all hover:scale-105"
                   style={{
-                    background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
-                    border: '1px solid var(--border-light)',
+                    background: 'linear-gradient(135deg, var(--bg-2) 0%, var(--surface) 100%)',
+                    border: '1px solid var(--line)',
                   }}
                   aria-label={`Follow us on ${social.label}`}
                 >

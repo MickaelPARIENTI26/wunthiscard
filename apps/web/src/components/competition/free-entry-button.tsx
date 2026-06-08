@@ -80,7 +80,7 @@ export function FreeEntryButton({
           <CheckCircle style={{ width: '20px', height: '20px' }} />
           Already Entered
         </button>
-        <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center' }}>
+        <p style={{ fontSize: '13px', color: 'var(--ink-dim)', textAlign: 'center' }}>
           You already have a ticket for this draw. Good luck!
         </p>
       </div>
@@ -90,7 +90,7 @@ export function FreeEntryButton({
   return (
     <div className="space-y-3">
       {/* Ticket limit info */}
-      <p style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+      <p style={{ fontSize: '14px', color: 'var(--ink-dim)' }}>
         {maxTicketsPerUser === 1
           ? '1 free ticket per account'
           : `Up to ${maxTicketsPerUser} free ticket${maxTicketsPerUser > 1 ? 's' : ''} per account`}

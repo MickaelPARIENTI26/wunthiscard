@@ -95,13 +95,13 @@ export function AddressList({ addresses }: AddressListProps) {
             key={address.id}
             className="rounded-lg border p-4"
             style={{
-              borderColor: address.isDefault ? 'rgba(0, 199, 106, 0.3)' : 'var(--border-subtle)',
+              borderColor: address.isDefault ? 'rgba(0, 199, 106, 0.3)' : 'var(--line)',
               background: address.isDefault ? 'rgba(0, 199, 106, 0.03)' : 'transparent',
             }}
           >
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>
                   {address.label ?? 'Address'}
                 </span>
                 {address.isDefault && (

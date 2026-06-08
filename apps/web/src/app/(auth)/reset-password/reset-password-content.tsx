@@ -161,7 +161,7 @@ export function ResetPasswordContent() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
             <XCircle className="h-6 w-6 text-destructive" />
           </div>
-          <CardTitle className="font-bold font-sans" style={{ fontSize: '29px', color: 'var(--text-primary)' }}>Invalid or expired link</CardTitle>
+          <CardTitle className="font-bold font-sans" style={{ fontSize: '29px', color: 'var(--ink)' }}>Invalid or expired link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired. Please request a new one.
           </CardDescription>

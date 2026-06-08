@@ -175,10 +175,12 @@ export function AgeGate() {
             style={{
               padding: '14px',
               borderRadius: '12px',
-              background: 'var(--text-primary)',
+              background: 'var(--ink)',
+              border: '1.5px solid var(--ink)',
+              boxShadow: '3px 3px 0 var(--accent)',
               color: '#ffffff',
               fontSize: '15px',
-              fontWeight: 600,
+              fontWeight: 700,
               cursor: 'pointer',
               outlineColor: 'var(--accent)',
             }}
@@ -193,11 +195,11 @@ export function AgeGate() {
             style={{
               padding: '14px',
               borderRadius: '12px',
-              background: 'transparent',
-              border: '1.5px solid rgba(0, 0, 0, 0.12)',
-              color: 'var(--text-muted)',
+              background: 'var(--surface)',
+              border: '1.5px solid var(--ink)',
+              color: 'var(--ink-dim)',
               fontSize: '15px',
-              fontWeight: 500,
+              fontWeight: 600,
               cursor: 'pointer',
               outlineColor: 'var(--accent)',
             }}

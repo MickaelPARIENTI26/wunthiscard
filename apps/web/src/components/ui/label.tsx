@@ -17,7 +17,7 @@ const Label = React.forwardRef<
     ref={ref}
     className={cn(labelVariants(), className)}
     style={{
-      color: 'var(--text-muted)',
+      color: 'var(--ink-dim)',
       fontSize: '12px',
       fontWeight: 600,
       ...style,
