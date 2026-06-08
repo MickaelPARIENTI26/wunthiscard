@@ -5,6 +5,10 @@ import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileRequired } from '@/lib/turnstile';
+import { sendEmail } from '@/lib/email';
+
+// Where contact-form notifications are delivered (override via env if needed).
+const CONTACT_INBOX = process.env.CONTACT_EMAIL ?? 'support@winucards.com';
 
 const contactFormSchema = z.object({
   name: z
@@ -103,15 +107,38 @@ export async function submitContactForm(
   const { name, email, subject, message } = validatedFields.data;
 
   try {
-    // Save to database
+    const subjectLabel = subjectLabels[subject] ?? subject;
+
+    // Save to database (always — this is the source of truth, visible in admin)
     await prisma.contactMessage.create({
       data: {
         name,
         email,
-        subject: subjectLabels[subject] || subject,
+        subject: subjectLabel,
         message,
       },
     });
+
+    // Notify the support inbox by email. Non-blocking: if the send fails, the
+    // message is still saved in the DB, so we don't fail the submission.
+    try {
+      const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      await sendEmail({
+        to: CONTACT_INBOX,
+        subject: `[Contact] ${subjectLabel} — ${name}`,
+        html: `
+          <h2 style="font-family: sans-serif;">New contact message</h2>
+          <p style="font-family: sans-serif;"><b>From:</b> ${name} &lt;${email}&gt;</p>
+          <p style="font-family: sans-serif;"><b>Subject:</b> ${subjectLabel}</p>
+          <p style="font-family: sans-serif;"><b>Message:</b></p>
+          <p style="font-family: sans-serif; white-space: pre-wrap; border-left: 3px solid #00c76a; padding-left: 12px;">${safeMessage}</p>
+          <hr/>
+          <p style="font-family: sans-serif; font-size: 12px; color: #888;">Reply directly to ${email} to respond to this person.</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error('Failed to send contact notification email:', emailError);
+    }
 
     return {
       success: true,

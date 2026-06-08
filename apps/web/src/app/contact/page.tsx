@@ -14,13 +14,12 @@ export const metadata: Metadata = {
 };
 
 const infoRows = [
-  { label: 'Email', value: 'hello@winucards.com', meta: 'General enquiries + support' },
-  { label: 'Press', value: 'press@winucards.com', meta: 'Media, partnerships, PR' },
+  { label: 'Email', value: 'support@winucards.com', meta: 'General enquiries + support' },
   { label: 'Postal / HQ', value: 'WinUCard Ltd\nUnit 14 Skyline House\n200 Union Street\nLondon SE1 0LX', meta: 'Also the address for free postal entries.' },
   { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
 ];
 
-const topics = ['Entry / ticket', 'Delivery', 'Account', 'Press', 'Other'];
+const topics = ['Entry / ticket', 'Delivery', 'Account', 'Other'];
 const socials = [
   { href: 'https://tiktok.com/@winucard', label: 'TikTok' },
   { href: 'https://instagram.com/winucard', label: 'Instagram' },
