@@ -39,7 +39,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://winucard.com'),
+  metadataBase: new URL('https://winucards.com'),
   title: {
     default: 'WinUCard - Win Collectible Cards & Memorabilia',
     template: '%s | WinUCard',
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://winucard.com',
+    url: 'https://winucards.com',
     siteName: 'WinUCard',
     title: 'WinUCard - Win Collectible Cards & Memorabilia',
     description:
@@ -122,7 +122,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.webmanifest',
   alternates: {
-    canonical: 'https://winucard.com',
+    canonical: 'https://winucards.com',
   },
   category: 'entertainment',
   classification: 'Prize Competitions',

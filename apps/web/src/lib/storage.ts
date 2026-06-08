@@ -11,7 +11,7 @@
  *   R2_SECRET_ACCESS_KEY  — R2 API token secret
  *   R2_BUCKET_NAME        — target bucket
  *   R2_PUBLIC_URL         — public base URL for the bucket (custom domain or
- *                           the r2.dev URL), e.g. https://cdn.winucard.com
+ *                           the r2.dev URL), e.g. https://cdn.winucards.com
  */
 
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';

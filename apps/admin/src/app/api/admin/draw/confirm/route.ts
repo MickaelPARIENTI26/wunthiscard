@@ -120,8 +120,8 @@ export async function POST(request: NextRequest) {
           competition_card_value: formatCurrency(Number(win.prizeValue ?? competition.prizeValue)),
           draw_winning_ticket: String(win.ticketNumber),
           draw_date: formatDate(competition.actualDrawDate),
-          site_url: process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk',
-          site_logo_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://winthiscard.co.uk'}/logo-email.png`,
+          site_url: process.env.NEXT_PUBLIC_APP_URL || 'https://winucards.com',
+          site_logo_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://winucards.com'}/logo-email.png`,
           current_year: new Date().getFullYear().toString(),
         };
 

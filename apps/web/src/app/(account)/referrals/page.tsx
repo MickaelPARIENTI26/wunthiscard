@@ -61,7 +61,7 @@ export default async function ReferralsPage() {
     where: { referredById: userId },
   });
 
-  const referralLink = `https://winucard.com/?ref=${user.referralCode}`;
+  const referralLink = `https://winucards.com/?ref=${user.referralCode}`;
   const progressTowardNext = user.referralTicketCount % 10;
 
   return (

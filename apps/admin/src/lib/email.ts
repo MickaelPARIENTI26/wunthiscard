@@ -6,7 +6,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winucard.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winucards.com';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -82,7 +82,7 @@ export function getTestData(): Record<string, string> {
     competition_tickets_remaining: '36',
     competition_end_date: 'March 15, 2026',
     competition_draw_date: 'March 16, 2026 at 8:00 PM GMT',
-    competition_url: 'https://winucard.co.uk/competitions/charizard-psa10',
+    competition_url: 'https://winucards.com/competitions/charizard-psa10',
     competition_category: 'Pokémon',
 
     // Order data
@@ -100,15 +100,15 @@ export function getTestData(): Record<string, string> {
     draw_time: '8:00 PM GMT',
 
     // Site data
-    site_url: 'https://winucard.co.uk',
+    site_url: 'https://winucards.com',
     site_name: 'WinUCard',
-    site_logo_url: 'https://winucard.co.uk/logo-email.png',
+    site_logo_url: 'https://winucards.com/logo-email.png',
     current_year: new Date().getFullYear().toString(),
 
     // Action URLs
-    unsubscribe_url: 'https://winucard.co.uk/unsubscribe?token=test',
-    verification_url: 'https://winucard.co.uk/verify?token=test',
-    cart_url: 'https://winucard.co.uk/cart?recover=test',
+    unsubscribe_url: 'https://winucards.com/unsubscribe?token=test',
+    verification_url: 'https://winucards.com/verify?token=test',
+    cart_url: 'https://winucards.com/cart?recover=test',
   };
 }
 
@@ -207,7 +207,7 @@ export async function sendWinnerNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      If you have any questions, please contact us at support@winucard.com
+      If you have any questions, please contact us at support@winucards.com
     </p>
   `);
 
@@ -319,7 +319,7 @@ export async function sendCancellationNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      Questions? Contact us at support@winucard.com
+      Questions? Contact us at support@winucards.com
     </p>
   `);
 

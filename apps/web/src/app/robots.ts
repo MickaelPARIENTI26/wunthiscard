@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://winucard.com';
+const BASE_URL = 'https://winucards.com';
 
 /**
  * Robots.txt configuration for WinUCard

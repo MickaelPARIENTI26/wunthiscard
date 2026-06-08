@@ -388,10 +388,10 @@ export default function CookiesPage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:privacy@winucard.com"
+                    href="mailto:privacy@winucards.com"
                     className="text-primary"
                   >
-                    privacy@winucard.com
+                    privacy@winucards.com
                   </a>
                 </li>
                 <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>

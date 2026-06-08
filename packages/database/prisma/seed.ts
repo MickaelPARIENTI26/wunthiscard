@@ -48,7 +48,7 @@ async function main() {
 
   const superAdmin = await prisma.user.create({
     data: {
-      email: 'admin@winucard.com',
+      email: 'admin@winucards.com',
       passwordHash: adminPassword,
       firstName: 'Super',
       lastName: 'Admin',
@@ -60,7 +60,7 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      email: 'moderator@winucard.com',
+      email: 'moderator@winucards.com',
       passwordHash: adminPassword,
       firstName: 'Mod',
       lastName: 'Admin',
@@ -73,7 +73,7 @@ async function main() {
   const drawMasterPassword = await hashPassword(process.env.DRAW_MASTER_PASSWORD || 'DrawMaster123!');
   const drawMaster = await prisma.user.create({
     data: {
-      email: 'draw@winthiscard.co.uk',
+      email: 'draw@winucards.com',
       passwordHash: drawMasterPassword,
       firstName: 'Draw',
       lastName: 'Master',
@@ -515,7 +515,7 @@ async function main() {
         heroCta: 'Browse Competitions',
         companyName: 'WinUCard Ltd',
         companyAddress: '123 Collection Street, London, EC1A 1BB, United Kingdom',
-        companyEmail: 'hello@winucard.com',
+        companyEmail: 'hello@winucards.com',
         socialLinks: {
           instagram: 'https://instagram.com/winucard',
           twitter: 'https://twitter.com/winucard',
@@ -701,10 +701,10 @@ async function main() {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
             <td align="center" style="padding-bottom: 20px;">
-              <a href="https://tiktok.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
-              <a href="https://instagram.com/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
-              <a href="https://youtube.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
-              <a href="https://discord.gg/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucard.co.uk/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>
+              <a href="https://tiktok.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
+              <a href="https://instagram.com/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
+              <a href="https://youtube.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
+              <a href="https://discord.gg/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>
             </td>
           </tr>
           <tr>
@@ -1231,7 +1231,7 @@ async function main() {
               <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center" style="padding: 20px 0;">
-                    ${ctaButton('Confirm My Address', 'mailto:support@winucard.com?subject=Winner%20Address%20Confirmation')}
+                    ${ctaButton('Confirm My Address', 'mailto:support@winucards.com?subject=Winner%20Address%20Confirmation')}
                   </td>
                 </tr>
               </table>
@@ -1272,9 +1272,9 @@ async function main() {
   console.log('🎉 Database seeded successfully!');
   console.log('');
   console.log('Test accounts:');
-  console.log('  Super Admin: admin@winucard.com / Admin123!');
-  console.log('  Admin: moderator@winucard.com / Admin123!');
-  console.log('  Draw Master: draw@winthiscard.co.uk / DrawMaster123!');
+  console.log('  Super Admin: admin@winucards.com / Admin123!');
+  console.log('  Admin: moderator@winucards.com / Admin123!');
+  console.log('  Draw Master: draw@winucards.com / DrawMaster123!');
   console.log('  User: john@example.com / User123!');
   console.log('  User: jane@example.com / User123!');
 }

@@ -79,7 +79,7 @@ export function LoginForm() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@winucard.com"
+                placeholder="admin@winucards.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

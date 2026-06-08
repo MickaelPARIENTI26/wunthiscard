@@ -116,7 +116,7 @@ function TermsContent() {
       <section id="winner-publicity">
         <h3 className="legal-h">10. Winner Publicity and Photo Requirement</h3>
         <p className="legal-p">Upon receiving your prize, you are required to provide at least one photograph of yourself with the prize item within 7 days of delivery. By submitting your photograph, you grant WinUCard a non-exclusive, royalty-free, worldwide licence to use, reproduce, and publish your photograph and first name across our marketing channels.</p>
-        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:winners@winucard.co.uk" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>winners@winucard.co.uk</a> within 48 hours of being notified as a winner.</p>
+        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:winners@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>winners@winucards.com</a> within 48 hours of being notified as a winner.</p>
       </section>
 
       <section id="refunds">
@@ -151,7 +151,7 @@ function TermsContent() {
 
       <section id="contact">
         <h3 className="legal-h">17. Contact Us</h3>
-        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:legal@winucard.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>legal@winucard.com</a> or by post: WinUCard Ltd, Unit 14 Skyline House, 200 Union Street, London SE1 0LX.</p>
+        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:legal@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>legal@winucards.com</a> or by post: WinUCard Ltd, Unit 14 Skyline House, 200 Union Street, London SE1 0LX.</p>
       </section>
     </>
   );

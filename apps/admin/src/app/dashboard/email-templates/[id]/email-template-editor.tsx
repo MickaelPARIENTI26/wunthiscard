@@ -58,7 +58,7 @@ const testData: Record<string, string> = {
   competition_tickets_remaining: '36',
   competition_end_date: 'March 15, 2026',
   competition_draw_date: 'March 16, 2026 at 8:00 PM GMT',
-  competition_url: 'https://winucard.co.uk/competitions/charizard-psa10',
+  competition_url: 'https://winucards.com/competitions/charizard-psa10',
   competition_category: 'Pokémon',
   order_id: 'WUC-20260301-0042',
   order_total: '£90',
@@ -70,13 +70,13 @@ const testData: Record<string, string> = {
   draw_video_url: 'https://youtube.com/live/example',
   draw_date: 'March 16, 2026',
   draw_time: '8:00 PM GMT',
-  site_url: 'https://winucard.co.uk',
+  site_url: 'https://winucards.com',
   site_name: 'WinUCard',
-  site_logo_url: 'https://winucard.co.uk/logo-email.png',
+  site_logo_url: 'https://winucards.com/logo-email.png',
   current_year: new Date().getFullYear().toString(),
-  unsubscribe_url: 'https://winucard.co.uk/unsubscribe?token=test',
-  verification_url: 'https://winucard.co.uk/verify?token=test',
-  cart_url: 'https://winucard.co.uk/cart?recover=test',
+  unsubscribe_url: 'https://winucards.com/unsubscribe?token=test',
+  verification_url: 'https://winucards.com/verify?token=test',
+  cart_url: 'https://winucards.com/cart?recover=test',
 };
 
 const availableVariables = [

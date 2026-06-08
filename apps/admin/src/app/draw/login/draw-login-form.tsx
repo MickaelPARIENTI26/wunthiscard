@@ -122,7 +122,7 @@ export function DrawLoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
-                placeholder="draw@winthiscard.co.uk"
+                placeholder="draw@winucards.com"
               />
             </div>
 

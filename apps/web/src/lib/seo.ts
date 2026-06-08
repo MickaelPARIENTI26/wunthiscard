@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const BASE_URL = 'https://winucard.com';
+const BASE_URL = 'https://winucards.com';
 const SITE_NAME = 'WinUCard';
 const DEFAULT_DESCRIPTION =
   'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.';

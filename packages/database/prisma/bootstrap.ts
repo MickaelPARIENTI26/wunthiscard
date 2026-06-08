@@ -68,7 +68,7 @@ async function main() {
           heroTitle: 'Win Amazing Collectibles',
           heroCta: 'Browse Competitions',
           companyName: 'WinUCard Ltd',
-          companyEmail: 'hello@winucard.com',
+          companyEmail: 'hello@winucards.com',
           bonusTiers: [
             { ticketsBought: 10, bonusTickets: 1 },
             { ticketsBought: 15, bonusTickets: 2 },

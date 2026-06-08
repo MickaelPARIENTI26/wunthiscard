@@ -1,6 +1,6 @@
 import { siteConfig } from './seo';
 
-const BASE_URL = 'https://winucard.com';
+const BASE_URL = 'https://winucards.com';
 
 /**
  * Schema.org JSON-LD generators for structured data
@@ -41,7 +41,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'support@winucard.com',
+      email: 'support@winucards.com',
       url: `${BASE_URL}/contact`,
       availableLanguage: 'English',
     },

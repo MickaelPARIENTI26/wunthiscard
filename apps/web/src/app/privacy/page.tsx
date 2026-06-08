@@ -98,8 +98,8 @@ function PlaceholderPrivacyContent() {
           <li>Registered in: England and Wales</li>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winucard.com" className="text-primary">
-              privacy@winucard.com
+            <a href="mailto:privacy@winucards.com" className="text-primary">
+              privacy@winucards.com
             </a>
           </li>
           <li>Address: [Company Address], United Kingdom</li>
@@ -310,8 +310,8 @@ function PlaceholderPrivacyContent() {
         </ul>
         <p>
           To exercise your rights, please contact us at{' '}
-          <a href="mailto:privacy@winucard.com" className="text-primary">
-            privacy@winucard.com
+          <a href="mailto:privacy@winucards.com" className="text-primary">
+            privacy@winucards.com
           </a>
           . We will respond within one month.
         </p>
@@ -407,8 +407,8 @@ function PlaceholderPrivacyContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winucard.com" className="text-primary">
-              privacy@winucard.com
+            <a href="mailto:privacy@winucards.com" className="text-primary">
+              privacy@winucards.com
             </a>
           </li>
           <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>

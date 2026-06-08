@@ -48,7 +48,7 @@ export function CompanySettingsForm({ settings }: CompanySettingsFormProps) {
                 name="companyEmail"
                 type="email"
                 defaultValue={settings.companyEmail ?? ''}
-                placeholder="support@winucard.com"
+                placeholder="support@winucards.com"
               />
             </div>
           </div>

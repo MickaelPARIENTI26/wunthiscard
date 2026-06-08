@@ -200,7 +200,7 @@ export default async function Image() {
               letterSpacing: 1,
             }}
           >
-            winucard.com
+            winucards.com
           </span>
         </div>
       </div>

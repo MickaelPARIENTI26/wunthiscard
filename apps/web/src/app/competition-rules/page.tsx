@@ -145,7 +145,7 @@ function PlaceholderCompetitionRulesContent() {
 
         <h3>3.1 Online Entry (Paid)</h3>
         <ol>
-          <li>Create an account or log in at winucard.com</li>
+          <li>Create an account or log in at winucards.com</li>
           <li>Browse available competitions and select one to enter</li>
           <li>Choose your ticket number(s) manually or use random selection</li>
           <li>Select the number of tickets you wish to purchase</li>
@@ -490,10 +490,10 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Disputes should be submitted in writing to{' '}
             <a
-              href="mailto:disputes@winucard.com"
+              href="mailto:disputes@winucards.com"
               className="text-primary"
             >
-              disputes@winucard.com
+              disputes@winucards.com
             </a>
           </li>
           <li>
@@ -546,17 +546,17 @@ function PlaceholderCompetitionRulesContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:support@winucard.com" className="text-primary">
-              support@winucard.com
+            <a href="mailto:support@winucards.com" className="text-primary">
+              support@winucards.com
             </a>
           </li>
           <li>
             Disputes:{' '}
             <a
-              href="mailto:disputes@winucard.com"
+              href="mailto:disputes@winucards.com"
               className="text-primary"
             >
-              disputes@winucard.com
+              disputes@winucards.com
             </a>
           </li>
           <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>

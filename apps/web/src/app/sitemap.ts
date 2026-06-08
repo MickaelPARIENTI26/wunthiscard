@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/db';
 
-const BASE_URL = 'https://winucard.com';
+const BASE_URL = 'https://winucards.com';
 
 /**
  * Dynamic sitemap generation for WinUCard

@@ -54,7 +54,7 @@ export default function ResponsiblePlayPage() {
 
       <section id="contact">
         <h3 className="legal-h">6. Contact</h3>
-        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:support@winucard.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucard.com</a>.</p>
+        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a>.</p>
       </section>
     </LegalPage>
   );

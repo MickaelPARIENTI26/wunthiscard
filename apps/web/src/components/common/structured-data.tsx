@@ -59,7 +59,7 @@ interface BreadcrumbStructuredDataProps {
 }
 
 export function BreadcrumbStructuredData({ items }: BreadcrumbStructuredDataProps) {
-  const BASE_URL = 'https://winucard.com';
+  const BASE_URL = 'https://winucards.com';
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -142,7 +142,7 @@ export function ProductStructuredData({
   sku,
   category,
 }: ProductStructuredDataProps) {
-  const BASE_URL = 'https://winucard.com';
+  const BASE_URL = 'https://winucards.com';
 
   const availabilityMap = {
     InStock: 'https://schema.org/InStock',
