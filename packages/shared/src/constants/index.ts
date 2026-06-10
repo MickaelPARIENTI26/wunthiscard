@@ -18,7 +18,9 @@ export const MAX_TICKETS_PER_USER_PER_COMPETITION = 50;
 export const DEFAULT_MAX_TICKETS_PER_USER_FREE = 1;
 
 // Referral system
-export const REFERRAL_TICKETS_REQUIRED = 10; // Tickets bought by referees to earn 1 free ticket
+// A referrer earns exactly 1 free ticket per referee, the first time that
+// referee makes a successful purchase (handled in the Stripe webhook). There is
+// no per-ticket threshold anymore.
 export const REFERRAL_CODE_LENGTH = 8;
 export const REFERRAL_COOKIE_DAYS = 30;
 export const MAX_REFERRALS_PER_USER = 100;

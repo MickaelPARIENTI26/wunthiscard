@@ -6,7 +6,6 @@ import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/db';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { sendPurchaseConfirmationEmail } from '@/lib/email';
-import { REFERRAL_TICKETS_REQUIRED } from '@winucard/shared';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -299,64 +298,56 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     }
   }
 
-  // Referral tracking — runs after payment is confirmed, outside the main transaction
-  // Failure here should never block payment confirmation
-  try {
-    const buyer = await prisma.user.findUnique({
-      where: { id: order.userId ?? undefined },
-      select: { referredById: true },
-    });
-
-    if (buyer?.referredById) {
-      const referrerId = buyer.referredById;
-      const ticketCount = paidTicketNumbers.length;
-
-      // Increment referrer's counters
-      const updatedReferrer = await prisma.user.update({
-        where: { id: referrerId },
-        data: {
-          referralTicketCount: { increment: ticketCount },
-          referralTotalTickets: { increment: ticketCount },
-        },
-        select: { referralTicketCount: true },
+  // Referral reward — each referred user grants their referrer ONE free ticket,
+  // exactly once, on that referee's FIRST successful purchase. After that, this
+  // referee can never increment the referrer again, no matter how much they buy.
+  // Runs after payment is confirmed, outside the main transaction; a failure here
+  // must never block payment confirmation.
+  if (order.userId) {
+    try {
+      const buyer = await prisma.user.findUnique({
+        where: { id: order.userId },
+        select: { referredById: true },
       });
 
-      // Calculate free tickets earned from accumulated referral tickets
-      const freeTicketsToAward = Math.floor(
-        updatedReferrer.referralTicketCount / REFERRAL_TICKETS_REQUIRED
-      );
-
-      if (freeTicketsToAward > 0) {
-        const ticketsToSubtract = freeTicketsToAward * REFERRAL_TICKETS_REQUIRED;
-
-        await prisma.user.update({
-          where: { id: referrerId },
-          data: {
-            referralTicketCount: { decrement: ticketsToSubtract },
-            referralFreeTicketsEarned: { increment: freeTicketsToAward },
-            referralFreeTicketsAvailable: { increment: freeTicketsToAward },
-          },
+      if (buyer?.referredById) {
+        // Atomically claim this referee's one-time reward. updateMany returns
+        // count 0 if the flag was already set (a prior purchase, or a webhook
+        // retry), guaranteeing the referrer is rewarded exactly once per referee.
+        const claimed = await prisma.user.updateMany({
+          where: { id: order.userId, referralRewardGranted: false },
+          data: { referralRewardGranted: true },
         });
 
-        await prisma.auditLog.create({
-          data: {
-            userId: referrerId,
-            action: 'REFERRAL_BONUS_EARNED',
-            entity: 'user',
-            entityId: referrerId,
-            metadata: {
-              ticketsFromReferee: ticketCount,
-              freeTicketsAwarded: freeTicketsToAward,
-              refereeUserId: order.userId,
+        if (claimed.count > 0) {
+          await prisma.user.update({
+            where: { id: buyer.referredById },
+            data: {
+              referralFreeTicketsEarned: { increment: 1 },
+              referralFreeTicketsAvailable: { increment: 1 },
             },
-          },
-        });
+          });
 
-        // TODO: Send email notification to referrer about earned free tickets
+          await prisma.auditLog.create({
+            data: {
+              userId: buyer.referredById,
+              action: 'REFERRAL_BONUS_EARNED',
+              entity: 'user',
+              entityId: buyer.referredById,
+              metadata: {
+                freeTicketsAwarded: 1,
+                refereeUserId: order.userId,
+                trigger: 'referee_first_purchase',
+              },
+            },
+          });
+
+          // TODO: Send email notification to referrer about the earned free ticket
+        }
       }
+    } catch (referralError) {
+      console.error('Referral reward failed (non-blocking):', referralError);
     }
-  } catch (referralError) {
-    console.error('Referral tracking failed (non-blocking):', referralError);
   }
 }
 

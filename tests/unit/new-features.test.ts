@@ -7,7 +7,6 @@ import {
   calculateProgress,
 } from '../../packages/shared/src/utils/index';
 import {
-  REFERRAL_TICKETS_REQUIRED,
   REFERRAL_CODE_LENGTH,
   MAX_REFERRALS_PER_USER,
   DEFAULT_MAX_TICKETS_PER_USER_FREE,
@@ -169,10 +168,6 @@ describe('calculateProgress with nullable total', () => {
 // REFERRAL SYSTEM
 // ==========================================
 describe('Referral System Constants', () => {
-  it('should require 10 tickets for a free ticket', () => {
-    expect(REFERRAL_TICKETS_REQUIRED).toBe(10);
-  });
-
   it('should have 8-char referral codes', () => {
     expect(REFERRAL_CODE_LENGTH).toBe(8);
   });
@@ -186,51 +181,55 @@ describe('Referral System Constants', () => {
   });
 });
 
-describe('Referral Bonus Calculation', () => {
-  // Simulates the webhook logic: Math.floor(count / REFERRAL_TICKETS_REQUIRED)
-  function calculateReferralBonus(ticketCount: number): { freeTickets: number; remaining: number } {
-    const freeTickets = Math.floor(ticketCount / REFERRAL_TICKETS_REQUIRED);
-    const remaining = ticketCount % REFERRAL_TICKETS_REQUIRED;
-    return { freeTickets, remaining };
+describe('Referral Reward Rule (one free ticket per referee, first purchase only)', () => {
+  // Mirrors the Stripe webhook: a referee grants their referrer +1 free ticket
+  // exactly once, on the referee's FIRST successful purchase, regardless of how
+  // many tickets they buy. The `referralRewardGranted` flag enforces "once ever".
+  function awardOnFirstPurchase(
+    alreadyGranted: boolean,
+    _ticketsBought: number
+  ): { rewardReferrer: boolean; grantedAfter: boolean } {
+    if (alreadyGranted) {
+      return { rewardReferrer: false, grantedAfter: true };
+    }
+    return { rewardReferrer: true, grantedAfter: true };
   }
 
-  it('should award 0 free tickets for 9 referral tickets', () => {
-    const { freeTickets, remaining } = calculateReferralBonus(9);
-    expect(freeTickets).toBe(0);
-    expect(remaining).toBe(9);
+  it('rewards the referrer on the referee first purchase (1 ticket bought)', () => {
+    const r = awardOnFirstPurchase(false, 1);
+    expect(r.rewardReferrer).toBe(true);
+    expect(r.grantedAfter).toBe(true);
   });
 
-  it('should award 1 free ticket for exactly 10 referral tickets', () => {
-    const { freeTickets, remaining } = calculateReferralBonus(10);
-    expect(freeTickets).toBe(1);
-    expect(remaining).toBe(0);
+  it('still rewards exactly once even when the first purchase is huge (35 tickets)', () => {
+    const r = awardOnFirstPurchase(false, 35);
+    expect(r.rewardReferrer).toBe(true); // +1, NOT +35
   });
 
-  it('should award 2 free tickets for 25 referral tickets with 5 remaining', () => {
-    const { freeTickets, remaining } = calculateReferralBonus(25);
-    expect(freeTickets).toBe(2);
-    expect(remaining).toBe(5);
+  it('does NOT reward again on the referee second purchase', () => {
+    const r = awardOnFirstPurchase(true, 50);
+    expect(r.rewardReferrer).toBe(false);
+    expect(r.grantedAfter).toBe(true);
   });
 
-  it('should award 5 free tickets for exactly 50 referral tickets', () => {
-    const { freeTickets, remaining } = calculateReferralBonus(50);
-    expect(freeTickets).toBe(5);
-    expect(remaining).toBe(0);
+  it('never rewards more than once across many purchases by the same referee', () => {
+    let granted = false;
+    let rewardsGiven = 0;
+    for (const tickets of [3, 12, 7, 40, 1]) {
+      const r = awardOnFirstPurchase(granted, tickets);
+      if (r.rewardReferrer) rewardsGiven += 1;
+      granted = r.grantedAfter;
+    }
+    expect(rewardsGiven).toBe(1); // only the very first purchase counts
   });
 
-  it('should handle large batch purchase correctly (e.g. 37 tickets at once)', () => {
-    // Existing counter: 8, new purchase: 37 → total 45
-    const existingCount = 8;
-    const newPurchase = 37;
-    const totalCount = existingCount + newPurchase;
-    const { freeTickets, remaining } = calculateReferralBonus(totalCount);
-    expect(freeTickets).toBe(4); // 45 / 10 = 4
-    expect(remaining).toBe(5); // 45 % 10 = 5
-  });
-
-  it('should award 0 for 0 tickets', () => {
-    const { freeTickets } = calculateReferralBonus(0);
-    expect(freeTickets).toBe(0);
+  it('is idempotent on a webhook retry of the first purchase', () => {
+    // First delivery claims the reward and sets the flag.
+    const first = awardOnFirstPurchase(false, 5);
+    expect(first.rewardReferrer).toBe(true);
+    // A retry of the same event sees the flag already set → no double reward.
+    const retry = awardOnFirstPurchase(first.grantedAfter, 5);
+    expect(retry.rewardReferrer).toBe(false);
   });
 });
 

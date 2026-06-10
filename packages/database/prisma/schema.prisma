@@ -38,10 +38,11 @@ model User {
   // Referral system
   referralCode                String?  @unique // Auto-generated 8-char code (e.g. "MICK3A2F")
   referredById                String?          // The user who referred this user
-  referralTicketCount         Int      @default(0) // Current counter (resets every 10)
-  referralTotalTickets        Int      @default(0) // Lifetime tickets from referees (never resets)
-  referralFreeTicketsEarned   Int      @default(0) // Total free tickets earned via referrals
+  referralTicketCount         Int      @default(0) // [legacy] old per-10 progress counter — unused under the one-time rule
+  referralTotalTickets        Int      @default(0) // [legacy] lifetime tickets from referees — no longer written
+  referralFreeTicketsEarned   Int      @default(0) // Total free tickets earned via referrals (1 per referee's first purchase)
   referralFreeTicketsAvailable Int     @default(0) // Free tickets not yet used
+  referralRewardGranted       Boolean  @default(false) // True once THIS user (as a referee) has rewarded their referrer with the one-time +1
 
   accounts           Account[]
   sessions           Session[]

@@ -101,7 +101,7 @@ export default async function SettingsPage() {
         </TabsContent>
 
         <TabsContent value="referrals">
-          <ReferralSettingsForm settings={settings} />
+          <ReferralSettingsForm />
         </TabsContent>
 
         <TabsContent value="ticket-packs">

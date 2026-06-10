@@ -30,8 +30,6 @@ export default async function ReferralsPage() {
     select: {
       firstName: true,
       referralCode: true,
-      referralTicketCount: true,
-      referralTotalTickets: true,
       referralFreeTicketsEarned: true,
       referralFreeTicketsAvailable: true,
     },
@@ -62,7 +60,6 @@ export default async function ReferralsPage() {
   });
 
   const referralLink = `https://winucards.com/?ref=${user.referralCode}`;
-  const progressTowardNext = user.referralTicketCount % 10;
 
   return (
     <div className="space-y-6">
@@ -71,7 +68,7 @@ export default async function ReferralsPage() {
           Refer &amp; Win
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
-          Invite friends, earn bonus tickets. You get 1 free ticket for every 10 tickets your invited friends buy.
+          Invite friends and earn free tickets. Every friend who makes their first purchase gets you 1 free ticket.
         </p>
       </div>
 
@@ -111,10 +108,10 @@ export default async function ReferralsPage() {
             How it works
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--ink-dim)', lineHeight: 1.6, marginBottom: '6px' }}>
-            Share your link. When your friends buy tickets, you earn free ones.
+            Share your link and invite your friends to join WinUCard.
           </p>
           <p style={{ fontSize: '14px', color: 'var(--ink-dim)', lineHeight: 1.6 }}>
-            Every <strong style={{ color: 'var(--ink)' }}>10 tickets</strong> purchased by your friends = <strong style={{ color: 'var(--accent)' }}>1 free ticket</strong> for you.
+            The first time a friend makes a purchase, you get <strong style={{ color: 'var(--accent)' }}>1 free ticket</strong> — no matter how many tickets they buy.
           </p>
         </div>
 
@@ -127,7 +124,7 @@ export default async function ReferralsPage() {
             Your stats
           </h2>
 
-          <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '20px' }}>
+          <div className="grid grid-cols-2 gap-4" style={{ marginBottom: '16px' }}>
             <div
               style={{
                 padding: '16px',
@@ -145,68 +142,35 @@ export default async function ReferralsPage() {
                 borderRadius: '12px',
               }}
             >
-              <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginBottom: '4px' }}>Tickets bought by friends</p>
-              <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--ink)' }}>{user.referralTotalTickets}</p>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ marginBottom: '20px' }}>
-            <div className="flex items-center justify-between" style={{ marginBottom: '8px' }}>
-              <p style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
-                Progress: <strong style={{ color: 'var(--ink)' }}>{progressTowardNext}/10</strong> toward next free ticket
-              </p>
-            </div>
-            <div
-              style={{
-                height: '10px',
-                background: 'var(--bg-3)',
-                borderRadius: '5px',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  height: '100%',
-                  width: `${(progressTowardNext / 10) * 100}%`,
-                  background: 'var(--accent)',
-                  borderRadius: '5px',
-                  transition: 'width 0.3s ease',
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div
-              style={{
-                padding: '16px',
-                background: 'var(--bg-2)',
-                borderRadius: '12px',
-              }}
-            >
               <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginBottom: '4px' }}>Free tickets earned</p>
               <p style={{ fontSize: '24px', fontWeight: 700, color: 'var(--ink)' }}>{user.referralFreeTicketsEarned}</p>
             </div>
-            <div
+          </div>
+
+          <div
+            style={{
+              padding: '20px',
+              background: user.referralFreeTicketsAvailable > 0 ? 'rgba(0, 199, 106, 0.06)' : 'var(--bg-2)',
+              borderRadius: '12px',
+              border: user.referralFreeTicketsAvailable > 0 ? '1px solid rgba(22, 163, 74, 0.2)' : '1px solid transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div>
+              <p style={{ fontSize: '13px', color: 'var(--ink-dim)', marginBottom: '2px' }}>Free tickets available</p>
+              <p style={{ fontSize: '12px', color: 'var(--ink-faint)' }}>Apply them at checkout when buying 2+ tickets</p>
+            </div>
+            <p
               style={{
-                padding: '16px',
-                background: user.referralFreeTicketsAvailable > 0 ? 'rgba(0, 199, 106, 0.06)' : 'var(--bg-2)',
-                borderRadius: '12px',
-                border: user.referralFreeTicketsAvailable > 0 ? '1px solid rgba(22, 163, 74, 0.2)' : '1px solid transparent',
+                fontSize: '32px',
+                fontWeight: 800,
+                color: user.referralFreeTicketsAvailable > 0 ? 'var(--accent)' : 'var(--ink)',
               }}
             >
-              <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginBottom: '4px' }}>Free tickets available</p>
-              <p
-                style={{
-                  fontSize: '28px',
-                  fontWeight: 800,
-                  color: user.referralFreeTicketsAvailable > 0 ? 'var(--accent)' : 'var(--ink)',
-                }}
-              >
-                {user.referralFreeTicketsAvailable}
-              </p>
-            </div>
+              {user.referralFreeTicketsAvailable}
+            </p>
           </div>
         </div>
       </div>
