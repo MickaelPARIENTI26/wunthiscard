@@ -133,10 +133,10 @@ export function CompetitionsContent({
               onClick={() => updateFilters('category', filter.value)}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
               style={{
-                background: isActive ? '#1a1a2e' : '#ffffff',
-                color: isActive ? '#ffffff' : '#6b7088',
-                border: isActive ? 'none' : '1px solid #e8e8ec',
-                boxShadow: isActive ? '0 4px 12px rgba(26, 26, 46, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.04)',
+                background: isActive ? 'var(--ink)' : 'var(--surface)',
+                color: isActive ? '#ffffff' : 'var(--ink-dim)',
+                border: `1.5px solid ${isActive ? 'var(--ink)' : 'var(--line)'}`,
+                boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
               }}
             >
               <span>{filter.emoji}</span>
@@ -157,9 +157,9 @@ export function CompetitionsContent({
               onClick={() => updateFilters('status', filter.value)}
               className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
               style={{
-                background: isActive ? 'rgba(240, 185, 11, 0.1)' : 'transparent',
-                color: isActive ? '#E8A000' : '#6b7088',
-                border: `1px solid ${isActive ? 'rgba(240, 185, 11, 0.3)' : 'transparent'}`,
+                background: isActive ? 'var(--ink)' : 'transparent',
+                color: isActive ? 'var(--accent)' : 'var(--ink-dim)',
+                border: `1.5px solid ${isActive ? 'var(--ink)' : 'var(--line)'}`,
               }}
             >
               {filter.label}

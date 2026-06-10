@@ -79,9 +79,9 @@ const SelectContent = React.forwardRef<
         className
       )}
       style={{
-        backgroundColor: 'var(--ink)',
+        backgroundColor: 'var(--surface)',
         color: 'var(--ink)',
-        borderColor: '#2a2a4a',
+        borderColor: 'var(--ink)',
       }}
       position={position}
       {...props}

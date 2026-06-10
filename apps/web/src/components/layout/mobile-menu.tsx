@@ -173,7 +173,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 <AvatarFallback
                   className="font-semibold"
                   style={{
-                    background: 'linear-gradient(135deg, var(--accent) 0%, #C9990A 100%)',
+                    background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
                     color: 'var(--bg-base)',
                   }}
                 >
@@ -239,7 +239,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 size="lg"
                 className="w-full font-semibold"
                 style={{
-                  background: 'linear-gradient(135deg, var(--accent) 0%, #C9990A 100%)',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
                   color: 'var(--bg-base)',
                 }}
               >

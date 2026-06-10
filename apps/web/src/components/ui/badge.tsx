@@ -30,12 +30,12 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants> {}
 
 const variantStyles: Record<string, React.CSSProperties> = {
-  default: { backgroundColor: '#FFD700', color: '#0f0f1a' },
-  secondary: { backgroundColor: '#1f1f35', color: 'var(--ink)' },
-  destructive: { backgroundColor: '#dc2626', color: 'var(--ink)' },
-  outline: { backgroundColor: 'transparent', color: 'var(--ink)', borderColor: '#2a2a4a' },
-  success: { backgroundColor: '#22c55e', color: '#ffffff' },
-  warning: { backgroundColor: '#eab308', color: '#ffffff' },
+  default: { backgroundColor: 'var(--accent)', color: 'var(--ink)' },
+  secondary: { backgroundColor: 'var(--bg-2)', color: 'var(--ink)' },
+  destructive: { backgroundColor: 'var(--hot)', color: '#ffffff' },
+  outline: { backgroundColor: 'transparent', color: 'var(--ink)', borderColor: 'var(--ink)' },
+  success: { backgroundColor: 'var(--accent)', color: 'var(--ink)' },
+  warning: { backgroundColor: 'var(--warn)', color: 'var(--ink)' },
 };
 
 function Badge({ className, variant, style, ...props }: BadgeProps) {
