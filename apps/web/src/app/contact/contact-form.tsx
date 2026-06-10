@@ -64,11 +64,11 @@ export function ContactForm() {
           </div>
         )}
 
-        {!state.success && state.message && !state.errors && (
+        {!state.success && state.message && (
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               gap: '12px',
               padding: '16px 18px',
               marginBottom: '18px',
@@ -81,8 +81,20 @@ export function ContactForm() {
               fontWeight: 700,
             }}
           >
-            <AlertCircle className="h-6 w-6 shrink-0" />
-            <p>{state.message}</p>
+            <AlertCircle className="h-6 w-6 shrink-0" style={{ marginTop: '2px' }} />
+            <div>
+              <p>{state.message}</p>
+              {state.errors && (
+                <ul style={{ margin: '6px 0 0', paddingLeft: '18px', fontWeight: 600, fontSize: '13.5px' }}>
+                  {Object.values(state.errors)
+                    .flat()
+                    .filter(Boolean)
+                    .map((err, i) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                </ul>
+              )}
+            </div>
           </div>
         )}
       </div>
