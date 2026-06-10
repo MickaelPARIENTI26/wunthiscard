@@ -63,54 +63,58 @@ export async function submitContactForm(
   _prevState: ContactFormState,
   formData: FormData
 ): Promise<ContactFormState> {
-  // Rate limiting
-  const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-             headersList.get('x-real-ip') ??
-             'unknown';
-  const { success: rateLimitSuccess } = await rateLimits.contact.limit(ip);
-  if (!rateLimitSuccess) {
-    return {
-      success: false,
-      message: 'Too many messages sent. Please try again later.',
-    };
-  }
+  // Everything is wrapped so NOTHING can throw uncaught — the user must always
+  // get a clear message back (never a silent "scroll to top, no feedback").
+  try {
+    const headersList = await headers();
+    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+               headersList.get('x-real-ip') ??
+               'unknown';
 
-  // Verify Turnstile captcha ONLY if a token was provided. The contact form is
-  // already protected by rate limiting (3/h per IP), so a flaky/absent invisible
-  // captcha must not block legitimate messages.
-  const turnstileToken = formData.get('cf-turnstile-response');
-  if (typeof turnstileToken === 'string' && turnstileToken.length > 0) {
-    const captchaResult = await verifyTurnstileToken(turnstileToken, ip);
-    if (!captchaResult.success) {
+    // Rate limiting — but degrade gracefully if the limiter itself errors
+    // (e.g. transient Redis issue), rather than crashing the whole submission.
+    try {
+      const { success: rateLimitSuccess } = await rateLimits.contact.limit(ip);
+      if (!rateLimitSuccess) {
+        return {
+          success: false,
+          message: 'Too many messages sent. Please try again later.',
+        };
+      }
+    } catch (rateErr) {
+      console.error('Contact rate-limit check failed (allowing request):', rateErr);
+    }
+
+    // Verify Turnstile captcha ONLY if a token was provided (rate limit already
+    // protects the form, so a flaky/absent invisible captcha must not block it).
+    const turnstileToken = formData.get('cf-turnstile-response');
+    if (typeof turnstileToken === 'string' && turnstileToken.length > 0) {
+      const captchaResult = await verifyTurnstileToken(turnstileToken, ip);
+      if (!captchaResult.success) {
+        return {
+          success: false,
+          message: captchaResult.error ?? 'Captcha verification failed. Please try again.',
+        };
+      }
+    }
+
+    const rawData = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message'),
+    };
+
+    const validatedFields = contactFormSchema.safeParse(rawData);
+    if (!validatedFields.success) {
       return {
         success: false,
-        message: captchaResult.error ?? 'Captcha verification failed. Please try again.',
+        message: 'Please fix the errors below.',
+        errors: validatedFields.error.flatten().fieldErrors,
       };
     }
-  }
 
-  const rawData = {
-    name: formData.get('name'),
-    email: formData.get('email'),
-    subject: formData.get('subject'),
-    message: formData.get('message'),
-  };
-
-  // Validate the form data
-  const validatedFields = contactFormSchema.safeParse(rawData);
-
-  if (!validatedFields.success) {
-    return {
-      success: false,
-      message: 'Please fix the errors below.',
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const { name, email, subject, message } = validatedFields.data;
-
-  try {
+    const { name, email, subject, message } = validatedFields.data;
     const subjectLabel = subjectLabels[subject] ?? subject;
 
     // Save to database (always — this is the source of truth, visible in admin)
