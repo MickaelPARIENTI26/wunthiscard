@@ -24,13 +24,14 @@ export function SimpleTicketSelector({
   availableTicketCount,
   userTicketCount = 0,
   categoryColor: _categoryColor,
-  referralFreeTickets: _referralFreeTickets = 0,
+  referralFreeTickets = 0,
 }: SimpleTicketSelectorProps) {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
   const isAuthenticated = !!session?.user;
 
   const [quantity, setQuantity] = useState(1);
+  const [useReferralTicket, setUseReferralTicket] = useState(false);
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
   const [reservation, setReservation] = useState<{
@@ -45,8 +46,11 @@ export function SimpleTicketSelector({
   const maxQuantity = Math.min(remainingAllowance, availableTicketCount, 100);
 
   const bonusTickets = calculateBonusTickets(quantity);
-  const useReferralTicket = false;
-  const paidTickets = useReferralTicket ? Math.max(quantity - 1, 0) : quantity;
+  // A free referral ticket can only be applied when the user has one AND is
+  // buying at least 2 tickets (so there's still a paid amount for Stripe).
+  const canUseReferralTicket = referralFreeTickets > 0 && quantity >= 2;
+  const referralApplied = useReferralTicket && canUseReferralTicket;
+  const paidTickets = referralApplied ? quantity - 1 : quantity;
 
   // Format countdown timer
   const formatCountdown = (ms: number): string => {
@@ -119,7 +123,7 @@ export function SimpleTicketSelector({
         `pending_quantity_${competitionId}`,
         JSON.stringify({ quantity, timestamp: Date.now() })
       );
-      if (useReferralTicket) {
+      if (referralApplied) {
         sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
       } else {
         sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
@@ -153,7 +157,7 @@ export function SimpleTicketSelector({
         `reservation_${competitionId}`,
         JSON.stringify({ ticketNumbers: data.ticketNumbers, expiresAt: data.expiresAt })
       );
-      if (useReferralTicket) {
+      if (referralApplied) {
         sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
       } else {
         sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
@@ -221,9 +225,41 @@ export function SimpleTicketSelector({
         <span className="qty-custom-max">Max {maxQuantity}{bonus > 0 ? ` · +${bonus} bonus` : ''}</span>
       </div>
 
+      {/* Free referral ticket toggle (only for users who have earned one) */}
+      {referralFreeTickets > 0 && (
+        <label
+          className="check-row"
+          style={{
+            marginTop: '14px',
+            padding: '12px 14px',
+            border: '1.5px solid var(--ink)',
+            borderRadius: '10px',
+            background: referralApplied ? 'rgba(0, 199, 106, 0.08)' : 'var(--surface)',
+            cursor: canUseReferralTicket ? 'pointer' : 'not-allowed',
+            opacity: canUseReferralTicket ? 1 : 0.6,
+            alignItems: 'center',
+          }}
+        >
+          <input
+            type="checkbox"
+            className="checkbox"
+            checked={referralApplied}
+            disabled={!canUseReferralTicket}
+            onChange={(e) => setUseReferralTicket(e.target.checked)}
+          />
+          <span>
+            🎁 Use 1 free referral ticket{' '}
+            <b>(you have {referralFreeTickets})</b>
+            {!canUseReferralTicket && quantity < 2 && (
+              <span style={{ color: 'var(--ink-faint)' }}> — buy 2+ tickets to apply</span>
+            )}
+          </span>
+        </label>
+      )}
+
       {/* Error */}
       {reservationError && (
-        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)' }}>
+        <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)' }}>
           {reservationError}
         </div>
       )}
@@ -231,7 +267,11 @@ export function SimpleTicketSelector({
       {/* Summary + CTA */}
       <div style={{ marginTop: '18px', paddingTop: '18px', borderTop: '1.5px dashed var(--line-2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '14px', fontSize: '14px' }}>
-          <span>{quantity} ticket{quantity > 1 ? 's' : ''}{bonus > 0 ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> + {bonus} bonus</span> : ''}</span>
+          <span>
+            {quantity} ticket{quantity > 1 ? 's' : ''}
+            {bonus > 0 ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> + {bonus} bonus</span> : ''}
+            {referralApplied ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> · 1 free referral</span> : ''}
+          </span>
           <span style={{ fontFamily: 'var(--display)', fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>£{displayTotal}</span>
         </div>
         <button

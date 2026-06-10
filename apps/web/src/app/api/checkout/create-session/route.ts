@@ -9,6 +9,7 @@ import { getReservation, extendReservation, recreateReservation, releaseTicketsF
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
   ticketNumbers: z.array(z.number().int().positive()).optional(),
+  useReferralTicket: z.boolean().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { competitionId, ticketNumbers: providedTicketNumbers } = validation.data;
+    const { competitionId, ticketNumbers: providedTicketNumbers, useReferralTicket: requestedReferralTicket } = validation.data;
 
     // Verify user has passed QCM (check by userId first, then by IP for anonymous users who just logged in)
     let qcmPassed = await hasPassedQcm(competitionId, userId);
@@ -175,6 +176,7 @@ export async function POST(request: NextRequest) {
         lastName: true,
         emailVerified: true,
         isBanned: true,
+        referralFreeTicketsAvailable: true,
       },
     });
 
@@ -202,12 +204,22 @@ export async function POST(request: NextRequest) {
         ? (competition.ticketPrice as { toNumber: () => number }).toNumber()
         : Number(competition.ticketPrice);
 
-    const totalAmount = ticketCount * ticketPrice;
+    // Referral free ticket: apply ONLY if the user genuinely has one available
+    // AND is buying ≥ 2 tickets (so at least 1 ticket is still paid → valid charge).
+    // Never trust the client — re-checked here against the DB.
+    const applyReferralTicket =
+      requestedReferralTicket === true &&
+      user.referralFreeTicketsAvailable >= 1 &&
+      ticketCount >= 2;
+    const paidTicketCount = applyReferralTicket ? ticketCount - 1 : ticketCount;
+
+    const totalAmount = paidTicketCount * ticketPrice;
 
     // Generate order number
     const orderNumber = generateOrderNumber();
 
-    // Create order in database (PENDING status)
+    // Create order in database (PENDING status). ticketCount = total tickets the
+    // user receives; totalAmount reflects what they actually pay.
     const order = await prisma.order.create({
       data: {
         orderNumber,
@@ -239,6 +251,7 @@ export async function POST(request: NextRequest) {
         ticketNumbers: JSON.stringify(ticketNumbers),
         ticketCount: ticketCount.toString(),
         bonusTickets: bonusTickets.toString(),
+        referralTicketUsed: applyReferralTicket ? '1' : '0',
       },
       line_items: [
         {
@@ -246,14 +259,22 @@ export async function POST(request: NextRequest) {
             currency: 'gbp',
             unit_amount: Math.round(ticketPrice * 100), // Stripe uses cents/pence
             product_data: {
-              name: `${ticketCount} Ticket${ticketCount > 1 ? 's' : ''} - ${competition.title}`,
-              description: bonusTickets > 0
-                ? `Includes ${bonusTickets} bonus ticket${bonusTickets > 1 ? 's' : ''}! Ticket numbers: #${ticketNumbers.join(', #')}`
-                : `Ticket numbers: #${ticketNumbers.join(', #')}`,
+              name: `${paidTicketCount} Ticket${paidTicketCount > 1 ? 's' : ''} - ${competition.title}`,
+              description: [
+                applyReferralTicket
+                  ? `1 free referral ticket applied (you get ${ticketCount} ticket${ticketCount > 1 ? 's' : ''} total).`
+                  : null,
+                bonusTickets > 0
+                  ? `Includes ${bonusTickets} bonus ticket${bonusTickets > 1 ? 's' : ''}!`
+                  : null,
+                `Ticket numbers: #${ticketNumbers.join(', #')}`,
+              ]
+                .filter(Boolean)
+                .join(' '),
               images: competition.mainImageUrl ? [competition.mainImageUrl] : [],
             },
           },
-          quantity: ticketCount,
+          quantity: paidTicketCount,
         },
       ],
       payment_intent_data: {
@@ -287,6 +308,8 @@ export async function POST(request: NextRequest) {
         metadata: {
           orderNumber,
           ticketCount,
+          paidTicketCount,
+          referralTicketUsed: applyReferralTicket,
           bonusTickets,
           totalAmount,
           stripeSessionId: checkoutSession.id,

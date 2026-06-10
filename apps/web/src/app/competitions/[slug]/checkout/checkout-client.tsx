@@ -13,6 +13,7 @@ interface CheckoutClientProps {
   competitionTitle: string;
   mainImageUrl: string;
   ticketPrice: number;
+  referralFreeTickets?: number;
 }
 
 export function CheckoutClient({
@@ -21,6 +22,7 @@ export function CheckoutClient({
   competitionTitle,
   mainImageUrl,
   ticketPrice,
+  referralFreeTickets = 0,
 }: CheckoutClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
@@ -30,11 +32,16 @@ export function CheckoutClient({
   const [reservation, setReservation] = useState<{ expiresAt: number } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const [qcmPassed, setQcmPassed] = useState(false);
+  const [useReferralTicket, setUseReferralTicket] = useState(false);
 
   const ticketCount = selectedTickets.length;
   const bonusTickets = calculateBonusTickets(ticketCount);
   const totalEntries = ticketCount + bonusTickets;
-  const totalPrice = ticketCount * ticketPrice;
+  // A free referral ticket needs ≥ 2 paid tickets so at least one is still charged.
+  const referralApplied =
+    useReferralTicket && referralFreeTickets > 0 && ticketCount >= 2;
+  const paidTicketCount = referralApplied ? ticketCount - 1 : ticketCount;
+  const totalPrice = paidTicketCount * ticketPrice;
   const totalPriceLabel = (totalPrice / 100).toFixed(2);
 
   const formatCountdown = useCallback((ms: number): string => {
@@ -57,6 +64,9 @@ export function CheckoutClient({
     }
 
     setQcmPassed(true);
+    setUseReferralTicket(
+      sessionStorage.getItem('useReferralTicket_' + competitionId) === 'true'
+    );
 
     if (stored && reservationStored) {
       const res = JSON.parse(reservationStored);
@@ -145,6 +155,7 @@ export function CheckoutClient({
         body: JSON.stringify({
           competitionId,
           ticketNumbers: selectedTickets.length > 0 ? selectedTickets : undefined,
+          useReferralTicket: referralApplied,
         }),
       });
 
@@ -376,8 +387,24 @@ export function CheckoutClient({
             <span style={{ color: 'var(--ink-dim)' }}>
               {ticketCount} × {formatPrice(ticketPrice)}
             </span>
-            <span style={{ fontWeight: 600 }}>{formatPrice(totalPrice)}</span>
+            <span style={{ fontWeight: 600 }}>{formatPrice(ticketCount * ticketPrice)}</span>
           </div>
+          {referralApplied && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: 'var(--accent-2)',
+                fontWeight: 600,
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Gift className="h-4 w-4" />
+                Free referral ticket
+              </span>
+              <span>−{formatPrice(ticketPrice)}</span>
+            </div>
+          )}
           {bonusTickets > 0 && (
             <div
               style={{

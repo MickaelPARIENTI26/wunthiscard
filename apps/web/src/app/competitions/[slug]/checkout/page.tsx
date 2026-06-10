@@ -121,6 +121,11 @@ export default async function CheckoutPage({
   );
 
   if (session?.user?.id) {
+    const accountUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { referralFreeTicketsAvailable: true },
+    });
+
     return (
       <main style={{ paddingBottom: '60px' }}>
         {enterHead}
@@ -143,6 +148,7 @@ export default async function CheckoutPage({
             competitionTitle={competition.title}
             mainImageUrl={competition.mainImageUrl}
             ticketPrice={competition.ticketPrice}
+            referralFreeTickets={accountUser?.referralFreeTicketsAvailable ?? 0}
           />
         </section>
       </main>

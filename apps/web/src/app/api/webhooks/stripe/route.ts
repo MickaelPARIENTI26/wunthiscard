@@ -266,6 +266,39 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     });
   }
 
+  // Redeem the buyer's free referral ticket, if one was applied at checkout.
+  // Runs once per order (the transaction above returns early on webhook retries),
+  // and is guarded so the counter can never go negative. Non-blocking.
+  if (session.metadata?.referralTicketUsed === '1' && order.userId) {
+    try {
+      const redeemed = await prisma.user.updateMany({
+        where: { id: order.userId, referralFreeTicketsAvailable: { gt: 0 } },
+        data: { referralFreeTicketsAvailable: { decrement: 1 } },
+      });
+
+      if (redeemed.count > 0) {
+        await prisma.auditLog.create({
+          data: {
+            userId: order.userId,
+            action: 'REFERRAL_FREE_TICKET_REDEEMED',
+            entity: 'order',
+            entityId: order.id,
+            metadata: {
+              orderNumber: order.orderNumber,
+              competitionId: order.competitionId,
+            },
+          },
+        });
+      } else {
+        console.warn(
+          `Referral ticket flagged used for order ${order.id} but buyer had none available`
+        );
+      }
+    } catch (redeemError) {
+      console.error('Referral ticket redemption failed (non-blocking):', redeemError);
+    }
+  }
+
   // Referral tracking — runs after payment is confirmed, outside the main transaction
   // Failure here should never block payment confirmation
   try {
