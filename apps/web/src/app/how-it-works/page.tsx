@@ -32,9 +32,9 @@ const steps = [
   {
     n: '03', t: 'Enter',
     lead: 'Pick your numbers. Stack your odds.',
-    b: 'Choose ticket numbers manually or let us auto-pick. Buy bundles and unlock bonus tickets — buy 10, get 2 free. The more tickets, the better your shot.',
+    b: 'Choose ticket numbers manually or let us auto-pick. Buy bundles and unlock bonus tickets — buy 10, get 1 free. The more tickets, the better your shot.',
     swatch: 'var(--pop)',
-    bullets: ['Manual or auto-pick', 'Bonus tickets on bundles', 'Apple Pay · Google Pay · Card'],
+    bullets: ['Manual or auto-pick', 'Bonus tickets on bundles', 'Secure card payment'],
   },
   {
     n: '04', t: 'Win',

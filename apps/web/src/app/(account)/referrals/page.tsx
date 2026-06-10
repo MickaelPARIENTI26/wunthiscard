@@ -71,7 +71,7 @@ export default async function ReferralsPage() {
           Refer &amp; Win
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
-          Invite friends, earn bonus tickets. You get 3 tickets for every friend who signs up and enters.
+          Invite friends, earn bonus tickets. You get 1 free ticket for every 10 tickets your invited friends buy.
         </p>
       </div>
 
