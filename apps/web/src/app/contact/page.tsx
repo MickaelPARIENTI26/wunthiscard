@@ -21,10 +21,8 @@ const infoRows = [
 ];
 
 const socials = [
-  { href: 'https://tiktok.com/@winucard', label: 'TikTok' },
-  { href: 'https://instagram.com/winucard', label: 'Instagram' },
-  { href: 'https://youtube.com/@winucard', label: 'YouTube' },
-  { href: 'https://discord.gg/winucard', label: 'Discord' },
+  { href: 'https://www.instagram.com/winucards/', label: 'Instagram' },
+  { href: 'https://www.tiktok.com/@winucards', label: 'TikTok' },
 ];
 
 export default function ContactPage() {
