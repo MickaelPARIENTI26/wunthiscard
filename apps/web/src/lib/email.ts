@@ -2,23 +2,13 @@ import { Resend } from 'resend';
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// In production, missing email configuration is a hard failure: silently
-// "succeeding" would lose account-verification, password-reset, and winner
-// emails without any signal. In development we allow a console mock so the
-// app runs without Resend credentials.
+// IMPORTANT: never throw at module load. This file is imported by many actions
+// (register, contact, checkout webhook, etc.) — a top-level throw would crash
+// ALL of them, not just email. Missing config is handled inside sendEmail()
+// instead: it fails loudly (logs + returns failure) rather than silently
+// "succeeding", but it never crashes the caller.
 if (!process.env.RESEND_API_KEY) {
-  if (IS_PRODUCTION) {
-    throw new Error(
-      'RESEND_API_KEY is required in production — transactional emails (verification, password reset, winner notifications) cannot be sent without it.',
-    );
-  }
-  console.warn('RESEND_API_KEY is not set - emails will be mocked (development only)');
-}
-
-if (IS_PRODUCTION && !process.env.FROM_EMAIL) {
-  throw new Error(
-    'FROM_EMAIL is required in production — set it to a verified sender on your Resend domain.',
-  );
+  console.warn('RESEND_API_KEY is not set - emails will not be sent.');
 }
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -35,7 +25,12 @@ interface SendEmailOptions {
 
 export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
   if (!resend) {
-    // Only reachable in non-production — the module throws at import time in prod.
+    if (IS_PRODUCTION) {
+      // Don't silently pretend it worked in prod — log loudly and report failure
+      // (callers wrap this in try/catch and degrade gracefully).
+      console.error('Email NOT sent — RESEND_API_KEY missing in production:', { to, subject });
+      return { success: false, error: 'Email service not configured' };
+    }
     console.log('Email would be sent to:', to, 'Subject:', subject);
     return { success: true, mock: true };
   }
