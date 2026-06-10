@@ -91,19 +91,40 @@ async function main() {
   if (faqCount === 0) {
     await prisma.faqItem.createMany({
       data: [
-        { category: 'Account', sortOrder: 1, question: 'How do I create an account?', answer: 'Click the "Sign Up" button in the top right corner of the website. You can register with your email address or sign in with Google.' },
-        { category: 'Account', sortOrder: 2, question: 'I forgot my password. How can I reset it?', answer: 'Click "Forgot Password" on the login page and enter your email address. We\'ll send you a link to reset your password.' },
-        { category: 'Tickets', sortOrder: 1, question: 'How do I buy tickets?', answer: 'Browse our active competitions, select the one you want to enter, choose your ticket numbers (or use the random picker), answer the skill question correctly, and complete your payment.' },
-        { category: 'Tickets', sortOrder: 2, question: 'What are bonus tickets?', answer: 'When you buy 10+ tickets in a single purchase, you receive bonus tickets for free! Buy 10 get 1 free, 15 get 2 free, 20 get 3 free, 50 get 5 free.' },
-        { category: 'Tickets', sortOrder: 3, question: 'Is there a free entry route?', answer: 'Yes! You can enter any competition for free by sending a letter to our postal address with your name, email, chosen ticket number(s), and the correct answer to the skill question. See the competition page for details.' },
+        // Getting started
+        { category: 'Getting Started', sortOrder: 1, question: 'How does WinUCard work?', answer: 'WinUCard is a skill-based prize competition platform for collectible cards. Browse our live competitions, pick how many tickets you want, answer a short skill question, and complete your payment. When the competition closes, we run a certified random draw — and the winner gets the graded card delivered to their door.' },
+        { category: 'Getting Started', sortOrder: 2, question: 'How do I create an account?', answer: 'Click "Sign Up" in the top-right corner. You can register with your email address or sign in with Google. You\'ll need to verify your email before you can enter a competition.' },
+        { category: 'Getting Started', sortOrder: 3, question: 'I forgot my password. How can I reset it?', answer: 'Click "Forgot Password" on the login page and enter your email address. We\'ll send you a link to choose a new password.' },
+
+        // Tickets & entry
+        { category: 'Tickets & Entry', sortOrder: 1, question: 'How do I enter a competition?', answer: 'Choose a live competition, select how many tickets you want (auto-pick or choose your own numbers), answer the skill question correctly, and complete your payment. Your entry is confirmed once payment is received.' },
+        { category: 'Tickets & Entry', sortOrder: 2, question: 'How many tickets can I buy?', answer: 'Each competition has a maximum number of tickets per person, shown on the competition page. You can buy any amount up to that limit while tickets remain.' },
+        { category: 'Tickets & Entry', sortOrder: 3, question: 'What are bonus tickets?', answer: 'When you buy in bundles, you get extra tickets for free: buy 10 get 1 free, 15 get 2 free, 20 get 3 free, and 50 get 5 free. The more you buy, the better your odds.' },
+        { category: 'Tickets & Entry', sortOrder: 4, question: 'Is there a free entry route?', answer: 'Yes. UK law requires a free entry route on every competition. Send a postcard with your full name, email, the competition name, your chosen ticket number(s) and your answer to the skill question to our postal address (shown on each competition page). One entry per envelope, no purchase necessary.' },
+
+        // Payment
         { category: 'Payment', sortOrder: 1, question: 'What payment methods do you accept?', answer: 'We accept all major credit and debit cards (Visa, Mastercard, American Express), processed securely through Stripe.' },
-        { category: 'Draw', sortOrder: 1, question: 'How is the winner selected?', answer: 'Winners are selected using a certified random number generator under independent supervision. The draw is conducted fairly and transparently.' },
-        { category: 'Draw', sortOrder: 2, question: 'When does the draw take place?', answer: 'The draw takes place either when all tickets are sold or on the scheduled draw date, whichever comes first.' },
-        { category: 'Legal', sortOrder: 1, question: 'Is WinUCard legal in the UK?', answer: 'Yes! WinUCard operates as a prize competition (not a lottery) under the UK Gambling Act 2005. All entries require answering a skill-based question, and a free entry route is always available.' },
-        { category: 'Legal', sortOrder: 2, question: 'What is the minimum age to participate?', answer: 'You must be 18 years or older to participate in any WinUCard competition.' },
+        { category: 'Payment', sortOrder: 2, question: 'Can I get a refund?', answer: 'Tickets are non-refundable once purchased. The only exception is if a competition is cancelled — in that case all entrants are fully refunded.' },
+
+        // The draw
+        { category: 'The Draw', sortOrder: 1, question: 'How is the winner selected?', answer: 'Winners are drawn using a certified Random Number Generator (RNG). The draw is streamed live for full transparency, and the winning ticket number is published publicly.' },
+        { category: 'The Draw', sortOrder: 2, question: 'When does the draw take place?', answer: 'The draw happens either when all tickets sell out or on the scheduled draw date — whichever comes first. You\'ll see the countdown on every competition.' },
+        { category: 'The Draw', sortOrder: 3, question: 'How many winners are there?', answer: 'Most competitions have a single winner. Some competitions offer multiple prizes and multiple winners — this is always shown clearly on the competition page.' },
+        { category: 'The Draw', sortOrder: 4, question: 'How will I know if I\'ve won?', answer: 'We notify the winner by email within 24 hours of the draw. The winning ticket number is also posted publicly on the competition page and our winners page.' },
+
+        // Winners & delivery
+        { category: 'Winners & Delivery', sortOrder: 1, question: 'How long does delivery take?', answer: 'Once the win is verified, we ship your prize within a few business days using insured, tracked delivery.' },
+        { category: 'Winners & Delivery', sortOrder: 2, question: 'Where do you deliver?', answer: 'Delivery is free across the UK with full tracking and insurance. International delivery can be arranged where possible.' },
+        { category: 'Winners & Delivery', sortOrder: 3, question: 'Are the cards authenticated?', answer: 'Yes. Prizes are professionally graded and authenticated (for example PSA, Beckett or equivalent) where applicable, so you know exactly what you\'re winning.' },
+
+        // Legal & eligibility
+        { category: 'Legal & Eligibility', sortOrder: 1, question: 'Is this a lottery?', answer: 'No. WinUCard is a skill-based prize competition, fully compliant with the UK Gambling Act 2005. Every entry requires correctly answering a skill question, and a free entry route is always available.' },
+        { category: 'Legal & Eligibility', sortOrder: 2, question: 'What is the skill question?', answer: 'Each competition includes a fair multiple-choice trivia question about the card you\'re entering for. A correct answer validates your entry — this is what makes it a skill competition and not a lottery.' },
+        { category: 'Legal & Eligibility', sortOrder: 3, question: 'Who can participate?', answer: 'You must be 18 years or older to enter any WinUCard competition. Age verification may be required for larger prizes.' },
+        { category: 'Legal & Eligibility', sortOrder: 4, question: 'Who runs WinUCard?', answer: 'WinUCard is a trading name of YD PARTNERS LTD, a company registered in England & Wales (company number 16766570), with registered office at 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.' },
       ],
     });
-    console.log('✅ FAQ starter items seeded (10)');
+    console.log('✅ FAQ starter items seeded (22)');
   } else {
     console.log(`↩️  FAQ already has ${faqCount} item(s) — left untouched (managed in admin)`);
   }
