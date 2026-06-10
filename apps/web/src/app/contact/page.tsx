@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Chip } from '@/components/ui/chip';
 import { Eyebrow } from '@/components/ui/eyebrow';
 import { Button } from '@/components/ui/button';
+import { ContactForm } from './contact-form';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -19,7 +20,6 @@ const infoRows = [
   { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
 ];
 
-const topics = ['Entry / ticket', 'Delivery', 'Account', 'Other'];
 const socials = [
   { href: 'https://tiktok.com/@winucard', label: 'TikTok' },
   { href: 'https://instagram.com/winucard', label: 'Instagram' },
@@ -102,57 +102,30 @@ export default function ContactPage() {
               </div>
             </aside>
 
-            {/* Right: form */}
-            <form
+            {/* Right: the real, functional contact form */}
+            <div
               style={{
                 background: 'var(--surface)', border: '1.5px solid var(--ink)',
                 borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
-                padding: '34px 36px', display: 'flex', flexDirection: 'column', gap: '20px',
+                padding: '34px 36px',
               }}
-              action="#"
             >
-              <div style={{ marginBottom: '6px' }}>
+              <div style={{ marginBottom: '20px' }}>
                 <Eyebrow>Send a message</Eyebrow>
                 <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.1, marginTop: '8px' }}>
                   We reply to every single one.
                 </h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="drop-field-label">Full name *</label>
-                  <input className="drop-input" placeholder="Alex Taylor" />
-                </div>
-                <div>
-                  <label className="drop-field-label">Email *</label>
-                  <input type="email" className="drop-input" placeholder="you@domain.com" />
-                </div>
-              </div>
+              <ContactForm />
 
-              <div>
-                <label className="drop-field-label">Topic *</label>
-                <div className="contact-topics">
-                  {topics.map((t, i) => (
-                    <label key={t} className="contact-topic">
-                      <input type="radio" name="topic" defaultChecked={i === 0} />
-                      <span>{t}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="drop-field-label">Message *</label>
-                <textarea className="drop-input" rows={6} placeholder="What's up?" style={{ resize: 'vertical' }} />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4" style={{ paddingTop: '10px' }}>
-                <Button variant="hot" size="xl">Send message →</Button>
-                <span style={{ fontSize: '12px', color: 'var(--ink-dim)' }}>
-                  By sending you agree to our <Link href="/privacy" style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>privacy policy</Link>.
-                </span>
-              </div>
-            </form>
+              <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginTop: '14px' }}>
+                By sending you agree to our{' '}
+                <Link href="/privacy" style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>
+                  privacy policy
+                </Link>.
+              </p>
+            </div>
           </div>
         </div>
       </section>
