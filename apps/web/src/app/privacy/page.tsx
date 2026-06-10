@@ -68,7 +68,7 @@ function PlaceholderPrivacyContent() {
   return (
     <>
       <p className="lead">
-        This Privacy Policy explains how WinUCard Ltd (&quot;we&quot;,
+        This Privacy Policy explains how YD PARTNERS LTD (trading as WinUCard) (&quot;we&quot;,
         &quot;us&quot;, or &quot;our&quot;) collects, uses, shares, and protects
         your personal data when you use our website and services. We are
         committed to protecting your privacy in compliance with the UK General
@@ -92,17 +92,18 @@ function PlaceholderPrivacyContent() {
 
       <section id="data-controller">
         <h2>2. Data Controller</h2>
-        <p>WinUCard Ltd is the data controller for your personal data.</p>
+        <p>YD PARTNERS LTD (trading as WinUCard) is the data controller for your personal data.</p>
         <ul>
-          <li>Company Name: WinUCard Ltd</li>
-          <li>Registered in: England and Wales</li>
+          <li>Company Name: YD PARTNERS LTD (trading as WinUCard)</li>
+          <li>Company Number: 16766570</li>
+          <li>Registered in: England &amp; Wales</li>
           <li>
             Email:{' '}
             <a href="mailto:privacy@winucards.com" className="text-primary">
               privacy@winucards.com
             </a>
           </li>
-          <li>Address: [Company Address], United Kingdom</li>
+          <li>Address: 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
         </ul>
       </section>
 
@@ -411,7 +412,7 @@ function PlaceholderPrivacyContent() {
               privacy@winucards.com
             </a>
           </li>
-          <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
+          <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
         </ul>
       </section>
     </>

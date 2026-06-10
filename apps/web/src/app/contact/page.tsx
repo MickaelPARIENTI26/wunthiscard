@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 const infoRows = [
   { label: 'Email', value: 'support@winucards.com', meta: 'General enquiries + support' },
-  { label: 'Postal / HQ', value: 'WinUCard Ltd\nUnit 14 Skyline House\n200 Union Street\nLondon SE1 0LX', meta: 'Also the address for free postal entries.' },
+  { label: 'Postal / HQ', value: 'YD PARTNERS LTD (WinUCard)\n71-75 Shelton Street\nCovent Garden\nLondon WC2H 9JQ', meta: 'Also the address for free postal entries.' },
   { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
 ];
 

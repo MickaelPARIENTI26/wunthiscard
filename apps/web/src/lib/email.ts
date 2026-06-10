@@ -180,7 +180,7 @@ function emailWrapper(content: string): string {
     <!-- Footer -->
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        WinUCard Ltd. | Registered in England & Wales
+        YD PARTNERS LTD (trading as WinUCard). | Registered in England & Wales · Company No. 16766570
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·

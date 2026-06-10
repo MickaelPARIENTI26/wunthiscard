@@ -513,8 +513,8 @@ async function main() {
       data: {
         heroTitle: 'Win Amazing Collectibles',
         heroCta: 'Browse Competitions',
-        companyName: 'WinUCard Ltd',
-        companyAddress: '123 Collection Street, London, EC1A 1BB, United Kingdom',
+        companyName: 'YD PARTNERS LTD (trading as WinUCard)',
+        companyAddress: '71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom',
         companyEmail: 'hello@winucards.com',
         socialLinks: {
           instagram: 'https://instagram.com/winucard',
@@ -536,7 +536,7 @@ async function main() {
           { ticketsBought: 20, bonusTickets: 3 },
           { ticketsBought: 50, bonusTickets: 5 },
         ],
-        freeEntryAddress: 'WinUCard Ltd, Free Entry Department, PO Box 123, London EC1A 1BB',
+        freeEntryAddress: 'WinUCard Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
       },
     },
   });
@@ -709,8 +709,8 @@ async function main() {
           </tr>
           <tr>
             <td align="center" style="color: #888; font-size: 12px; line-height: 18px;">
-              <p style="margin: 0 0 10px;">WinUCard Ltd | Registered in England & Wales</p>
-              <p style="margin: 0 0 10px;">123 Collection Street, London, EC1A 1BB</p>
+              <p style="margin: 0 0 10px;">YD PARTNERS LTD (trading as WinUCard) | Registered in England &amp; Wales · No. 16766570</p>
+              <p style="margin: 0 0 10px;">71-75 Shelton Street, Covent Garden, London WC2H 9JQ</p>
               <p style="margin: 0;">
                 <a href="{{site_url}}/terms" style="color: #888; text-decoration: underline;">Terms</a> &nbsp;|&nbsp;
                 <a href="{{site_url}}/privacy" style="color: #888; text-decoration: underline;">Privacy</a> &nbsp;|&nbsp;

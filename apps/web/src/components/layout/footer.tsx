@@ -104,7 +104,7 @@ export function Footer() {
           className="flex flex-wrap items-center justify-between gap-3"
           style={{ borderTop: '1.5px dashed var(--ink)', paddingTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--ink-faint)', textTransform: 'uppercase' }}
         >
-          <span>© {new Date().getFullYear()} WinUCard Ltd.</span>
+          <span>© {new Date().getFullYear()} WinUCard</span>
           <span>🔒 SSL · ⚑ UK Registered</span>
         </div>
       </div>

@@ -67,7 +67,7 @@ async function main() {
         data: {
           heroTitle: 'Win Amazing Collectibles',
           heroCta: 'Browse Competitions',
-          companyName: 'WinUCard Ltd',
+          companyName: 'YD PARTNERS LTD (trading as WinUCard)',
           companyEmail: 'hello@winucards.com',
           bonusTiers: [
             { ticketsBought: 10, bonusTickets: 1 },
@@ -75,7 +75,7 @@ async function main() {
             { ticketsBought: 20, bonusTickets: 3 },
             { ticketsBought: 50, bonusTickets: 5 },
           ],
-          freeEntryAddress: 'WinUCard Ltd, Free Entry Department, PO Box 123, London EC1A 1BB',
+          freeEntryAddress: 'WinUCard Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
         },
       },
     });

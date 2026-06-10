@@ -69,7 +69,7 @@ function PlaceholderCompetitionRulesContent() {
   return (
     <>
       <p className="lead">
-        These rules apply to all prize competitions operated by WinUCard Ltd.
+        These rules apply to all prize competitions operated by YD PARTNERS LTD (trading as WinUCard).
         By entering any competition, you agree to be bound by these rules and
         our{' '}
         <Link href="/terms" className="text-primary hover:underline">
@@ -124,7 +124,7 @@ function PlaceholderCompetitionRulesContent() {
         </ul>
         <p>The following persons are NOT eligible to enter:</p>
         <ul>
-          <li>Employees of WinUCard Ltd and their immediate family members</li>
+          <li>Employees of YD PARTNERS LTD (trading as WinUCard) and their immediate family members</li>
           <li>
             Anyone directly involved in the operation of the competitions
           </li>
@@ -192,7 +192,7 @@ function PlaceholderCompetitionRulesContent() {
             <br />
             <strong>WinUCard Free Entry</strong>
             <br />
-            [Company Address]
+            71-75 Shelton Street, Covent Garden, London WC2H 9JQ
             <br />
             United Kingdom
           </li>
@@ -559,7 +559,7 @@ function PlaceholderCompetitionRulesContent() {
               disputes@winucards.com
             </a>
           </li>
-          <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
+          <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
         </ul>
         <p>
           For full terms of use, please refer to our{' '}

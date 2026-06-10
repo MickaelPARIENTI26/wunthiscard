@@ -101,7 +101,7 @@ export default function CookiesPage() {
     <LegalPage title="Cookie Policy" lastUpdated={`Last updated: ${lastUpdated}`} toc={tableOfContents}>
       <div>
             <p className="lead">
-              This Cookie Policy explains how WinUCard Ltd uses cookies and
+              This Cookie Policy explains how YD PARTNERS LTD (trading as WinUCard) uses cookies and
               similar technologies when you visit our website. By using our
               website, you consent to the use of cookies as described in this
               policy.
@@ -394,7 +394,7 @@ export default function CookiesPage() {
                     privacy@winucards.com
                   </a>
                 </li>
-                <li>Post: WinUCard Ltd, [Company Address], United Kingdom</li>
+                <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
               </ul>
               <p>
                 For more information about how we handle your personal data,

@@ -65,7 +65,7 @@ function TermsContent() {
         <h3 className="legal-h">1. Definitions</h3>
         <p className="legal-p">In these Terms and Conditions:</p>
         <p className="legal-p">
-          <strong>&quot;WinUCard&quot;</strong>, <strong>&quot;we&quot;</strong>, <strong>&quot;us&quot;</strong>, or <strong>&quot;our&quot;</strong> refers to WinUCard Ltd, a company registered in England. <strong>&quot;Competition&quot;</strong> means any prize competition offered on our platform. <strong>&quot;Ticket&quot;</strong> means an entry into a Competition. <strong>&quot;Prize&quot;</strong> means the item(s) offered as the prize. <strong>&quot;User&quot;</strong>, <strong>&quot;you&quot;</strong>, or <strong>&quot;your&quot;</strong> refers to any person accessing or using our services.
+          <strong>&quot;WinUCard&quot;</strong>, <strong>&quot;we&quot;</strong>, <strong>&quot;us&quot;</strong>, or <strong>&quot;our&quot;</strong> refers to YD PARTNERS LTD (trading as WinUCard), a company registered in England. <strong>&quot;Competition&quot;</strong> means any prize competition offered on our platform. <strong>&quot;Ticket&quot;</strong> means an entry into a Competition. <strong>&quot;Prize&quot;</strong> means the item(s) offered as the prize. <strong>&quot;User&quot;</strong>, <strong>&quot;you&quot;</strong>, or <strong>&quot;your&quot;</strong> refers to any person accessing or using our services.
         </p>
       </section>
 
@@ -98,7 +98,7 @@ function TermsContent() {
 
       <section id="free-entry">
         <h3 className="legal-h">7. Free Entry Route</h3>
-        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: WinUCard Free Entry, Unit 14 Skyline House, 200 Union Street, London SE1 0LX. One entry per envelope. No purchase necessary.</p>
+        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: WinUCard Free Entry, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ. One entry per envelope. No purchase necessary.</p>
         <p className="legal-p">Free entries are treated equally to paid entries in the draw. Postal entries must be received before the Competition closing date.</p>
       </section>
 
@@ -151,7 +151,7 @@ function TermsContent() {
 
       <section id="contact">
         <h3 className="legal-h">17. Contact Us</h3>
-        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:legal@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>legal@winucards.com</a> or by post: WinUCard Ltd, Unit 14 Skyline House, 200 Union Street, London SE1 0LX.</p>
+        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:legal@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>legal@winucards.com</a> or by post: YD PARTNERS LTD (trading as WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</p>
       </section>
     </>
   );
