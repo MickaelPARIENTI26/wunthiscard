@@ -3,7 +3,7 @@ const items = [
   { icon: '📺', label: 'Live Draws' },
   { icon: '🚚', label: 'Free Delivery' },
   { icon: '✉️', label: 'Free Postal Entry' },
-  { icon: '✓', label: 'PSA 10 Authenticated' },
+  { icon: '✓', label: 'Graded & Authenticated' },
 ];
 
 export function TrustStrip() {

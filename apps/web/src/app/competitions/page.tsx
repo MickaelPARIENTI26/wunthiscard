@@ -259,7 +259,7 @@ export default async function CompetitionsPage({
           All Competitions
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '400px', lineHeight: 1.5 }}>
-          Browse all our live and upcoming competitions. Tickets from £2.99.
+          Browse all our live and upcoming competitions. Tickets from £14.90.
         </p>
       </header>
 

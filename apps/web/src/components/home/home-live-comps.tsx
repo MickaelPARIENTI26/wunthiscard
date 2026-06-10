@@ -48,7 +48,7 @@ export function HomeLiveComps({ competitions }: HomeLiveCompsProps) {
             </h2>
           </div>
           <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '360px', lineHeight: 1.5 }}>
-            Pick your card, grab a ticket, watch the draw live. Tickets from £2.99.
+            Pick your card, grab a ticket, watch the draw live. Tickets from £14.90.
           </p>
         </div>
 

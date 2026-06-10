@@ -20,7 +20,7 @@ const steps = [
     lead: 'Pick the card you want to win.',
     b: "Curated drops across Pokémon, One Piece TCG, sports cards and signed memorabilia. Each comp shows the prize value, ticket price, tickets left and draw date — no surprises, no hidden cost.",
     swatch: 'var(--accent)',
-    bullets: ['PSA 10 authenticated', 'Live count of tickets left', 'Countdown to draw'],
+    bullets: ['Graded & authenticated', 'Live count of tickets left', 'Countdown to draw'],
   },
   {
     n: '02', t: 'Answer',

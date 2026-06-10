@@ -70,7 +70,7 @@ export function HomeHero({ competitions }: HomeHeroProps) {
 
           {/* Subtitle */}
           <p style={{ fontSize: '18px', lineHeight: 1.5, color: 'var(--ink-dim)', maxWidth: '460px', margin: '0 0 30px' }}>
-            UK&apos;s biggest card comps — <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>Pokémon, One Piece, Football &amp; Basketball</b>. Tickets from <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>£2.99</b>. Live draws. Real cards delivered to your door.
+            UK&apos;s biggest card comps — <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>Pokémon, One Piece, Football &amp; Basketball</b>. Tickets from <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>£14.90</b>. Live draws. Real cards delivered to your door.
           </p>
 
           {/* CTAs */}
