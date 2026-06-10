@@ -39,9 +39,9 @@ const steps = [
   {
     n: '04', t: 'Win',
     lead: 'Live draw. Tracked delivery.',
-    b: "When the comp sells out (or hits its end date), we run a certified RNG draw — streamed live on TikTok. Winner notified within 24h. Insured tracked shipping, free in the UK.",
+    b: "When the comp sells out (or hits its end date), we run a certified RNG draw — streamed live. Winner notified within 24h. Insured tracked shipping, free in the UK.",
     swatch: 'var(--hot)',
-    bullets: ['RNG + live TikTok draw', 'Winner posted publicly', 'Free UK delivery'],
+    bullets: ['RNG + live draw', 'Winner posted publicly', 'Free UK delivery'],
   },
 ];
 

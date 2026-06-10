@@ -373,7 +373,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             <div className="comp-meta-row">
               <span>🔒 Secure checkout</span>
               <span>✉ Free postal entry</span>
-              <span>📺 Live TikTok draw</span>
+              <span>📺 Live draw</span>
             </div>
           </div>
         </div>
@@ -415,7 +415,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   )}
                   <li><span className="about-card-k">Category</span><span className="about-card-v">{CATEGORY_LABELS[category]}</span></li>
                   <li><span className="about-card-k">Draw Date</span><span className="about-card-v">{new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span></li>
-                  <li><span className="about-card-k">Draw Type</span><span className="about-card-v">Certified RNG · Live on TikTok</span></li>
+                  <li><span className="about-card-k">Draw Type</span><span className="about-card-v">Certified RNG · Live</span></li>
                 </ul>
               </div>
 

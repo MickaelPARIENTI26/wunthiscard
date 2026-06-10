@@ -120,7 +120,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
           Our Winners
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '500px', lineHeight: 1.5 }}>
-          Real winners, real cards, real wins. Every draw verified on TikTok Live.
+          Real winners, real cards, real wins. Every draw verified live.
         </p>
       </header>
 

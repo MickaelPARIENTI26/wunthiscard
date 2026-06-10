@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const stats = [
   { v: '£500K+', l: 'Prizes Paid', c: 'var(--accent)' },
   { v: '482', l: 'Cards Won', c: 'var(--hot)' },
-  { v: '100%', l: 'Live TikTok Draws', c: 'var(--pop)' },
+  { v: '100%', l: 'Live Draws', c: 'var(--pop)' },
   { v: 'PSA 10', l: 'Every Card Graded', c: 'var(--warn)' },
 ];
 
@@ -26,7 +26,7 @@ const pillars = [
   {
     mark: '01 / Transparency',
     title: 'Every draw, live.',
-    body: "No pre-recorded videos. No \"trust us\". Every single draw is streamed on TikTok Live with a certified RNG rolling on-screen. The winning ticket is posted publicly — alongside the entrant's first name and city.",
+    body: "No pre-recorded videos. No \"trust us\". Every single draw is streamed live with a certified RNG rolling on-screen. The winning ticket is posted publicly — alongside the entrant's first name and city.",
     foot: { text: "Watch last week's →", href: '/winners', label: 'winners' },
   },
   {
@@ -81,7 +81,7 @@ export default function AboutPage() {
               &ldquo;
             </div>
             <p style={{ position: 'relative', paddingLeft: '40px' }}>
-              We started WinUCard because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £9.99 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
+              We started WinUCard because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £14.90 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
             </p>
             <div style={{ marginTop: '18px', paddingLeft: '40px', fontFamily: 'var(--mono)', fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 600 }}>
               — The WinUCard team
