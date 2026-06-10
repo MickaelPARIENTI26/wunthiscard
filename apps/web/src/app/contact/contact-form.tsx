@@ -23,6 +23,7 @@ const initialState: ContactFormState = {
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (state.success && formRef.current) {
@@ -30,51 +31,61 @@ export function ContactForm() {
     }
   }, [state.success]);
 
+  // Whenever there's feedback to show, scroll it into view so the user never
+  // misses the confirmation (the message sits at the top of a long form).
+  useEffect(() => {
+    if (state.message) {
+      messageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [state.message, state.success]);
+
   return (
     <form ref={formRef} action={formAction}>
-      {state.success && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '10px',
-            padding: '12px 16px',
-            marginBottom: '18px',
-            background: 'var(--accent)',
-            color: 'var(--ink)',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
-            boxShadow: 'var(--shadow-sm)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-          }}
-        >
-          <CheckCircle className="h-5 w-5 shrink-0" />
-          <p>{state.message}</p>
-        </div>
-      )}
+      <div ref={messageRef}>
+        {state.success && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '16px 18px',
+              marginBottom: '18px',
+              background: 'var(--accent)',
+              color: 'var(--ink)',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '10px',
+              boxShadow: 'var(--shadow)',
+              fontSize: '15px',
+              fontWeight: 700,
+            }}
+          >
+            <CheckCircle className="h-6 w-6 shrink-0" />
+            <p>{state.message}</p>
+          </div>
+        )}
 
-      {!state.success && state.message && !state.errors && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            gap: '10px',
-            padding: '12px 16px',
-            marginBottom: '18px',
-            background: 'var(--hot)',
-            color: '#fff',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
-            boxShadow: 'var(--shadow-sm)',
-            fontSize: '13.5px',
-            fontWeight: 600,
-          }}
-        >
-          <AlertCircle className="h-5 w-5 shrink-0" />
-          <p>{state.message}</p>
-        </div>
-      )}
+        {!state.success && state.message && !state.errors && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '16px 18px',
+              marginBottom: '18px',
+              background: 'var(--hot)',
+              color: '#fff',
+              border: '1.5px solid var(--ink)',
+              borderRadius: '10px',
+              boxShadow: 'var(--shadow)',
+              fontSize: '15px',
+              fontWeight: 700,
+            }}
+          >
+            <AlertCircle className="h-6 w-6 shrink-0" />
+            <p>{state.message}</p>
+          </div>
+        )}
+      </div>
 
       <div className="billing-grid">
         <div className="field billing-full">
