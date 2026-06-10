@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
-import { verifyTurnstileRequired } from '@/lib/turnstile';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 import { sendEmail } from '@/lib/email';
 
 // Where contact-form notifications are delivered (override via env if needed).
@@ -76,14 +76,18 @@ export async function submitContactForm(
     };
   }
 
-  // Verify Turnstile captcha — required whenever Turnstile is configured.
-  const turnstileToken = formData.get('cf-turnstile-response') as string | null;
-  const captchaResult = await verifyTurnstileRequired(turnstileToken, ip);
-  if (!captchaResult.success) {
-    return {
-      success: false,
-      message: captchaResult.error || 'Captcha verification failed. Please try again.',
-    };
+  // Verify Turnstile captcha ONLY if a token was provided. The contact form is
+  // already protected by rate limiting (3/h per IP), so a flaky/absent invisible
+  // captcha must not block legitimate messages.
+  const turnstileToken = formData.get('cf-turnstile-response');
+  if (typeof turnstileToken === 'string' && turnstileToken.length > 0) {
+    const captchaResult = await verifyTurnstileToken(turnstileToken, ip);
+    if (!captchaResult.success) {
+      return {
+        success: false,
+        message: captchaResult.error ?? 'Captcha verification failed. Please try again.',
+      };
+    }
   }
 
   const rawData = {

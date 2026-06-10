@@ -3,10 +3,7 @@
 import { useActionState } from 'react';
 import { useEffect, useRef } from 'react';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { submitContactForm, type ContactFormState } from './actions';
-
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const subjects = [
   { value: 'general', label: 'General enquiry' },
@@ -26,20 +23,12 @@ const initialState: ContactFormState = {
 export function ContactForm() {
   const [state, formAction, isPending] = useActionState(submitContactForm, initialState);
   const formRef = useRef<HTMLFormElement>(null);
-  const turnstileRef = useRef<TurnstileInstance>(null);
 
   useEffect(() => {
     if (state.success && formRef.current) {
       formRef.current.reset();
-      turnstileRef.current?.reset();
     }
   }, [state.success]);
-
-  useEffect(() => {
-    if (!state.success && state.message) {
-      turnstileRef.current?.reset();
-    }
-  }, [state.success, state.message]);
 
   return (
     <form ref={formRef} action={formAction}>
@@ -160,14 +149,6 @@ export function ContactForm() {
           {state.errors?.message && <span className="field-error">{state.errors.message[0]}</span>}
         </div>
       </div>
-
-      {TURNSTILE_SITE_KEY && (
-        <Turnstile
-          ref={turnstileRef}
-          siteKey={TURNSTILE_SITE_KEY}
-          options={{ size: 'invisible', theme: 'auto' }}
-        />
-      )}
 
       <div style={{ marginTop: '20px' }}>
         <button
