@@ -388,10 +388,10 @@ export default function CookiesPage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:privacy@winucards.com"
+                    href="mailto:support@winucards.com"
                     className="text-primary"
                   >
-                    privacy@winucards.com
+                    support@winucards.com
                   </a>
                 </li>
                 <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>

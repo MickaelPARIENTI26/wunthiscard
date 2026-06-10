@@ -99,8 +99,8 @@ function PlaceholderPrivacyContent() {
           <li>Registered in: England &amp; Wales</li>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winucards.com" className="text-primary">
-              privacy@winucards.com
+            <a href="mailto:support@winucards.com" className="text-primary">
+              support@winucards.com
             </a>
           </li>
           <li>Address: 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
@@ -311,8 +311,8 @@ function PlaceholderPrivacyContent() {
         </ul>
         <p>
           To exercise your rights, please contact us at{' '}
-          <a href="mailto:privacy@winucards.com" className="text-primary">
-            privacy@winucards.com
+          <a href="mailto:support@winucards.com" className="text-primary">
+            support@winucards.com
           </a>
           . We will respond within one month.
         </p>
@@ -408,8 +408,8 @@ function PlaceholderPrivacyContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:privacy@winucards.com" className="text-primary">
-              privacy@winucards.com
+            <a href="mailto:support@winucards.com" className="text-primary">
+              support@winucards.com
             </a>
           </li>
           <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>

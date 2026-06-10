@@ -490,10 +490,10 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Disputes should be submitted in writing to{' '}
             <a
-              href="mailto:disputes@winucards.com"
+              href="mailto:support@winucards.com"
               className="text-primary"
             >
-              disputes@winucards.com
+              support@winucards.com
             </a>
           </li>
           <li>
@@ -553,10 +553,10 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Disputes:{' '}
             <a
-              href="mailto:disputes@winucards.com"
+              href="mailto:support@winucards.com"
               className="text-primary"
             >
-              disputes@winucards.com
+              support@winucards.com
             </a>
           </li>
           <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>

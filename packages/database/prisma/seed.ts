@@ -515,7 +515,7 @@ async function main() {
         heroCta: 'Browse Competitions',
         companyName: 'YD PARTNERS LTD (trading as WinUCard)',
         companyAddress: '71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom',
-        companyEmail: 'hello@winucards.com',
+        companyEmail: 'support@winucards.com',
         socialLinks: {
           instagram: 'https://instagram.com/winucard',
           twitter: 'https://twitter.com/winucard',
@@ -584,7 +584,7 @@ async function main() {
       category: 'Payment',
       question: 'What payment methods do you accept?',
       answer:
-        'We accept all major credit and debit cards (Visa, Mastercard, American Express), as well as Apple Pay and Google Pay through Stripe.',
+        'We accept all major credit and debit cards (Visa, Mastercard, American Express), processed securely through Stripe.',
       sortOrder: 1,
     },
     {
