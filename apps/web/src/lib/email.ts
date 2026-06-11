@@ -158,6 +158,52 @@ export async function sendPasswordResetEmail(email: string, token: string, first
   });
 }
 
+// Referral Reward — sent to the referrer when one of their friends makes their
+// first purchase and earns them a free ticket.
+export async function sendReferralRewardEmail(
+  email: string,
+  firstName: string,
+  freeTicketsAvailable: number
+) {
+  const referralsUrl = `${BASE_URL}/referrals`;
+  const competitionsUrl = `${BASE_URL}/competitions`;
+
+  const html = emailWrapper(`
+    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">🎁 You've earned a free ticket!</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+      Great news${firstName ? `, ${firstName}` : ''} — a friend you invited just made their first purchase on WinUCard, so we've added <strong>1 free ticket</strong> to your account.
+    </p>
+
+    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Free tickets available</p>
+      <p style="color: #16a34a; font-size: 32px; font-weight: 800; margin: 0;">${freeTicketsAvailable}</p>
+    </div>
+
+    <p style="color: #4b5563; font-size: 14px; line-height: 22px; margin: 0 0 24px;">
+      Use it at checkout on any competition when you buy 2 or more tickets — one ticket will be on us.
+    </p>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Browse Competitions
+      </a>
+    </div>
+
+    <p style="color: #6b7280; font-size: 14px; margin: 24px 0 0;">
+      Keep sharing your link to earn more — every friend who makes their first purchase gets you another free ticket.
+    </p>
+    <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0;">
+      View your referrals: ${referralsUrl}
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: '🎁 You earned a free ticket on WinUCard',
+    html,
+  });
+}
+
 // Purchase Confirmation
 interface PurchaseConfirmationData {
   orderNumber: string;

@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/db';
 import { releaseTicketsFromRedis } from '@/lib/redis';
-import { sendPurchaseConfirmationEmail } from '@/lib/email';
+import { sendPurchaseConfirmationEmail, sendReferralRewardEmail } from '@/lib/email';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -320,12 +320,13 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         });
 
         if (claimed.count > 0) {
-          await prisma.user.update({
+          const referrer = await prisma.user.update({
             where: { id: buyer.referredById },
             data: {
               referralFreeTicketsEarned: { increment: 1 },
               referralFreeTicketsAvailable: { increment: 1 },
             },
+            select: { email: true, firstName: true, referralFreeTicketsAvailable: true },
           });
 
           await prisma.auditLog.create({
@@ -342,7 +343,17 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
             },
           });
 
-          // TODO: Send email notification to referrer about the earned free ticket
+          // Notify the referrer about their earned free ticket (best-effort —
+          // an email failure must never break the reward or the webhook).
+          try {
+            await sendReferralRewardEmail(
+              referrer.email,
+              referrer.firstName,
+              referrer.referralFreeTicketsAvailable
+            );
+          } catch (emailError) {
+            console.error('Referral reward email failed (non-blocking):', emailError);
+          }
         }
       }
     } catch (referralError) {
