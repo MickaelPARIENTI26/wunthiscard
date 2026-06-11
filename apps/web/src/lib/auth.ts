@@ -2,7 +2,9 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import type { Provider } from 'next-auth/providers';
+import { cookies } from 'next/headers';
 import { prisma } from '@winucard/database';
+import { MAX_REFERRALS_PER_USER } from '@winucard/shared';
 import { authConfig } from './auth.config';
 import { verifyPassword, hashPassword } from './password';
 
@@ -165,6 +167,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.lastName = existingUser.lastName;
           user.role = existingUser.role;
         } else {
+          // Resolve the referrer from the `ref_code` cookie (set by ReferralTracker),
+          // mirroring the credentials registration flow so Google sign-ups are also
+          // attributed. Wrapped so a referral hiccup can never block the sign-in.
+          let referredById: string | null = null;
+          let refCode: string | null = null;
+          try {
+            const cookieStore = await cookies();
+            refCode = cookieStore.get('ref_code')?.value ?? null;
+            if (refCode) {
+              const referrer = await prisma.user.findUnique({
+                where: { referralCode: refCode },
+                select: { id: true, isActive: true, referrals: { select: { id: true } } },
+              });
+              if (referrer && referrer.isActive && referrer.referrals.length < MAX_REFERRALS_PER_USER) {
+                referredById = referrer.id;
+              }
+            }
+          } catch (refErr) {
+            console.error('OAuth referral resolution failed (non-blocking):', refErr);
+          }
+
           // Create new user from Google OAuth
           const newUser = await prisma.user.create({
             data: {
@@ -174,12 +197,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               emailVerified: new Date(),
               isActive: true,
               role: 'USER',
+              referredById,
             },
           });
           user.id = newUser.id;
           user.firstName = newUser.firstName;
           user.lastName = newUser.lastName;
           user.role = newUser.role;
+
+          // Record the referral link, same as the credentials path
+          if (referredById) {
+            await prisma.auditLog.create({
+              data: {
+                userId: newUser.id,
+                action: 'REFERRAL_LINKED',
+                entity: 'user',
+                entityId: newUser.id,
+                metadata: {
+                  referrerId: referredById,
+                  referralCode: refCode,
+                  method: 'google',
+                },
+              },
+            });
+          }
         }
       }
       return true;
