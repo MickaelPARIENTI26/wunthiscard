@@ -94,46 +94,6 @@ export function anonymizeWinnerName(firstName: string, lastName: string): string
 }
 
 /**
- * Check if a user is at least 18 years old
- */
-export function isAdult(dateOfBirth: Date | string): boolean {
-  const dob = typeof dateOfBirth === 'string' ? new Date(dateOfBirth) : dateOfBirth;
-  const today = new Date();
-  const age = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    return age - 1 >= 18;
-  }
-  return age >= 18;
-}
-
-/**
- * Calculate time remaining until a date
- */
-export function getTimeRemaining(endDate: Date | string): {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  total: number;
-} {
-  const end = typeof endDate === 'string' ? new Date(endDate) : endDate;
-  const total = end.getTime() - Date.now();
-
-  if (total <= 0) {
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
-  }
-
-  return {
-    total,
-    days: Math.floor(total / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((total / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((total / 1000 / 60) % 60),
-    seconds: Math.floor((total / 1000) % 60),
-  };
-}
-
-/**
  * Calculate ticket sale progress percentage
  */
 export function calculateProgress(sold: number, total: number | null): number {
