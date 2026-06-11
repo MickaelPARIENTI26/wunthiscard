@@ -136,12 +136,6 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
       });
     });
 
-    // TODO: Send confirmation email
-    // await sendPasswordChangedEmail({
-    //   to: user.email,
-    //   firstName: user.firstName,
-    // });
-
     return { success: true };
   } catch (error) {
     console.error('Password reset error:', error);

@@ -107,28 +107,3 @@ export function CookieConsentBanner() {
   );
 }
 
-// Hook to check cookie consent status
-export function useCookieConsent(): ConsentStatus {
-  const [status, setStatus] = useState<ConsentStatus>('pending');
-
-  useEffect(() => {
-    const storedConsent = localStorage.getItem(COOKIE_CONSENT_KEY);
-    if (storedConsent) {
-      try {
-        const consent: CookieConsent = JSON.parse(storedConsent);
-        setStatus(consent.status);
-      } catch {
-        setStatus('pending');
-      }
-    }
-  }, []);
-
-  return status;
-}
-
-// Utility to reset cookie consent (useful for testing)
-export function resetCookieConsent(): void {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem(COOKIE_CONSENT_KEY);
-  }
-}

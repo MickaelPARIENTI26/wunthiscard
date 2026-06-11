@@ -95,7 +95,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         side="right"
         className="flex w-full flex-col sm:max-w-sm border-l"
         style={{
-          background: 'linear-gradient(180deg, var(--surface) 0%, var(--bg-base) 100%)',
+          background: 'linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%)',
           borderColor: 'var(--line)',
         }}
       >
@@ -109,7 +109,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                <Trophy className="h-5 w-5 relative z-10" style={{ color: 'var(--bg-base)' }} />
+                <Trophy className="h-5 w-5 relative z-10" style={{ color: 'var(--bg)' }} />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight font-sans font-bold">
@@ -139,7 +139,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   className="font-semibold"
                   style={{
                     background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
-                    color: 'var(--bg-base)',
+                    color: 'var(--bg)',
                   }}
                 >
                   {getInitials(user.name)}
@@ -205,7 +205,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 className="w-full font-semibold"
                 style={{
                   background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
-                  color: 'var(--bg-base)',
+                  color: 'var(--bg)',
                 }}
               >
                 <Link href="/register" onClick={onClose} className="flex items-center gap-2">
@@ -220,7 +220,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 className="w-full"
                 style={{
                   background: 'transparent',
-                  borderColor: 'var(--border-hover)',
+                  borderColor: 'var(--ink)',
                 }}
               >
                 <Link href="/login" onClick={onClose}>

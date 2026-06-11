@@ -16,7 +16,6 @@ async function getReferralStats() {
         referralCode: true,
         referralFreeTicketsEarned: true,
         referralFreeTicketsAvailable: true,
-        referralTotalTickets: true,
         _count: { select: { referrals: true } },
       },
       orderBy: { referrals: { _count: 'desc' } },
@@ -35,7 +34,6 @@ async function getReferralStats() {
       referralCount: u._count.referrals,
       freeTicketsEarned: u.referralFreeTicketsEarned,
       freeTicketsAvailable: u.referralFreeTicketsAvailable,
-      totalTicketsFromReferees: u.referralTotalTickets,
     })),
   };
 }

@@ -37,15 +37,3 @@ export function clearCheckoutStorage(): void {
     }
   }
 }
-
-/**
- * Clear all checkout-related data for a specific competition
- */
-export function clearCompetitionCheckoutStorage(competitionId: string): void {
-  if (typeof window === 'undefined') return;
-
-  sessionStorage.removeItem(`tickets_${competitionId}`);
-  sessionStorage.removeItem(`reservation_${competitionId}`);
-  sessionStorage.removeItem(`pending_quantity_${competitionId}`);
-  sessionStorage.removeItem(`qcm_passed_${competitionId}`);
-}

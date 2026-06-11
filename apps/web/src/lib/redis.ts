@@ -508,19 +508,6 @@ export async function recreateReservation(
   return reserveTicketsInRedis(competitionId, userId, ticketNumbers);
 }
 
-// Check if ticket is locked
-export async function isTicketLocked(
-  competitionId: string,
-  ticketNumber: number,
-  excludeUserId?: string
-): Promise<boolean> {
-  const lockKey = getTicketLockKey(competitionId, ticketNumber);
-  const lockedBy = await redis.get<string>(lockKey);
-  if (!lockedBy) return false;
-  if (excludeUserId && lockedBy === excludeUserId) return false;
-  return true;
-}
-
 // Get all locked ticket numbers for a competition
 export async function getLockedTickets(competitionId: string): Promise<number[]> {
   // Use SCAN to find all keys matching the pattern
@@ -613,14 +600,4 @@ export async function hasPassedQcm(
   const passedKey = getQcmPassedKey(competitionId, userId);
   const passed = await redis.exists(passedKey);
   return passed === 1;
-}
-
-// Get QCM attempt count
-export async function getQcmAttempts(
-  competitionId: string,
-  userId: string
-): Promise<number> {
-  const attemptKey = getQcmAttemptKey(competitionId, userId);
-  const attempts = await redis.get<number>(attemptKey);
-  return typeof attempts === 'number' ? attempts : 0;
 }
