@@ -88,16 +88,6 @@ export const competitionCategorySchema = z.enum([
   'OTHER',
 ]);
 
-export const competitionStatusSchema = z.enum([
-  'DRAFT',
-  'UPCOMING',
-  'ACTIVE',
-  'SOLD_OUT',
-  'DRAWING',
-  'COMPLETED',
-  'CANCELLED',
-]);
-
 export const createCompetitionSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   subtitle: z.string().max(300).optional(),
@@ -166,19 +156,6 @@ export const contactFormSchema = z.object({
   message: z.string().min(10, 'Message must be at least 10 characters').max(5000),
 });
 
-// Admin validators
-export const adminUserActionSchema = z.object({
-  userId: z.string().cuid('Invalid user ID'),
-  reason: z.string().max(500).optional(),
-});
-
-export const addFreeEntrySchema = z.object({
-  competitionId: z.string().cuid('Invalid competition ID'),
-  ticketNumbers: z.array(z.number().int().positive()).min(1),
-  userEmail: emailSchema,
-  userName: z.string().min(1).max(100),
-});
-
 // Export types from validators
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
@@ -186,12 +163,3 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type AddressInput = z.infer<typeof addressSchema>;
-export type CreateCompetitionInput = z.infer<typeof createCompetitionSchema>;
-export type ReserveTicketsInput = z.infer<typeof reserveTicketsSchema>;
-// Legacy interface for backward compatibility
-export interface ReserveTicketsLegacyInput { competitionId: string; ticketNumbers: number[] }
-export type ValidateAnswerInput = z.infer<typeof validateAnswerSchema>;
-export type ContactFormInput = z.infer<typeof contactFormSchema>;
-export type AdminUserActionInput = z.infer<typeof adminUserActionSchema>;
-export type AddFreeEntryInput = z.infer<typeof addFreeEntrySchema>;
-export type ClaimFreeEntryInput = z.infer<typeof claimFreeEntrySchema>;

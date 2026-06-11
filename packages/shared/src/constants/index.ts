@@ -14,7 +14,6 @@ export const BONUS_TIERS = [
 ] as const;
 
 // Limits
-export const MAX_TICKETS_PER_USER_PER_COMPETITION = 50;
 export const DEFAULT_MAX_TICKETS_PER_USER_FREE = 1;
 
 // Referral system
@@ -22,35 +21,13 @@ export const DEFAULT_MAX_TICKETS_PER_USER_FREE = 1;
 // referee makes a successful purchase (handled in the Stripe webhook). There is
 // no per-ticket threshold anymore.
 export const REFERRAL_CODE_LENGTH = 8;
-export const REFERRAL_COOKIE_DAYS = 30;
 export const MAX_REFERRALS_PER_USER = 100;
-export const MAX_GALLERY_IMAGES = 10;
-export const TICKET_RESERVATION_TTL_SECONDS = 300; // 5 minutes
-export const QCM_MAX_ATTEMPTS = 3;
-export const QCM_LOCKOUT_SECONDS = 900; // 15 minutes
 
 // Auth
-export const PASSWORD_MIN_LENGTH = 8;
 export const MAX_LOGIN_ATTEMPTS = 5;
-export const ACCOUNT_LOCKOUT_DURATION_MINUTES = 30;
-export const PASSWORD_RESET_TOKEN_EXPIRY_HOURS = 1;
-export const EMAIL_VERIFICATION_TOKEN_EXPIRY_HOURS = 24;
-
-// Rate limiting
-export const RATE_LIMITS = {
-  login: { requests: 5, window: '15m' },
-  signup: { requests: 3, window: '1h' },
-  forgotPassword: { requests: 3, window: '1h' },
-  ticketReserve: { requests: 10, window: '1m' },
-  checkout: { requests: 5, window: '5m' },
-  contact: { requests: 3, window: '1h' },
-  globalAuth: { requests: 100, window: '1m' },
-  globalUnauth: { requests: 30, window: '1m' },
-} as const;
 
 // Currency
 export const CURRENCY = 'GBP';
-export const CURRENCY_SYMBOL = '£';
 export const LOCALE = 'en-GB';
 
 // Competition categories with display names
@@ -82,9 +59,3 @@ export const MINIMUM_AGE = 18;
 
 // Winner claim deadline in days
 export const WINNER_CLAIM_DEADLINE_DAYS = 14;
-
-// Order number prefix
-export const ORDER_NUMBER_PREFIX = 'WTC';
-
-// Default country
-export const DEFAULT_COUNTRY = 'GB';

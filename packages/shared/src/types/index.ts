@@ -1,8 +1,6 @@
 // User types
 export type UserRole = 'USER' | 'ADMIN' | 'SUPER_ADMIN';
 
-export type TokenType = 'EMAIL_VERIFICATION' | 'PASSWORD_RESET' | 'ACCOUNT_UNLOCK';
-
 // Competition types
 export type CompetitionCategory =
   | 'POKEMON'
@@ -35,51 +33,6 @@ export type PaymentStatus =
   | 'FAILED'
   | 'REFUNDED'
   | 'CANCELLED';
-
-// API Response types
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
-
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
-
-// Audit log types
-export type AuditAction =
-  | 'USER_REGISTERED'
-  | 'USER_LOGIN'
-  | 'USER_LOGIN_FAILED'
-  | 'USER_LOCKED'
-  | 'USER_UNLOCKED'
-  | 'USER_BANNED'
-  | 'USER_UNBANNED'
-  | 'TICKET_RESERVED'
-  | 'TICKET_RELEASED'
-  | 'TICKET_PURCHASED'
-  | 'PAYMENT_SUCCEEDED'
-  | 'PAYMENT_FAILED'
-  | 'DRAW_EXECUTED'
-  | 'COMPETITION_CREATED'
-  | 'COMPETITION_UPDATED'
-  | 'COMPETITION_STATUS_CHANGED'
-  | 'COMPETITION_DELETED'
-  | 'REFUND_ISSUED'
-  | 'SETTINGS_CHANGED'
-  | 'FREE_ENTRY_ADDED'
-  | 'FREE_ENTRY_CLAIMED'
-  | 'REFERRAL_LINKED'
-  | 'REFERRAL_BONUS_EARNED'
-  | 'REFERRAL_TICKET_USED'
-  | 'MULTI_DRAW_EXECUTED'
-  | 'MYSTERY_REVEALED';
 
 // Multi-draw prize type
 export interface CompetitionPrize {
