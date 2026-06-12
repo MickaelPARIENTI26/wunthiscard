@@ -3,7 +3,7 @@
 Source: multi-agent pre-prod review (2026-06, adversarially verified).
 37 raw findings → 31 confirmed → 1 P0, 14 P1, 16 P2, 6 dismissed.
 
-**Status: P0 ✅ done · all code-fixable P1 ✅ done · remaining = 2 ops items + P2 polish.**
+**Status: P0 ✅ · all code-fixable P1 ✅ · all 14 P2 ✅ — remaining = 2 ops items only (SPF/DKIM, Sentry).**
 
 Legend: `[x]` done · `[ ]` todo · (code) fixed by Claude · (ops) needs you
 
@@ -30,21 +30,21 @@ Legend: `[x]` done · `[ ]` todo · (code) fixed by Claude · (ops) needs you
 - [ ] (ops) Verify SPF/DKIM/DMARC + Resend-verified FROM domain on winucards.com before launch.
 - [ ] (ops) Add error monitoring (Sentry or similar) — needs an account/DSN; ping me to wire it in.
 
-## P2 — minor / polish (not yet done)
-- (code) Escape user name/email/firstName in transactional + contact email HTML.
-- (code) Guest-checkout password policy weaker than main register.
-- (code) Google OAuth login skips credentials login's account-state guards.
-- (code) Admin /api/export/* not covered by middleware admin-API guard.
-- (code) Avatar upload trusts client MIME, no magic-byte check.
-- (code) turbo.json globalEnv missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, CONTACT_EMAIL, ALLOW_DESTRUCTIVE_SEED.
-- (code) Global rate limiters defined but unused.
-- (code) Webhook has no runtime/maxDuration config → timeout risk.
-- (code) Reserve: DB/Redis can desync if rollback release throws.
-- (code) Success page swallows all errors → real failures show "Order Not Found".
-- (code) resend-verification send not error-wrapped (anti-enumeration).
-- (docs) .env.example FROM_EMAIL uses winucard.com (no 's').
-- (code) Verification email sent to original-case (not stored lowercase) address.
-- (code) Skill-question pass reusable for 1h, not per-entry.
+## P2 — minor / polish (ALL DONE — commit fixes)
+- [x] Escaped user name/email/firstName in transactional + contact email HTML.
+- [x] Guest-checkout now enforces the shared passwordSchema.
+- [x] Google OAuth login re-applies isActive + lockedUntil guards.
+- [x] Admin middleware backstop covers /api/export/*.
+- [x] Avatar upload validates magic bytes + uses detected ContentType.
+- [x] turbo.json: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY + CONTACT_EMAIL + ALLOW_DESTRUCTIVE_SEED.
+- [x] Removed dead rateLimits.globalAuth.
+- [x] Webhook runtime='nodejs' + maxDuration=60.
+- [x] Reserve + create-session rollback release wrapped (no 500 masking 409).
+- [x] Success page differentiates "Confirming payment…" vs "Order Not Found".
+- [x] resend-verification send error-wrapped (anti-enumeration).
+- [x] .env.example + docs winucard.com → winucards.com.
+- [x] Verification email sent to lowercased address.
+- [x] Skill-question pass consumed per completed purchase (clearQcmPassed).
 
 ## Dismissed (verified NOT issues)
 Shared AUTH_SECRET, double bonus-ticket assignment (idempotent), webhook metadata trust, login rate-limit "client only" (server limiter exists), admin login limiter, dev fail-open limiter.
