@@ -53,6 +53,18 @@ export async function POST(request: NextRequest) {
         await handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
         break;
 
+      case 'charge.refunded': {
+        const charge = event.data.object as Stripe.Charge;
+        await handleChargeReversed(charge.payment_intent, 'refund');
+        break;
+      }
+
+      case 'charge.dispute.created': {
+        const dispute = event.data.object as Stripe.Dispute;
+        await handleChargeReversed(dispute.payment_intent, 'dispute');
+        break;
+      }
+
       default:
         // Unhandled event types are safely ignored
         break;
@@ -87,6 +99,40 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
   if (!order) {
     console.error('Order not found:', orderId);
+    return;
+  }
+
+  // Verify Stripe actually charged what this order should cost. amount_total is in
+  // pence; order.totalAmount is GBP. A mismatch means tampering or an amount/line-item
+  // divergence — fail closed (don't hand out tickets) and record it for review.
+  const expectedPence = Math.round(
+    (typeof order.totalAmount === 'object' && 'toNumber' in order.totalAmount
+      ? (order.totalAmount as { toNumber: () => number }).toNumber()
+      : Number(order.totalAmount)) * 100
+  );
+  if (
+    typeof session.amount_total === 'number' &&
+    (session.amount_total !== expectedPence || (session.currency ?? 'gbp').toLowerCase() !== 'gbp')
+  ) {
+    console.error('Payment amount mismatch — refusing to fulfil order', {
+      orderId,
+      expectedPence,
+      chargedPence: session.amount_total,
+      currency: session.currency,
+    });
+    await prisma.auditLog.create({
+      data: {
+        userId: order.userId,
+        action: 'PAYMENT_AMOUNT_MISMATCH',
+        entity: 'order',
+        entityId: order.id,
+        metadata: {
+          expectedPence,
+          chargedPence: session.amount_total,
+          currency: session.currency,
+        },
+      },
+    });
     return;
   }
 
@@ -413,6 +459,69 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
         orderNumber: order.orderNumber,
         stripeSessionId: session.id,
       },
+    },
+  });
+}
+
+async function handleChargeReversed(
+  paymentIntent: string | Stripe.PaymentIntent | null,
+  reason: 'refund' | 'dispute'
+) {
+  const paymentIntentId =
+    typeof paymentIntent === 'string' ? paymentIntent : paymentIntent?.id;
+  if (!paymentIntentId) return;
+
+  const order = await prisma.order.findFirst({
+    where: { stripePaymentIntentId: paymentIntentId },
+  });
+
+  if (!order) {
+    console.warn(`${reason}: no order found for payment_intent ${paymentIntentId}`);
+    return;
+  }
+
+  // Idempotent: a refund followed by a dispute (or a webhook retry) must not
+  // double-process.
+  if (order.paymentStatus === 'REFUNDED') return;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.order.update({
+      where: { id: order.id },
+      data: { paymentStatus: 'REFUNDED' },
+    });
+
+    // Pull the order's tickets out of the draw — a refunded/disputed entry must no
+    // longer be a valid entry. Freed back to AVAILABLE so they can be re-sold.
+    await tx.ticket.updateMany({
+      where: { orderId: order.id },
+      data: {
+        status: 'AVAILABLE',
+        userId: null,
+        orderId: null,
+        isBonus: false,
+        reservedUntil: null,
+      },
+    });
+
+    // If the competition had flipped to SOLD_OUT, reopen it (no-op otherwise).
+    const remaining = await tx.ticket.count({
+      where: { competitionId: order.competitionId, status: 'AVAILABLE' },
+    });
+    if (remaining > 0) {
+      await tx.competition.updateMany({
+        where: { id: order.competitionId, status: 'SOLD_OUT' },
+        data: { status: 'ACTIVE' },
+      });
+    }
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      userId: order.userId,
+      action: reason === 'dispute' ? 'PAYMENT_DISPUTED' : 'PAYMENT_REFUNDED',
+      entity: 'order',
+      entityId: order.id,
+      metadata: { orderNumber: order.orderNumber, paymentIntentId, reason },
     },
   });
 }

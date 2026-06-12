@@ -152,7 +152,7 @@ async function processPaymentIfNeeded(orderId: string, stripeSession: { payment_
   });
 }
 
-async function getOrderDetails(sessionId: string) {
+async function getOrderDetails(sessionId: string, viewerId: string) {
   try {
     // Get session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -160,6 +160,13 @@ async function getOrderDetails(sessionId: string) {
     });
 
     if (!session || !session.metadata?.orderId) {
+      return null;
+    }
+
+    // Ownership check BEFORE any processing: the session_id is attacker-supplyable
+    // (it appears in the redirect URL / browser history / Referer). Never fulfil or
+    // expose an order that isn't the viewer's.
+    if (session.metadata.userId && session.metadata.userId !== viewerId) {
       return null;
     }
 
@@ -191,6 +198,11 @@ async function getOrderDetails(sessionId: string) {
       },
     });
 
+    // Defensive second check: the loaded order must belong to the viewer.
+    if (order && order.userId && order.userId !== viewerId) {
+      return null;
+    }
+
     return order;
   } catch (error) {
     console.error('Error fetching order details:', error);
@@ -217,7 +229,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
     redirect('/');
   }
 
-  const order = await getOrderDetails(sessionId);
+  const order = await getOrderDetails(sessionId, session.user.id);
 
   if (!order) {
     return (

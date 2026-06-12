@@ -18,10 +18,17 @@ export function calculateBonusTickets(quantity: number): number {
   return 0;
 }
 
-// Generate order number: WTC-YYYYMMDD-XXXX
+// Generate order number: WTC-YYYYMMDD-XXXXXXXX
+// 8 hex chars from CSPRNG (~4.3B space/day). Uniqueness is still guaranteed by the
+// DB @unique constraint + a retry at the call site; this just makes collisions
+// astronomically unlikely in the first place.
 export function generateOrderNumber(): string {
   const date = new Date();
   const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const bytes = new Uint8Array(4);
+  globalThis.crypto.getRandomValues(bytes);
+  const random = Array.from(bytes, (b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
   return `WTC-${dateStr}-${random}`;
 }

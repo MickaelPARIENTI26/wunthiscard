@@ -9,7 +9,7 @@ import { getReservation, extendReservation, recreateReservation, releaseTicketsF
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
-  ticketNumbers: z.array(z.number().int().positive()).optional(),
+  ticketNumbers: z.array(z.number().int().positive()).max(100).optional(),
   useReferralTicket: z.boolean().optional(),
 });
 
@@ -82,7 +82,25 @@ export async function POST(request: NextRequest) {
       // Refresh reservation data after extension
       reservation = await getReservation(competitionId, userId);
     } else if (providedTicketNumbers && providedTicketNumbers.length > 0) {
-      // Reservation expired but client provided ticket numbers - recreate it
+      // Reservation expired but client provided ticket numbers - recreate it.
+      // This path trusts client-supplied numbers, so it must re-enforce the
+      // per-user cap that /api/tickets/reserve normally applies — otherwise a
+      // user could check out more tickets than the competition allows.
+      const capComp = await prisma.competition.findUnique({
+        where: { id: competitionId },
+        select: { maxTicketsPerUser: true },
+      });
+      const existingOwned = await prisma.ticket.count({
+        where: { competitionId, userId, status: 'SOLD' },
+      });
+      const perUserCap = capComp?.maxTicketsPerUser ?? 50;
+      if (providedTicketNumbers.length > perUserCap - existingOwned) {
+        return NextResponse.json(
+          { error: `You can hold at most ${perUserCap} tickets for this competition.` },
+          { status: 400 }
+        );
+      }
+
       const recreateResult = await recreateReservation(competitionId, userId, providedTicketNumbers);
       if (!recreateResult.success) {
         return NextResponse.json(
@@ -229,25 +247,45 @@ export async function POST(request: NextRequest) {
 
     const totalAmount = paidTicketCount * ticketPrice;
 
-    // Generate order number
-    const orderNumber = generateOrderNumber();
-
     // Create order in database (PENDING status). ticketCount = total tickets the
-    // user receives; totalAmount reflects what they actually pay.
-    const order = await prisma.order.create({
-      data: {
-        orderNumber,
-        userId,
-        competitionId,
-        ticketCount,
-        bonusTicketCount: bonusTickets,
-        totalAmount,
-        currency: 'GBP',
-        paymentStatus: 'PENDING',
-        questionAnswered: true,
-        questionCorrect: true,
-      },
-    });
+    // user receives; totalAmount reflects what they actually pay. Regenerate the
+    // order number on the (astronomically rare) unique-constraint collision rather
+    // than 500ing the user's checkout.
+    let order: Awaited<ReturnType<typeof prisma.order.create>> | null = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        order = await prisma.order.create({
+          data: {
+            orderNumber: generateOrderNumber(),
+            userId,
+            competitionId,
+            ticketCount,
+            bonusTicketCount: bonusTickets,
+            totalAmount,
+            currency: 'GBP',
+            paymentStatus: 'PENDING',
+            questionAnswered: true,
+            questionCorrect: true,
+          },
+        });
+        break;
+      } catch (e) {
+        const code =
+          e && typeof e === 'object' && 'code' in e
+            ? (e as { code?: string }).code
+            : undefined;
+        if (code === 'P2002' && attempt < 4) continue; // orderNumber collision — retry
+        throw e;
+      }
+    }
+
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Could not create your order. Please try again.' },
+        { status: 500 }
+      );
+    }
+    const orderNumber = order.orderNumber;
 
     // Get base URL for redirects
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
