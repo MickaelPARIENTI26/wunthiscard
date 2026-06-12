@@ -28,7 +28,9 @@ Legend: `[x]` done · `[ ]` todo · (code) fixed by Claude · (ops) needs you
 
 ## P1 — ops (need you)
 - [ ] (ops) Verify SPF/DKIM/DMARC + Resend-verified FROM domain on winucards.com before launch.
-- [ ] (ops) Add error monitoring (Sentry or similar) — needs an account/DSN; ping me to wire it in.
+- [x] (code) Sentry wired into web + admin (graceful no-op until DSN set). — commit f769282
+  - [ ] (ops) Create 2 Sentry projects (web, admin), then set `NEXT_PUBLIC_SENTRY_DSN`
+    in each Vercel project to its DSN. Optional: SENTRY_ORG/PROJECT/AUTH_TOKEN for source maps.
 
 ## P2 — minor / polish (ALL DONE — commit fixes)
 - [x] Escaped user name/email/firstName in transactional + contact email HTML.
