@@ -250,10 +250,16 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     return;
   }
 
-  // Release Redis reservation (cleanup)
-  // Only release if userId exists (should always exist for active orders)
+  // Release Redis reservation (cleanup only). This must NEVER throw out of the
+  // handler: a Redis hiccup here used to abort the whole function, and Stripe's
+  // retry would then early-return on 'alreadyProcessed' — permanently losing the
+  // purchase-confirmation email and the success audit log below.
   if (order.userId) {
-    await releaseTicketsFromRedis(order.competitionId, order.userId);
+    try {
+      await releaseTicketsFromRedis(order.competitionId, order.userId);
+    } catch (releaseError) {
+      console.error('Redis release failed after payment (non-blocking):', releaseError);
+    }
   }
 
   // Log success

@@ -1,5 +1,7 @@
 import { Resend } from 'resend';
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 if (!process.env.RESEND_API_KEY) {
   console.warn('RESEND_API_KEY is not set - emails will not be sent');
 }
@@ -18,6 +20,12 @@ interface SendEmailOptions {
 
 export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
   if (!resend) {
+    if (IS_PRODUCTION) {
+      // Never report success in prod — winner notifications would be recorded as
+      // sent when they weren't. Fail loudly so the caller can surface it.
+      console.error('Email NOT sent — RESEND_API_KEY missing in production:', { to, subject });
+      return { success: false, error: 'Email service not configured' };
+    }
     console.log('Email would be sent to:', to, 'Subject:', subject);
     return { success: true, mock: true };
   }

@@ -164,10 +164,12 @@ export async function POST(request: NextRequest) {
 
     const confirmedAt = new Date();
 
-    // Update competition to mark winner as notified
+    // Mark winnerNotified ONLY if every winner email actually sent. If any failed,
+    // leave it false so the failure is visible and the notification can be retried
+    // (rather than silently recording un-sent winner emails as delivered).
     await prisma.competition.update({
       where: { id: competition_id },
-      data: { winnerNotified: true },
+      data: { winnerNotified: allEmailsSent },
     });
 
     // Update DrawLog with confirmation and email timestamps

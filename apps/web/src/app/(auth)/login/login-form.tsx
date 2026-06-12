@@ -66,8 +66,14 @@ export function LoginForm() {
         return;
       }
 
-      // Verify captcha (if site key is configured)
-      if (TURNSTILE_SITE_KEY && turnstileToken) {
+      // Verify captcha when it's configured. If a site key is set, a token is
+      // REQUIRED — previously a missing token silently skipped verification, so a
+      // user who never solved the captcha could log in.
+      if (TURNSTILE_SITE_KEY) {
+        if (!turnstileToken) {
+          setServerError('Please complete the captcha before signing in.');
+          return;
+        }
         const captchaResult = await verifyLoginCaptcha(turnstileToken);
         if (!captchaResult.success) {
           setServerError('Captcha verification failed. Please try again.');
