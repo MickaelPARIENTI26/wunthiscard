@@ -120,7 +120,11 @@ export async function executeDraw({
             totalTicketsSold: soldTicketsCount,
             winnerId: winningTicket.user!.id,
             winnerEmail: winningTicket.user!.email,
-            rngMethod: 'crypto.getRandomValues',
+            // Honest record: this path takes an admin-entered winning number, so it
+            // is a MANUAL selection — never claim it was RNG-drawn. For a verifiable
+            // fair draw, use the server-side RNG draw endpoint instead.
+            selectionMethod: 'manual_admin',
+            selectedByAdminId: adminId,
             timestamp: new Date().toISOString(),
           },
         },

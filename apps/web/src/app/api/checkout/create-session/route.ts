@@ -168,6 +168,7 @@ export async function POST(request: NextRequest) {
         status: true,
         ticketPrice: true,
         mainImageUrl: true,
+        drawDate: true,
       },
     });
 
@@ -181,6 +182,15 @@ export async function POST(request: NextRequest) {
     if (competition.status !== 'ACTIVE') {
       return NextResponse.json(
         { error: 'This competition is not currently accepting entries' },
+        { status: 400 }
+      );
+    }
+
+    // No checkout past the advertised draw time (defence even if a status-flip
+    // cron hasn't run yet).
+    if (competition.drawDate && new Date(competition.drawDate) <= new Date()) {
+      return NextResponse.json(
+        { error: 'This competition has closed and is no longer accepting entries.' },
         { status: 400 }
       );
     }

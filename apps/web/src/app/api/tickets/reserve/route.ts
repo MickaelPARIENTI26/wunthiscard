@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
         maxTicketsPerUser: true,
         ticketPrice: true,
         isFree: true,
+        drawDate: true,
       },
     });
 
@@ -131,6 +132,15 @@ export async function POST(request: NextRequest) {
     if (competition.status !== 'ACTIVE') {
       return NextResponse.json(
         { error: 'This competition is not currently accepting entries' },
+        { status: 400 }
+      );
+    }
+
+    // Stop accepting entries once the advertised draw time has passed, even if a
+    // status-flip cron hasn't run yet (no selling past the published draw date).
+    if (competition.drawDate && new Date(competition.drawDate) <= new Date()) {
+      return NextResponse.json(
+        { error: 'This competition has closed and is no longer accepting entries.' },
         { status: 400 }
       );
     }
