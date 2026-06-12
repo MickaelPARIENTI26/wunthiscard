@@ -549,8 +549,8 @@ winucard/
 
 ### 4.2 Routing Strategy
 
-**Site Public** : `winucard.com`
-**Admin Panel** : `admin.winucard.com` (sous-domaine séparé)
+**Site Public** : `winucards.com`
+**Admin Panel** : `admin.winucards.com` (sous-domaine séparé)
 
 Les deux apps partagent la même base de données et les mêmes packages via le monorepo Turborepo.
 
@@ -696,8 +696,8 @@ PUT    /api/admin/messages/:id/read
 | Env | URL | DB | Usage |
 |-----|-----|-----|-------|
 | **Local** | `localhost:3000` / `localhost:3001` | Docker PostgreSQL + Redis | Dev |
-| **Staging** | `staging.winucard.com` | Neon branch | Testing |
-| **Production** | `winucard.com` | Neon main | Live |
+| **Staging** | `staging.winucards.com` | Neon branch | Testing |
+| **Production** | `winucards.com` | Neon main | Live |
 
 ---
 

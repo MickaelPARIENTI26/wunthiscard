@@ -136,8 +136,13 @@ export async function POST(request: NextRequest) {
 
       // Verify all tickets were successfully reserved in the database
       if (updateResult.count !== providedTicketNumbers.length) {
-        // Some tickets couldn't be reserved - release the Redis locks
-        await releaseTicketsFromRedis(competitionId, userId);
+        // Some tickets couldn't be reserved - release the Redis locks. Don't let a
+        // cleanup failure mask the real 409 with a 500 (locks self-heal on TTL).
+        try {
+          await releaseTicketsFromRedis(competitionId, userId);
+        } catch (releaseError) {
+          console.error('Redis release failed during reservation rollback:', releaseError);
+        }
         return NextResponse.json(
           { error: 'Some tickets are no longer available. Please select tickets again.' },
           { status: 409 }

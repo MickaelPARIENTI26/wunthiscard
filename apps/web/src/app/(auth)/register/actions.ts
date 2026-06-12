@@ -191,7 +191,7 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
     // can request a resend — so we catch and log instead of throwing.
     if (isProduction) {
       try {
-        await sendVerificationEmail(email, verificationToken, firstName);
+        await sendVerificationEmail(email.toLowerCase(), verificationToken, firstName);
       } catch (emailError) {
         console.error('Failed to send verification email:', emailError);
       }

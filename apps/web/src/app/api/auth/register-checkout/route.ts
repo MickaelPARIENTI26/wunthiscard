@@ -3,6 +3,7 @@ import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { z } from 'zod';
 import { prisma } from '@winucard/database';
+import { passwordSchema } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 
@@ -13,7 +14,7 @@ const guestCheckoutSchema = z.object({
   firstName: z.string().min(1).max(50).trim(),
   lastName: z.string().min(1).max(50).trim(),
   email: z.string().email().toLowerCase().trim(),
-  password: z.string().min(8),
+  password: passwordSchema,
   confirmPassword: z.string().min(1),
   country: z.string().min(1).max(10),
   postcode: z.string().min(1).max(20).trim(),

@@ -45,8 +45,8 @@ Copy from `.env.example` and fill in production values:
 
 ```
 # App URLs (update for production)
-NEXT_PUBLIC_APP_URL=https://winucard.com
-NEXT_PUBLIC_ADMIN_URL=https://admin.winucard.com
+NEXT_PUBLIC_APP_URL=https://winucards.com
+NEXT_PUBLIC_ADMIN_URL=https://admin.winucards.com
 
 # Database (Neon or production PostgreSQL)
 DATABASE_URL=postgresql://...
@@ -58,7 +58,7 @@ UPSTASH_REDIS_REST_TOKEN=...
 
 # Auth (NextAuth v5 — note: AUTH_* names, NOT the v4 NEXTAUTH_* names)
 AUTH_SECRET=<generate-new-secret, min 32 chars: `openssl rand -base64 32`>
-AUTH_URL=https://winucard.com          # admin: https://admin.winucard.com
+AUTH_URL=https://winucards.com          # admin: https://admin.winucards.com
 AUTH_TRUST_HOST=true                   # required behind the Vercel proxy
 
 # Google OAuth (optional)
@@ -77,7 +77,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Email (Resend) — code reads FROM_EMAIL (NOT EMAIL_FROM)
 RESEND_API_KEY=re_...
-FROM_EMAIL=noreply@winucard.com        # must be on a Resend-verified domain
+FROM_EMAIL=noreply@winucards.com        # must be on a Resend-verified domain
 
 # Storage (Cloudflare R2) — all five required; uploads hard-fail without them
 R2_ACCOUNT_ID=...
@@ -87,7 +87,7 @@ R2_BUCKET_NAME=winucard-images
 R2_PUBLIC_URL=https://<bucket>.r2.dev   # or your custom CDN domain
 
 # Admin bootstrap (used once by `npm run db:bootstrap`)
-ADMIN_EMAIL=admin@winucard.com
+ADMIN_EMAIL=admin@winucards.com
 ADMIN_PASSWORD=<strong-password, min 12 chars>
 
 # Monitoring (optional — Sentry not yet wired in code)
@@ -112,7 +112,7 @@ NODE_ENV=production
 
 - [ ] Activate Stripe account (complete verification)
 - [ ] Switch to live API keys
-- [ ] Configure webhook endpoint: `https://winucard.com/api/webhooks/stripe`
+- [ ] Configure webhook endpoint: `https://winucards.com/api/webhooks/stripe`
 - [ ] Add webhook events:
   - `checkout.session.completed`
   - `payment_intent.succeeded`
@@ -122,10 +122,10 @@ NODE_ENV=production
 
 ### DNS & Domain
 
-- [ ] Register domain (winucard.com)
+- [ ] Register domain (winucards.com)
 - [ ] Configure DNS for Vercel
 - [ ] Add custom domain in Vercel project
-- [ ] Setup subdomain for admin (admin.winucard.com)
+- [ ] Setup subdomain for admin (admin.winucards.com)
 - [ ] Verify SSL certificates are issued
 
 ### Email Setup

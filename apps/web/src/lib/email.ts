@@ -60,6 +60,16 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+// Escape user-controlled values before interpolating them into email HTML.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // Email Templates
 
 function emailWrapper(content: string): string {
@@ -105,7 +115,7 @@ export async function sendVerificationEmail(email: string, token: string, firstN
   const verifyUrl = `${BASE_URL}/verify-email?token=${token}`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Welcome, ${firstName}!</h2>
+    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Welcome, ${escapeHtml(firstName)}!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Thanks for signing up for WinUCard. Please verify your email address to start entering competitions.
     </p>
@@ -136,7 +146,7 @@ export async function sendPasswordResetEmail(email: string, token: string, first
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Hi ${firstName}, we received a request to reset your password. Click the button below to choose a new password.
+      Hi ${escapeHtml(firstName)}, we received a request to reset your password. Click the button below to choose a new password.
     </p>
     <div style="text-align: center; margin: 32px 0;">
       <a href="${resetUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
@@ -171,7 +181,7 @@ export async function sendReferralRewardEmail(
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">🎁 You've earned a free ticket!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Great news${firstName ? `, ${firstName}` : ''} — a friend you invited just made their first purchase on WinUCard, so we've added <strong>1 free ticket</strong> to your account.
+      Great news${firstName ? `, ${escapeHtml(firstName)}` : ''} — a friend you invited just made their first purchase on WinUCard, so we've added <strong>1 free ticket</strong> to your account.
     </p>
 
     <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
@@ -238,7 +248,7 @@ export async function sendPurchaseConfirmationEmail(
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Order Confirmed! 🎉</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Hi ${firstName}, your ticket purchase has been confirmed. Good luck!
+      Hi ${escapeHtml(firstName)}, your ticket purchase has been confirmed. Good luck!
     </p>
 
     <!-- Order Details -->
@@ -301,7 +311,7 @@ export async function sendDrawCompleteNotificationEmail(
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Hi ${firstName}, the draw for <strong>${data.competitionTitle}</strong> has been completed.
+      Hi ${escapeHtml(firstName)}, the draw for <strong>${escapeHtml(data.competitionTitle)}</strong> has been completed.
     </p>
 
     <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
@@ -357,7 +367,7 @@ export async function sendFreeEntryConfirmationEmail(
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Free Entry Confirmed</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Hi ${firstName}, your free entry has been confirmed. Good luck!
+      Hi ${escapeHtml(firstName)}, your free entry has been confirmed. Good luck!
     </p>
 
     <div style="background-color: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 24px; margin: 24px 0;">
@@ -423,7 +433,7 @@ export async function sendWinnerNotificationEmail(
     <div style="text-align: center;">
       <h2 style="color: #16a34a; font-size: 28px; margin: 0 0 16px;">🎉 CONGRATULATIONS! 🎉</h2>
       <p style="color: #4b5563; font-size: 20px; line-height: 28px; margin: 0 0 24px;">
-        ${firstName}, you've WON!
+        ${escapeHtml(firstName)}, you've WON!
       </p>
     </div>
 

@@ -89,18 +89,18 @@ Tu as besoin de pouvoir lancer 2-3 commandes pour la base de données.
 2. **API Keys** → **Create API Key** → nomme-la `winucard` → copie la clé
    (commence par `re_...`). C'est ta `RESEND_API_KEY`.
 3. **Vérifier ton domaine** (obligatoire pour que les emails partent vraiment) :
-   - Il te faut un **nom de domaine** (ex : `winucard.com`). Si tu n'en as pas,
+   - Il te faut un **nom de domaine** (ex : `winucards.com`). Si tu n'en as pas,
      achètes-en un (~10€/an) chez Namecheap, OVH, Cloudflare, etc.
    - Dans Resend : **Domains** → **Add Domain** → entre ton domaine.
    - Resend te donne des enregistrements **DNS** (SPF, DKIM, DMARC) à ajouter.
    - Va chez ton fournisseur de domaine → zone DNS → ajoute ces enregistrements
      (copie-colle exactement). Reviens dans Resend et clique **Verify**.
      (Ça peut prendre quelques minutes à quelques heures.)
-4. Choisis ton **adresse d'envoi** : par exemple `noreply@winucard.com`.
+4. Choisis ton **adresse d'envoi** : par exemple `noreply@winucards.com`.
    C'est ta variable `FROM_EMAIL`.
 
 > ⚠️ Choisis **UN seul** domaine et garde-le partout (le code mentionnait
-> `winucard.com` / `winucard.co.uk` — décide-toi pour un seul).
+> `winucards.com` / `winucard.co.uk` — décide-toi pour un seul).
 
 ---
 
@@ -138,7 +138,7 @@ Toujours dans Cloudflare (même compte) :
 
 1. Menu de gauche → **Turnstile** → **Add site** :
    - Name : `winucard`
-   - Domain : ton domaine (ex `winucard.com`) — tu pourras ajouter le domaine Vercel après.
+   - Domain : ton domaine (ex `winucards.com`) — tu pourras ajouter le domaine Vercel après.
    - Widget type : **Managed**.
 2. Copie :
    - **Site Key** → `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
@@ -235,8 +235,8 @@ Tu vas créer **2 projets Vercel** à partir du **même** dépôt GitHub.
    ```
 4. **Deploy**. Tu obtiens `https://wunthiscard-admin.vercel.app`.
 
-> 🔁 Si tu mets des domaines personnalisés plus tard (ex `winucard.com` et
-> `admin.winucard.com`), reviens mettre à jour `NEXT_PUBLIC_APP_URL` /
+> 🔁 Si tu mets des domaines personnalisés plus tard (ex `winucards.com` et
+> `admin.winucards.com`), reviens mettre à jour `NEXT_PUBLIC_APP_URL` /
 > `NEXT_PUBLIC_ADMIN_URL` / `AUTH_URL` puis Redeploy.
 
 ---
@@ -317,7 +317,7 @@ Fais le parcours d'un vrai joueur, sur ton site **en ligne** :
 ## ÉTAPE 12 — Avant d'ouvrir au public (à ne pas oublier)
 
 - [ ] **Domaine perso** : dans Vercel → projet → Settings → Domains → ajoute
-      `winucard.com` (web) et `admin.winucard.com` (admin). Suis les instructions DNS.
+      `winucards.com` (web) et `admin.winucards.com` (admin). Suis les instructions DNS.
       Puis mets à jour `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_ADMIN_URL`, l'URL du
       webhook Stripe, le domaine Turnstile, et Redeploy.
 - [ ] **Pages légales** (Terms, Privacy, Competition Rules…) : fais-les **relire par

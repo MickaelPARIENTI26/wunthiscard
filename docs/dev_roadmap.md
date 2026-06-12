@@ -51,7 +51,7 @@ Avoir un monorepo fonctionnel avec auth, database, et les deux apps qui tournent
 - [ ] Logique de verrouillage de compte (5 tentatives)
 
 #### 0.4 — Authentification (Admin)
-- [ ] Login admin séparé (`admin.winucard.com/login`)
+- [ ] Login admin séparé (`admin.winucards.com/login`)
 - [ ] Vérification du rôle `ADMIN` ou `SUPER_ADMIN`
 - [ ] Middleware admin qui bloque les non-admins
 - [ ] Pas d'inscription publique pour l'admin (comptes créés manuellement en DB ou via seed)
@@ -344,7 +344,7 @@ Un utilisateur peut acheter des tickets, répondre au QCM, et payer via Stripe.
 - [ ] Beta testing
 
 #### 6.3 — Préparation Production
-- [ ] Domaines `winucard.com` + `admin.winucard.com`
+- [ ] Domaines `winucards.com` + `admin.winucards.com`
 - [ ] DNS Cloudflare + SSL
 - [ ] Env vars production (Stripe live keys)
 - [ ] Vérification pages légales avec juriste UK

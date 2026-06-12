@@ -14,14 +14,14 @@ This document lists all environment variables required for production deployment
 |----------|----------|-------------|---------|
 | `AUTH_SECRET` | Yes | NextAuth.js secret (32+ chars) | `your-32-character-secret-string` |
 | `NEXTAUTH_SECRET` | Yes | Legacy alias for AUTH_SECRET | Same as AUTH_SECRET |
-| `NEXTAUTH_URL` | Yes | Public URL of the web app | `https://winucard.com` |
+| `NEXTAUTH_URL` | Yes | Public URL of the web app | `https://winucards.com` |
 | `AUTH_URL` | Yes | Legacy alias for NEXTAUTH_URL | Same as NEXTAUTH_URL |
 
 ### App URLs
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
-| `NEXT_PUBLIC_APP_URL` | Yes | Public web app URL | `https://winucard.com` |
-| `NEXT_PUBLIC_ADMIN_URL` | Yes | Admin panel URL | `https://admin.winucard.com` |
+| `NEXT_PUBLIC_APP_URL` | Yes | Public web app URL | `https://winucards.com` |
+| `NEXT_PUBLIC_ADMIN_URL` | Yes | Admin panel URL | `https://admin.winucards.com` |
 
 ### Stripe Payments
 | Variable | Required | Description | Example |
@@ -43,7 +43,7 @@ This document lists all environment variables required for production deployment
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
 | `RESEND_API_KEY` | Yes | Resend API key | `re_xxxxxxx` |
-| `FROM_EMAIL` | Yes | Sender email address | `noreply@winucard.com` |
+| `FROM_EMAIL` | Yes | Sender email address | `noreply@winucards.com` |
 
 ### Cloudflare Turnstile (Bot Protection)
 | Variable | Required | Description | Example |
@@ -65,7 +65,7 @@ This document lists all environment variables required for production deployment
 | `R2_ACCESS_KEY_ID` | Yes | R2 access key ID | `xxxxxxx` |
 | `R2_SECRET_ACCESS_KEY` | Yes | R2 secret access key | `xxxxxxx` |
 | `R2_BUCKET_NAME` | Yes | R2 bucket name | `winucard-images` |
-| `R2_PUBLIC_URL` | Yes | Public CDN URL for R2 | `https://images.winucard.com` |
+| `R2_PUBLIC_URL` | Yes | Public CDN URL for R2 | `https://images.winucards.com` |
 
 ### Error Tracking (Optional)
 | Variable | Required | Description | Example |

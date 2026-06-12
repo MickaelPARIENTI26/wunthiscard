@@ -305,10 +305,7 @@ export const rateLimits = {
   // Contact form: 3 attempts per hour
   contact: createRateLimiter({ requests: 3, window: '1 h', prefix: 'ratelimit:contact' }),
 
-  // Global authenticated: 100 per minute
-  globalAuth: createRateLimiter({ requests: 100, window: '1 m', prefix: 'ratelimit:global-auth' }),
-
-  // Global unauthenticated: 30 per minute
+  // Global unauthenticated: 30 per minute (used by the public ticket-status poll)
   globalUnauth: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:global-unauth' }),
 };
 
@@ -600,4 +597,15 @@ export async function hasPassedQcm(
   const passedKey = getQcmPassedKey(competitionId, userId);
   const passed = await redis.exists(passedKey);
   return passed === 1;
+}
+
+// Consume the QCM pass so the skill question is required again for the NEXT
+// purchase (per-purchase entry, per business_rules.md) rather than reusable for
+// the whole 1h window.
+export async function clearQcmPassed(
+  competitionId: string,
+  userId: string
+): Promise<void> {
+  const passedKey = getQcmPassedKey(competitionId, userId);
+  await redis.del(passedKey);
 }

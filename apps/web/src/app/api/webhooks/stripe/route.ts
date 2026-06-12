@@ -4,10 +4,15 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/db';
-import { releaseTicketsFromRedis } from '@/lib/redis';
+import { releaseTicketsFromRedis, clearQcmPassed } from '@/lib/redis';
 import { sendPurchaseConfirmationEmail, sendReferralRewardEmail } from '@/lib/email';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+// The handler does DB + Redis + email work; don't let it be capped at a low plan
+// default and time out (a 500 makes Stripe retry the whole delivery).
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
   try {
@@ -257,8 +262,11 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   if (order.userId) {
     try {
       await releaseTicketsFromRedis(order.competitionId, order.userId);
+      // Consume the skill-question pass so the next purchase requires answering
+      // again (per-purchase entry, not reusable for the whole 1h window).
+      await clearQcmPassed(order.competitionId, order.userId);
     } catch (releaseError) {
-      console.error('Redis release failed after payment (non-blocking):', releaseError);
+      console.error('Redis cleanup failed after payment (non-blocking):', releaseError);
     }
   }
 

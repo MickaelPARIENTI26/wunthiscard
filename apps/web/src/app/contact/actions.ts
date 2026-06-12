@@ -130,18 +130,28 @@ export async function submitContactForm(
     // Notify the support inbox by email. Non-blocking: if the send fails, the
     // message is still saved in the DB, so we don't fail the submission.
     try {
-      const safeMessage = message.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      // Escape every user-controlled value before interpolating into the email HTML.
+      const esc = (s: string) =>
+        s
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      const safeName = esc(name);
+      const safeEmail = esc(email);
+      const safeMessage = esc(message);
       await sendEmail({
         to: CONTACT_INBOX,
         subject: `[Contact] ${subjectLabel} — ${name}`,
         html: `
           <h2 style="font-family: sans-serif;">New contact message</h2>
-          <p style="font-family: sans-serif;"><b>From:</b> ${name} &lt;${email}&gt;</p>
+          <p style="font-family: sans-serif;"><b>From:</b> ${safeName} &lt;${safeEmail}&gt;</p>
           <p style="font-family: sans-serif;"><b>Subject:</b> ${subjectLabel}</p>
           <p style="font-family: sans-serif;"><b>Message:</b></p>
           <p style="font-family: sans-serif; white-space: pre-wrap; border-left: 3px solid #00c76a; padding-left: 12px;">${safeMessage}</p>
           <hr/>
-          <p style="font-family: sans-serif; font-size: 12px; color: #888;">Reply directly to ${email} to respond to this person.</p>
+          <p style="font-family: sans-serif; font-size: 12px; color: #888;">Reply directly to ${safeEmail} to respond to this person.</p>
         `,
       });
     } catch (emailError) {

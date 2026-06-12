@@ -9,7 +9,11 @@ export default auth((req) => {
   const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard');
   const isOnLogin = req.nextUrl.pathname === '/login';
   const isOnRoot = req.nextUrl.pathname === '/';
-  const isAdminApi = req.nextUrl.pathname.startsWith('/api/admin');
+  // Backstop only — the export routes keep their own stricter ADMIN/SUPER_ADMIN
+  // in-route checks; this just ensures they don't sit entirely outside the edge guard.
+  const isAdminApi =
+    req.nextUrl.pathname.startsWith('/api/admin') ||
+    req.nextUrl.pathname.startsWith('/api/export');
 
   // Redirect root to dashboard or login
   if (isOnRoot) {

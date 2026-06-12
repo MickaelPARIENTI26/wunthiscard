@@ -69,8 +69,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Send verification email
-    await sendVerificationEmail(user.email, token, user.firstName);
+    // Send verification email. A send failure must not change the response — the
+    // endpoint returns success regardless to preserve the anti-enumeration contract
+    // (it must not reveal whether an address exists or whether delivery worked).
+    try {
+      await sendVerificationEmail(user.email, token, user.firstName);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

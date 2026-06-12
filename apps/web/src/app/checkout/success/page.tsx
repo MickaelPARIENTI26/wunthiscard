@@ -205,8 +205,11 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
 
     return order;
   } catch (error) {
+    // A backend hiccup (Stripe/DB) is NOT the same as "order doesn't exist". The
+    // webhook is racing to credit the order, so signal "still confirming" rather
+    // than showing the alarming "Order Not Found" for a transient failure.
     console.error('Error fetching order details:', error);
-    return null;
+    return 'pending' as const;
   }
 }
 
@@ -230,6 +233,27 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
   }
 
   const order = await getOrderDetails(sessionId, session.user.id);
+
+  if (order === 'pending') {
+    return (
+      <main>
+        <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
+          <h1 style={{ fontFamily: 'var(--display)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>Confirming your payment…</h1>
+          <p style={{ color: 'var(--ink-dim)', marginBottom: '24px' }}>
+            Your payment is being confirmed. This page will show your tickets shortly, and we&apos;ll email your confirmation. You can safely refresh in a moment or check your account.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <Button variant="primary" size="lg" asChild>
+              <Link href="/my-tickets">View My Tickets</Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/">Return Home</Link>
+            </Button>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!order) {
     return (

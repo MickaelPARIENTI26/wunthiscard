@@ -150,9 +150,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         });
 
         if (existingUser) {
-          // Check if user is banned
+          // Mirror the credentials-login account-state guards so deactivation /
+          // lockout can't be silently bypassed by signing in with Google.
           if (existingUser.isBanned) {
             return '/login?error=AccountBanned';
+          }
+          if (!existingUser.isActive) {
+            return '/login?error=AccountInactive';
+          }
+          if (existingUser.lockedUntil && existingUser.lockedUntil > new Date()) {
+            return '/login?error=AccountLocked';
           }
           // Update last login
           await prisma.user.update({
