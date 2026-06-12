@@ -51,7 +51,9 @@ export async function updateProfile(
       }
     }
 
-    // Update user in database
+    // Update user in database. Only touch dateOfBirth when one was supplied, so a
+    // routine profile edit (name/phone) never wipes a stored DOB — which would
+    // lock a legitimate adult out of every entry path.
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
@@ -59,7 +61,7 @@ export async function updateProfile(
         lastName,
         phone: phone ? phone : null,
         instagram: instagram ? instagram : null,
-        dateOfBirth: parsedDateOfBirth,
+        ...(dateOfBirth ? { dateOfBirth: parsedDateOfBirth } : {}),
       },
     });
 

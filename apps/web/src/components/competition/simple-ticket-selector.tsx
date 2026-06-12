@@ -142,6 +142,10 @@ export function SimpleTicketSelector({
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === 'AGE_VERIFICATION_REQUIRED') {
+          router.push('/profile?reason=age');
+          return;
+        }
         setReservationError(data.error ?? 'Failed to reserve tickets');
         setIsProceeding(false);
         return;

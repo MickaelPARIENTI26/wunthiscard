@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { isAdult } from '@/lib/age';
 import {
   rateLimits,
   reserveTicketsInRedis,
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Check if user is verified
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { emailVerified: true, isBanned: true },
+      select: { emailVerified: true, isBanned: true, dateOfBirth: true },
     });
 
     if (!user) {
@@ -75,6 +76,18 @@ export async function POST(request: NextRequest) {
     if (!user.emailVerified) {
       return NextResponse.json(
         { error: 'Please verify your email before purchasing tickets' },
+        { status: 403 }
+      );
+    }
+
+    // 18+ is a legal requirement (UK Gambling Act 2005). The real control is here,
+    // server-side, against a stored date of birth — not the client AgeGate cookie.
+    if (!isAdult(user.dateOfBirth)) {
+      return NextResponse.json(
+        {
+          error: 'You must confirm your date of birth (18+) before entering.',
+          code: 'AGE_VERIFICATION_REQUIRED',
+        },
         { status: 403 }
       );
     }

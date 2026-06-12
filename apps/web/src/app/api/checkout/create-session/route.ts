@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { isAdult } from '@/lib/age';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
 import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
 
@@ -176,6 +177,7 @@ export async function POST(request: NextRequest) {
         lastName: true,
         emailVerified: true,
         isBanned: true,
+        dateOfBirth: true,
         referralFreeTicketsAvailable: true,
       },
     });
@@ -194,6 +196,18 @@ export async function POST(request: NextRequest) {
     if (!user.emailVerified) {
       return NextResponse.json(
         { error: 'Please verify your email before purchasing tickets' },
+        { status: 403 }
+      );
+    }
+
+    // 18+ is a legal requirement (UK Gambling Act 2005). Hard server-side gate on
+    // the money path — independent of the client AgeGate cookie.
+    if (!isAdult(user.dateOfBirth)) {
+      return NextResponse.json(
+        {
+          error: 'You must confirm your date of birth (18+) before entering.',
+          code: 'AGE_VERIFICATION_REQUIRED',
+        },
         { status: 403 }
       );
     }
