@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface GlobalErrorProps {
@@ -10,7 +11,8 @@ interface GlobalErrorProps {
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
-    // Log the error to an error reporting service
+    // Report to Sentry (no-op until a DSN is configured) and keep the console log.
+    Sentry.captureException(error);
     console.error('Global application error:', error);
   }, [error]);
 

@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -41,7 +42,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https://images.pokemontcg.io https://*.cloudflare.com https://*.r2.cloudflarestorage.com https://*.r2.dev https://picsum.photos",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://*.upstash.io",
+      "connect-src 'self' https://*.upstash.io https://*.sentry.io",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -96,4 +97,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  widenClientFileUpload: true,
+});

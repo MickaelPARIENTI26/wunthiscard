@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -41,7 +42,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "img-src 'self' data: blob: https://images.pokemontcg.io https://*.cloudflare.com https://*.r2.cloudflarestorage.com https://*.r2.dev https://*.stripe.com https://picsum.photos https://*.googleusercontent.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "connect-src 'self' https://api.stripe.com https://*.upstash.io https://*.google-analytics.com https://challenges.cloudflare.com",
+      "connect-src 'self' https://api.stripe.com https://*.upstash.io https://*.google-analytics.com https://challenges.cloudflare.com https://*.sentry.io",
       "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://challenges.cloudflare.com",
       "object-src 'none'",
       "base-uri 'self'",
@@ -97,4 +98,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Source-map upload only happens when these are set (CI/Vercel); otherwise it's
+  // skipped silently. The SDK itself still works at runtime via the DSN env var.
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: true,
+  widenClientFileUpload: true,
+});
