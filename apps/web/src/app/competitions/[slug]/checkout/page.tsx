@@ -138,8 +138,8 @@ export default async function CheckoutPage({
               <div className="step-kicker">Step 03 · Your details</div>
               <h2 className="step-title">Where do we send your win?</h2>
             </div>
-            <Link href={`/competitions/${slug}/question`} className="btn btn-ghost">
-              ← Back
+            <Link href={`/competitions/${slug}`} className="btn btn-ghost">
+              ← Change tickets
             </Link>
           </div>
           <CheckoutClient
@@ -167,8 +167,8 @@ export default async function CheckoutPage({
             <div className="step-kicker">Step 03 · Your details</div>
             <h2 className="step-title">Where do we send your win?</h2>
           </div>
-          <Link href={`/competitions/${slug}/question`} className="btn btn-ghost">
-            ← Back
+          <Link href={`/competitions/${slug}`} className="btn btn-ghost">
+            ← Change tickets
           </Link>
         </div>
         <GuestCheckoutForm
