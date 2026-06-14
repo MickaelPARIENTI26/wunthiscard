@@ -42,7 +42,7 @@ export function CheckoutClient({
     useReferralTicket && referralFreeTickets > 0 && ticketCount >= 2;
   const paidTicketCount = referralApplied ? ticketCount - 1 : ticketCount;
   const totalPrice = paidTicketCount * ticketPrice;
-  const totalPriceLabel = (totalPrice / 100).toFixed(2);
+  const totalPriceLabel = totalPrice.toFixed(2);
 
   const formatCountdown = useCallback((ms: number): string => {
     if (ms <= 0) return '0:00';

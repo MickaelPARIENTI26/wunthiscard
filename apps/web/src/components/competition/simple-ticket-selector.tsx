@@ -174,10 +174,10 @@ export function SimpleTicketSelector({
     }
   };
 
-  const price = ticketPrice / 100; // pence to pounds
+  const price = ticketPrice; // ticketPrice is stored in pounds
   const bundles = [1, 5, 10, 25, 50, 100];
   const bonus = bonusTickets;
-  const displayTotal = (paidTickets * ticketPrice / 100).toFixed(2);
+  const displayTotal = (paidTickets * ticketPrice).toFixed(2);
 
   return (
     <div className="inline-step">

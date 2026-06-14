@@ -96,7 +96,7 @@ export default async function QuestionPage({ params }: { params: Promise<PagePar
             <span>Auto pick</span>
             <span>·</span>
             <span>
-              Total <b>£{(competition.ticketPrice / 100).toFixed(2)}</b>
+              Total <b>£{competition.ticketPrice.toFixed(2)}</b>
             </span>
           </div>
         </div>

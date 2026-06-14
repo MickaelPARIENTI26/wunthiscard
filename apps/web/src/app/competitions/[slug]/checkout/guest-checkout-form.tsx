@@ -115,7 +115,7 @@ export function GuestCheckoutForm({
   const bonusTickets = calculateBonusTickets(ticketCount);
   const totalEntries = ticketCount + bonusTickets;
   const totalPrice = ticketCount * ticketPrice;
-  const totalPriceLabel = (totalPrice / 100).toFixed(2);
+  const totalPriceLabel = totalPrice.toFixed(2);
 
   const selectedPhoneCountryData = COUNTRIES.find((c) => c.code === selectedPhoneCountry);
 

@@ -111,7 +111,7 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
         <div className="flex items-center justify-between mt-auto" style={{ paddingTop: '12px', borderTop: '1.5px dashed var(--line-2)' }}>
           <div>
             <div style={{ fontFamily: 'var(--display)', fontSize: '20px', fontWeight: 700, letterSpacing: '-0.02em' }}>
-              £{(ticketPrice / 100).toFixed(2)}
+              £{ticketPrice.toFixed(2)}
             </div>
             <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               per ticket
