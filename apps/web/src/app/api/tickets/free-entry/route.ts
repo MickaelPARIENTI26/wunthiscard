@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let ticketNumber: number;
+    let ticketNumber = 0;
 
     if (competition.totalTickets !== null) {
       // Finite tickets: find and claim an available pre-created ticket
@@ -195,22 +195,40 @@ export async function POST(request: NextRequest) {
 
       ticketNumber = availableTicket.ticketNumber;
     } else {
-      // Unlimited tickets: create a new ticket record
-      const existingCount = await prisma.ticket.count({
-        where: { competitionId },
-      });
-
-      ticketNumber = existingCount + 1;
-
-      await prisma.ticket.create({
-        data: {
-          competitionId,
-          ticketNumber,
-          userId,
-          status: 'FREE_ENTRY',
-          isFreeEntry: true,
-        },
-      });
+      // Unlimited tickets: create a ticket on demand. ticketNumber is derived from
+      // the current count, so two concurrent free entries can collide on the unique
+      // [competitionId, ticketNumber] index — retry on that collision instead of 500ing.
+      let created = false;
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const existingCount = await prisma.ticket.count({ where: { competitionId } });
+        ticketNumber = existingCount + 1;
+        try {
+          await prisma.ticket.create({
+            data: {
+              competitionId,
+              ticketNumber,
+              userId,
+              status: 'FREE_ENTRY',
+              isFreeEntry: true,
+            },
+          });
+          created = true;
+          break;
+        } catch (e) {
+          const code =
+            e && typeof e === 'object' && 'code' in e
+              ? (e as { code?: string }).code
+              : undefined;
+          if (code === 'P2002') continue; // number collision — recompute and retry
+          throw e;
+        }
+      }
+      if (!created) {
+        return NextResponse.json(
+          { error: 'Could not register your free entry. Please try again.' },
+          { status: 409 }
+        );
+      }
     }
 
     // Create audit log entry
