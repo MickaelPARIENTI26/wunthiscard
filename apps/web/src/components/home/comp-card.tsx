@@ -26,7 +26,9 @@ function formatCategory(cat: string) {
 }
 
 export function CompCard({ slug, title, mainImageUrl, category, prizeValue, ticketPrice, totalTickets, soldTickets, status }: CompCardProps) {
-  const total = totalTickets ?? 1000;
+  const isUnlimited = totalTickets === null;
+  const isFree = ticketPrice <= 0;
+  const total = totalTickets ?? 1; // only used when !isUnlimited
   const left = total - soldTickets;
   const pct = Math.max(Math.round((soldTickets / total) * 100), 3);
   const isOpen = status === 'ACTIVE';
@@ -96,25 +98,34 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
           £{prizeValue.toLocaleString('en-GB')}
         </div>
 
-        {/* Progress */}
+        {/* Progress / entries */}
         <div>
-          <div style={{ height: '4px', background: 'var(--bg-3)', borderRadius: '2px', overflow: 'hidden', border: '1px solid var(--ink)' }}>
-            <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', borderRadius: '2px' }} />
-          </div>
-          <div className="flex justify-between" style={{ marginTop: '8px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--ink-dim)', textTransform: 'uppercase' }}>
-            <span>{soldTickets.toLocaleString('en-GB')} / {total.toLocaleString('en-GB')} sold</span>
-            <span>{left.toLocaleString('en-GB')} tickets left</span>
-          </div>
+          {isUnlimited ? (
+            <div className="flex justify-between" style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--ink-dim)', textTransform: 'uppercase' }}>
+              <span>{soldTickets.toLocaleString('en-GB')} entries</span>
+              <span>Unlimited tickets</span>
+            </div>
+          ) : (
+            <>
+              <div style={{ height: '4px', background: 'var(--bg-3)', borderRadius: '2px', overflow: 'hidden', border: '1px solid var(--ink)' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: 'var(--accent)', borderRadius: '2px' }} />
+              </div>
+              <div className="flex justify-between" style={{ marginTop: '8px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.08em', color: 'var(--ink-dim)', textTransform: 'uppercase' }}>
+                <span>{soldTickets.toLocaleString('en-GB')} / {total.toLocaleString('en-GB')} sold</span>
+                <span>{left.toLocaleString('en-GB')} tickets left</span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Price row */}
         <div className="flex items-center justify-between mt-auto" style={{ paddingTop: '12px', borderTop: '1.5px dashed var(--line-2)' }}>
           <div>
             <div style={{ fontFamily: 'var(--display)', fontSize: '20px', fontWeight: 700, letterSpacing: '-0.02em' }}>
-              £{ticketPrice.toFixed(2)}
+              {isFree ? 'FREE' : `£${ticketPrice.toFixed(2)}`}
             </div>
             <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-              per ticket
+              {isFree ? 'free entry' : 'per ticket'}
             </div>
           </div>
           <span
