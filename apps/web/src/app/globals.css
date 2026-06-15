@@ -1249,7 +1249,9 @@ input:focus, textarea:focus, select:focus,
   .qty-custom { grid-template-columns: 1fr; }
   .qty-pick-options { grid-template-columns: 1fr; }
   /* Stat strips: collapse multi-column to single on phones */
-  .comp-stats-mini { grid-template-columns: 1fr; gap: 10px; }
+  /* On phones: hide Participants and put Card value + Per ticket side by side. */
+  .comp-stats-mini { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+  .comp-stat-mobile-hide { display: none; }
   .about-stats { grid-template-columns: 1fr; }
   .about-stat { border-right: none; border-bottom: 1px dashed rgba(255,255,255,0.15); padding: 28px 24px; }
   .about-stat:last-child { border-bottom: none; }

@@ -269,7 +269,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   <div className="comp-value-label">Card value</div>
                   <div className="comp-stats-mini-v">{formattedPrizeValue}</div>
                 </div>
-                <div>
+                <div className="comp-stat-mobile-hide">
                   <div className="comp-value-label">Participants</div>
                   <div className="comp-stats-mini-v">{competition.soldTickets.toLocaleString('en-GB')}</div>
                 </div>
