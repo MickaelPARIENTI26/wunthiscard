@@ -1247,6 +1247,11 @@ input:focus, textarea:focus, select:focus,
   .qty-grid { grid-template-columns: repeat(2, 1fr); }
   .qty-grid-6 { grid-template-columns: repeat(2, 1fr); }
   .qty-custom { grid-template-columns: 1fr; }
+  /* Full-width stepper on phones: fixed −/+ buttons, the number grows to fill the
+     middle (centered) instead of leaving a weird empty gap before the + button. */
+  .qty-stepper { width: 100%; }
+  .qty-stepper button { flex-shrink: 0; }
+  .qty-stepper input { flex: 1; width: auto; min-width: 0; }
   .qty-pick-options { grid-template-columns: 1fr; }
   /* Stat strips: collapse multi-column to single on phones */
   /* On phones: hide Participants and put Card value + Per ticket side by side. */
