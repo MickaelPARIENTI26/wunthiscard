@@ -64,7 +64,7 @@ export default async function ReferralsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: '44px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(30px, 6vw, 44px)', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
           Refer &amp; Win
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>

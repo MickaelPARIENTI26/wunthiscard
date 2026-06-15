@@ -381,7 +381,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
       {/* ABOUT THIS CARD — full-bleed gray background */}
       <section style={{ background: 'var(--bg-2)', borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
-        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '80px 32px' }}>
+        <div style={{ maxWidth: '1440px', margin: '0 auto', padding: 'clamp(40px, 8vw, 80px) clamp(16px, 5vw, 32px)' }}>
           {/* Section header */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px', gap: '32px', flexWrap: 'wrap' }}>
             <div>

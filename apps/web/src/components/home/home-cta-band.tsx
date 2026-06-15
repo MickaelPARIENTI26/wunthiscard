@@ -7,7 +7,7 @@ export function HomeCTABand() {
       style={{
         background: 'var(--ink)',
         color: 'var(--bg)',
-        padding: '90px 32px',
+        padding: 'clamp(56px, 12vw, 90px) clamp(20px, 6vw, 32px)',
         textAlign: 'center',
         position: 'relative',
         overflow: 'hidden',

@@ -147,6 +147,9 @@
 
   html {
     scroll-behavior: smooth;
+    /* Safety net: clip (not hidden, so position:sticky still works) any element
+       that bleeds past the viewport width, so the page never scrolls sideways. */
+    overflow-x: clip;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -161,6 +164,10 @@
     -webkit-font-smoothing: antialiased;
     background-color: var(--bg);
     color: var(--ink);
+    overflow-x: clip;
+    /* Break long unbreakable strings (emails, codes, tracking #) instead of
+       overflowing their card on a phone. Only acts when a word would overflow. */
+    overflow-wrap: break-word;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -376,6 +383,10 @@ input:focus, textarea:focus, select:focus,
   .drop-section {
     padding: 60px 20px;
   }
+  /* 16px minimum on form fields so iOS Safari doesn't auto-zoom on focus. */
+  .input, .select, .textarea {
+    font-size: 16px;
+  }
 }
 
 /* === HIW HERO + TIMELINE === */
@@ -527,6 +538,14 @@ input:focus, textarea:focus, select:focus,
   margin-bottom: 12px;
 }
 .legal-p:last-child { margin-bottom: 0; }
+/* Prose primitives for the legal/info pages (privacy, cookies, rules) so their
+   tables, code tokens and lists stay readable and don't overflow on mobile. */
+.legal-body { overflow-wrap: anywhere; }
+.legal-body table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+.legal-body th, .legal-body td { padding: 8px 10px; text-align: left; border: 1px solid var(--line-2); vertical-align: top; }
+.legal-body code { word-break: break-all; font-size: 12px; }
+.legal-body ul, .legal-body ol { padding-left: 20px; margin-bottom: 12px; color: var(--ink-dim); font-size: 15px; line-height: 1.65; }
+.legal-body .lead { font-size: 16px; }
 
 @media (max-width: 860px) {
   .legal-toc { position: static; }
@@ -688,6 +707,7 @@ input:focus, textarea:focus, select:focus,
 .comp-progress-head {
   display: flex; justify-content: space-between;
   align-items: baseline; margin-bottom: 10px;
+  flex-wrap: wrap; gap: 6px 10px;
 }
 .comp-progress-pct {
   font-family: var(--mono); font-size: 11px;
@@ -840,9 +860,9 @@ input:focus, textarea:focus, select:focus,
 .comp-about-wrap { max-width: 1100px; margin: 0 auto; }
 .comp-about-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 26px; }
 .about-card-details { display: flex; flex-direction: column; border-top: 1px dashed var(--line-2); }
-.about-card-details li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed var(--line-2); }
+.about-card-details li { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px dashed var(--line-2); }
 .about-card-k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); font-weight: 700; }
-.about-card-v { font-weight: 600; font-size: 14px; }
+.about-card-v { font-weight: 600; font-size: 14px; min-width: 0; overflow-wrap: anywhere; text-align: right; }
 .postal-card { background: var(--accent); border: 1.5px solid var(--ink); border-radius: 12px; padding: 22px; box-shadow: 4px 4px 0 var(--ink); }
 .postal-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
 .postal-card p { font-size: 13px; line-height: 1.55; margin-bottom: 12px; }
@@ -1357,6 +1377,7 @@ input:focus, textarea:focus, select:focus,
   }
   .hiw-step:nth-child(even) .hiw-step-num { order: 0; }
   .hiw-step-num { min-height: 120px; }
+  .hiw-step-num span { font-size: 72px; }
 }
 
 /* === KEYFRAMES === */

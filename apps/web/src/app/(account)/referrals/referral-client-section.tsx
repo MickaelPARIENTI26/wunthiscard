@@ -42,6 +42,7 @@ export function ReferralClientSection({ referralLink, referralCode: _referralCod
           value={referralLink}
           style={{
             flex: 1,
+            minWidth: 0,
             padding: '10px 14px',
             borderRadius: '10px',
             border: '1.5px solid var(--ink)',

@@ -314,8 +314,8 @@ export default async function MyWinsPage() {
                           <span style={{ color: 'var(--ink-dim)' }}>Carrier</span>
                           <span>{win.shippingCarrier ?? 'Royal Mail'}</span>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <span style={{ color: 'var(--ink-dim)' }}>Tracking</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+                          <span style={{ color: 'var(--ink-dim)', flexShrink: 0 }}>Tracking</span>
                           {win.trackingUrl ? (
                             <a
                               href={win.trackingUrl}
@@ -325,17 +325,20 @@ export default async function MyWinsPage() {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '4px',
+                                minWidth: 0,
                                 fontFamily: 'var(--mono)',
                                 color: 'var(--ink)',
                                 fontWeight: 700,
                                 textDecoration: 'underline',
+                                overflowWrap: 'anywhere',
+                                textAlign: 'right',
                               }}
                             >
                               {win.trackingNumber}
-                              <ExternalLink className="h-3 w-3" />
+                              <ExternalLink className="h-3 w-3" style={{ flexShrink: 0 }} />
                             </a>
                           ) : (
-                            <span style={{ fontFamily: 'var(--mono)' }}>{win.trackingNumber}</span>
+                            <span style={{ fontFamily: 'var(--mono)', minWidth: 0, overflowWrap: 'anywhere', textAlign: 'right' }}>{win.trackingNumber}</span>
                           )}
                         </div>
                         {win.shippedAt && (

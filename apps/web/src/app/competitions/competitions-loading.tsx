@@ -49,7 +49,7 @@ export function CompetitionsLoading() {
       {/* Filters skeleton */}
       <div className="mb-6 space-y-4">
         {/* Category tabs skeleton */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-8 w-20 rounded-full" />
           ))}
