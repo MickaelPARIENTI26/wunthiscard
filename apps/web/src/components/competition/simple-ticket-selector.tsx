@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { calculateBonusTickets } from '@winucard/shared/utils';
@@ -27,93 +27,29 @@ export function SimpleTicketSelector({
   referralFreeTickets = 0,
 }: SimpleTicketSelectorProps) {
   const router = useRouter();
-  const { data: session, status: sessionStatus } = useSession();
-  const isAuthenticated = !!session?.user;
+  const { status: sessionStatus } = useSession();
 
-  // Default to a popular bonus-bearing bundle (10 → +1 bonus) so the user lands on
-  // the best-value option, clamped to what's actually allowed.
-  const [quantity, setQuantity] = useState(() =>
-    Math.max(1, Math.min(10, maxTicketsPerUser - userTicketCount, availableTicketCount, 100))
-  );
-  const [useReferralTicket, setUseReferralTicket] = useState(false);
-  const [isProceeding, setIsProceeding] = useState(false);
-  const [reservationError, setReservationError] = useState<string | null>(null);
-  const [reservation, setReservation] = useState<{
-    ticketNumbers: number[];
-    expiresAt: number;
-  } | null>(null);
-  const [countdown, setCountdown] = useState<string>('');
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Effective max considers user's existing tickets
+  // Effective max considers the user's existing tickets.
   const remainingAllowance = maxTicketsPerUser - userTicketCount;
   const maxQuantity = Math.min(remainingAllowance, availableTicketCount, 100);
 
+  // Default to a popular bonus-bearing bundle (10 → +1 bonus), clamped to what's allowed.
+  const [quantity, setQuantity] = useState(() => Math.max(1, Math.min(10, maxQuantity)));
+  const [customValue, setCustomValue] = useState(String(quantity));
+  const [maxNote, setMaxNote] = useState(false);
+  const [useReferralTicket, setUseReferralTicket] = useState(false);
+  const [isProceeding, setIsProceeding] = useState(false);
+
   const bonusTickets = calculateBonusTickets(quantity);
-  // A free referral ticket can only be applied when the user has one AND is
-  // buying at least 2 tickets (so there's still a paid amount for Stripe).
+  // A free referral ticket can only be applied when the user has one AND is buying
+  // at least 2 tickets (so there's still a paid amount for Stripe).
   const canUseReferralTicket = referralFreeTickets > 0 && quantity >= 2;
   const referralApplied = useReferralTicket && canUseReferralTicket;
   const paidTickets = referralApplied ? quantity - 1 : quantity;
 
-  // Format countdown timer
-  const formatCountdown = (ms: number): string => {
-    if (ms <= 0) return '0:00';
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  // Update countdown timer
-  useEffect(() => {
-    if (!reservation) {
-      setCountdown('');
-      return;
-    }
-
-    const updateCountdown = () => {
-      const remaining = reservation.expiresAt - Date.now();
-      if (remaining <= 0) {
-        setCountdown('0:00');
-        setReservation(null);
-        setReservationError('Your reservation has expired. Please select tickets again.');
-        if (countdownIntervalRef.current) {
-          clearInterval(countdownIntervalRef.current);
-        }
-      } else {
-        setCountdown(formatCountdown(remaining));
-      }
-    };
-
-    updateCountdown();
-    countdownIntervalRef.current = setInterval(updateCountdown, 1000);
-
-    return () => {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
-  }, [reservation]);
-
-  // Release reservation on unmount
-  useEffect(() => {
-    if (!isAuthenticated) return;
-
-    return () => {
-      if (reservation) {
-        fetch('/api/tickets/release', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ competitionId }),
-        }).catch(() => {});
-      }
-    };
-  }, [reservation, competitionId, isAuthenticated]);
-
   // Restore a previously-chosen quantity when returning to this step (e.g. via
-  // "Change tickets" on checkout) instead of resetting to the default. Done in an
-  // effect (not the initial state) to avoid a server/client hydration mismatch.
+  // "Change tickets" on checkout) instead of resetting to the default. In an effect
+  // (not initial state) to avoid a server/client hydration mismatch.
   useEffect(() => {
     let restored: number | null = null;
     try {
@@ -129,89 +65,54 @@ export function SimpleTicketSelector({
     }
   }, [competitionId, maxQuantity]);
 
+  // Keep the custom input in sync when quantity changes from the tiles/stepper.
+  useEffect(() => {
+    setCustomValue(String(quantity));
+  }, [quantity]);
+
   const handleQuantityChange = (newQty: number) => {
     const clamped = Math.max(1, Math.min(newQty, maxQuantity));
+    setMaxNote(newQty > maxQuantity);
     setQuantity(clamped);
-    setReservationError(null);
   };
 
-  const proceedToCheckout = async () => {
+  const proceedToCheckout = () => {
     if (quantity === 0) return;
     setIsProceeding(true);
-    setReservationError(null);
 
-    // If the skill question was already answered for this competition, go straight
-    // to checkout — no need to re-show step 2 (which would just flash and forward).
+    // Skip the skill question if it was already answered for this competition.
     const nextStep =
       sessionStorage.getItem(`qcm_passed_${competitionId}`) === 'true' ? 'checkout' : 'question';
 
-    if (!isAuthenticated) {
-      sessionStorage.setItem(
-        `pending_quantity_${competitionId}`,
-        JSON.stringify({ quantity, timestamp: Date.now() })
-      );
-      if (referralApplied) {
-        sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
-      } else {
-        sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
-      }
-      router.push(`/competitions/${competitionSlug}/${nextStep}`);
-      return;
+    // Stash the chosen quantity and reserve later (at checkout) — keeps "Enter now"
+    // instant (no pre-navigation reserve, spinner or timer at the top of the funnel)
+    // and removes the reservation-expiry dead-ends. Clear any stale reservation.
+    sessionStorage.setItem(
+      `pending_quantity_${competitionId}`,
+      JSON.stringify({ quantity, timestamp: Date.now() })
+    );
+    sessionStorage.removeItem(`tickets_${competitionId}`);
+    sessionStorage.removeItem(`reservation_${competitionId}`);
+    if (referralApplied) {
+      sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
+    } else {
+      sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
     }
 
-    try {
-      const response = await fetch('/api/tickets/reserve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ competitionId, quantity }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.code === 'AGE_VERIFICATION_REQUIRED') {
-          router.push('/profile?reason=age');
-          return;
-        }
-        setReservationError(data.error ?? 'Failed to reserve tickets');
-        setIsProceeding(false);
-        return;
-      }
-
-      setReservation({
-        ticketNumbers: data.ticketNumbers,
-        expiresAt: data.expiresAt,
-      });
-
-      sessionStorage.setItem(`tickets_${competitionId}`, JSON.stringify(data.ticketNumbers));
-      sessionStorage.setItem(
-        `reservation_${competitionId}`,
-        JSON.stringify({ ticketNumbers: data.ticketNumbers, expiresAt: data.expiresAt })
-      );
-      if (referralApplied) {
-        sessionStorage.setItem(`useReferralTicket_${competitionId}`, 'true');
-      } else {
-        sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
-      }
-
-      router.push(`/competitions/${competitionSlug}/${nextStep}`);
-    } catch {
-      setReservationError('Network error. Please try again.');
-      setIsProceeding(false);
-    }
+    router.push(`/competitions/${competitionSlug}/${nextStep}`);
   };
 
   const price = ticketPrice; // ticketPrice is stored in pounds
   const bundles = [1, 5, 10, 25, 50, 100];
   const bonus = bonusTickets;
   const displayTotal = (paidTickets * ticketPrice).toFixed(2);
+  const ctaDisabled = isProceeding || quantity === 0 || sessionStatus === 'loading';
 
   return (
     <div className="inline-step">
       <div className="inline-step-head">
-        <span className="inline-step-num">01</span>
         <div>
-          <div className="step-kicker">Pick your tickets</div>
+          <div className="step-kicker">Step 1 of 3 · Pick your tickets</div>
           <h3 className="inline-step-title">How many do you want?</h3>
         </div>
       </div>
@@ -247,14 +148,25 @@ export function SimpleTicketSelector({
           <button type="button" onClick={() => handleQuantityChange(quantity - 1)}>−</button>
           <input
             type="number"
-            value={quantity}
-            onChange={e => handleQuantityChange(parseInt(e.target.value) || 1)}
+            inputMode="numeric"
+            pattern="[0-9]*"
+            value={customValue}
+            onChange={e => {
+              const v = e.target.value;
+              setCustomValue(v);
+              if (v === '') return; // allow an empty field while editing
+              const n = parseInt(v, 10);
+              if (!Number.isNaN(n)) handleQuantityChange(n);
+            }}
+            onBlur={() => setCustomValue(String(quantity))}
             min={1}
             max={maxQuantity}
           />
           <button type="button" onClick={() => handleQuantityChange(quantity + 1)}>+</button>
         </div>
-        <span className="qty-custom-max">Max {maxQuantity}{bonus > 0 ? ` · +${bonus} bonus` : ''}</span>
+        <span className="qty-custom-max">
+          {maxNote ? `Max ${maxQuantity} per person` : `Max ${maxQuantity}${bonus > 0 ? ` · +${bonus} bonus` : ''}`}
+        </span>
       </div>
 
       {/* Free referral ticket toggle (only for users who have earned one) */}
@@ -289,13 +201,6 @@ export function SimpleTicketSelector({
         </label>
       )}
 
-      {/* Error */}
-      {reservationError && (
-        <div style={{ marginTop: '12px', padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)' }}>
-          {reservationError}
-        </div>
-      )}
-
       {/* Summary + CTA */}
       <div style={{ marginTop: '18px', paddingTop: '18px', borderTop: '1.5px dashed var(--line-2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '14px', fontSize: '14px' }}>
@@ -308,11 +213,11 @@ export function SimpleTicketSelector({
         </div>
         <button
           onClick={proceedToCheckout}
-          disabled={isProceeding || quantity === 0 || sessionStatus === 'loading'}
+          disabled={ctaDisabled}
           className="btn btn-hot btn-xl btn-block"
           style={{ opacity: isProceeding ? 0.6 : 1 }}
         >
-          {isProceeding ? 'Reserving...' : `Enter now · £${displayTotal} →`}
+          {isProceeding ? 'Loading…' : `Enter now · £${displayTotal} →`}
         </button>
       </div>
 
@@ -326,15 +231,9 @@ export function SimpleTicketSelector({
         <p className="buy-trust-note">
           Skill-based prize competition — not a lottery. Free postal entry available ·{' '}
           <a href="/competition-rules" target="_blank" rel="noopener noreferrer">See rules</a>
+          <br />Run by YD PARTNERS LTD (UK).
         </p>
       </div>
-
-      {/* Reservation countdown */}
-      {reservation && countdown && (
-        <div style={{ textAlign: 'center', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: countdown === '0:00' ? 'var(--hot)' : 'var(--ink-dim)', marginTop: '8px' }}>
-          {countdown === '0:00' ? 'Reservation expired' : `Tickets reserved for ${countdown}`}
-        </div>
-      )}
 
       {/* Mobile sticky buy bar — keeps price + action in the thumb zone */}
       <div className="buy-sticky">
@@ -344,12 +243,8 @@ export function SimpleTicketSelector({
           </span>
           <span className="buy-sticky-total">£{displayTotal}</span>
         </div>
-        <button
-          onClick={proceedToCheckout}
-          disabled={isProceeding || quantity === 0 || sessionStatus === 'loading'}
-          className="btn btn-hot"
-        >
-          {isProceeding ? 'Reserving…' : 'Enter now →'}
+        <button onClick={proceedToCheckout} disabled={ctaDisabled} className="btn btn-hot">
+          {isProceeding ? 'Loading…' : 'Enter now →'}
         </button>
       </div>
 

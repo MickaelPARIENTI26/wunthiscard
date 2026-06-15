@@ -52,6 +52,28 @@ interface PageParams {
   slug: string;
 }
 
+function anonymizeName(firstName: string, lastName: string): string {
+  const f = firstName?.trim()?.[0] ?? '';
+  const l = lastName?.trim()?.[0] ?? '';
+  return [f && `${f}.`, l && `${l}.`].filter(Boolean).join(' ') || 'Winner';
+}
+
+async function getRecentWinners() {
+  const wins = await prisma.win.findMany({
+    where: { competition: { status: 'COMPLETED' } },
+    select: {
+      competition: { select: { title: true } },
+      user: { select: { firstName: true, lastName: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  });
+  return wins.map((w) => ({
+    name: w.user ? anonymizeName(w.user.firstName, w.user.lastName) : 'Lucky winner',
+    competitionTitle: w.competition.title,
+  }));
+}
+
 async function getCompetition(slug: string) {
   const competition = await prisma.competition.findUnique({
     where: { slug },
@@ -205,6 +227,9 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
       ])
     : [0, 0, 0];
 
+  // Recent winners site-wide — social proof (empty until a competition is drawn).
+  const recentWinners = isActive ? await getRecentWinners() : [];
+
   const category = competition.category as CompetitionCategory;
   const categoryColor = CATEGORY_COLORS[category];
   const _categoryBgColor = CATEGORY_BG_COLORS[category];
@@ -297,6 +322,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               {isMysteryUnrevealed ? `Mystery ${CATEGORY_LABELS[category]} Card` : competition.title}
             </h1>
 
+            {/* Prize value — the core motivator, right under the title */}
+            <div className="comp-prize-line">
+              Win this — worth <b>{formattedPrizeValue}</b>
+            </div>
+
             {/* Progress + countdown */}
             {hasTotalTickets && (
               <div className="comp-progress-combo">
@@ -305,10 +335,16 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     <b style={{ fontFamily: 'var(--display)', fontSize: '22px', letterSpacing: '-0.02em' }}>{ticketsRemaining.toLocaleString('en-GB')}</b>
                     <span style={{ color: 'var(--ink-dim)', fontSize: '13px', marginLeft: '6px' }}>/ {competition.totalTickets!.toLocaleString('en-GB')} tickets left</span>
                   </span>
-                  <span className="comp-progress-pct">{soldPercentage}% sold</span>
+                  <span className="comp-progress-pct">{soldPercentage === 0 ? 'Just launched' : `${soldPercentage}% sold`}</span>
                 </div>
                 <div className="comp-hero-bar">
-                  <div className="comp-hero-bar-fill" style={{ width: `${Math.max(soldPercentage, 3)}%` }} />
+                  <div
+                    className="comp-hero-bar-fill"
+                    style={{ width: `${Math.max(soldPercentage, 3)}%`, ...(soldPercentage === 0 ? { animation: 'none' } : {}) }}
+                  />
+                </div>
+                <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.04em', color: 'var(--ink-dim)', marginTop: '8px' }}>
+                  Max odds 1 in {competition.totalTickets!.toLocaleString('en-GB')}
                 </div>
                 <div className="comp-progress-end">
                   <span className="comp-progress-end-l">Draw ends in</span>
@@ -317,6 +353,15 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   </span>
                 </div>
               </div>
+            )}
+
+            {/* Verify strip — fairness/authenticity proofs right by the buy widget */}
+            {isActive && (
+              <p className="comp-verify-line">
+                {competition.certificationNumber ? `Cert #${competition.certificationNumber} · ` : ''}
+                {competition.grade ? `${competition.grade} · ` : ''}
+                Draws {new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} · Certified RNG live · Full refund if cancelled
+              </p>
             )}
 
             {/* Inline Step 01: ticket picker (active comps only) */}
@@ -377,6 +422,19 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <span>✉ Free postal entry</span>
               <span>📺 Live draw</span>
             </div>
+
+            {/* Recent winners — social proof */}
+            {recentWinners.length > 0 && (
+              <div className="comp-winners-strip">
+                🏆 Recent winners:{' '}
+                {recentWinners.map((w, i) => (
+                  <span key={i}>
+                    {i > 0 ? ' · ' : ''}
+                    <b>{w.name}</b>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

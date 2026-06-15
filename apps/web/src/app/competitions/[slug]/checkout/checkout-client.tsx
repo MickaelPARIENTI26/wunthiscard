@@ -102,6 +102,10 @@ export function CheckoutClient({
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === 'AGE_VERIFICATION_REQUIRED') {
+          router.push('/profile?reason=age');
+          return;
+        }
         setError(data.error ?? 'Failed to reserve tickets. Please select tickets again.');
         setIsLoading(false);
         return;

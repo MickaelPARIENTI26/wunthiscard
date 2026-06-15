@@ -697,8 +697,24 @@ input:focus, textarea:focus, select:focus,
 .comp-detail-title {
   font-family: var(--display); font-size: clamp(40px, 5vw, 60px);
   font-weight: 700; letter-spacing: -0.04em;
-  line-height: 0.98; margin: 0 0 22px;
+  line-height: 0.98; margin: 0 0 10px;
 }
+.comp-prize-line {
+  margin: 0 0 18px; font-family: var(--display);
+  font-size: clamp(18px, 4.5vw, 24px); font-weight: 600;
+  letter-spacing: -0.01em; color: var(--ink-dim);
+}
+.comp-prize-line b { color: var(--ink); font-weight: 800; }
+.comp-verify-line {
+  margin: 14px 0 0; font-family: var(--mono);
+  font-size: 11px; line-height: 1.55; letter-spacing: 0.02em;
+  color: var(--ink-faint);
+}
+.comp-winners-strip {
+  margin-top: 12px; font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.02em; color: var(--ink-dim);
+}
+.comp-winners-strip b { color: var(--ink); font-weight: 700; }
 .comp-progress-combo {
   background: var(--surface); border: 1.5px solid var(--ink);
   border-radius: 10px; padding: 16px 18px;
@@ -1302,7 +1318,11 @@ input:focus, textarea:focus, select:focus,
   .about-stat:last-child { border-bottom: none; }
   /* Enter flow: trim oversized horizontal padding */
   .enter-step { padding: 22px 18px 26px; }
-  .enter-step-foot { gap: 12px; }
+  /* Full-width primary button + hint above it on phones (steps 2 & 3), matching
+     the full-width step-1 CTA so every step has one clear thumb-wide action. */
+  .enter-step-foot { flex-direction: column; align-items: stretch; gap: 12px; }
+  .enter-step-foot .btn { width: 100%; justify-content: center; order: 2; }
+  .enter-step-foot .skill-hint { order: 1; text-align: center; }
 }
 @media (max-width: 414px) {
   /* Compact enter hero: stack card + body, shrink padding */
