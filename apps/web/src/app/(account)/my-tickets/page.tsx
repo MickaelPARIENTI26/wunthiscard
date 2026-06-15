@@ -72,7 +72,8 @@ export default async function MyTicketsPage() {
   const tickets = await prisma.ticket.findMany({
     where: {
       userId: session.user.id,
-      status: 'SOLD',
+      // Include free postal/skill entries, not just paid tickets.
+      status: { in: ['SOLD', 'FREE_ENTRY'] },
     },
     include: {
       competition: {

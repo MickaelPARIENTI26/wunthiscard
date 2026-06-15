@@ -27,7 +27,7 @@ async function getLiveCompetitions() {
       status: true,
       _count: {
         select: {
-          tickets: { where: { status: 'SOLD' } },
+          tickets: { where: { status: { in: ['SOLD', 'FREE_ENTRY'] } } },
         },
       },
     },

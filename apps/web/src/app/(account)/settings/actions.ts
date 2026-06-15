@@ -95,7 +95,7 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
     const activeTickets = await prisma.ticket.findFirst({
       where: {
         userId,
-        status: 'SOLD',
+        status: { in: ['SOLD', 'FREE_ENTRY'] },
         competition: {
           status: {
             in: ['ACTIVE', 'SOLD_OUT', 'DRAWING'],
