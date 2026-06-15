@@ -111,6 +111,24 @@ export function SimpleTicketSelector({
     };
   }, [reservation, competitionId, isAuthenticated]);
 
+  // Restore a previously-chosen quantity when returning to this step (e.g. via
+  // "Change tickets" on checkout) instead of resetting to the default. Done in an
+  // effect (not the initial state) to avoid a server/client hydration mismatch.
+  useEffect(() => {
+    let restored: number | null = null;
+    try {
+      const tickets = sessionStorage.getItem(`tickets_${competitionId}`);
+      const pending = sessionStorage.getItem(`pending_quantity_${competitionId}`);
+      if (tickets) restored = (JSON.parse(tickets) as number[]).length;
+      else if (pending) restored = (JSON.parse(pending) as { quantity: number }).quantity;
+    } catch {
+      restored = null;
+    }
+    if (restored && restored >= 1) {
+      setQuantity(Math.max(1, Math.min(restored, maxQuantity)));
+    }
+  }, [competitionId, maxQuantity]);
+
   const handleQuantityChange = (newQty: number) => {
     const clamped = Math.max(1, Math.min(newQty, maxQuantity));
     setQuantity(clamped);
@@ -122,6 +140,11 @@ export function SimpleTicketSelector({
     setIsProceeding(true);
     setReservationError(null);
 
+    // If the skill question was already answered for this competition, go straight
+    // to checkout — no need to re-show step 2 (which would just flash and forward).
+    const nextStep =
+      sessionStorage.getItem(`qcm_passed_${competitionId}`) === 'true' ? 'checkout' : 'question';
+
     if (!isAuthenticated) {
       sessionStorage.setItem(
         `pending_quantity_${competitionId}`,
@@ -132,7 +155,7 @@ export function SimpleTicketSelector({
       } else {
         sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
       }
-      router.push(`/competitions/${competitionSlug}/question`);
+      router.push(`/competitions/${competitionSlug}/${nextStep}`);
       return;
     }
 
@@ -171,7 +194,7 @@ export function SimpleTicketSelector({
         sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
       }
 
-      router.push(`/competitions/${competitionSlug}/question`);
+      router.push(`/competitions/${competitionSlug}/${nextStep}`);
     } catch {
       setReservationError('Network error. Please try again.');
       setIsProceeding(false);
