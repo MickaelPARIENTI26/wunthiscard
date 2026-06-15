@@ -590,7 +590,7 @@ input:focus, textarea:focus, select:focus,
 .comp-hero-frame {
   border: 1.5px solid var(--ink); border-radius: 18px;
   box-shadow: 8px 8px 0 var(--ink); background: var(--surface);
-  overflow: hidden; position: relative;
+  overflow: hidden; position: relative; max-width: 100%;
 }
 .comp-hero-frame.game-pokemon { background: #fff9e3; }
 .comp-hero-frame.game-one-piece { background: #fde8e8; }
@@ -1192,6 +1192,9 @@ input:focus, textarea:focus, select:focus,
 /* Responsive */
 @media (max-width: 960px) {
   .comp-hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+  /* Let the single column shrink below the image's intrinsic width (prevents the
+     card overflowing the viewport on mobile). */
+  .comp-hero-grid > * { min-width: 0; }
   .comp-hero-visual { position: static; }
   .comp-about-grid { grid-template-columns: 1fr; }
   .skill-opts { grid-template-columns: 1fr; }
@@ -1215,7 +1218,12 @@ input:focus, textarea:focus, select:focus,
   }
 }
 @media (max-width: 640px) {
-  .comp-hero { padding: 16px 20px 40px; }
+  .comp-hero { padding: 16px 16px 40px; }
+  /* Trim the card frame's inner padding + softer shadow so it fits comfortably. */
+  .comp-hero-imgwrap { padding: 24px 18px 18px; }
+  .comp-hero-frame { box-shadow: 5px 5px 0 var(--ink); }
+  .comp-hero-img { max-height: 380px; }
+  .comp-hero-marquee { font-size: 10px; letter-spacing: 0.12em; padding: 9px 14px; }
   .qty-grid { grid-template-columns: repeat(2, 1fr); }
   .qty-grid-6 { grid-template-columns: repeat(2, 1fr); }
   .qty-custom { grid-template-columns: 1fr; }
