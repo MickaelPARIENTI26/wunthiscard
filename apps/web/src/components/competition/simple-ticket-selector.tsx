@@ -30,7 +30,11 @@ export function SimpleTicketSelector({
   const { data: session, status: sessionStatus } = useSession();
   const isAuthenticated = !!session?.user;
 
-  const [quantity, setQuantity] = useState(1);
+  // Default to a popular bonus-bearing bundle (10 → +1 bonus) so the user lands on
+  // the best-value option, clamped to what's actually allowed.
+  const [quantity, setQuantity] = useState(() =>
+    Math.max(1, Math.min(10, maxTicketsPerUser - userTicketCount, availableTicketCount, 100))
+  );
   const [useReferralTicket, setUseReferralTicket] = useState(false);
   const [isProceeding, setIsProceeding] = useState(false);
   const [reservationError, setReservationError] = useState<string | null>(null);
@@ -203,6 +207,7 @@ export function SimpleTicketSelector({
               style={{ opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer' }}
               disabled={disabled}
             >
+              {b === 10 && !disabled && <div className="qty-tile-ribbon">BEST VALUE</div>}
               <div className="qty-tile-num">{b}</div>
               <div className="qty-tile-label">ticket{b > 1 ? 's' : ''}</div>
               {bb > 0 && <div className="qty-tile-bonus">+{bb}</div>}
@@ -288,12 +293,42 @@ export function SimpleTicketSelector({
         </button>
       </div>
 
+      {/* Trust / reassurance — right where the user commits */}
+      <div className="buy-trust">
+        <div className="buy-trust-chips">
+          <span>🔒 Secure Stripe payment</span>
+          <span>✓ Graded &amp; authenticated</span>
+          <span>📺 Certified live draw</span>
+        </div>
+        <p className="buy-trust-note">
+          Skill-based prize competition — not a lottery. Free postal entry available ·{' '}
+          <a href="/competition-rules" target="_blank" rel="noopener noreferrer">See rules</a>
+        </p>
+      </div>
+
       {/* Reservation countdown */}
       {reservation && countdown && (
         <div style={{ textAlign: 'center', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: countdown === '0:00' ? 'var(--hot)' : 'var(--ink-dim)', marginTop: '8px' }}>
           {countdown === '0:00' ? 'Reservation expired' : `Tickets reserved for ${countdown}`}
         </div>
       )}
+
+      {/* Mobile sticky buy bar — keeps price + action in the thumb zone */}
+      <div className="buy-sticky">
+        <div className="buy-sticky-info">
+          <span className="buy-sticky-qty">
+            {quantity} ticket{quantity > 1 ? 's' : ''}{bonus > 0 ? ` +${bonus}` : ''}
+          </span>
+          <span className="buy-sticky-total">£{displayTotal}</span>
+        </div>
+        <button
+          onClick={proceedToCheckout}
+          disabled={isProceeding || quantity === 0 || sessionStatus === 'loading'}
+          className="btn btn-hot"
+        >
+          {isProceeding ? 'Reserving…' : 'Enter now →'}
+        </button>
+      </div>
 
     </div>
   );

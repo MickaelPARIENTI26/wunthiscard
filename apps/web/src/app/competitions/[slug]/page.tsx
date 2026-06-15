@@ -230,10 +230,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
 
   const gameClass = category.toLowerCase().replace(/_/g, '-').replace('sports-', '');
-  const psa = competition.grade ?? 'PSA 10';
+  // Never fabricate a grade — show the real one, or a neutral "Authenticated".
+  const gradeBadge = competition.grade?.trim() || 'Authenticated';
 
   return (
-    <main>
+    <main className="comp-detail-main">
       {/* Back */}
       <div className="comp-back">
         <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
@@ -257,7 +258,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </div>
               <div className="comp-hero-badges">
                 <span className={`comp-game ${gameClass}`} style={{ position: 'static' }}>{CATEGORY_LABELS[category]}</span>
-                <span className="comp-hero-psa">{psa}</span>
+                <span className="comp-hero-psa">{gradeBadge}</span>
               </div>
             </div>
 
@@ -288,7 +289,8 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               style={{ padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)', borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '14px' }}
             >
               <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
-              {isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'} · #WUC-{String(competition.soldTickets).padStart(5, '0')}
+              {isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'}
+              {competition.soldTickets > 0 ? ` · ${competition.soldTickets.toLocaleString('en-GB')} entered` : ''}
             </div>
 
             <h1 className="comp-detail-title">
