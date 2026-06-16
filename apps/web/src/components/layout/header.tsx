@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu, User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -70,23 +71,7 @@ export function Header({ user = null }: HeaderProps) {
           className="flex items-center gap-2.5"
           style={{ fontFamily: 'var(--display)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.03em' }}
         >
-          {/* Green square with star */}
-          <span
-            className="grid place-items-center"
-            style={{
-              width: 34,
-              height: 34,
-              background: 'var(--accent)',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '8px',
-              boxShadow: '2px 2px 0 var(--ink)',
-              fontWeight: 700,
-              fontSize: '18px',
-              color: 'var(--ink)',
-            }}
-          >
-            ★
-          </span>
+          <Image src="/logo.png" alt="WinUCard logo" width={34} height={34} priority />
           WinUCard
         </Link>
 

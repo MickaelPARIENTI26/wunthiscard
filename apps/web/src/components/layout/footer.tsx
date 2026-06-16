@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const socialButtons = [
   { href: 'https://www.instagram.com/winucards/', label: 'Instagram' },
@@ -40,10 +41,7 @@ export function Footer() {
               className="inline-flex items-center gap-2 justify-center"
               style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '10px' }}
             >
-              <span
-                className="grid place-items-center"
-                style={{ width: 24, height: 24, background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: '5px', boxShadow: '1.5px 1.5px 0 var(--ink)', fontWeight: 700, fontSize: '13px', color: 'var(--ink)' }}
-              >★</span>
+              <Image src="/logo.png" alt="WinUCard logo" width={24} height={24} />
               WinUCard
             </Link>
             <p style={{ color: 'var(--ink-dim)', fontSize: '11px', lineHeight: 1.5, marginBottom: '12px' }}>
@@ -75,10 +73,7 @@ export function Footer() {
                 className="inline-flex items-center gap-2.5"
                 style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}
               >
-                <span
-                  className="grid place-items-center"
-                  style={{ width: 28, height: 28, background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: '6px', boxShadow: '2px 2px 0 var(--ink)', fontWeight: 700, fontSize: '15px', color: 'var(--ink)' }}
-                >★</span>
+                <Image src="/logo.png" alt="WinUCard logo" width={28} height={28} />
                 WinUCard
               </Link>
               <p style={{ color: 'var(--ink-dim)', fontSize: '13px', lineHeight: 1.55, maxWidth: '280px', marginBottom: '18px' }}>

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -102,15 +103,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         <SheetHeader className="text-left">
           <SheetTitle>
             <Link href="/" onClick={onClose} className="flex items-center gap-3">
-              <div
-                className="relative flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden"
-                style={{
-                  background: 'var(--accent)',
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-transparent" />
-                <Trophy className="h-5 w-5 relative z-10" style={{ color: 'var(--bg)' }} />
-              </div>
+              <Image src="/logo.png" alt="WinUCard logo" width={40} height={40} className="rounded-xl" />
+
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight font-sans font-bold">
                   WinUCard
