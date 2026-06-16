@@ -159,7 +159,7 @@ export function LoginForm() {
   const displayError = serverError || getErrorMessage(error);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {displayError && (
         <div
           role="alert"

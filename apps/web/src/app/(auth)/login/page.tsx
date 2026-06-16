@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <div>
-      <div className="text-center mb-7">
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: '32px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+      <div className="text-center mb-5">
+        <h1 style={{ fontFamily: 'var(--display)', fontSize: '26px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 4px' }}>
           Welcome Back
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>

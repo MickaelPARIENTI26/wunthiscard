@@ -3,10 +3,10 @@ import Image from 'next/image';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section style={{ padding: '48px 20px 80px', background: 'var(--bg)', minHeight: 'calc(100vh - 200px)' }}>
+    <section style={{ padding: '24px 20px 40px', background: 'var(--bg)', minHeight: 'calc(100vh - 200px)' }}>
       <div style={{ maxWidth: '480px', margin: '0 auto' }}>
         {/* Brand mark */}
-        <div className="flex justify-center mb-7">
+        <div className="flex justify-center mb-4">
           <Link
             href="/"
             className="inline-flex items-center gap-2.5"
@@ -23,7 +23,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             background: 'var(--surface)',
             border: '1.5px solid var(--ink)',
             borderRadius: 'var(--radius)',
-            padding: '36px',
+            padding: '24px 28px 28px',
             boxShadow: 'var(--shadow-lg)',
           }}
         >
