@@ -230,7 +230,7 @@ export default async function MyTicketsPage() {
                       background: 'var(--bg-2)',
                       flexShrink: 0,
                     }}
-                    className="sm:w-40 sm:aspect-square"
+                    className="sm:w-40 sm:aspect-square max-sm:hidden"
                   >
                     <Image
                       src={competition.mainImageUrl}
@@ -369,7 +369,7 @@ export default async function MyTicketsPage() {
                       >
                         Your tickets · {ticketNumbers.length}
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      <div className="hidden sm:flex flex-wrap" style={{ gap: '6px' }}>
                         {ticketNumbers
                           .sort((a, b) => a - b)
                           .map((num) => {
