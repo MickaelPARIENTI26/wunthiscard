@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,19 +12,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             className="inline-flex items-center gap-2.5"
             style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700 }}
           >
-            <span
-              className="grid place-items-center"
-              style={{
-                width: 36, height: 36,
-                background: 'var(--accent)',
-                border: '1.5px solid var(--ink)',
-                borderRadius: '8px',
-                boxShadow: '2px 2px 0 var(--ink)',
-                fontWeight: 700, fontSize: '18px', color: 'var(--ink)',
-              }}
-            >
-              ★
-            </span>
+            <Image src="/logo.png" alt="WinUCard logo" width={36} height={36} priority />
             WinUCard
           </Link>
         </div>
