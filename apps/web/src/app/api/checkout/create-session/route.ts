@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { isAdult } from '@/lib/age';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
-import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits } from '@/lib/redis';
+import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits, CHECKOUT_RESERVATION_TTL } from '@/lib/redis';
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
@@ -359,6 +359,23 @@ export async function POST(request: NextRequest) {
         stripeSessionId: checkoutSession.id,
       },
     });
+
+    // Hold the reserved tickets for the FULL Stripe Checkout window (~31 min, just
+    // beyond the 30-min session expiry) so they can't be resold while the buyer is
+    // on the payment page. Extend BOTH the Redis lock and the DB reservedUntil — the
+    // 5-minute selection hold would otherwise expire mid-payment and let another
+    // buyer grab the same numbers (causing a paid-but-under-delivered order).
+    // Best-effort: a Redis/DB hiccup here must not block checkout — the webhook
+    // reassigns any lost numbers from available stock as a backstop.
+    try {
+      await extendReservation(competitionId, userId, CHECKOUT_RESERVATION_TTL);
+      await prisma.ticket.updateMany({
+        where: { competitionId, userId, status: 'RESERVED' },
+        data: { reservedUntil: new Date(Date.now() + CHECKOUT_RESERVATION_TTL * 1000) },
+      });
+    } catch (extendError) {
+      console.error('Failed to extend reservation to the checkout window:', extendError);
+    }
 
     // Log checkout initiation
     await prisma.auditLog.create({

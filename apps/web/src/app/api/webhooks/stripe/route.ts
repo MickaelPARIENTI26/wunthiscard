@@ -188,13 +188,49 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       },
     });
 
-    // Verify all expected tickets were updated
-    if (ticketUpdateResult.count !== ticketNumbers.length) {
-      console.error(
-        `Ticket count mismatch: expected ${ticketNumbers.length}, updated ${ticketUpdateResult.count}`
-      );
-      // Don't throw - payment succeeded so we should continue
-      // The user will get the tickets that were successfully updated
+    // Make the buyer whole if any of their reserved numbers were lost (e.g. the
+    // hold lapsed and another buyer took them): assign the shortfall from genuinely
+    // AVAILABLE tickets, inside this transaction. They paid for N tickets and must
+    // receive N. The extended checkout-window hold makes this path rare, but we must
+    // never silently under-deliver a paid order.
+    let assignedPaidCount = ticketUpdateResult.count;
+    if (assignedPaidCount < ticketNumbers.length) {
+      const shortfall = ticketNumbers.length - assignedPaidCount;
+      const replacements = await tx.ticket.findMany({
+        where: {
+          competitionId: order.competitionId,
+          status: 'AVAILABLE',
+          ticketNumber: { notIn: ticketNumbers },
+        },
+        take: shortfall,
+        orderBy: { ticketNumber: 'asc' },
+        select: { ticketNumber: true },
+      });
+      if (replacements.length > 0) {
+        const replacementNumbers = replacements.map((t) => t.ticketNumber);
+        const repResult = await tx.ticket.updateMany({
+          where: {
+            competitionId: order.competitionId,
+            ticketNumber: { in: replacementNumbers },
+            status: 'AVAILABLE', // re-check inside the tx to avoid a race
+          },
+          data: {
+            orderId: order.id,
+            userId: order.userId,
+            status: 'SOLD',
+            reservedUntil: null,
+          },
+        });
+        assignedPaidCount += repResult.count;
+      }
+      if (assignedPaidCount < ticketNumbers.length) {
+        // Still short → the competition is genuinely out of tickets. The payment
+        // already succeeded, so we don't fail the webhook; flag loudly for a manual
+        // refund of the difference. Should be near-impossible with the extended hold.
+        console.error(
+          `UNDER-DELIVERY order=${order.id}: paid for ${ticketNumbers.length} tickets, only ${assignedPaidCount} assignable — manual refund of the difference required.`
+        );
+      }
     }
 
     // Assign bonus tickets if any

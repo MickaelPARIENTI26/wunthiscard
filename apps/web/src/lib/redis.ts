@@ -312,7 +312,11 @@ export const rateLimits = {
 };
 
 // Ticket reservation lock constants
-export const TICKET_RESERVATION_TTL = 300; // 5 minutes in seconds
+export const TICKET_RESERVATION_TTL = 300; // 5 minutes — selection/skill-question window
+// Once the buyer commits to paying, the hold is extended to outlast the Stripe
+// Checkout session (30 min — see create-session expires_at) so their reserved
+// numbers can't be resold to someone else while they sit on the payment page.
+export const CHECKOUT_RESERVATION_TTL = 31 * 60; // 31 minutes in seconds
 export const QCM_ATTEMPT_TTL = 900; // 15 minutes in seconds
 export const MAX_QCM_ATTEMPTS = 3;
 
@@ -469,7 +473,8 @@ export async function getReservation(
 // Extend/refresh an existing reservation TTL
 export async function extendReservation(
   competitionId: string,
-  userId: string
+  userId: string,
+  ttlSeconds: number = TICKET_RESERVATION_TTL
 ): Promise<{ success: boolean; expiresAt: number }> {
   const reservationKey = getTicketReservationKey(competitionId, userId);
   const data = await redis.get<string>(reservationKey);
@@ -479,18 +484,18 @@ export async function extendReservation(
   }
 
   const reservationData: ReservationData = typeof data === 'string' ? JSON.parse(data) : data;
-  const newExpiresAt = Date.now() + TICKET_RESERVATION_TTL * 1000;
+  const newExpiresAt = Date.now() + ttlSeconds * 1000;
 
   // Update reservation with new expiry
   reservationData.expiresAt = newExpiresAt;
-  await redis.set(reservationKey, JSON.stringify(reservationData), { ex: TICKET_RESERVATION_TTL });
+  await redis.set(reservationKey, JSON.stringify(reservationData), { ex: ttlSeconds });
 
   // Also extend all ticket locks
   for (const ticketNumber of reservationData.ticketNumbers) {
     const lockKey = getTicketLockKey(competitionId, ticketNumber);
     const lockedBy = await redis.get<string>(lockKey);
     if (lockedBy === userId) {
-      await redis.expire(lockKey, TICKET_RESERVATION_TTL);
+      await redis.expire(lockKey, ttlSeconds);
     }
   }
 
