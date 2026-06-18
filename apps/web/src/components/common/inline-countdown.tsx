@@ -34,7 +34,14 @@ export function InlineCountdown({ targetDate }: InlineCountdownProps) {
   }, [targetDate]);
 
   return (
-    <span style={{ color: ended ? 'var(--hot)' : urgent ? 'var(--hot)' : undefined, fontWeight: ended || urgent ? 700 : undefined }}>
+    // notranslate / translate="no": the timer is English ("26d 12:34:56"). Without
+    // this, browser auto-translate (e.g. to French) rewrites the "d" unit to "j"
+    // (jour), so users intermittently saw "26j". Keep the unit fixed in English.
+    <span
+      translate="no"
+      className="notranslate"
+      style={{ color: ended ? 'var(--hot)' : urgent ? 'var(--hot)' : undefined, fontWeight: ended || urgent ? 700 : undefined }}
+    >
       {text}
     </span>
   );
