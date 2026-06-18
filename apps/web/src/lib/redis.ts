@@ -290,8 +290,10 @@ export const rateLimits = {
   // Login: 5 attempts per 15 minutes
   login: createRateLimiter({ requests: 5, window: '15 m', prefix: 'ratelimit:login' }),
 
-  // Signup: 3 attempts per hour
-  signup: createRateLimiter({ requests: 3, window: '1 h', prefix: 'ratelimit:signup' }),
+  // Signup: 10 attempts per hour. CAPTCHA (Turnstile) is the primary bot
+  // defense; this is just a safety net. Kept generous so multiple real users
+  // behind one shared/carrier IP (CGNAT, offices, cafés) aren't locked out.
+  signup: createRateLimiter({ requests: 10, window: '1 h', prefix: 'ratelimit:signup' }),
 
   // Password reset: 3 attempts per hour
   passwordReset: createRateLimiter({ requests: 3, window: '1 h', prefix: 'ratelimit:password-reset' }),
