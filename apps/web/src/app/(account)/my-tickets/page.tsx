@@ -221,23 +221,29 @@ export default async function MyTicketsPage() {
                 className="sm:flex-row"
               >
                 <div className="flex flex-col sm:flex-row" style={{ flex: 1 }}>
-                  {/* Image */}
+                  {/* Image — fixed thumbnail on desktop, hidden on mobile.
+                      (Inline width/aspect must hold the size: inline styles beat
+                      the Tailwind sm: classes, so the size lives here.) */}
                   <div
                     style={{
                       position: 'relative',
-                      width: '100%',
-                      aspectRatio: '16 / 10',
+                      width: '128px',
+                      aspectRatio: '1 / 1',
                       background: 'var(--bg-2)',
                       flexShrink: 0,
+                      alignSelf: 'center',
+                      marginLeft: '14px',
+                      borderRadius: '10px',
+                      overflow: 'hidden',
                     }}
-                    className="sm:w-40 sm:aspect-square max-sm:hidden"
+                    className="max-sm:hidden"
                   >
                     <Image
                       src={competition.mainImageUrl}
                       alt={competition.title}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 100vw, 160px"
+                      sizes="128px"
                     />
                     {isWinner && (
                       <div
