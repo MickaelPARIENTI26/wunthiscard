@@ -19,8 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Ban, ShieldCheck, MoreVertical, Shield, Mail } from 'lucide-react';
-import { banUser, unbanUser, updateUserRole } from '@/app/dashboard/users/actions';
+import { Ban, ShieldCheck, MoreVertical, Shield, Mail, MailCheck } from 'lucide-react';
+import { banUser, unbanUser, updateUserRole, verifyUserEmail } from '@/app/dashboard/users/actions';
 
 interface UserActionsProps {
   user: {
@@ -28,6 +28,7 @@ interface UserActionsProps {
     email: string;
     role: 'USER' | 'ADMIN' | 'SUPER_ADMIN' | 'DRAW_MASTER';
     isBanned: boolean;
+    emailVerified: Date | string | null;
   };
 }
 
@@ -35,6 +36,12 @@ export function UserActions({ user }: UserActionsProps) {
   const [isPending, startTransition] = useTransition();
   const [showBanDialog, setShowBanDialog] = useState(false);
   const [showRoleDialog, setShowRoleDialog] = useState(false);
+
+  const handleVerifyEmail = () => {
+    startTransition(async () => {
+      await verifyUserEmail(user.id);
+    });
+  };
 
   const handleBan = () => {
     startTransition(async () => {
@@ -72,6 +79,12 @@ export function UserActions({ user }: UserActionsProps) {
             <Mail className="mr-2 h-4 w-4" />
             Send Email
           </DropdownMenuItem>
+          {!user.emailVerified && (
+            <DropdownMenuItem onClick={handleVerifyEmail} disabled={isPending}>
+              <MailCheck className="mr-2 h-4 w-4" />
+              Mark email verified
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setShowRoleDialog(true)}>
             <Shield className="mr-2 h-4 w-4" />

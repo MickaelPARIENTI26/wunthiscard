@@ -77,6 +77,27 @@ export async function unbanUser(userId: string) {
   revalidatePath(`/dashboard/users/${userId}`);
 }
 
+export async function verifyUserEmail(userId: string) {
+  const session = await auth();
+  const adminId = requireAdmin(session);
+
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { emailVerified: new Date() },
+  });
+
+  await createAuditLog({
+    action: 'USER_EMAIL_VERIFIED',
+    entityType: 'User',
+    entityId: userId,
+    adminId,
+    details: { email: user.email, method: 'admin_manual' },
+  });
+
+  revalidatePath('/dashboard/users');
+  revalidatePath(`/dashboard/users/${userId}`);
+}
+
 export async function updateUserRole(userId: string, role: 'USER' | 'ADMIN') {
   const session = await auth();
   const adminId = requireAdmin(session);
