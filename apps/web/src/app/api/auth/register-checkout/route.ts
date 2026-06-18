@@ -6,6 +6,7 @@ import { prisma } from '@winucard/database';
 import { passwordSchema } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
+import { sendVerificationEmail } from '@/lib/email';
 
 const scryptAsync = promisify(scrypt);
 
@@ -158,6 +159,21 @@ export async function POST(request: NextRequest) {
 
       return newUser;
     });
+
+    // Send the verification email so guest-checkout registrants can actually
+    // activate their account. This was previously omitted here (only the token
+    // was created), which left every guest-checkout user permanently unverified
+    // and unable to purchase. A send failure must not fail the request — the
+    // account exists and the user can request a resend.
+    if (isProduction) {
+      try {
+        await sendVerificationEmail(data.email, verificationToken, data.firstName);
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+      }
+    } else {
+      console.log(`[DEV] Verification token for ${data.email}: ${verificationToken}`);
+    }
 
     return NextResponse.json({
       success: true,

@@ -56,10 +56,13 @@ export async function POST(request: NextRequest) {
 
     const { competitionId, quantity } = validation.data;
 
-    // Check if user is verified
+    // Load the buyer's account status. NOTE: paid purchases intentionally do NOT
+    // require a verified email — the Stripe payment is the legitimacy signal, and
+    // blocking checkout to verify kills conversion. Free entries DO require a
+    // verified email (anti-abuse) — see /api/tickets/free-entry.
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { emailVerified: true, isBanned: true, dateOfBirth: true },
+      select: { isBanned: true, dateOfBirth: true },
     });
 
     if (!user) {
@@ -69,13 +72,6 @@ export async function POST(request: NextRequest) {
     if (user.isBanned) {
       return NextResponse.json(
         { error: 'Your account has been suspended' },
-        { status: 403 }
-      );
-    }
-
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        { error: 'Please verify your email before purchasing tickets' },
         { status: 403 }
       );
     }

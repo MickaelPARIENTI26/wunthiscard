@@ -208,7 +208,6 @@ export async function POST(request: NextRequest) {
         email: true,
         firstName: true,
         lastName: true,
-        emailVerified: true,
         isBanned: true,
         dateOfBirth: true,
         referralFreeTicketsAvailable: true,
@@ -226,12 +225,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        { error: 'Please verify your email before purchasing tickets' },
-        { status: 403 }
-      );
-    }
+    // Paid purchases intentionally do NOT require a verified email — the Stripe
+    // payment is the legitimacy signal. (Free entries DO; see free-entry route.)
 
     // 18+ is a legal requirement (UK Gambling Act 2005). Hard server-side gate on
     // the money path — independent of the client AgeGate cookie.
