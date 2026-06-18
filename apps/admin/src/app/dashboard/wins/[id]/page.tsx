@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
-import { auth } from '@/lib/auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,6 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { DeliveryStatusForm } from './delivery-status-form';
-import { ReDrawButton } from './redraw-button';
 
 interface WinPageProps {
   params: Promise<{ id: string }>;
@@ -74,7 +72,6 @@ function getStatusBadge(status: DeliveryStatus) {
 
 export default async function WinPage({ params }: WinPageProps) {
   const { id } = await params;
-  const session = await auth();
 
   const win = await prisma.win.findUnique({
     where: { id },
@@ -116,7 +113,6 @@ export default async function WinPage({ params }: WinPageProps) {
     (Date.now() - win.createdAt.getTime()) / (1000 * 60 * 60 * 24)
   );
   const showUnclaimedWarning = status === 'PENDING' && daysSinceWin >= 14;
-  const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN';
 
   return (
     <div className="space-y-6">
@@ -144,22 +140,9 @@ export default async function WinPage({ params }: WinPageProps) {
           <AlertDescription className="mt-2">
             <p>
               The winner has not claimed their prize within 14 days. According to competition terms,
-              you may void this win and run a re-draw to select a new winner.
+              you may need to follow up with the winner or coordinate a re-draw with the external
+              draw company.
             </p>
-            {isSuperAdmin && (
-              <div className="mt-4">
-                <ReDrawButton
-                  winId={win.id}
-                  competitionId={win.competition.id}
-                  competitionTitle={win.competition.title}
-                />
-              </div>
-            )}
-            {!isSuperAdmin && (
-              <p className="mt-2 text-sm">
-                Contact a Super Admin to initiate a re-draw.
-              </p>
-            )}
           </AlertDescription>
         </Alert>
       )}

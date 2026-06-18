@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatPrice, formatDate, formatDateTime, calculateProgress } from '@winucard/shared';
 import { COMPETITION_CATEGORIES, COMPETITION_STATUSES } from '@winucard/shared';
-import { Pencil, ArrowLeft, Dices, EyeOff, Eye } from 'lucide-react';
+import { Pencil, ArrowLeft, EyeOff, Eye } from 'lucide-react';
 import { auth } from '@/lib/auth';
 import type { CompetitionStatus } from '@winucard/database';
 import { CancelCompetitionDialog } from './cancel-competition-dialog';
 import { RevealMysteryButton } from './reveal-mystery-button';
 import { ParticipantsExport } from './participants-export';
+import { RecordWinner } from './record-winner';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
@@ -100,10 +101,13 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
   const progress = calculateProgress(soldTickets, competition.totalTickets);
   const questionChoices = competition.questionChoices as string[];
 
-  // Check if eligible for draw
+  // Check if eligible to record a winner (the external draw company has run the draw).
+  // ADMIN and SUPER_ADMIN can record the result once the competition is drawable and
+  // has not already been completed / has no winner yet.
+  const isAdmin = session?.user?.role === 'ADMIN' || session?.user?.role === 'SUPER_ADMIN';
   const drawDatePassed = new Date(competition.drawDate) <= new Date();
-  const canDraw =
-    session?.user?.role === 'SUPER_ADMIN' &&
+  const canRecordWinner =
+    isAdmin &&
     competition.status !== 'COMPLETED' &&
     competition.status !== 'CANCELLED' &&
     competition.status !== 'DRAFT' &&
@@ -142,15 +146,7 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {canDraw && (
-            <Button asChild variant="default">
-              <Link href={`/dashboard/competitions/${id}/draw`}>
-                <Dices className="mr-2 h-4 w-4" />
-                Execute Draw
-              </Link>
-            </Button>
-          )}
-          <Button asChild variant={canDraw ? 'outline' : 'default'}>
+          <Button asChild variant="default">
             <Link href={`/dashboard/competitions/${id}/edit`}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit
@@ -208,6 +204,8 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
       </div>
 
       <ParticipantsExport competitionId={id} stats={participantStats} />
+
+      {canRecordWinner && <RecordWinner competitionId={id} />}
 
       {/* Mystery Card Section */}
       {competition.isMystery && (

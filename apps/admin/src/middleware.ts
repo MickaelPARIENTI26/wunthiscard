@@ -29,7 +29,7 @@ export default auth((req) => {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const role = req.auth?.user?.role;
-    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN' && role !== 'DRAW_MASTER') {
+    if (role !== 'ADMIN' && role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     return NextResponse.next();

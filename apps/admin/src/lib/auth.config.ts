@@ -6,16 +6,15 @@ import type { NextAuthConfig } from 'next-auth';
  * SECURITY NOTES:
  * - Uses separate cookie names from public site (wtc-admin.*)
  * - SUPER_ADMIN: Full access to all admin features
- * - ADMIN: Full access except draw execution
- * - DRAW_MASTER: Access ONLY to draw pages (/draw section)
- * - Session expires after 8 hours for ADMIN/SUPER_ADMIN
- * - Session expires after 4 hours for DRAW_MASTER (shorter for security)
+ * - ADMIN: Full access to all admin features
+ * - The prize draw is run by an external company; admins record the winning
+ *   ticket number manually from the competition detail page.
+ * - Session expires after 8 hours for admins
  * - AUTH_SECRET must be a strong random string
  */
 
-// Session durations in seconds
+// Session duration in seconds
 const SESSION_DURATION_DEFAULT = 8 * 60 * 60; // 8 hours for ADMIN/SUPER_ADMIN
-const SESSION_DURATION_DRAW_MASTER = 4 * 60 * 60; // 4 hours for DRAW_MASTER
 export const authConfig = {
   secret: process.env.AUTH_SECRET,
   trustHost: true, // Required for NextAuth v5 behind the Vercel proxy (avoids UntrustedHost)
@@ -64,12 +63,7 @@ export const authConfig = {
         token.firstName = user.firstName;
         token.lastName = user.lastName;
 
-        // Set custom expiry based on role
-        const sessionDuration =
-          user.role === 'DRAW_MASTER'
-            ? SESSION_DURATION_DRAW_MASTER
-            : SESSION_DURATION_DEFAULT;
-        token.expiresAt = Date.now() + sessionDuration * 1000;
+        token.expiresAt = Date.now() + SESSION_DURATION_DEFAULT * 1000;
       }
 
       // Check if custom expiry has passed (for role-based expiry)
@@ -100,56 +94,22 @@ export const authConfig = {
       // Check if token has expired (role-based expiry)
       // @ts-expect-error - custom expired flag on session
       if (auth?.expired) {
-        const loginPage =
-          nextUrl.pathname.startsWith('/draw') ? '/draw/login' : '/login';
         return Response.redirect(
-          new URL(`${loginPage}?error=SessionExpired`, nextUrl)
+          new URL('/login?error=SessionExpired', nextUrl)
         );
       }
 
       const isLoggedIn = !!auth?.user;
       const pathname = nextUrl.pathname;
       const isOnDashboard = pathname.startsWith('/dashboard');
-      const isOnDrawLogin = pathname === '/draw/login';
-      const isOnDrawSection = pathname.startsWith('/draw') && pathname !== '/draw/login';
-      const isDrawPage = /^\/dashboard\/competitions\/[^/]+\/draw/.test(pathname);
-
-      // Draw login page is always accessible
-      if (isOnDrawLogin) {
-        return true;
-      }
-
-      // Draw section pages (/draw, /draw/[id]) - protected for DRAW_MASTER and SUPER_ADMIN
-      if (isOnDrawSection) {
-        if (!isLoggedIn) {
-          return Response.redirect(new URL('/draw/login', nextUrl));
-        }
-
-        const role = auth?.user?.role;
-        if (role === 'SUPER_ADMIN' || role === 'DRAW_MASTER') {
-          return true;
-        }
-
-        return Response.redirect(new URL('/draw/login?error=AccessDenied', nextUrl));
-      }
 
       if (isOnDashboard) {
         if (!isLoggedIn) return false;
 
         const role = auth?.user?.role;
 
-        // SUPER_ADMIN has full access
-        if (role === 'SUPER_ADMIN') return true;
-
-        // ADMIN has access to everything except draw pages (optional: remove this line to allow)
-        if (role === 'ADMIN') return true;
-
-        // DRAW_MASTER can ONLY access draw pages
-        if (role === 'DRAW_MASTER') {
-          if (isDrawPage) return true;
-          // Redirect to draw login if trying to access other pages
-          return Response.redirect(new URL('/draw/login?error=AccessDenied', nextUrl));
-        }
+        // ADMIN and SUPER_ADMIN have full access to the admin dashboard
+        if (role === 'SUPER_ADMIN' || role === 'ADMIN') return true;
 
         return false;
       }

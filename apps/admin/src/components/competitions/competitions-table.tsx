@@ -53,7 +53,6 @@ import {
   Trash2,
   Eye,
   ArrowUpDown,
-  Dices,
   Star,
 } from 'lucide-react';
 import type { CompetitionCategory, CompetitionStatus } from '@winucard/database';
@@ -202,15 +201,6 @@ const columns: ColumnDef<Competition>[] = [
       const canPublish = competition.status === 'DRAFT';
       const canActivate = competition.status === 'UPCOMING';
 
-      // Can draw if: SOLD_OUT or (ACTIVE/SOLD_OUT and draw date has passed)
-      const drawDatePassed = new Date(competition.drawDate) <= new Date();
-      const canDraw =
-        competition.status !== 'COMPLETED' &&
-        competition.status !== 'CANCELLED' &&
-        competition.status !== 'DRAFT' &&
-        competition.status !== 'UPCOMING' &&
-        (competition.status === 'SOLD_OUT' || drawDatePassed);
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -240,14 +230,6 @@ const columns: ColumnDef<Competition>[] = [
               Duplicate
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            {canDraw && (
-              <DropdownMenuItem asChild>
-                <Link href={`/dashboard/competitions/${competition.id}/draw`}>
-                  <Dices className="mr-2 h-4 w-4" />
-                  Execute Draw
-                </Link>
-              </DropdownMenuItem>
-            )}
             {canPublish && (
               <DropdownMenuItem
                 onClick={() => updateCompetitionStatus(competition.id, 'UPCOMING')}

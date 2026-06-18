@@ -740,6 +740,150 @@ export async function setFeaturedCompetition(competitionId: string | null) {
   }
 }
 
+export async function recordWinner(competitionId: string, ticketNumber: number) {
+  const session = await auth();
+  if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+    throw new Error('Unauthorized');
+  }
+  const adminId = session.user.id;
+  const adminRole = session.user.role;
+
+  if (!Number.isInteger(ticketNumber) || ticketNumber < 1) {
+    throw new Error('Please enter a valid winning ticket number.');
+  }
+
+  const competition = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      prizeValue: true,
+      totalTickets: true,
+      winnerNotified: true,
+    },
+  });
+
+  if (!competition) {
+    throw new Error('Competition not found');
+  }
+
+  if (competition.status === 'COMPLETED') {
+    throw new Error('A winner has already been recorded for this competition.');
+  }
+
+  // Find the winning ticket (must be a participating SOLD or FREE_ENTRY ticket with a user)
+  const ticket = await prisma.ticket.findFirst({
+    where: {
+      competitionId,
+      ticketNumber,
+      status: { in: ['SOLD', 'FREE_ENTRY'] },
+      userId: { not: null },
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          displayName: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!ticket || !ticket.userId || !ticket.user) {
+    throw new Error('No participating ticket with that number (it must be a SOLD or FREE_ENTRY ticket).');
+  }
+
+  const winner = ticket.user;
+  const winnerName = winner.displayName || `${winner.firstName} ${winner.lastName}`;
+
+  // Count participating tickets for the draw-log audit trail
+  const ticketsSold = await prisma.ticket.count({
+    where: { competitionId, status: { in: ['SOLD', 'FREE_ENTRY'] } },
+  });
+
+  const drawDate = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.win.create({
+      data: {
+        competitionId,
+        userId: winner.id,
+        ticketNumber,
+        prizePosition: 1,
+      },
+    });
+
+    await tx.competition.update({
+      where: { id: competitionId },
+      data: {
+        status: 'COMPLETED',
+        actualDrawDate: drawDate,
+        winningTicketNumber: ticketNumber,
+        drawnById: adminId,
+        winnerNotified: false,
+      },
+    });
+
+    await tx.drawLog.create({
+      data: {
+        competitionId,
+        competitionTitle: competition.title,
+        totalTickets: competition.totalTickets ?? ticketsSold,
+        ticketsSold,
+        winningTicketNumber: ticketNumber,
+        winnerUserId: winner.id,
+        winnerName,
+        winnerEmail: winner.email,
+        drawnById: adminId,
+        drawnByRole: adminRole,
+        drawMethod: 'manual_external',
+      },
+    });
+
+    await tx.auditLog.create({
+      data: {
+        userId: adminId,
+        action: 'WINNER_RECORDED',
+        entity: 'competition',
+        entityId: competitionId,
+        metadata: {
+          ticketNumber,
+          winnerId: winner.id,
+          method: 'manual_external',
+        },
+      },
+    });
+  });
+
+  // Send the winner notification email (best-effort — must not throw out of the action)
+  try {
+    const { sendWinnerNotificationEmail } = await import('@/lib/email');
+    const result = await sendWinnerNotificationEmail(winner.email, winner.firstName, {
+      competitionTitle: competition.title,
+      ticketNumber,
+      prizeValue: Number(competition.prizeValue),
+    });
+    if (result.success) {
+      await prisma.competition.update({
+        where: { id: competitionId },
+        data: { winnerNotified: true },
+      });
+    }
+  } catch (error) {
+    console.error('Failed to send winner notification email:', error);
+  }
+
+  revalidatePath('/dashboard/competitions');
+  revalidatePath(`/dashboard/competitions/${competitionId}`);
+  revalidatePath('/dashboard/wins');
+
+  return { success: true };
+}
+
 export async function revealMysteryCard(competitionId: string) {
   const session = await auth();
   if (!session?.user || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
