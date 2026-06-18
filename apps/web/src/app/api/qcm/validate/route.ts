@@ -9,17 +9,17 @@ import {
   isQcmBlocked,
   markQcmPassed,
   hasPassedQcm,
-  getReservation,
-  extendReservation,
-  recreateReservation,
-  releaseTicketsFromRedis,
   MAX_QCM_ATTEMPTS,
 } from '@/lib/redis';
 
 const validateSchema = z.object({
   competitionId: z.string().min(1),
   answer: z.number().int().min(0).max(3),
-  turnstileToken: process.env.NODE_ENV === 'production' ? z.string().min(1, 'CAPTCHA verification required') : z.string().optional(),
+  // Optional on purpose: the skill question is already protected by per-identifier
+  // attempt limiting (MAX_QCM_ATTEMPTS + 15-min block), and the invisible Turnstile
+  // token can race the submit (which previously caused "Invalid request data" and
+  // blocked legitimate buyers). Verified below only when present.
+  turnstileToken: z.string().optional(),
   ticketNumbers: z.array(z.number().int().positive()).optional(),
 });
 
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { competitionId, answer, turnstileToken, ticketNumbers } = validation.data;
+    const { competitionId, answer, turnstileToken } = validation.data;
 
     // Verify Turnstile captcha if token provided
     if (turnstileToken) {
@@ -84,74 +84,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // For authenticated users, verify/manage their reservation
-    // Anonymous users will create reservation at checkout
-    let newExpiresAt: number | null = null;
-    if (userId) {
-      let reservation = await getReservation(competitionId, userId);
-
-      if (reservation) {
-        // Reservation exists - extend it to prevent expiration during checkout
-        const extendResult = await extendReservation(competitionId, userId);
-        if (extendResult.success) {
-          newExpiresAt = extendResult.expiresAt;
-        }
-      } else if (ticketNumbers && ticketNumbers.length > 0) {
-        // Reservation expired but we have ticket numbers from sessionStorage - recreate it
-        const recreateResult = await recreateReservation(competitionId, userId, ticketNumbers);
-        if (!recreateResult.success) {
-          return NextResponse.json(
-            { error: recreateResult.error || 'Failed to reserve tickets. Please select tickets again.' },
-            { status: 400 }
-          );
-        }
-
-        // Also update database tickets to RESERVED (Redis-only recreation doesn't update DB)
-        const now = new Date();
-        const updateResult = await prisma.ticket.updateMany({
-          where: {
-            competitionId,
-            ticketNumber: { in: ticketNumbers },
-            OR: [
-              { status: 'AVAILABLE' },
-              {
-                status: 'RESERVED',
-                reservedUntil: { lte: now }, // Expired reservation
-              },
-              {
-                status: 'RESERVED',
-                userId, // User's own existing reservation
-              },
-            ],
-          },
-          data: {
-            status: 'RESERVED',
-            userId,
-            reservedUntil: new Date(recreateResult.expiresAt),
-          },
-        });
-
-        // Verify all tickets were successfully reserved in the database
-        if (updateResult.count !== ticketNumbers.length) {
-          // Some tickets couldn't be reserved - release the Redis locks
-          await releaseTicketsFromRedis(competitionId, userId);
-          return NextResponse.json(
-            { error: 'Some tickets are no longer available. Please select tickets again.' },
-            { status: 409 }
-          );
-        }
-
-        newExpiresAt = recreateResult.expiresAt;
-        reservation = await getReservation(competitionId, userId);
-      }
-
-      if (!reservation) {
-        return NextResponse.json(
-          { error: 'No active ticket reservation found. Please select tickets again.' },
-          { status: 400 }
-        );
-      }
-    }
+    // No reservation is required to answer the skill question. The selector no
+    // longer pre-reserves; tickets are reserved at checkout (/api/tickets/reserve)
+    // AFTER the question is passed. Requiring a reservation here used to block every
+    // logged-in buyer in the new flow ("No active ticket reservation found").
 
     // Get competition and verify status
     const competition = await prisma.competition.findUnique({
@@ -201,8 +137,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         correct: true,
         message: 'Correct! You can now proceed to checkout.',
-        // Return new expiry time so client can update the timer
-        ...(newExpiresAt && { expiresAt: newExpiresAt }),
       });
     }
 
