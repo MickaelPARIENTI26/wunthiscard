@@ -287,8 +287,13 @@ function createRateLimiter(opts: { requests: number; window: string; prefix: str
 
 // Rate limiters for different endpoints
 export const rateLimits = {
-  // Login: 5 attempts per 15 minutes
+  // Login: 5 attempts per 15 minutes (keyed per-account email).
   login: createRateLimiter({ requests: 5, window: '15 m', prefix: 'ratelimit:login' }),
+
+  // Login (per-IP): looser cap to throttle credential-stuffing / password-
+  // spraying across many accounts from a single source, without locking out
+  // shared/NAT IPs (CGNAT, offices, cafés) doing legitimate logins.
+  loginIp: createRateLimiter({ requests: 30, window: '15 m', prefix: 'ratelimit:login-ip' }),
 
   // Signup: 10 attempts per hour. CAPTCHA (Turnstile) is the primary bot
   // defense; this is just a safety net. Kept generous so multiple real users
@@ -339,6 +344,42 @@ export function getQcmBlockKey(competitionId: string, userId: string): string {
 
 export function getQcmPassedKey(competitionId: string, userId: string): string {
   return `qcm-passed:${competitionId}:${userId}`;
+}
+
+// Free-entry ticket-number allocation (unlimited free competitions)
+// ------------------------------------------------------------------
+// Unlimited free competitions create ticket rows on demand, so the next
+// ticketNumber can't come from COUNT(*): that read serialises concurrent
+// entries and, under load, races to the same number (duplicate-key 409s /
+// exhausted retries). Instead we keep a per-competition Redis counter and use
+// atomic INCR, which is monotonic and collision-free across concurrent callers.
+// The counter is seeded lazily — and atomically, via SETNX so only the first
+// caller seeds — from the current max ticketNumber in Postgres, so it stays
+// consistent with any rows that already exist (e.g. created before this counter
+// was introduced, or via the admin assignment path).
+export function getFreeEntryTicketCounterKey(competitionId: string): string {
+  return `free-entry-ticket-counter:${competitionId}`;
+}
+
+export async function nextFreeEntryTicketNumber(
+  competitionId: string,
+  // Lazily computes the current max ticketNumber for this competition. Only
+  // invoked when the counter has not been seeded yet.
+  getCurrentMax: () => Promise<number>
+): Promise<number> {
+  const key = getFreeEntryTicketCounterKey(competitionId);
+
+  // Seed the counter once, atomically. SETNX only succeeds for the first caller;
+  // everyone else sees the key already present and skips straight to INCR. We
+  // seed to the current max so the first INCR yields max + 1.
+  const exists = await redis.exists(key);
+  if (exists === 0) {
+    const currentMax = await getCurrentMax();
+    await redis.setnx(key, String(currentMax));
+  }
+
+  // Atomic, monotonic allocation — never returns the same number twice.
+  return redis.incr(key);
 }
 
 // Reservation data structure

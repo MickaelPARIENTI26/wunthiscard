@@ -31,7 +31,12 @@ export async function verifyLoginCaptcha(token: string): Promise<TurnstileCheckR
     return result;
   } catch (error) {
     console.error('Turnstile verification error:', error);
-    // Allow on error to not block legitimate users in case of Cloudflare issues
+    // Fail CLOSED in production: an unexpected error must not let a request
+    // through unverified. In non-production we stay lenient so local dev/test
+    // flows aren't blocked by Cloudflare connectivity issues.
+    if (process.env.NODE_ENV === 'production') {
+      return { success: false, error: 'Captcha verification failed. Please try again.' };
+    }
     return { success: true };
   }
 }

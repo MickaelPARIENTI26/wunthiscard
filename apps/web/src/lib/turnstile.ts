@@ -30,8 +30,17 @@ export async function verifyTurnstileToken(
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
   if (!secretKey) {
+    // Fail CLOSED in production: a missing secret key must not silently
+    // disable captcha protection. In non-production, skip so local dev/test
+    // flows work without Turnstile configured.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('TURNSTILE_SECRET_KEY not configured - rejecting request (fail closed)');
+      return {
+        success: false,
+        error: 'Captcha verification is temporarily unavailable. Please try again later.',
+      };
+    }
     console.warn('TURNSTILE_SECRET_KEY not configured - skipping captcha verification');
-    // Allow in development if not configured
     return { success: true };
   }
 
@@ -107,8 +116,15 @@ export async function verifyTurnstileRequired(
   token: string | undefined | null,
   ip?: string
 ): Promise<VerifyResult> {
-  // When Turnstile isn't configured, skip (matches verifyTurnstileToken's dev behaviour).
+  // When Turnstile isn't configured: fail CLOSED in production, skip in dev/test
+  // (matches verifyTurnstileToken's behaviour).
   if (!process.env.TURNSTILE_SECRET_KEY) {
+    if (process.env.NODE_ENV === 'production') {
+      return {
+        success: false,
+        error: 'Captcha verification is temporarily unavailable. Please try again later.',
+      };
+    }
     return { success: true };
   }
 

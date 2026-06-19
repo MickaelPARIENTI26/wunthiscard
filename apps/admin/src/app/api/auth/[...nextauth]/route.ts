@@ -15,37 +15,47 @@ export async function POST(request: NextRequest) {
     const formData = await clonedRequest.formData();
     const email = formData.get('email')?.toString()?.toLowerCase() || '';
 
-    // Also rate limit by IP as fallback
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
                request.headers.get('x-real-ip') ||
                'anonymous';
 
-    // Rate limit key combines email and IP for better protection
-    const rateLimitKey = email || ip;
+    // Rate limit on BOTH the email AND the IP independently, and block if
+    // EITHER is exceeded. The email key throttles brute-forcing a single
+    // admin account; the IP key throttles password-spraying many accounts
+    // from one source. Distinct prefixes keep the two budgets separate.
+    const emailKey = email ? `login:email:${email}` : null;
+    const ipKey = `login:ip:${ip}`;
 
-    if (rateLimitKey) {
-      const { success: rateLimitSuccess, remaining } = await rateLimits.login.limit(rateLimitKey);
+    const [emailResult, ipResult] = await Promise.all([
+      emailKey ? rateLimits.login.limit(emailKey) : Promise.resolve(null),
+      rateLimits.login.limit(ipKey),
+    ]);
 
-      if (!rateLimitSuccess) {
-        return NextResponse.json(
-          { error: 'Too many requests. Please try again later.' },
-          {
-            status: 429,
-            headers: {
-              'Retry-After': '900', // 15 minutes in seconds
-              'X-RateLimit-Remaining': '0',
-            },
-          }
-        );
-      }
-
-      // Add remaining attempts to response headers (handled by NextAuth)
-      const response = await handlers.POST(request);
-      if (response) {
-        response.headers.set('X-RateLimit-Remaining', String(remaining));
-      }
-      return response;
+    if ((emailResult && !emailResult.success) || !ipResult.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': '900', // 15 minutes in seconds
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      );
     }
+
+    // Surface the tighter of the two remaining budgets.
+    const remaining = Math.min(
+      emailResult ? emailResult.remaining : Number.POSITIVE_INFINITY,
+      ipResult.remaining
+    );
+
+    // Add remaining attempts to response headers (handled by NextAuth)
+    const response = await handlers.POST(request);
+    if (response) {
+      response.headers.set('X-RateLimit-Remaining', String(remaining));
+    }
+    return response;
   }
 
   // For all other POST requests, use the default handler
