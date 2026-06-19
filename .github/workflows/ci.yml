@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint · Typecheck · Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # Non-secret placeholders so module-level guards (e.g. lib/stripe.ts requires
+    # STRIPE_SECRET_KEY at import time) don't crash unit tests. These are dummy
+    # values, never real credentials.
+    env:
+      STRIPE_SECRET_KEY: sk_test_ci_dummy
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+      AUTH_SECRET: ci-dummy-auth-secret-not-used-at-test-time
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Prisma client is consumed by the apps' lint/build; generate it so lint
+      # doesn't fail on a missing generated client. Schema lives in packages/database.
+      - name: Generate Prisma client
+        run: npx prisma generate --schema packages/database/prisma/schema.prisma
+
+      - name: Lint
+        run: npm run lint
+
+      # Typecheck the framework-agnostic packages. The Next.js apps need their
+      # generated types from a production build (the deploy/Verify pipeline owns
+      # that), so they are intentionally excluded from the fast CI gate here.
+      - name: Typecheck (packages)
+        run: |
+          npx tsc --noEmit -p packages/shared/tsconfig.json
+          npx tsc --noEmit -p packages/database/tsconfig.json
+
+      - name: Unit tests
+        run: npm run test

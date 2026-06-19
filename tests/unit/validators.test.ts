@@ -292,20 +292,20 @@ describe('Reserve Tickets Validation', () => {
     expect(() => reserveTicketsSchema.parse(invalid)).toThrow();
   });
 
-  it('should reject more than 50 tickets', () => {
-    const invalid = {
-      competitionId: 'comp123',
-      quantity: 51,
-    };
-    expect(() => reserveTicketsSchema.parse(invalid)).toThrow();
-  });
-
-  it('should accept maximum 50 tickets', () => {
+  it('should accept maximum 100 tickets', () => {
     const valid = {
       competitionId: 'comp123',
-      quantity: 50,
+      quantity: 100,
     };
     expect(() => reserveTicketsSchema.parse(valid)).not.toThrow();
+  });
+
+  it('should reject more than 100 tickets', () => {
+    const invalid = {
+      competitionId: 'comp123',
+      quantity: 101,
+    };
+    expect(() => reserveTicketsSchema.parse(invalid)).toThrow();
   });
 
   it('should reject empty competition ID', () => {
