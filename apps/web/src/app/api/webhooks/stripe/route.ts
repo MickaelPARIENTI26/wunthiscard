@@ -147,21 +147,15 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   // Start a transaction to update order and assign tickets
   // Using a transaction with the idempotency check INSIDE to prevent race conditions
   const transactionResult = await prisma.$transaction(async (tx) => {
-    // Check again inside transaction to prevent duplicate processing
-    const currentOrder = await tx.order.findUnique({
-      where: { id: orderId },
-      select: { paymentStatus: true },
-    });
-
-    if (currentOrder?.paymentStatus === 'SUCCEEDED') {
-      return { alreadyProcessed: true };
-    }
-
-    // Update order status atomically
-    const updatedOrder = await tx.order.update({
+    // Flip the order to SUCCEEDED atomically AND claim idempotency in one statement.
+    // updateMany (not update) is deliberate: update() throws P2025 when no row matches
+    // its where clause, so a duplicate/retried webhook delivery (order already SUCCEEDED)
+    // would throw → 500 → Stripe retries forever. updateMany returns { count } and never
+    // throws on no-match, so count === 0 means "already processed" → return 200 quietly.
+    const claim = await tx.order.updateMany({
       where: {
         id: orderId,
-        paymentStatus: { not: 'SUCCEEDED' }, // Extra safety
+        paymentStatus: { not: 'SUCCEEDED' },
       },
       data: {
         paymentStatus: 'SUCCEEDED',
@@ -169,15 +163,49 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       },
     });
 
-    if (!updatedOrder) {
+    if (claim.count === 0) {
       return { alreadyProcessed: true };
+    }
+
+    // Defensive per-user cap (issue #B). maxTicketsPerUser is enforced at
+    // reserve/create-session against the SOLD count, but two concurrent Checkout
+    // sessions can each pass that check and then both convert to SOLD here, letting
+    // one user exceed the competition cap. Re-check at the point of SOLD conversion:
+    // count the user's tickets ALREADY SOLD for this competition (prior orders — this
+    // order's tickets are still RESERVED), and cap the numbers we assign to what's left
+    // of their allowance. The common case (within cap) leaves `ticketNumbers` untouched.
+    let paidTicketsToAssign = ticketNumbers;
+    if (order.userId) {
+      const alreadySold = await tx.ticket.count({
+        where: {
+          competitionId: order.competitionId,
+          userId: order.userId,
+          status: 'SOLD',
+        },
+      });
+      const remainingAllowance = Math.max(
+        0,
+        order.competition.maxTicketsPerUser - alreadySold
+      );
+      if (ticketNumbers.length > remainingAllowance) {
+        paidTicketsToAssign = ticketNumbers.slice(0, remainingAllowance);
+        // Don't fail the payment — flag the overage for a manual refund/review. This
+        // should be rare and only happens under concurrent checkout for the same user.
+        console.error(
+          `PER-USER-CAP order=${order.id} user=${order.userId} comp=${order.competitionId}: ` +
+            `paid for ${ticketNumbers.length} tickets but only ${remainingAllowance} within the ` +
+            `per-user cap of ${order.competition.maxTicketsPerUser} (already sold ${alreadySold}); ` +
+            `assigning ${paidTicketsToAssign.length}, ${ticketNumbers.length - paidTicketsToAssign.length} over-cap — ` +
+            `manual refund of the difference required.`
+        );
+      }
     }
 
     // Assign paid tickets to user - only update RESERVED tickets belonging to this user
     const ticketUpdateResult = await tx.ticket.updateMany({
       where: {
         competitionId: order.competitionId,
-        ticketNumber: { in: ticketNumbers },
+        ticketNumber: { in: paidTicketsToAssign },
         status: 'RESERVED',
         userId: order.userId, // Only update tickets reserved by this user
       },
@@ -194,8 +222,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     // receive N. The extended checkout-window hold makes this path rare, but we must
     // never silently under-deliver a paid order.
     let assignedPaidCount = ticketUpdateResult.count;
-    if (assignedPaidCount < ticketNumbers.length) {
-      const shortfall = ticketNumbers.length - assignedPaidCount;
+    if (assignedPaidCount < paidTicketsToAssign.length) {
+      const shortfall = paidTicketsToAssign.length - assignedPaidCount;
       const replacements = await tx.ticket.findMany({
         where: {
           competitionId: order.competitionId,
@@ -223,12 +251,12 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         });
         assignedPaidCount += repResult.count;
       }
-      if (assignedPaidCount < ticketNumbers.length) {
+      if (assignedPaidCount < paidTicketsToAssign.length) {
         // Still short → the competition is genuinely out of tickets. The payment
         // already succeeded, so we don't fail the webhook; flag loudly for a manual
         // refund of the difference. Should be near-impossible with the extended hold.
         console.error(
-          `UNDER-DELIVERY order=${order.id}: paid for ${ticketNumbers.length} tickets, only ${assignedPaidCount} assignable — manual refund of the difference required.`
+          `UNDER-DELIVERY order=${order.id}: paid for ${paidTicketsToAssign.length} tickets, only ${assignedPaidCount} assignable — manual refund of the difference required.`
         );
       }
     }

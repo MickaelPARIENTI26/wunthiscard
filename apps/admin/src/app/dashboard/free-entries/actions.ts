@@ -96,27 +96,63 @@ export async function assignFreeEntry(formData: FormData) {
   const ticketIds: string[] = [];
   await prisma.$transaction(async (tx) => {
     for (const ticketNumber of availableNumbers) {
-      const ticket = await tx.ticket.upsert({
+      // TOCTOU guard: the availableNumbers set was computed from an earlier read,
+      // so a ticket may have flipped to RESERVED/SOLD/FREE_ENTRY in the meantime.
+      // Claim it with an atomic updateMany guarded on status: 'AVAILABLE' (mirrors
+      // the public free-entry route) rather than a blind upsert that would
+      // overwrite an already-taken ticket.
+      const claimed = await tx.ticket.updateMany({
         where: {
-          competitionId_ticketNumber: {
-            competitionId,
-            ticketNumber,
-          },
-        },
-        create: {
           competitionId,
           ticketNumber,
-          userId: user.id,
-          status: 'FREE_ENTRY',
-          isFreeEntry: true,
+          status: 'AVAILABLE', // Guard: refuse to reassign a taken ticket
         },
-        update: {
+        data: {
           userId: user.id,
           status: 'FREE_ENTRY',
           isFreeEntry: true,
         },
       });
-      ticketIds.push(ticket.id);
+
+      if (claimed.count === 1) {
+        const ticket = await tx.ticket.findUniqueOrThrow({
+          where: { competitionId_ticketNumber: { competitionId, ticketNumber } },
+          select: { id: true },
+        });
+        ticketIds.push(ticket.id);
+        continue;
+      }
+
+      // No AVAILABLE row was updated. Either the row doesn't exist yet (unlimited
+      // competition — create it on demand) or it exists but is already taken.
+      // A guarded create distinguishes the two: P2002 on the unique
+      // [competitionId, ticketNumber] index means the row exists and was taken.
+      try {
+        const ticket = await tx.ticket.create({
+          data: {
+            competitionId,
+            ticketNumber,
+            userId: user.id,
+            status: 'FREE_ENTRY',
+            isFreeEntry: true,
+          },
+          select: { id: true },
+        });
+        ticketIds.push(ticket.id);
+      } catch (e) {
+        const code =
+          e && typeof e === 'object' && 'code' in e
+            ? (e as { code?: string }).code
+            : undefined;
+        if (code === 'P2002') {
+          // Row exists but wasn't AVAILABLE — it was claimed between our read and
+          // this write. Abort the whole assignment instead of overwriting it.
+          throw new Error(
+            `Ticket ${ticketNumber} was just taken by another entry. Please try again.`
+          );
+        }
+        throw e;
+      }
     }
 
     // Log the action

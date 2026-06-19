@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { isAdult } from '@/lib/age';
-import { rateLimits } from '@/lib/redis';
+import { rateLimits, nextFreeEntryTicketNumber } from '@/lib/redis';
 import { sendFreeEntryConfirmationEmail } from '@/lib/email';
 
 const freeEntrySchema = z.object({
@@ -195,13 +195,20 @@ export async function POST(request: NextRequest) {
 
       ticketNumber = availableTicket.ticketNumber;
     } else {
-      // Unlimited tickets: create a ticket on demand. ticketNumber is derived from
-      // the current count, so two concurrent free entries can collide on the unique
-      // [competitionId, ticketNumber] index — retry on that collision instead of 500ing.
+      // Unlimited tickets: create a ticket on demand. ticketNumber is allocated
+      // from an atomic, monotonic Redis INCR counter (seeded lazily from the
+      // current max in Postgres) instead of COUNT(*) + 1, so concurrent entries
+      // can't serialise on the same read or collide on the unique
+      // [competitionId, ticketNumber] index under viral load.
       let created = false;
       for (let attempt = 0; attempt < 6; attempt++) {
-        const existingCount = await prisma.ticket.count({ where: { competitionId } });
-        ticketNumber = existingCount + 1;
+        ticketNumber = await nextFreeEntryTicketNumber(competitionId, async () => {
+          const max = await prisma.ticket.aggregate({
+            where: { competitionId },
+            _max: { ticketNumber: true },
+          });
+          return max._max.ticketNumber ?? 0;
+        });
         try {
           await prisma.ticket.create({
             data: {
@@ -219,7 +226,10 @@ export async function POST(request: NextRequest) {
             e && typeof e === 'object' && 'code' in e
               ? (e as { code?: string }).code
               : undefined;
-          if (code === 'P2002') continue; // number collision — recompute and retry
+          // A collision should be near-impossible with the atomic counter, but
+          // if a pre-existing row ever overlaps a freshly-seeded value, the next
+          // INCR advances past it — so just retry.
+          if (code === 'P2002') continue;
           throw e;
         }
       }
