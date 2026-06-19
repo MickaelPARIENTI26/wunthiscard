@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import { z } from 'zod';
 import { prisma } from '@winucard/database';
 import { passwordSchema } from '@winucard/shared/validators';
+import * as Sentry from '@sentry/nextjs';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { sendVerificationEmail } from '@/lib/email';
@@ -64,13 +65,22 @@ export async function POST(request: NextRequest) {
                request.headers.get('x-real-ip') ??
                'unknown';
 
-    // Rate limiting
-    const { success: rateLimitSuccess } = await rateLimits.signup.limit(ip);
-    if (!rateLimitSuccess) {
-      return NextResponse.json(
-        { error: 'Too many registration attempts. Please try again in an hour.' },
-        { status: 429 }
-      );
+    // Rate limiting — FAIL-OPEN. The limiter is a network call to Upstash; if
+    // Redis is down/slow it throws. It's only a non-essential safety net here:
+    // signup is also protected by the Turnstile CAPTCHA (required in prod) and
+    // the unique-email check below. So on a limiter error we log and ALLOW the
+    // request rather than 500-ing every registration during a Redis outage.
+    try {
+      const { success: rateLimitSuccess } = await rateLimits.signup.limit(ip);
+      if (!rateLimitSuccess) {
+        return NextResponse.json(
+          { error: 'Too many registration attempts. Please try again in an hour.' },
+          { status: 429 }
+        );
+      }
+    } catch (rateErr) {
+      console.error('Signup rate-limit check failed (allowing request):', rateErr);
+      Sentry.captureException(rateErr);
     }
 
     const body = await request.json();

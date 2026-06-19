@@ -23,14 +23,20 @@ export async function POST(request: NextRequest) {
 
     const email = validation.data.email;
 
-    // Rate limit by email to prevent email spam
+    // Rate limit by email to prevent email spam. FAIL-OPEN: the limiter is a network
+    // call to Upstash; on an outage we log and allow rather than 500-ing every resend
+    // (this is only an anti-spam safety net).
     const emailLower = email.toLowerCase();
-    const { success: rateLimitOk } = await rateLimits.passwordReset.limit(emailLower);
-    if (!rateLimitOk) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
+    try {
+      const { success: rateLimitOk } = await rateLimits.passwordReset.limit(emailLower);
+      if (!rateLimitOk) {
+        return NextResponse.json(
+          { error: 'Too many requests. Please try again later.' },
+          { status: 429 }
+        );
+      }
+    } catch (rateErr) {
+      console.error('resend-verification rate-limit check failed (allowing request):', rateErr);
     }
 
     const user = await prisma.user.findUnique({

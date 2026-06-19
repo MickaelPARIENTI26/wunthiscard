@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import * as Sentry from '@sentry/nextjs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getReservation, rateLimits } from '@/lib/redis';
@@ -11,15 +12,24 @@ const statusSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limit by IP to prevent probing
+    // Rate limit by IP to prevent probing — FAIL-OPEN. The limiter is a network
+    // call to Upstash; if Redis is down/slow it throws. This is only a
+    // non-essential anti-probing safety net on a read-only status endpoint, so
+    // on a limiter error we log and ALLOW the request rather than 500-ing and
+    // breaking ticket-availability polling during a Redis outage.
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
                request.headers.get('x-real-ip') ?? 'unknown';
-    const { success: rateLimitOk } = await rateLimits.globalUnauth.limit(ip);
-    if (!rateLimitOk) {
-      return NextResponse.json(
-        { error: 'Too many requests' },
-        { status: 429 }
-      );
+    try {
+      const { success: rateLimitOk } = await rateLimits.globalUnauth.limit(ip);
+      if (!rateLimitOk) {
+        return NextResponse.json(
+          { error: 'Too many requests' },
+          { status: 429 }
+        );
+      }
+    } catch (rateErr) {
+      console.error('Ticket-status rate-limit check failed (allowing request):', rateErr);
+      Sentry.captureException(rateErr);
     }
 
     const session = await auth();

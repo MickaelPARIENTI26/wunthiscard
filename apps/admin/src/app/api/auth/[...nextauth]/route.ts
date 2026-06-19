@@ -1,5 +1,6 @@
 import { handlers } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { rateLimits } from '@/lib/redis';
 
 export const { GET } = handlers;
@@ -26,12 +27,27 @@ export async function POST(request: NextRequest) {
     const emailKey = email ? `login:email:${email}` : null;
     const ipKey = `login:ip:${ip}`;
 
-    const [emailResult, ipResult] = await Promise.all([
-      emailKey ? rateLimits.login.limit(emailKey) : Promise.resolve(null),
-      rateLimits.login.limit(ipKey),
-    ]);
+    // FAIL-OPEN: the limiter is a network call to Upstash; if Redis is
+    // down/slow it throws. This limiter is only a non-essential safety net —
+    // the real brute-force protection is the DB failedLoginAttempts/lockedUntil
+    // lockout in the credentials authorize() path, which still holds. So on a
+    // limiter error we log and ALLOW the request rather than 500-ing every
+    // admin login and locking everyone out during a Redis outage.
+    let emailResult: Awaited<ReturnType<typeof rateLimits.login.limit>> | null = null;
+    let ipResult: Awaited<ReturnType<typeof rateLimits.login.limit>> | null = null;
+    try {
+      [emailResult, ipResult] = await Promise.all([
+        emailKey ? rateLimits.login.limit(emailKey) : Promise.resolve(null),
+        rateLimits.login.limit(ipKey),
+      ]);
+    } catch (rateErr) {
+      console.error('Login rate-limit check failed (allowing request):', rateErr);
+      Sentry.captureException(rateErr);
+    }
 
-    if ((emailResult && !emailResult.success) || !ipResult.success) {
+    // Only block when a limiter actually returned success:false. A null result
+    // (limiter errored or no email key) is treated as "allowed".
+    if ((emailResult && !emailResult.success) || (ipResult && !ipResult.success)) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         {
@@ -47,7 +63,7 @@ export async function POST(request: NextRequest) {
     // Surface the tighter of the two remaining budgets.
     const remaining = Math.min(
       emailResult ? emailResult.remaining : Number.POSITIVE_INFINITY,
-      ipResult.remaining
+      ipResult ? ipResult.remaining : Number.POSITIVE_INFINITY
     );
 
     // Add remaining attempts to response headers (handled by NextAuth)

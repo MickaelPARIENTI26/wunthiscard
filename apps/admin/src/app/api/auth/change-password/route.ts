@@ -22,13 +22,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Rate limit by user ID to prevent brute force
-    const { success: rateLimitOk } = await rateLimits.passwordReset.limit(session.user.id);
-    if (!rateLimitOk) {
-      return NextResponse.json(
-        { error: 'Too many password change attempts. Please try again later.' },
-        { status: 429 }
-      );
+    // Rate limit by user ID to prevent brute force. FAIL-OPEN: a limiter (Upstash)
+    // outage must not 500 the change-password flow — the request is already
+    // authenticated and gated by the current-password check below.
+    try {
+      const { success: rateLimitOk } = await rateLimits.passwordReset.limit(session.user.id);
+      if (!rateLimitOk) {
+        return NextResponse.json(
+          { error: 'Too many password change attempts. Please try again later.' },
+          { status: 429 }
+        );
+      }
+    } catch (rateErr) {
+      console.error('change-password rate-limit check failed (allowing request):', rateErr);
     }
 
     const body = await request.json();
