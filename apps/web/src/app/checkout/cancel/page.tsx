@@ -166,7 +166,7 @@ export default async function CheckoutCancelPage({ searchParams }: PageProps) {
         <div className="flex flex-wrap gap-2.5 justify-center">
           {order ? (
             <Button variant="primary" size="xl" asChild>
-              <Link href={`/competitions/${order.competition.slug}/tickets`}>Try again →</Link>
+              <Link href={`/competitions/${order.competition.slug}`}>Try again →</Link>
             </Button>
           ) : (
             <Button variant="primary" size="xl" asChild>

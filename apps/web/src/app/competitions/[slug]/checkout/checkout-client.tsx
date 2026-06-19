@@ -88,7 +88,7 @@ export function CheckoutClient({
       return;
     }
 
-    router.push('/competitions/' + competitionSlug + '/tickets');
+    router.replace('/competitions/' + competitionSlug);
   }, [competitionId, competitionSlug, router]);
 
   const createReservation = async (quantity: number) => {
@@ -235,7 +235,7 @@ export function CheckoutClient({
           {error ?? 'Your ticket reservation has expired. Please select tickets again.'}
         </p>
         <button
-          onClick={() => router.push('/competitions/' + competitionSlug + '/tickets')}
+          onClick={() => router.push('/competitions/' + competitionSlug)}
           className="btn btn-primary btn-xl"
         >
           Select tickets again →

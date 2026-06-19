@@ -83,8 +83,10 @@ export function QuestionForm({
         return;
       }
     } else if (!stored) {
-      // No tickets or quantity selected, redirect back
-      router.push(`/competitions/${competitionSlug}/tickets`);
+      // Reached out of context (Back button / direct URL with no selection): send
+      // them to the competition page (the current selector), not the legacy /tickets
+      // page. replace() so this URL doesn't stack in history and trap the Back button.
+      router.replace(`/competitions/${competitionSlug}`);
       return;
     }
 
@@ -210,7 +212,7 @@ export function QuestionForm({
   };
 
   const handleBackToTickets = () => {
-    router.push(`/competitions/${competitionSlug}/tickets`);
+    router.push(`/competitions/${competitionSlug}`);
   };
 
   if (isLoading) {
