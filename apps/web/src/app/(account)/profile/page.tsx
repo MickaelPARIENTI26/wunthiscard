@@ -9,8 +9,13 @@ export const metadata = {
   description: 'Manage your personal information and profile settings',
 };
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ reason?: string }>;
+}) {
   const session = await auth();
+  const fromAge = (await searchParams)?.reason === 'age';
 
   if (!session?.user?.id) {
     redirect('/login?callbackUrl=/profile');
@@ -42,6 +47,26 @@ export default async function ProfilePage() {
 
   return (
     <div>
+      {fromAge && (
+        <div
+          role="alert"
+          style={{
+            marginBottom: '24px',
+            padding: '14px 18px',
+            borderRadius: '12px',
+            background: 'var(--warn)',
+            border: '1.5px solid var(--ink)',
+            boxShadow: 'var(--shadow-sm)',
+            fontSize: '14px',
+            color: 'var(--ink)',
+            lineHeight: 1.5,
+          }}
+        >
+          📅 Add your <strong>date of birth</strong> below to enter competitions — UK law
+          requires entrants to be 18 or over. Once saved, head back to the competition to enter.
+        </div>
+      )}
+
       {/* Drop-style profile hero */}
       <div
         style={{

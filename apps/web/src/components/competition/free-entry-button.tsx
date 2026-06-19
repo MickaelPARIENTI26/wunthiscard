@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { Loader2, CheckCircle } from 'lucide-react';
+import { Loader2, CheckCircle, CalendarClock } from 'lucide-react';
 
 interface FreeEntryButtonProps {
   competitionId: string;
@@ -30,6 +31,9 @@ export function FreeEntryButton({
   const [enteredCount, setEnteredCount] = useState(userTicketCount);
   const hasEntered = enteredCount >= maxTicketsPerUser;
   const [error, setError] = useState<string | null>(null);
+  // No date of birth on file (e.g. Google sign-in doesn't share it) -> show a clear
+  // path to set it instead of a dead "confirm your DOB" error.
+  const [needsAge, setNeedsAge] = useState(false);
 
   const handleFreeEntry = async () => {
     if (!isAuthenticated) {
@@ -50,6 +54,11 @@ export function FreeEntryButton({
       const data = await response.json();
 
       if (!response.ok) {
+        if (data.code === 'AGE_VERIFICATION_REQUIRED') {
+          setNeedsAge(true);
+          setIsSubmitting(false);
+          return;
+        }
         setError(data.error || 'Failed to enter competition');
         setIsSubmitting(false);
         return;
@@ -103,53 +112,103 @@ export function FreeEntryButton({
           : `Up to ${maxTicketsPerUser} free ticket${maxTicketsPerUser > 1 ? 's' : ''} per account`}
       </p>
 
-      {/* Error */}
-      {error && (
+      {needsAge ? (
+        /* Missing date of birth (e.g. Google sign-in) — guide them to set it. */
         <div
           role="alert"
           style={{
-            padding: '12px 16px',
+            padding: '14px 16px',
             borderRadius: '12px',
-            background: 'rgba(220, 38, 38, 0.08)',
-            border: '1px solid rgba(220, 38, 38, 0.2)',
-            color: '#DC2626',
-            fontSize: '14px',
+            background: 'var(--surface)',
+            border: '1.5px solid var(--ink)',
           }}
         >
-          {error}
+          <p
+            style={{
+              fontSize: '14px',
+              color: 'var(--ink)',
+              marginBottom: '12px',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'flex-start',
+              lineHeight: 1.45,
+            }}
+          >
+            <CalendarClock style={{ width: 18, height: 18, flexShrink: 0, marginTop: 2 }} />
+            <span>
+              UK law requires you to be 18+. You signed in with Google, which doesn&apos;t
+              share your date of birth — add it once to your profile, then come back to enter.
+            </span>
+          </p>
+          <Link
+            href="/profile?reason=age"
+            className="w-full flex items-center justify-center"
+            style={{
+              minHeight: 'var(--btn-height-lg)',
+              padding: '0 24px',
+              borderRadius: 'var(--radius-btn)',
+              background: 'var(--ink)',
+              color: '#ffffff',
+              fontSize: '15px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            Add your date of birth →
+          </Link>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Error */}
+          {error && (
+            <div
+              role="alert"
+              style={{
+                padding: '12px 16px',
+                borderRadius: '12px',
+                background: 'rgba(220, 38, 38, 0.08)',
+                border: '1px solid rgba(220, 38, 38, 0.2)',
+                color: '#DC2626',
+                fontSize: '14px',
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-      {/* Action button */}
-      <button
-        onClick={handleFreeEntry}
-        disabled={isSubmitting || isLoading}
-        className="w-full flex items-center justify-center gap-2"
-        style={{
-          minHeight: 'var(--btn-height-lg)',
-          padding: '0 24px',
-          borderRadius: 'var(--radius-btn)',
-          background: 'var(--ink)',
-          color: '#ffffff',
-          fontSize: '16px',
-          fontWeight: 600,
-          cursor: isSubmitting || isLoading ? 'not-allowed' : 'pointer',
-          opacity: isSubmitting || isLoading ? 0.7 : 1,
-          transition: 'all 0.3s',
-          boxShadow: 'var(--shadow)',
-        }}
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="h-5 w-5 animate-spin" />
-            Entering...
-          </>
-        ) : isAuthenticated ? (
-          'Enter for Free'
-        ) : (
-          'Sign Up to Enter for Free'
-        )}
-      </button>
+          {/* Action button */}
+          <button
+            onClick={handleFreeEntry}
+            disabled={isSubmitting || isLoading}
+            className="w-full flex items-center justify-center gap-2"
+            style={{
+              minHeight: 'var(--btn-height-lg)',
+              padding: '0 24px',
+              borderRadius: 'var(--radius-btn)',
+              background: 'var(--ink)',
+              color: '#ffffff',
+              fontSize: '16px',
+              fontWeight: 600,
+              cursor: isSubmitting || isLoading ? 'not-allowed' : 'pointer',
+              opacity: isSubmitting || isLoading ? 0.7 : 1,
+              transition: 'all 0.3s',
+              boxShadow: 'var(--shadow)',
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Entering...
+              </>
+            ) : isAuthenticated ? (
+              'Enter for Free'
+            ) : (
+              'Sign Up to Enter for Free'
+            )}
+          </button>
+        </>
+      )}
     </div>
   );
 }
