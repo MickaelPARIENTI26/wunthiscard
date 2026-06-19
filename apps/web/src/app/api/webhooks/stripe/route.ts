@@ -361,37 +361,25 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
     });
   }
 
-  // Redeem the buyer's free referral ticket, if one was applied at checkout.
-  // Runs once per order (the transaction above returns early on webhook retries),
-  // and is guarded so the counter can never go negative. Non-blocking.
+  // NOTE: the buyer's free referral ticket is reserved ATOMICALLY at checkout-session
+  // creation (create-session decrements referralFreeTicketsAvailable before opening the
+  // Stripe session, so concurrent sessions can't all redeem the same free ticket). It is
+  // therefore NOT decremented again here — doing so would double-charge the counter and
+  // could push it negative on a partial purchase. Explicit cancellation re-credits it
+  // (see /checkout/cancel). Record the redemption for audit, once per order.
   if (session.metadata?.referralTicketUsed === '1' && order.userId) {
-    try {
-      const redeemed = await prisma.user.updateMany({
-        where: { id: order.userId, referralFreeTicketsAvailable: { gt: 0 } },
-        data: { referralFreeTicketsAvailable: { decrement: 1 } },
-      });
-
-      if (redeemed.count > 0) {
-        await prisma.auditLog.create({
-          data: {
-            userId: order.userId,
-            action: 'REFERRAL_FREE_TICKET_REDEEMED',
-            entity: 'order',
-            entityId: order.id,
-            metadata: {
-              orderNumber: order.orderNumber,
-              competitionId: order.competitionId,
-            },
-          },
-        });
-      } else {
-        console.warn(
-          `Referral ticket flagged used for order ${order.id} but buyer had none available`
-        );
-      }
-    } catch (redeemError) {
-      console.error('Referral ticket redemption failed (non-blocking):', redeemError);
-    }
+    await prisma.auditLog.create({
+      data: {
+        userId: order.userId,
+        action: 'REFERRAL_FREE_TICKET_REDEEMED',
+        entity: 'order',
+        entityId: order.id,
+        metadata: {
+          orderNumber: order.orderNumber,
+          competitionId: order.competitionId,
+        },
+      },
+    });
   }
 
   // Referral reward — each referred user grants their referrer ONE free ticket,

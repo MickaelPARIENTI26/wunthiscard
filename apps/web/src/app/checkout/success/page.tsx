@@ -9,6 +9,7 @@ import { stripe } from '@/lib/stripe';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@winucard/shared/utils';
+import { ClearCheckoutStorage } from './clear-checkout-storage';
 
 export const metadata: Metadata = {
   title: 'Purchase Successful - WinUCard',
@@ -20,6 +21,16 @@ interface PageProps {
 }
 
 async function processPaymentIfNeeded(orderId: string, stripeSession: { payment_status: string | null; metadata: { ticketNumbers?: string; bonusTickets?: string } | null; payment_intent: string | Stripe.PaymentIntent | null }) {
+  // DEVELOPMENT-ONLY fulfilment fallback for local dev where the Stripe webhook
+  // isn't reachable. In PRODUCTION the webhook is the SINGLE source of fulfilment —
+  // this fallback must NOT run there because it omits the referral free-ticket
+  // redemption AND the referrer +1 reward, and it races the webhook; whenever this
+  // page won the race the referrer reward would be lost forever. The caller already
+  // guards this, but we fail closed here too.
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
+
   // Check if payment was successful and order hasn't been processed yet
   if (stripeSession.payment_status !== 'paid') {
     return;
@@ -170,8 +181,12 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
       return null;
     }
 
-    // Process payment if webhook hasn't run yet (fallback for local dev without webhooks)
-    await processPaymentIfNeeded(session.metadata.orderId, session);
+    // DEV ONLY: process payment if the webhook hasn't run (local dev has no webhook).
+    // In production the Stripe webhook is the single source of fulfilment — see the
+    // guard inside processPaymentIfNeeded — so we never fulfil from this page there.
+    if (process.env.NODE_ENV !== 'production') {
+      await processPaymentIfNeeded(session.metadata.orderId, session);
+    }
 
     // Get order from database
     const order = await prisma.order.findUnique({
@@ -201,6 +216,20 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
     // Defensive second check: the loaded order must belong to the viewer.
     if (order && order.userId && order.userId !== viewerId) {
       return null;
+    }
+
+    // In production the webhook fulfils the order asynchronously, so this page can
+    // load a split-second before paymentStatus flips to SUCCEEDED. Don't show the
+    // (empty, ticket-less) success card or an error in that window — surface the
+    // graceful "confirming your payment" state instead; the webhook will finish and
+    // the tickets will appear in My Tickets / on refresh shortly. Treat any non-final
+    // status that isn't a hard failure as "still confirming".
+    if (
+      order &&
+      order.paymentStatus !== 'SUCCEEDED' &&
+      order.paymentStatus !== 'REFUNDED'
+    ) {
+      return 'pending' as const;
     }
 
     return order;
@@ -240,7 +269,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
           <h1 style={{ fontFamily: 'var(--display)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>Confirming your payment…</h1>
           <p style={{ color: 'var(--ink-dim)', marginBottom: '24px' }}>
-            Your payment is being confirmed. This page will show your tickets shortly, and we&apos;ll email your confirmation. You can safely refresh in a moment or check your account.
+            We&apos;re confirming your payment — your tickets will appear in My Tickets shortly, and we&apos;ll email your confirmation. You can safely refresh in a moment or check your account.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
             <Button variant="primary" size="lg" asChild>
@@ -280,6 +309,9 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
 
   return (
     <main>
+      {/* Reset this tab's per-competition checkout state so a repeat purchase in the
+          same session starts the funnel clean (no stale qcm/reservation dead-ends). */}
+      <ClearCheckoutStorage competitionId={order.competition.id} />
       <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
         {/* Celebration */}
         <div style={{ fontSize: '80px', marginBottom: '20px' }}>🎉</div>

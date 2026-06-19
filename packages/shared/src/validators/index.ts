@@ -140,7 +140,7 @@ export const claimFreeEntrySchema = z.object({
 // Ticket validators
 export const reserveTicketsSchema = z.object({
   competitionId: z.string().min(1, 'Competition ID is required'),
-  quantity: z.number().int().min(1, 'Select at least 1 ticket').max(50, 'Maximum 50 tickets per purchase'),
+  quantity: z.number().int().min(1, 'Select at least 1 ticket').max(100, 'Maximum 100 tickets per purchase'),
 });
 
 export const validateAnswerSchema = z.object({

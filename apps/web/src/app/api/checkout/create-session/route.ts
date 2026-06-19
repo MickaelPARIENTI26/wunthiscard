@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       const existingOwned = await prisma.ticket.count({
         where: { competitionId, userId, status: 'SOLD' },
       });
-      const perUserCap = capComp?.maxTicketsPerUser ?? 50;
+      const perUserCap = capComp?.maxTicketsPerUser ?? 100;
       if (providedTicketNumbers.length > perUserCap - existingOwned) {
         return NextResponse.json(
           { error: `You can hold at most ${perUserCap} tickets for this competition.` },
@@ -249,10 +249,26 @@ export async function POST(request: NextRequest) {
     // Referral free ticket: apply ONLY if the user genuinely has one available
     // AND is buying ≥ 2 tickets (so at least 1 ticket is still paid → valid charge).
     // Never trust the client — re-checked here against the DB.
-    const applyReferralTicket =
+    //
+    // Reserve the free ticket ATOMICALLY here (decrement before creating the Stripe
+    // session) rather than at webhook time. A plain read would let a user with 1 free
+    // ticket open several concurrent Checkout sessions, each showing the discount and
+    // each redeeming it at webhook time — a double-spend. The conditional updateMany
+    // (gt: 0) lets exactly one session win; the rest charge full price.
+    const wantsReferralTicket =
       requestedReferralTicket === true &&
       user.referralFreeTicketsAvailable >= 1 &&
       ticketCount >= 2;
+
+    let applyReferralTicket = false;
+    if (wantsReferralTicket) {
+      const dec = await prisma.user.updateMany({
+        where: { id: userId, referralFreeTicketsAvailable: { gt: 0 } },
+        data: { referralFreeTicketsAvailable: { decrement: 1 } },
+      });
+      applyReferralTicket = dec.count === 1;
+    }
+
     const paidTicketCount = applyReferralTicket ? ticketCount - 1 : ticketCount;
 
     const totalAmount = paidTicketCount * ticketPrice;

@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
+import { stripe } from '@/lib/stripe';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
 
@@ -35,45 +36,90 @@ async function getOrderAndRelease(orderId: string, userId: string) {
 
     if (!order) return null;
 
-    // If order is still PENDING, release the reserved tickets
+    // Only act on an order that is still PENDING (never SUCCEEDED). Flip PENDING →
+    // CANCELLED ATOMICALLY: updateMany with a paymentStatus: 'PENDING' guard returns
+    // count 1 only for the request that actually performs the transition. Everything
+    // that follows (releasing tickets, re-crediting the referral ticket) runs ONLY on
+    // that winning transition — so a double page-load, a refresh, or a racing webhook
+    // can never re-credit the free ticket twice or fight a successful payment.
     if (order.paymentStatus === 'PENDING') {
-      // Get ticket numbers from Stripe session metadata
-      // For now, release all Redis locks for this user/competition
-      await releaseTicketsFromRedis(order.competitionId, userId);
-
-      // Update order status to CANCELLED
-      await prisma.order.update({
-        where: { id: orderId },
+      const cancelled = await prisma.order.updateMany({
+        where: { id: orderId, paymentStatus: 'PENDING' },
         data: { paymentStatus: 'CANCELLED' },
       });
 
-      // Release database reservations
-      await prisma.ticket.updateMany({
-        where: {
-          competitionId: order.competitionId,
-          userId,
-          status: 'RESERVED',
-        },
-        data: {
-          status: 'AVAILABLE',
-          userId: null,
-          reservedUntil: null,
-        },
-      });
+      if (cancelled.count === 1) {
+        // Release Redis locks for this user/competition
+        await releaseTicketsFromRedis(order.competitionId, userId);
 
-      // Log the cancellation
-      await prisma.auditLog.create({
-        data: {
-          userId,
-          action: 'CHECKOUT_CANCELLED',
-          entity: 'order',
-          entityId: order.id,
-          metadata: {
-            orderNumber: order.orderNumber,
-            reason: 'user_cancelled',
+        // Release database reservations
+        await prisma.ticket.updateMany({
+          where: {
+            competitionId: order.competitionId,
+            userId,
+            status: 'RESERVED',
           },
-        },
-      });
+          data: {
+            status: 'AVAILABLE',
+            userId: null,
+            reservedUntil: null,
+          },
+        });
+
+        // Re-credit the buyer's free referral ticket if one was reserved for this
+        // order at checkout (the free ticket is decremented atomically in
+        // create-session, NOT in the webhook). The source of truth for "this order
+        // used a referral ticket" is the Stripe session metadata. Best-effort: a
+        // Stripe read failure here must not break the cancel page. The atomic
+        // PENDING → CANCELLED flip above guarantees this runs at most once per order,
+        // so the counter can never be over-credited.
+        let referralTicketUsed = false;
+        if (order.stripeSessionId) {
+          try {
+            const stripeSession = await stripe.checkout.sessions.retrieve(
+              order.stripeSessionId
+            );
+            referralTicketUsed = stripeSession.metadata?.referralTicketUsed === '1';
+          } catch (stripeError) {
+            console.error('Failed to read Stripe session on cancel:', stripeError);
+          }
+        }
+
+        if (referralTicketUsed) {
+          await prisma.user.update({
+            where: { id: userId },
+            data: { referralFreeTicketsAvailable: { increment: 1 } },
+          });
+
+          await prisma.auditLog.create({
+            data: {
+              userId,
+              action: 'REFERRAL_FREE_TICKET_RESTORED',
+              entity: 'order',
+              entityId: order.id,
+              metadata: {
+                orderNumber: order.orderNumber,
+                reason: 'checkout_cancelled',
+              },
+            },
+          });
+        }
+
+        // Log the cancellation
+        await prisma.auditLog.create({
+          data: {
+            userId,
+            action: 'CHECKOUT_CANCELLED',
+            entity: 'order',
+            entityId: order.id,
+            metadata: {
+              orderNumber: order.orderNumber,
+              reason: 'user_cancelled',
+              referralTicketRestored: referralTicketUsed,
+            },
+          },
+        });
+      }
     }
 
     return order;

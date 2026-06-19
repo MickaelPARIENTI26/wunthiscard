@@ -14,7 +14,7 @@ import {
 
 const reserveSchema = z.object({
   competitionId: z.string().min(1),
-  quantity: z.number().int().positive().min(1).max(50),
+  quantity: z.number().int().positive().min(1).max(100),
 });
 
 export async function POST(request: NextRequest) {

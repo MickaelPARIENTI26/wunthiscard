@@ -170,6 +170,19 @@ export function CheckoutClient({
           router.push('/profile?reason=age');
           return;
         }
+        // The skill-question pass is per-purchase and is consumed server-side after a
+        // purchase. A repeat buyer in the same tab can hit this with a stale
+        // qcm_passed_<id> flag still in sessionStorage. Instead of a dead-end error,
+        // clear the stale flag and send them back to answer the question again.
+        if (typeof data.error === 'string' && /skill question/i.test(data.error)) {
+          try {
+            sessionStorage.removeItem('qcm_passed_' + competitionId);
+          } catch {
+            // best-effort
+          }
+          router.push('/competitions/' + competitionSlug + '/question');
+          return;
+        }
         setError(data.error ?? 'Failed to create checkout session');
         setIsProcessing(false);
         return;
