@@ -10,7 +10,7 @@ const tableOfContents = [
   { id: 'our-commitment', title: '1. Our Commitment' },
   { id: 'not-gambling', title: '2. Skill Competitions, Not Gambling' },
   { id: 'spending-limits', title: '3. Spending Limits' },
-  { id: 'self-exclusion', title: '4. Self-Exclusion' },
+  { id: 'self-exclusion', title: '4. Taking a Break (Self-Exclusion)' },
   { id: 'support', title: '5. Support & Resources' },
   { id: 'contact', title: '6. Contact' },
 ];
@@ -39,9 +39,9 @@ export default function ResponsiblePlayPage() {
       </section>
 
       <section id="self-exclusion">
-        <h3 className="legal-h">4. Self-Exclusion</h3>
-        <p className="legal-p">If you feel you need a break from entering competitions, you can request self-exclusion from your account settings or by emailing us. Self-exclusion periods range from 24 hours to 6 months.</p>
-        <p className="legal-p">During a self-exclusion period, you will not be able to purchase tickets or enter any competitions.</p>
+        <h3 className="legal-h">4. Taking a Break (Self-Exclusion)</h3>
+        <p className="legal-p">If you feel you need a break from entering competitions, you can request a self-exclusion by emailing our support team at <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a>. Let us know how long you would like the break to last, and our team will action your request promptly.</p>
+        <p className="legal-p">Once your self-exclusion is in place, our team will restrict your account from entering competitions for the agreed period. If you are unsure what would help, just get in touch and we will talk it through with you.</p>
       </section>
 
       <section id="support">
