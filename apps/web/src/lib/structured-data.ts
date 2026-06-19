@@ -26,7 +26,7 @@ export function generateOrganizationSchema() {
       width: 512,
       height: 512,
     },
-    image: `${BASE_URL}/images/og-default.jpg`,
+    image: `${BASE_URL}/opengraph-image`,
     description: siteConfig.description,
     foundingDate: '2026',
     sameAs: [

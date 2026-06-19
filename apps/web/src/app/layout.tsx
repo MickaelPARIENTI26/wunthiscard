@@ -74,14 +74,8 @@ export const metadata: Metadata = {
     title: 'WinUCard - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
-    images: [
-      {
-        url: '/images/og-default.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'WinUCard - Win Collectible Cards & Memorabilia',
-      },
-    ],
+    // No explicit `images` here: Next.js automatically serves the dynamic
+    // opengraph-image.tsx route. Setting images would suppress that fallback.
   },
   twitter: {
     card: 'summary_large_image',
@@ -90,7 +84,8 @@ export const metadata: Metadata = {
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
     site: '@winucard',
     creator: '@winucard',
-    images: ['/images/og-default.jpg'],
+    // No explicit `images` here: Next.js automatically serves the dynamic
+    // twitter-image.tsx route. Setting images would suppress that fallback.
   },
   robots: {
     index: true,
