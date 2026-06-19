@@ -178,7 +178,7 @@ export async function sendWinnerNotificationEmail(
   firstName: string,
   data: WinnerNotificationData
 ) {
-  const winsUrl = `${BASE_URL}/profile/wins`;
+  const winsUrl = `${BASE_URL}/my-wins`;
 
   const html = emailWrapper(`
     <div style="text-align: center;">

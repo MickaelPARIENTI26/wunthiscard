@@ -425,7 +425,7 @@ export async function sendWinnerNotificationEmail(
   firstName: string,
   data: WinnerNotificationData
 ) {
-  const winsUrl = `${BASE_URL}/profile/wins`;
+  const winsUrl = `${BASE_URL}/my-wins`;
 
   const prizeFormatted = new Intl.NumberFormat('en-GB', {
     style: 'currency',
