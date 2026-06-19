@@ -11,6 +11,76 @@ function getTicketType(ticket: { isBonus: boolean; isFreeEntry: boolean }): stri
   return 'paid';
 }
 
+// Hard upper bound on rows we will ever assemble in memory for an export.
+// This MUST stay above the maximum possible number of participating tickets so
+// a legitimate export is never truncated. totalTickets is validated to
+// max(100000) in @winucard/shared (createCompetitionSchema), so 100000 paid
+// tickets is the ceiling; bonus tickets are minted against paid orders and free
+// entries are tightly rate-limited, so the realistic ceiling stays near that.
+// We allow a generous head-room buffer and FAIL LOUDLY if it is ever exceeded
+// rather than silently dropping the highest-numbered tickets (which would make
+// the draw run on an incomplete list). See EXPORT_BATCH_SIZE below for paging.
+const EXPORT_MAX_ROWS = 200000;
+const EXPORT_BATCH_SIZE = 10000;
+
+class ExportTooLargeError extends Error {
+  constructor(public readonly count: number) {
+    super(
+      `Export aborted: competition has ${count}+ participating tickets, which exceeds the ` +
+        `safe export limit of ${EXPORT_MAX_ROWS}. The export was NOT produced to avoid a ` +
+        `truncated (incomplete) draw manifest. Contact engineering.`,
+    );
+    this.name = 'ExportTooLargeError';
+  }
+}
+
+/**
+ * Fetch ALL participating tickets for a competition in ascending ticketNumber
+ * order, paginating in batches so a large competition is exported in full
+ * instead of being silently truncated. Throws ExportTooLargeError if the row
+ * count would exceed EXPORT_MAX_ROWS (a safety ceiling well above the validated
+ * totalTickets max), so we fail loudly rather than dropping rows.
+ *
+ * `select` is supplied by the caller and merged with the fixed where/orderBy so
+ * the inferred row type carries the caller's included relations.
+ */
+async function fetchAllParticipatingTickets<Select extends NonNullable<Parameters<typeof prisma.ticket.findMany>[0]>['select']>(
+  competitionId: string,
+  select: Select,
+) {
+  type Row = Awaited<ReturnType<typeof prisma.ticket.findMany<{ select: Select }>>>[number];
+  const all: Row[] = [];
+  let cursorTicketNumber: number | undefined;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const batch = await prisma.ticket.findMany({
+      select,
+      where: {
+        competitionId,
+        status: { in: ['SOLD', 'FREE_ENTRY'] },
+        userId: { not: null },
+        ...(cursorTicketNumber !== undefined ? { ticketNumber: { gt: cursorTicketNumber } } : {}),
+      },
+      orderBy: { ticketNumber: 'asc' },
+      take: EXPORT_BATCH_SIZE,
+    });
+
+    if (batch.length === 0) break;
+
+    all.push(...(batch as Row[]));
+
+    if (all.length > EXPORT_MAX_ROWS) {
+      throw new ExportTooLargeError(all.length);
+    }
+
+    if (batch.length < EXPORT_BATCH_SIZE) break;
+    cursorTicketNumber = (batch[batch.length - 1] as { ticketNumber: number }).ticketNumber;
+  }
+
+  return all;
+}
+
 function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').substring(0, 50);
 }
@@ -52,6 +122,10 @@ export async function GET(request: NextRequest) {
 
     return await exportDetailed(request, currentUserId, competition, format, dateStr, safeName);
   } catch (error) {
+    if (error instanceof ExportTooLargeError) {
+      console.error('Participant export aborted (too large):', error.message);
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error('Error exporting participants:', error);
     return NextResponse.json(
       { error: 'Failed to export participants' },
@@ -68,32 +142,27 @@ async function exportDetailed(
   dateStr: string,
   safeName: string,
 ) {
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      competitionId: competition.id,
-      status: { in: ['SOLD', 'FREE_ENTRY'] },
-      userId: { not: null },
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-        },
-      },
-      order: {
-        select: {
-          totalAmount: true,
-          ticketCount: true,
-          bonusTicketCount: true,
-          createdAt: true,
-        },
+  const tickets = await fetchAllParticipatingTickets(competition.id, {
+    ticketNumber: true,
+    userId: true,
+    isBonus: true,
+    isFreeEntry: true,
+    user: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
       },
     },
-    orderBy: { ticketNumber: 'asc' },
-    take: 50000,
+    order: {
+      select: {
+        totalAmount: true,
+        ticketCount: true,
+        bonusTicketCount: true,
+        createdAt: true,
+      },
+    },
   });
 
   // Count tickets per user for the tickets_count column
@@ -189,29 +258,25 @@ async function exportSummary(
   dateStr: string,
   safeName: string,
 ) {
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      competitionId: competition.id,
-      status: { in: ['SOLD', 'FREE_ENTRY'] },
-      userId: { not: null },
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-        },
-      },
-      order: {
-        select: {
-          totalAmount: true,
-        },
+  const tickets = await fetchAllParticipatingTickets(competition.id, {
+    ticketNumber: true,
+    userId: true,
+    orderId: true,
+    isBonus: true,
+    isFreeEntry: true,
+    user: {
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
       },
     },
-    orderBy: { ticketNumber: 'asc' },
-    take: 50000,
+    order: {
+      select: {
+        totalAmount: true,
+      },
+    },
   });
 
   // Aggregate per user

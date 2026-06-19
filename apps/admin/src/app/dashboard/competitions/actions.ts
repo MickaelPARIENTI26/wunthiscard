@@ -101,6 +101,13 @@ export async function createCompetition(formData: FormData) {
     errors.push('Total tickets must be at least 1');
   }
 
+  // P0: Cap total tickets at the shared validator's bound (createCompetitionSchema:
+  // totalTickets.max(100000)). The participant export (draw manifest) is sized to
+  // this ceiling, so allowing more here would let the export silently truncate.
+  if (totalTickets !== null && !isNaN(totalTickets) && totalTickets > 100000) {
+    errors.push('Total tickets cannot exceed 100,000');
+  }
+
   // P1-66: Main image required
   if (!mainImageUrl || mainImageUrl.trim().length === 0) {
     errors.push('Main image is required');
@@ -273,6 +280,18 @@ export async function updateCompetition(id: string, formData: FormData) {
   let questionChoices = existing.questionChoices;
   if (questionChoicesStr) {
     try { questionChoices = JSON.parse(questionChoicesStr); } catch { throw new Error('Invalid question choices format'); }
+  }
+
+  // P0: Cap total tickets at the shared validator's bound (createCompetitionSchema:
+  // totalTickets.max(100000)). The participant export (draw manifest) is sized to
+  // this ceiling, so allowing more here would let the export silently truncate.
+  if (totalTickets !== null) {
+    if (isNaN(totalTickets) || totalTickets < 1) {
+      throw new Error('Total tickets must be at least 1');
+    }
+    if (totalTickets > 100000) {
+      throw new Error('Total tickets cannot exceed 100,000');
+    }
   }
 
   // P1-6: totalTickets controls how many Ticket rows are generated on the
