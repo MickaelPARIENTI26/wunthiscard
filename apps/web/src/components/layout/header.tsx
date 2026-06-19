@@ -100,7 +100,11 @@ export function Header({ user = null }: HeaderProps) {
           {/* Desktop auth CTAs or avatar */}
           <div className="hidden lg:flex lg:items-center lg:gap-2">
             {user ? (
-              <DropdownMenu>
+              // modal={false}: the default (modal) dropdown locks page scroll via
+              // overflow:hidden on <body>, which breaks the sticky header's
+              // position:sticky — so after scrolling down, opening the avatar menu
+              // made the top bar jump/disappear. A nav menu doesn't need modal.
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
