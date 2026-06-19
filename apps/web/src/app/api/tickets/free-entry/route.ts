@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { isAdult } from '@/lib/age';
 import { rateLimits, nextFreeEntryTicketNumber } from '@/lib/redis';
 import { sendFreeEntryConfirmationEmail } from '@/lib/email';
 
@@ -52,7 +51,7 @@ export async function POST(request: NextRequest) {
     // Check if user is verified and not banned
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { emailVerified: true, isBanned: true, email: true, firstName: true, dateOfBirth: true },
+      select: { emailVerified: true, isBanned: true, email: true, firstName: true },
     });
 
     if (!user) {
@@ -73,17 +72,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 18+ is a legal requirement (UK Gambling Act 2005) — enforced server-side
-    // against a stored date of birth on every entry route, free entries included.
-    if (!isAdult(user.dateOfBirth)) {
-      return NextResponse.json(
-        {
-          error: 'You must confirm your date of birth (18+) before entering.',
-          code: 'AGE_VERIFICATION_REQUIRED',
-        },
-        { status: 403 }
-      );
-    }
+    // Age (18+) is confirmed by the arrival AgeGate prompt + the 18+ acceptance at
+    // signup (product decision) — no server-side date-of-birth gate here.
 
     // Get competition and verify it's active and free
     const competition = await prisma.competition.findUnique({

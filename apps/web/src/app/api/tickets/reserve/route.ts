@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { isAdult } from '@/lib/age';
 import {
   rateLimits,
   reserveTicketsInRedis,
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
     // verified email (anti-abuse) — see /api/tickets/free-entry.
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { isBanned: true, dateOfBirth: true },
+      select: { isBanned: true },
     });
 
     if (!user) {
@@ -76,17 +75,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 18+ is a legal requirement (UK Gambling Act 2005). The real control is here,
-    // server-side, against a stored date of birth — not the client AgeGate cookie.
-    if (!isAdult(user.dateOfBirth)) {
-      return NextResponse.json(
-        {
-          error: 'You must confirm your date of birth (18+) before entering.',
-          code: 'AGE_VERIFICATION_REQUIRED',
-        },
-        { status: 403 }
-      );
-    }
+    // Age (18+) is confirmed by the arrival AgeGate prompt + the 18+ acceptance at
+    // signup/checkout (product decision) — no server-side date-of-birth gate here.
 
     // Get competition and verify it's active
     const competition = await prisma.competition.findUnique({

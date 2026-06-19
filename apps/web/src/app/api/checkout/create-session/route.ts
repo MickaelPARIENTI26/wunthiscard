@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { isAdult } from '@/lib/age';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
 import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits, CHECKOUT_RESERVATION_TTL } from '@/lib/redis';
 
@@ -209,7 +208,6 @@ export async function POST(request: NextRequest) {
         firstName: true,
         lastName: true,
         isBanned: true,
-        dateOfBirth: true,
         referralFreeTicketsAvailable: true,
       },
     });
@@ -228,17 +226,8 @@ export async function POST(request: NextRequest) {
     // Paid purchases intentionally do NOT require a verified email — the Stripe
     // payment is the legitimacy signal. (Free entries DO; see free-entry route.)
 
-    // 18+ is a legal requirement (UK Gambling Act 2005). Hard server-side gate on
-    // the money path — independent of the client AgeGate cookie.
-    if (!isAdult(user.dateOfBirth)) {
-      return NextResponse.json(
-        {
-          error: 'You must confirm your date of birth (18+) before entering.',
-          code: 'AGE_VERIFICATION_REQUIRED',
-        },
-        { status: 403 }
-      );
-    }
+    // Age (18+) is confirmed by the arrival AgeGate prompt + the 18+ acceptance at
+    // signup/checkout (product decision) — no server-side date-of-birth gate here.
 
     // Calculate total
     const ticketPrice =
