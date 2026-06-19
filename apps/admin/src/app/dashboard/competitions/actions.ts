@@ -275,6 +275,19 @@ export async function updateCompetition(id: string, formData: FormData) {
     try { questionChoices = JSON.parse(questionChoicesStr); } catch { throw new Error('Invalid question choices format'); }
   }
 
+  // P1-6: totalTickets controls how many Ticket rows are generated on the
+  // UPCOMING -> ACTIVE transition. Once a competition leaves DRAFT/UPCOMING the
+  // Ticket inventory is fixed, so changing totalTickets afterwards corrupts
+  // inventory (raising = phantom unsellable capacity, lowering below sold =
+  // negative remaining). Only allow it while the inventory has not been minted yet.
+  const totalTicketsChanged = totalTickets !== existing.totalTickets;
+  if (totalTicketsChanged && existing.status !== 'DRAFT' && existing.status !== 'UPCOMING') {
+    throw new Error(
+      'Total tickets can only be changed while the competition is in DRAFT or UPCOMING status. ' +
+        'The ticket inventory is locked once the competition becomes active.',
+    );
+  }
+
   await prisma.competition.update({
     where: { id },
     data: {
@@ -525,6 +538,8 @@ interface CancelCompetitionResult {
   error?: string;
   refundedCount?: number;
   refundedAmount?: number;
+  /** Order ids whose Stripe refund failed and could not be marked REFUNDED. */
+  failedRefundOrderIds?: string[];
 }
 
 export async function cancelCompetition(id: string, reason: string): Promise<CancelCompetitionResult> {
@@ -579,21 +594,56 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
   let refundedAmount = 0;
   const refundErrors: string[] = [];
 
-  // Process refunds for all successful orders
+  // P1-5: Refunds must be idempotent and replayable so a retry (e.g. after a
+  // partial failure) never double-refunds. The Order model has no stripeRefundId
+  // column, so we record the returned Stripe refund id in an audit-log entry and
+  // use order.paymentStatus === 'REFUNDED' as the skip guard.
   for (const order of competition.orders) {
+    // Re-read the live payment status immediately before refunding. The status
+    // selected in the include above may be stale on a retry; this guarantees an
+    // already-refunded order is skipped and the Stripe refund is never issued twice.
+    const current = await prisma.order.findUnique({
+      where: { id: order.id },
+      select: { paymentStatus: true },
+    });
+
+    // Already refunded (e.g. on a previous attempt) — skip without contacting Stripe.
+    if (!current || current.paymentStatus === 'REFUNDED') {
+      continue;
+    }
+
     if (order.stripePaymentIntentId && stripe) {
       try {
-        // Create a full refund
-        await stripe.refunds.create({
+        // Create a full refund. Stripe also de-duplicates server-side, but the
+        // status guard above already prevents a second call for the same order.
+        const refund = await stripe.refunds.create({
           payment_intent: order.stripePaymentIntentId,
           reason: 'requested_by_customer',
         });
 
-        // Update order status
-        await prisma.order.update({
-          where: { id: order.id },
-          data: { paymentStatus: 'REFUNDED' },
-        });
+        // Mark the order refunded and record the Stripe refund id in the audit log
+        // (no stripeRefundId column exists on Order). Done together so the order is
+        // never flipped to REFUNDED without a recorded refund id.
+        await prisma.$transaction([
+          prisma.order.update({
+            where: { id: order.id },
+            data: { paymentStatus: 'REFUNDED' },
+          }),
+          prisma.auditLog.create({
+            data: {
+              userId: session.user.id,
+              action: 'ORDER_REFUNDED',
+              entity: 'order',
+              entityId: order.id,
+              metadata: {
+                competitionId: id,
+                stripeRefundId: refund.id,
+                stripePaymentIntentId: order.stripePaymentIntentId,
+                amount: Number(order.totalAmount),
+              },
+            },
+          }),
+        ]);
 
         refundedCount++;
         refundedAmount += Number(order.totalAmount);
@@ -602,7 +652,7 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
         refundErrors.push(order.id);
       }
     } else {
-      // No Stripe, just mark as refunded
+      // No Stripe payment intent (e.g. free entry) — just mark as refunded.
       await prisma.order.update({
         where: { id: order.id },
         data: { paymentStatus: 'REFUNDED' },
@@ -612,7 +662,43 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
     }
   }
 
-  // Update competition status and release all tickets
+  // P1-5: If any refund failed, do NOT silently cancel the competition. Return
+  // the failed order ids so the caller can surface them and retry. The retry is
+  // safe: orders already marked REFUNDED above are skipped before any Stripe call,
+  // so only the failed orders are re-attempted, and the competition is only
+  // cancelled once every refund has gone through.
+  if (refundErrors.length > 0) {
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: 'COMPETITION_CANCEL_REFUNDS_FAILED',
+        entity: 'competition',
+        entityId: id,
+        metadata: {
+          competitionTitle: competition.title,
+          reason,
+          ordersRefunded: refundedCount,
+          amountRefunded: refundedAmount,
+          failedRefundOrderIds: refundErrors,
+          timestamp: new Date().toISOString(),
+        },
+      },
+    });
+
+    revalidatePath('/dashboard/competitions');
+    revalidatePath(`/dashboard/competitions/${id}`);
+
+    return {
+      success: false,
+      refundedCount,
+      refundedAmount,
+      failedRefundOrderIds: refundErrors,
+      error: `${refundErrors.length} refund(s) failed. The competition was NOT cancelled. ` +
+        'Resolve the failures and retry — already-refunded orders will be skipped.',
+    };
+  }
+
+  // All refunds succeeded — update competition status and release all tickets.
   await prisma.$transaction(async (tx) => {
     // Set competition to CANCELLED
     await tx.competition.update({
@@ -643,7 +729,6 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
           reason,
           ordersRefunded: refundedCount,
           amountRefunded: refundedAmount,
-          refundErrors: refundErrors.length > 0 ? refundErrors : undefined,
           timestamp: new Date().toISOString(),
         },
       },
@@ -665,15 +750,6 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
         }
       ).catch((err) => console.error('Failed to send cancellation email:', err));
     }
-  }
-
-  if (refundErrors.length > 0) {
-    return {
-      success: true,
-      refundedCount,
-      refundedAmount,
-      error: `Competition cancelled but ${refundErrors.length} refund(s) failed. Check audit log for details.`,
-    };
   }
 
   return {
