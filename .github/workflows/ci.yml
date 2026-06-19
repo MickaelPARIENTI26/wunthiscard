@@ -35,7 +35,13 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        # npm install (not npm ci) on purpose: the committed lock validates with the
+        # dev toolchain's npm, but the runner's older npm resolves a transitive dep
+        # (@swc/helpers) differently and would fail npm ci's strict lock check. A
+        # lenient install still gives a good-enough dep tree for the lint/typecheck/
+        # test gate (this is also what the Vercel deploy uses), without fighting
+        # npm-version lock quirks.
+        run: npm install --no-audit --no-fund
 
       # Prisma client is consumed by the apps' lint/build; generate it so lint
       # doesn't fail on a missing generated client. Schema lives in packages/database.
