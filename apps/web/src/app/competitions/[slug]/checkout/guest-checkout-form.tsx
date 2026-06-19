@@ -42,6 +42,7 @@ const guestCheckoutSchema = z
     email: z.string().email('Invalid email address').toLowerCase().trim(),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
+    dateOfBirth: z.string().min(1, 'Date of birth is required'),
     country: z.string().min(1, 'Country is required'),
     postcode: z.string().min(1, 'Postcode is required').max(20).trim(),
     address: z.string().min(1, 'Address is required').max(200).trim(),
@@ -55,6 +56,19 @@ const guestCheckoutSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
+  })
+  .refine((data) => {
+    const today = new Date();
+    const birthDate = new Date(data.dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age >= 18;
+  }, {
+    message: 'You must be at least 18 years old to register',
+    path: ['dateOfBirth'],
   });
 
 type GuestCheckoutInput = z.infer<typeof guestCheckoutSchema>;
@@ -132,6 +146,7 @@ export function GuestCheckoutForm({
       email: '',
       password: '',
       confirmPassword: '',
+      dateOfBirth: '',
       country: 'GB',
       postcode: '',
       address: '',
@@ -480,6 +495,21 @@ export function GuestCheckoutForm({
           {errors.confirmPassword && (
             <span className="field-error">{errors.confirmPassword.message}</span>
           )}
+        </div>
+
+        <div className="field billing-full">
+          <label className="field-label" htmlFor="dateOfBirth">Date of birth</label>
+          <input
+            id="dateOfBirth"
+            type="date"
+            className={`input ${errors.dateOfBirth ? 'input-error' : ''}`}
+            autoComplete="bday"
+            disabled={isLoading}
+            max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+            {...register('dateOfBirth')}
+          />
+          <span className="field-hint">You must be at least 18 years old.</span>
+          {errors.dateOfBirth && <span className="field-error">{errors.dateOfBirth.message}</span>}
         </div>
       </div>
 

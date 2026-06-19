@@ -17,6 +17,10 @@ const guestCheckoutSchema = z.object({
   email: z.string().email().toLowerCase().trim(),
   password: passwordSchema,
   confirmPassword: z.string().min(1),
+  dateOfBirth: z.coerce.date({
+    required_error: 'Date of birth is required',
+    invalid_type_error: 'Invalid date',
+  }),
   country: z.string().min(1).max(10),
   postcode: z.string().min(1).max(20).trim(),
   address: z.string().min(1).max(200).trim(),
@@ -29,6 +33,18 @@ const guestCheckoutSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
+}).refine((data) => {
+  const today = new Date();
+  const birthDate = new Date(data.dateOfBirth);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 18;
+}, {
+  message: 'You must be at least 18 years old to register',
+  path: ['dateOfBirth'],
 });
 
 async function hashPassword(password: string): Promise<string> {
@@ -113,6 +129,7 @@ export async function POST(request: NextRequest) {
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
+          dateOfBirth: data.dateOfBirth,
           // Email verification (auto in dev, required in prod)
           emailVerified: isProduction ? null : new Date(),
         },

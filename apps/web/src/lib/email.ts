@@ -21,9 +21,12 @@ interface SendEmailOptions {
   subject: string;
   html: string;
   text?: string;
+  // Optional Reply-To address (e.g. a contact-form submitter) so replies go to
+  // the right person rather than the noreply FROM_EMAIL sender.
+  replyTo?: string;
 }
 
-export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
+export async function sendEmail({ to, subject, html, text, replyTo }: SendEmailOptions) {
   if (!resend) {
     if (IS_PRODUCTION) {
       // Don't silently pretend it worked in prod — log loudly and report failure
@@ -42,6 +45,7 @@ export async function sendEmail({ to, subject, html, text }: SendEmailOptions) {
       subject,
       html,
       text: text || stripHtml(html),
+      ...(replyTo ? { replyTo } : {}),
     });
 
     if (error) {

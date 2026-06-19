@@ -103,10 +103,10 @@ export function HomeHero({ competitions }: HomeHeroProps) {
             </Link>
           </div>
 
-          {/* Strip chips */}
+          {/* Strip chips — factual, process-based claims only (no invented stats) */}
           <div className="flex flex-wrap items-center gap-2.5" style={{ paddingTop: '24px', borderTop: '1.5px dashed var(--ink)' }}>
-            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--accent)' }}>£500K + won</span>
-            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--surface)' }}>2,500+ entries</span>
+            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--accent)' }}>Free postal entry</span>
+            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--surface)' }}>UK delivery included</span>
             <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--hot)', color: '#fff' }}>100% live draws</span>
           </div>
         </div>

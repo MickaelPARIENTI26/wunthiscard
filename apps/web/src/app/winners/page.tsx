@@ -49,7 +49,7 @@ async function getWinners(category?: string, page: number = 1) {
     ? { competition: { category: category as never } }
     : {};
 
-  const [winners, totalCount] = await Promise.all([
+  const [winners, totalCount, prizeValueAgg] = await Promise.all([
     prisma.win.findMany({
       where,
       include: {
@@ -75,11 +75,23 @@ async function getWinners(category?: string, page: number = 1) {
       take: ITEMS_PER_PAGE,
     }),
     prisma.win.count({ where }),
+    // Real total prize value across every win (all pages), derived from the
+    // linked competitions — never an invented marketing figure.
+    prisma.win.findMany({
+      where,
+      select: { competition: { select: { prizeValue: true } } },
+    }),
   ]);
+
+  const totalPrizeValue = prizeValueAgg.reduce(
+    (sum, w) => sum + Number(w.competition.prizeValue),
+    0
+  );
 
   return {
     winners,
     totalCount,
+    totalPrizeValue,
     totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
     currentPage: page,
   };
@@ -106,8 +118,10 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
   const category = params.category;
   const page = parseInt(params.page || '1', 10);
 
-  const [{ winners, totalCount, totalPages, currentPage }, categories] =
-    await Promise.all([getWinners(category, page), getCategories()]);
+  const [
+    { winners, totalCount, totalPrizeValue, totalPages, currentPage },
+    categories,
+  ] = await Promise.all([getWinners(category, page), getCategories()]);
 
   return (
     <main>
@@ -131,7 +145,9 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-8">
             <div style={{ background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Total prizes</div>
-              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>£2.4M</div>
+              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>
+                {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(totalPrizeValue)}
+              </div>
             </div>
             <div style={{ background: 'var(--hot)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Cards won</div>

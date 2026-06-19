@@ -24,7 +24,11 @@ export function FreeEntryButton({
   const isLoading = sessionStatus === 'loading';
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasEntered, setHasEntered] = useState(userTicketCount > 0);
+  // The user is "already entered" only once they've used up their free-entry
+  // allowance. Free comps can allow more than one entry, so a single existing
+  // ticket must not block further entries while under the per-user cap.
+  const [enteredCount, setEnteredCount] = useState(userTicketCount);
+  const hasEntered = enteredCount >= maxTicketsPerUser;
   const [error, setError] = useState<string | null>(null);
 
   const handleFreeEntry = async () => {
@@ -51,7 +55,8 @@ export function FreeEntryButton({
         return;
       }
 
-      setHasEntered(true);
+      setEnteredCount((count) => count + 1);
+      router.refresh();
       setIsSubmitting(false);
     } catch {
       setError('Network error. Please try again.');
@@ -81,7 +86,9 @@ export function FreeEntryButton({
           Already Entered
         </button>
         <p style={{ fontSize: '13px', color: 'var(--ink-dim)', textAlign: 'center' }}>
-          You already have a ticket for this draw. Good luck!
+          {maxTicketsPerUser === 1
+            ? 'You already have a ticket for this draw. Good luck!'
+            : `You've used all ${maxTicketsPerUser} of your free entries for this draw. Good luck!`}
         </p>
       </div>
     );

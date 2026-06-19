@@ -143,6 +143,7 @@ export async function submitContactForm(
       const safeMessage = esc(message);
       await sendEmail({
         to: CONTACT_INBOX,
+        replyTo: email,
         subject: `[Contact] ${subjectLabel} — ${name}`,
         html: `
           <h2 style="font-family: sans-serif;">New contact message</h2>
