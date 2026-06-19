@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { CheckoutClient } from './checkout-client';
@@ -88,8 +89,14 @@ export default async function CheckoutPage({
 
       {/* Enter head */}
       <section className="enter-head">
-        <div className="enter-head-card">
-          <img src={competition.mainImageUrl} alt={competition.title} />
+        <div className="enter-head-card" style={{ position: 'relative' }}>
+          <Image
+            src={competition.mainImageUrl}
+            alt={competition.title}
+            fill
+            sizes="72px"
+            className="object-cover"
+          />
         </div>
         <div className="enter-head-body">
           <div className="enter-head-kicker">Enter · {formatCategory(competition.category)}</div>

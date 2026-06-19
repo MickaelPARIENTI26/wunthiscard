@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { prisma } from '@/lib/db';
 import { QuestionForm } from './question-form';
 
@@ -86,8 +87,14 @@ export default async function QuestionPage({ params }: { params: Promise<PagePar
 
       {/* Enter head — compact hero bar */}
       <section className="enter-head">
-        <div className="enter-head-card">
-          <img src={competition.mainImageUrl} alt={competition.title} />
+        <div className="enter-head-card" style={{ position: 'relative' }}>
+          <Image
+            src={competition.mainImageUrl}
+            alt={competition.title}
+            fill
+            sizes="72px"
+            className="object-cover"
+          />
         </div>
         <div className="enter-head-body">
           <div className="enter-head-kicker">Enter · {formatCategory(competition.category)}</div>

@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Trophy } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
@@ -278,7 +279,16 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </div>
               <div className="comp-hero-imgwrap">
                 {competition.mainImageUrl && (
-                  <img src={competition.mainImageUrl} alt={competition.title} className="comp-hero-img" />
+                  <div className="comp-hero-img" style={{ width: '100%', maxWidth: '380px', aspectRatio: '5 / 7' }}>
+                    <Image
+                      src={competition.mainImageUrl}
+                      alt={competition.title}
+                      fill
+                      priority
+                      sizes="(max-width: 980px) 90vw, 45vw"
+                      className="object-contain"
+                    />
+                  </div>
                 )}
               </div>
               <div className="comp-hero-badges">
