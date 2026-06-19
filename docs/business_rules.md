@@ -120,8 +120,8 @@ Conformément au UK Gambling Act 2005, une voie d'entrée gratuite DOIT être pr
 
 ### 2.7 Tirage au Sort
 
-- Le tirage est effectué via un **Random Number Generator (RNG) certifié** sous supervision d'un **huissier de justice** (ou tiers indépendant à déterminer)
-- Le tirage peut être diffusé en live (optionnel, via lien YouTube/Twitch)
+- Le tirage est effectué par un **tiers indépendant** (prestataire de tirage externe) qui fournit le numéro de ticket gagnant ; un administrateur l'enregistre via `recordWinner` (`drawMethod: 'manual_external'`). Il n'y a **pas** de RNG sur le site ni de live stream.
+- Le résultat est publié sur la page de la compétition sous 24 h, vérifiable contre la liste des entrées
 - Le résultat est publié sur le site avec : numéro gagnant, pseudonyme du gagnant (anonymisé partiellement), date et heure du tirage
 - Le gagnant est notifié par email
 - Si le gagnant ne répond pas sous 14 jours, un nouveau tirage est effectué
@@ -193,7 +193,7 @@ Conformément au UK Gambling Act 2005, une voie d'entrée gratuite DOIT être pr
 ### 4.4 Page How It Works
 - Explication en 4 étapes illustrées
 - Information sur la question de skill (QCM)
-- Information sur le tirage (RNG certifié, supervision par huissier)
+- Information sur le tirage (tirage par tiers indépendant, résultat publié et vérifiable sous 24 h)
 - Information sur la free entry route (courrier postal)
 - FAQ rapide
 
@@ -272,7 +272,7 @@ Conformément au UK Gambling Act 2005, une voie d'entrée gratuite DOIT être pr
 - Gestion des pages statiques (About, FAQ, etc. — éditeur rich text)
 - Configuration des réseaux sociaux (liens + compteurs)
 - Configuration Stripe (clés API)
-- Configuration du tirage (méthode, prestataire RNG)
+- Configuration du tirage (méthode, prestataire de tirage indépendant)
 
 ### 5.7 Analytics
 - Revenus détaillés par période

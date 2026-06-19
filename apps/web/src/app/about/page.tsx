@@ -18,15 +18,15 @@ export const metadata: Metadata = {
 const stats = [
   { v: '£500K+', l: 'Prizes Paid', c: 'var(--accent)' },
   { v: '482', l: 'Cards Won', c: 'var(--hot)' },
-  { v: '100%', l: 'Live Draws', c: 'var(--pop)' },
+  { v: '100%', l: 'Results Published', c: 'var(--pop)' },
   { v: 'PSA 10', l: 'Every Card Graded', c: 'var(--warn)' },
 ];
 
 const pillars = [
   {
     mark: '01 / Transparency',
-    title: 'Every draw, live.',
-    body: "No pre-recorded videos. No \"trust us\". Every single draw is streamed live with a certified RNG rolling on-screen. The winning ticket is posted publicly — alongside the entrant's first name and city.",
+    title: 'Every result, published.',
+    body: "No \"trust us\". Every winner is drawn by an independent third party, and the result is published and verifiable on the competition page within 24 hours — the winning ticket number alongside the entrant's first name and city.",
     foot: { text: "Watch last week's →", href: '/winners', label: 'winners' },
   },
   {

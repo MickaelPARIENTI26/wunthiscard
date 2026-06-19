@@ -38,10 +38,10 @@ const steps = [
   },
   {
     n: '04', t: 'Win',
-    lead: 'Live draw. Tracked delivery.',
-    b: "When the comp sells out (or hits its end date), we run a certified RNG draw — streamed live. Winner notified within 24h. Insured tracked shipping, free in the UK.",
+    lead: 'Independent draw. Tracked delivery.',
+    b: "When the comp sells out (or hits its end date), the winner is drawn by an independent third party. The result is published and verifiable on the competition page, and the winner is notified within 24h. Insured tracked shipping, free in the UK.",
     swatch: 'var(--hot)',
-    bullets: ['RNG + live draw', 'Winner posted publicly', 'Free UK delivery'],
+    bullets: ['Independent third-party draw', 'Winner published publicly', 'Free UK delivery'],
   },
 ];
 

@@ -330,7 +330,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           You&apos;re <span className="inline-block bg-[var(--ink)] text-[var(--accent)] px-[0.18em] pb-[2px] rounded-[12px] rotate-[-2deg] font-bold">in</span>.
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '17px', lineHeight: 1.6, marginBottom: '32px' }}>
-          We&apos;ve emailed your confirmation with your ticket numbers. The draw is live — watch on our socials or right here when the countdown hits zero.
+          We&apos;ve emailed your confirmation with your ticket numbers. When the countdown hits zero, an independent third party draws the winner and we publish the result right here.
         </p>
 
         {/* Order summary card */}

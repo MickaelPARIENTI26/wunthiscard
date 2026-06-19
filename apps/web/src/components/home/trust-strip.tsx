@@ -1,6 +1,6 @@
 const items = [
   { icon: '🔒', label: 'Secure Payments' },
-  { icon: '📺', label: 'Live Draws' },
+  { icon: '🎲', label: 'Independent Draws' },
   { icon: '🚚', label: 'Free Delivery' },
   { icon: '✉️', label: 'Free Postal Entry' },
   { icon: '✓', label: 'Graded & Authenticated' },

@@ -7,14 +7,14 @@ const steps = [
   { n: '01', t: 'Browse', lead: 'Pick the card you want to win.', swatch: 'var(--accent)' },
   { n: '02', t: 'Answer', lead: 'One fair skill question per entry.', swatch: 'var(--warn)' },
   { n: '03', t: 'Enter', lead: 'Pick numbers. Stack your odds.', swatch: 'var(--pop)' },
-  { n: '04', t: 'Win', lead: 'Live draw. Tracked delivery.', swatch: 'var(--hot)' },
+  { n: '04', t: 'Win', lead: 'Independent draw. Tracked delivery.', swatch: 'var(--hot)' },
 ];
 
 const bodies = [
   'Curated drops across Pokémon, One Piece TCG, sports cards and signed memorabilia. Each comp shows the prize value, ticket price, and tickets left — no surprises.',
   'UK law requires a skill test — we ask a fair trivia question about the card you\'re entering. Correct answer = valid entry. Simple.',
   'Choose ticket numbers manually or let us auto-pick. Buy bundles and unlock bonus tickets. The more tickets, the better your shot.',
-  'When the comp closes we run a certified RNG draw streamed live. Winner notified within 24h. Insured tracked shipping, free in the UK.',
+  'When the comp closes, an independent third party draws the winner. We publish the result on the competition page and notify the winner within 24h. Insured tracked shipping, free in the UK.',
 ];
 
 export function HomeHowItWorks() {

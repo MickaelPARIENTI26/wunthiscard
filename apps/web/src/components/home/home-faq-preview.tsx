@@ -12,7 +12,7 @@ const faqItems = [
   },
   {
     q: 'How is the winner selected?',
-    a: 'Every competition uses certified Random Number Generation (RNG). Draws are streamed live on our socials, and the winning ticket number is published publicly on the competition page.',
+    a: 'The winning ticket number is drawn by an independent third party. The result is published and verifiable on the competition page, and the winner is notified, within 24 hours of the draw.',
   },
   {
     q: 'Is there a free entry route?',

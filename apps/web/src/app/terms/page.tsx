@@ -104,7 +104,7 @@ function TermsContent() {
 
       <section id="draw">
         <h3 className="legal-h">8. Draw Process</h3>
-        <p className="legal-p">The draw for each Competition is conducted using a certified Random Number Generator (RNG). The draw takes place on the stated draw date or when all tickets sell, may be live-streamed for transparency, and results are final and binding.</p>
+        <p className="legal-p">The winning ticket number for each Competition is drawn by an independent third party. The draw takes place on the stated draw date or when all tickets sell. The result is published on the competition page and verifiable against the entry list, and is final and binding.</p>
         <p className="legal-p">Winners are notified by email within 24 hours of the draw. If a winner does not respond within 14 days, a new winner may be selected.</p>
       </section>
 

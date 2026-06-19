@@ -70,7 +70,7 @@ export function HomeHero({ competitions }: HomeHeroProps) {
 
           {/* Subtitle */}
           <p style={{ fontSize: '18px', lineHeight: 1.5, color: 'var(--ink-dim)', maxWidth: '460px', margin: '0 0 30px' }}>
-            UK&apos;s biggest card comps — <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>Pokémon, One Piece, Football &amp; Basketball</b>. Tickets from <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>£14.90</b>. Live draws. Real cards delivered to your door.
+            UK&apos;s biggest card comps — <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>Pokémon, One Piece, Football &amp; Basketball</b>. Tickets from <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>£14.90</b>. Independent draws. Real cards delivered to your door.
           </p>
 
           {/* CTAs */}
@@ -107,7 +107,7 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           <div className="flex flex-wrap items-center gap-2.5" style={{ paddingTop: '24px', borderTop: '1.5px dashed var(--ink)' }}>
             <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--accent)' }}>Free postal entry</span>
             <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--surface)' }}>UK delivery included</span>
-            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--hot)', color: '#fff' }}>100% live draws</span>
+            <span style={{ padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, background: 'var(--hot)', color: '#fff' }}>Independent draws</span>
           </div>
         </div>
 

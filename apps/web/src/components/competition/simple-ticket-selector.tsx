@@ -226,7 +226,7 @@ export function SimpleTicketSelector({
         <div className="buy-trust-chips">
           <span>🔒 Secure Stripe payment</span>
           <span>✓ Graded &amp; authenticated</span>
-          <span>📺 Certified live draw</span>
+          <span>🎲 Independent draw</span>
         </div>
         <p className="buy-trust-note">
           Skill-based prize competition — not a lottery. Free postal entry available ·{' '}

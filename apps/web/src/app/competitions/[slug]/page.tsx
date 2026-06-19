@@ -275,7 +275,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           <div className="comp-hero-visual">
             <div className={`comp-hero-frame game-${gameClass}`}>
               <div className="comp-hero-marquee">
-                ★ LIVE DRAW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE DRAW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE DRAW ★
+                ★ LIVE NOW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE NOW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE NOW ★
               </div>
               <div className="comp-hero-imgwrap">
                 {competition.mainImageUrl && (
@@ -370,7 +370,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <p className="comp-verify-line">
                 {competition.certificationNumber ? `Cert #${competition.certificationNumber} · ` : ''}
                 {competition.grade ? `${competition.grade} · ` : ''}
-                Draws {new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} · Certified RNG live · Full refund if cancelled
+                Draws {new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} · Independent draw · Full refund if cancelled
               </p>
             )}
 
@@ -430,7 +430,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             <div className="comp-meta-row">
               <span>🔒 Secure checkout</span>
               <span>✉ Free postal entry</span>
-              <span>📺 Live draw</span>
+              <span>🎲 Independent draw</span>
             </div>
 
             {/* Recent winners — social proof */}
@@ -485,7 +485,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   )}
                   <li><span className="about-card-k">Category</span><span className="about-card-v">{CATEGORY_LABELS[category]}</span></li>
                   <li><span className="about-card-k">Draw Date</span><span className="about-card-v">{new Date(competition.drawDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span></li>
-                  <li><span className="about-card-k">Draw Type</span><span className="about-card-v">Certified RNG · Live</span></li>
+                  <li><span className="about-card-k">Draw Type</span><span className="about-card-v">Independent third party</span></li>
                 </ul>
               </div>
 

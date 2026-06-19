@@ -93,8 +93,9 @@ function PlaceholderCompetitionRulesContent() {
           <li>A free entry route available to all potential participants</li>
         </ul>
         <p>
-          All competitions are operated fairly and transparently, with draws
-          conducted using certified random number generation.
+          All competitions are operated fairly and transparently. Each winner is
+          drawn by an independent third party, and the result is published and
+          verifiable on the competition page.
         </p>
       </section>
 
@@ -344,14 +345,17 @@ function PlaceholderCompetitionRulesContent() {
         <h3>8.2 Draw Method</h3>
         <ul>
           <li>
-            All draws use a certified Random Number Generator (RNG) to ensure
-            fairness
+            The winning ticket number is selected by an independent third party
+            to ensure fairness
           </li>
           <li>
-            For high-value prizes (over 1,000 GBP), draws are supervised by an
-            independent third party
+            The result is published on the competition page, and the winner is
+            notified, within 24 hours of the draw
           </li>
-          <li>Draws may be live-streamed for additional transparency</li>
+          <li>
+            The winning ticket number is verifiable against the published entry
+            list
+          </li>
           <li>The draw result is final and binding</li>
         </ul>
 
