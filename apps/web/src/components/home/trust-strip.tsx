@@ -9,7 +9,7 @@ const items = [
 export function TrustStrip() {
   return (
     <div
-      className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 px-5 sm:px-8"
+      className="hidden md:flex flex-wrap justify-center items-center gap-4 sm:gap-8 px-5 sm:px-8"
       style={{
         padding: '20px 0',
         background: 'var(--bg-2)',

@@ -26,7 +26,47 @@ const heroImages = [
 
 export function HomeHero({ competitions }: HomeHeroProps) {
   return (
-    <section className="mx-auto px-5 sm:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16" style={{ maxWidth: '1440px' }}>
+    <>
+      {/* Mobile: compact intro banner only. On phones we want the live
+          competitions right at the top, so the full hero below is desktop-only. */}
+      <section className="md:hidden px-5 pt-5 pb-4">
+        <div
+          className="inline-flex items-center gap-2"
+          style={{
+            padding: '5px 11px',
+            background: 'var(--ink)',
+            color: 'var(--accent)',
+            borderRadius: '999px',
+            fontFamily: 'var(--mono)',
+            fontSize: '10px',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            fontWeight: 600,
+          }}
+        >
+          <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+          {competitions.length} live competition{competitions.length === 1 ? '' : 's'}
+        </div>
+        <h1
+          style={{
+            fontFamily: 'var(--display)',
+            fontSize: '30px',
+            lineHeight: 0.95,
+            letterSpacing: '-0.04em',
+            fontWeight: 700,
+            margin: '12px 0 8px',
+          }}
+        >
+          Win the card of your dreams.
+        </h1>
+        <p style={{ fontSize: '14px', color: 'var(--ink-dim)', lineHeight: 1.45, margin: 0 }}>
+          Pokémon, One Piece &amp; sports cards. Tickets from{' '}
+          <b style={{ color: 'var(--ink)' }}>£14.90</b>. Independent draws, real cards delivered.
+        </p>
+      </section>
+
+      {/* Desktop hero */}
+      <section className="hidden md:block mx-auto px-5 sm:px-8 pt-8 pb-12 sm:pt-12 sm:pb-16" style={{ maxWidth: '1440px' }}>
       <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: '48px', alignItems: 'center', minHeight: '620px' }}>
         {/* Left col */}
         <div>
@@ -131,6 +171,7 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           .carousel-track { width: 240px; height: 380px; }
         }
       `}</style>
-    </section>
+      </section>
+    </>
   );
 }
