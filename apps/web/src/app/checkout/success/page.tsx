@@ -2,11 +2,10 @@ import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import type Stripe from 'stripe';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
-import { releaseTicketsFromRedis } from '@/lib/redis';
+import { fulfillCheckoutSession } from '@/lib/fulfill-checkout';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@winucard/shared/utils';
 import { ClearCheckoutStorage } from './clear-checkout-storage';
@@ -18,149 +17,6 @@ export const metadata: Metadata = {
 
 interface PageProps {
   searchParams: Promise<{ session_id?: string }>;
-}
-
-async function processPaymentIfNeeded(orderId: string, stripeSession: { payment_status: string | null; metadata: { ticketNumbers?: string; bonusTickets?: string } | null; payment_intent: string | Stripe.PaymentIntent | null }) {
-  // DEVELOPMENT-ONLY fulfilment fallback for local dev where the Stripe webhook
-  // isn't reachable. In PRODUCTION the webhook is the SINGLE source of fulfilment —
-  // this fallback must NOT run there because it omits the referral free-ticket
-  // redemption AND the referrer +1 reward, and it races the webhook; whenever this
-  // page won the race the referrer reward would be lost forever. The caller already
-  // guards this, but we fail closed here too.
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-
-  // Check if payment was successful and order hasn't been processed yet
-  if (stripeSession.payment_status !== 'paid') {
-    return;
-  }
-
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: { competition: true },
-  });
-
-  if (!order || order.paymentStatus === 'SUCCEEDED') {
-    return; // Already processed or not found
-  }
-
-  const ticketNumbers = JSON.parse(stripeSession.metadata?.ticketNumbers || '[]') as number[];
-  const bonusTickets = parseInt(stripeSession.metadata?.bonusTickets || '0', 10);
-
-  // Process the payment (same logic as webhook)
-  const transactionResult = await prisma.$transaction(async (tx) => {
-    // Check again inside transaction to prevent duplicate processing
-    const currentOrder = await tx.order.findUnique({
-      where: { id: orderId },
-      select: { paymentStatus: true },
-    });
-
-    if (currentOrder?.paymentStatus === 'SUCCEEDED') {
-      return { alreadyProcessed: true };
-    }
-
-    // Update order status atomically
-    await tx.order.update({
-      where: {
-        id: orderId,
-        paymentStatus: { not: 'SUCCEEDED' },
-      },
-      data: {
-        paymentStatus: 'SUCCEEDED',
-        stripePaymentIntentId: typeof stripeSession.payment_intent === 'string'
-          ? stripeSession.payment_intent
-          : stripeSession.payment_intent?.id,
-      },
-    });
-
-    // Assign paid tickets to user - only update RESERVED tickets belonging to this user
-    await tx.ticket.updateMany({
-      where: {
-        competitionId: order.competitionId,
-        ticketNumber: { in: ticketNumbers },
-        status: 'RESERVED',
-        userId: order.userId,
-      },
-      data: {
-        orderId: order.id,
-        status: 'SOLD',
-        reservedUntil: null,
-      },
-    });
-
-    // Assign bonus tickets if any
-    if (bonusTickets > 0) {
-      const availableTickets = await tx.ticket.findMany({
-        where: {
-          competitionId: order.competitionId,
-          status: 'AVAILABLE',
-          ticketNumber: { notIn: ticketNumbers },
-        },
-        take: bonusTickets,
-        orderBy: { ticketNumber: 'asc' },
-      });
-
-      if (availableTickets.length > 0) {
-        const bonusTicketNumbers = availableTickets.map((t) => t.ticketNumber);
-        await tx.ticket.updateMany({
-          where: {
-            competitionId: order.competitionId,
-            ticketNumber: { in: bonusTicketNumbers },
-            status: 'AVAILABLE', // Only update if still available
-          },
-          data: {
-            userId: order.userId,
-            orderId: order.id,
-            status: 'SOLD',
-            isBonus: true,
-          },
-        });
-      }
-    }
-
-    // Check if competition is now sold out
-    const remainingTickets = await tx.ticket.count({
-      where: {
-        competitionId: order.competitionId,
-        status: 'AVAILABLE',
-      },
-    });
-
-    if (remainingTickets === 0 && order.competition.status === 'ACTIVE') {
-      await tx.competition.update({
-        where: { id: order.competitionId },
-        data: { status: 'SOLD_OUT' },
-      });
-    }
-
-    return { alreadyProcessed: false };
-  });
-
-  if (transactionResult.alreadyProcessed) {
-    return;
-  }
-
-  // Release Redis reservation
-  if (order.userId) {
-    await releaseTicketsFromRedis(order.competitionId, order.userId);
-  }
-
-  // Log success
-  await prisma.auditLog.create({
-    data: {
-      userId: order.userId,
-      action: 'PAYMENT_SUCCEEDED',
-      entity: 'order',
-      entityId: order.id,
-      metadata: {
-        orderNumber: order.orderNumber,
-        ticketNumbers,
-        bonusTickets,
-        processedBy: 'success_page_fallback',
-      },
-    },
-  });
 }
 
 async function getOrderDetails(sessionId: string, viewerId: string) {
@@ -181,11 +37,20 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
       return null;
     }
 
-    // DEV ONLY: process payment if the webhook hasn't run (local dev has no webhook).
-    // In production the Stripe webhook is the single source of fulfilment — see the
-    // guard inside processPaymentIfNeeded — so we never fulfil from this page there.
-    if (process.env.NODE_ENV !== 'production') {
-      await processPaymentIfNeeded(session.metadata.orderId, session);
+    // Fulfil from this page if the webhook hasn't already done so — in BOTH dev and
+    // prod. The webhook is normally the primary path, but in production it can be
+    // unconfigured, lagging, or failing signature verification; without this fallback
+    // a paid order would never fulfil (no tickets, no email, no counter drop). This
+    // shares the exact same idempotent logic as the webhook: the in-transaction claim
+    // (paymentStatus != 'SUCCEEDED') makes a webhook+page race safe — the loser does
+    // nothing. We skip the call entirely when the order is already SUCCEEDED to avoid a
+    // redundant Stripe-session round trip on the common (webhook-won) path.
+    const existingStatus = await prisma.order.findUnique({
+      where: { id: session.metadata.orderId },
+      select: { paymentStatus: true },
+    });
+    if (existingStatus && existingStatus.paymentStatus !== 'SUCCEEDED') {
+      await fulfillCheckoutSession(session);
     }
 
     // Get order from database
