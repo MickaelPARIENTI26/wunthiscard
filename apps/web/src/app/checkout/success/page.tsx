@@ -222,17 +222,6 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             <span style={{ color: 'var(--ink-dim)' }}>Tickets</span>
             <b>{paidTickets.length}{bonusTickets.length > 0 ? ` + ${bonusTickets.length} bonus` : ''}</b>
           </div>
-          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
-            <span style={{ color: 'var(--ink-dim)' }}>Ticket numbers</span>
-            <b style={{ fontFamily: 'var(--mono)', fontSize: '12px' }}>
-              {paidTickets.map(t => `#${t.ticketNumber}`).join(', ')}
-              {bonusTickets.length > 0 && (
-                <span style={{ color: 'var(--accent)' }}>
-                  {', '}{bonusTickets.map(t => `#${t.ticketNumber}`).join(', ')}
-                </span>
-              )}
-            </b>
-          </div>
           <div className="flex justify-between py-3">
             <span style={{ color: 'var(--ink-dim)' }}>Total paid</span>
             <b>{formatPrice(totalAmount)}</b>

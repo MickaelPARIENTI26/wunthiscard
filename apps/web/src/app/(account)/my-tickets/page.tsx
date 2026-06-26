@@ -375,37 +375,6 @@ export default async function MyTicketsPage() {
                       >
                         Your tickets · {ticketNumbers.length}
                       </div>
-                      <div className="hidden sm:flex flex-wrap" style={{ gap: '6px' }}>
-                        {ticketNumbers
-                          .sort((a, b) => a - b)
-                          .map((num) => {
-                            const isWin = num === winningTicket;
-                            return (
-                              <span
-                                key={num}
-                                style={{
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                  padding: '4px 10px',
-                                  minWidth: '44px',
-                                  justifyContent: 'center',
-                                  fontFamily: 'var(--mono)',
-                                  fontSize: '12px',
-                                  fontWeight: 700,
-                                  background: isWin ? 'var(--accent)' : 'var(--bg-2)',
-                                  color: 'var(--ink)',
-                                  border: '1.5px solid var(--ink)',
-                                  borderRadius: '6px',
-                                  boxShadow: isWin ? '2px 2px 0 var(--ink)' : 'none',
-                                }}
-                              >
-                                #{num}
-                                {isWin && <Trophy className="h-3 w-3" />}
-                              </span>
-                            );
-                          })}
-                      </div>
                     </div>
                   </div>
                 </div>

@@ -374,34 +374,6 @@ export function CheckoutClient({
           </div>
         </div>
 
-        {/* Ticket numbers */}
-        <div
-          style={{
-            padding: '12px 14px',
-            background: 'var(--bg-2)',
-            border: '1px dashed var(--line-2)',
-            borderRadius: '8px',
-            marginBottom: '14px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              color: 'var(--ink-faint)',
-              fontWeight: 700,
-              marginBottom: '6px',
-            }}
-          >
-            Ticket numbers
-          </div>
-          <p style={{ fontSize: '13px', fontWeight: 600, fontFamily: 'var(--mono)' }}>
-            #{selectedTickets.sort((a, b) => a - b).join(', #')}
-          </p>
-        </div>
-
         {/* Price breakdown */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13.5px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 500 }}>
