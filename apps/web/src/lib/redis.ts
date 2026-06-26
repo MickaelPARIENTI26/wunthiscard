@@ -33,8 +33,14 @@ interface RedisLike {
 
 interface PipelineLike {
   set(key: string, value: string, options?: { ex?: number }): PipelineLike;
+  // Atomic set-if-not-exists with expiry (SET key val NX EX ttl). Queued in the
+  // pipeline; on exec the result is the SET reply: OK when it set the key, null
+  // when the key already existed (NX lost), so callers can detect races.
+  setNxEx(key: string, value: string, ttlSeconds: number): PipelineLike;
+  expire(key: string, seconds: number): PipelineLike;
+  get(key: string): PipelineLike;
   del(key: string): PipelineLike;
-  exec(): Promise<unknown>;
+  exec(): Promise<unknown[]>;
 }
 
 // Create a unified wrapper
@@ -89,23 +95,39 @@ class LocalRedisWrapper implements RedisLike {
 
   pipeline(): PipelineLike {
     const pipe = this.client.pipeline();
-    return {
+    const self: PipelineLike = {
       set(key: string, value: string, options?: { ex?: number }) {
         if (options?.ex) {
           pipe.setex(key, options.ex, value);
         } else {
           pipe.set(key, value);
         }
-        return this;
+        return self;
+      },
+      setNxEx(key: string, value: string, ttlSeconds: number) {
+        pipe.set(key, value, 'EX', ttlSeconds, 'NX');
+        return self;
+      },
+      expire(key: string, seconds: number) {
+        pipe.expire(key, seconds);
+        return self;
+      },
+      get(key: string) {
+        pipe.get(key);
+        return self;
       },
       del(key: string) {
         pipe.del(key);
-        return this;
+        return self;
       },
       async exec() {
-        return pipe.exec();
+        // ioredis exec() returns Array<[error, result]>; surface the results so
+        // callers see the same shape as Upstash (array of replies).
+        const res = await pipe.exec();
+        return (res ?? []).map((entry) => (Array.isArray(entry) ? entry[1] : entry));
       },
     };
+    return self;
   }
 }
 
@@ -156,23 +178,37 @@ class UpstashRedisWrapper implements RedisLike {
 
   pipeline(): PipelineLike {
     const pipe = this.client.pipeline();
-    return {
+    const self: PipelineLike = {
       set(key: string, value: string, options?: { ex?: number }) {
         if (options?.ex) {
           pipe.set(key, value, { ex: options.ex });
         } else {
           pipe.set(key, value);
         }
-        return this;
+        return self;
+      },
+      setNxEx(key: string, value: string, ttlSeconds: number) {
+        pipe.set(key, value, { nx: true, ex: ttlSeconds });
+        return self;
+      },
+      expire(key: string, seconds: number) {
+        pipe.expire(key, seconds);
+        return self;
+      },
+      get(key: string) {
+        pipe.get(key);
+        return self;
       },
       del(key: string) {
         pipe.del(key);
-        return this;
+        return self;
       },
       async exec() {
-        return pipe.exec();
+        // Upstash exec() already returns an array of replies, one per command.
+        return pipe.exec<unknown[]>();
       },
     };
+    return self;
   }
 }
 
@@ -391,7 +427,17 @@ export interface ReservationData {
   expiresAt: number; // Unix timestamp
 }
 
-// Reserve tickets in Redis using atomic SETNX to prevent race conditions
+// Reserve tickets in Redis using atomic SET ... NX EX to prevent race
+// conditions. The work is batched so the number of Redis round-trips stays
+// roughly constant regardless of how many tickets are reserved (instead of the
+// old ~2-3 sequential awaits per ticket):
+//   1. one pipelined GET of every lock key to classify free / held-by-me /
+//      held-by-others — if ANY is held by another user, fail before taking any;
+//   2. one pipeline that atomically SET..NX..EX every free lock and refreshes
+//      the TTL of locks we already hold;
+//   3. verify each of our NX sets actually won (NX returns null when the key
+//      already existed, i.e. someone raced us); if any lost, release the locks
+//      we won in this call and fail.
 export async function reserveTicketsInRedis(
   competitionId: string,
   userId: string,
@@ -399,62 +445,91 @@ export async function reserveTicketsInRedis(
 ): Promise<{ success: boolean; expiresAt: number; error?: string }> {
   const reservationKey = getTicketReservationKey(competitionId, userId);
   const expiresAt = Date.now() + TICKET_RESERVATION_TTL * 1000;
-  const acquiredLocks: string[] = [];
-  const failedTickets: number[] = [];
 
-  // Try to acquire locks atomically using SETNX pattern
-  for (const ticketNumber of ticketNumbers) {
-    const lockKey = getTicketLockKey(competitionId, ticketNumber);
+  // Stable, de-duplicated key list so pipeline result indexes line up exactly
+  // with the keys we queued. (A ticket number appearing twice would otherwise
+  // make us SET..NX the same key twice and treat the second as a lost race.)
+  const lockKeys = [...new Set(ticketNumbers)].map((ticketNumber) => ({
+    ticketNumber,
+    lockKey: getTicketLockKey(competitionId, ticketNumber),
+  }));
 
-    // First check if we already own this lock
-    const existingLock = await redis.get<string>(lockKey);
-
-    if (existingLock === userId) {
-      // We already own this lock - just refresh the TTL
-      await redis.expire(lockKey, TICKET_RESERVATION_TTL);
-      acquiredLocks.push(lockKey);
-    } else if (existingLock) {
-      // Already locked by another user
-      failedTickets.push(ticketNumber);
-    } else {
-      // Try to acquire lock atomically with SETNX
-      // SETNX returns 1 if the key was set, 0 if it already exists
-      const lockAcquired = await redis.setnx(lockKey, userId);
-
-      if (lockAcquired === 1) {
-        // Successfully acquired - set TTL
-        await redis.expire(lockKey, TICKET_RESERVATION_TTL);
-        acquiredLocks.push(lockKey);
-      } else {
-        // Another user grabbed it between our check and setnx
-        // Double-check who owns it now
-        const currentOwner = await redis.get<string>(lockKey);
-        if (currentOwner === userId) {
-          // We somehow got it (race condition resolved in our favor)
-          await redis.expire(lockKey, TICKET_RESERVATION_TTL);
-          acquiredLocks.push(lockKey);
-        } else {
-          failedTickets.push(ticketNumber);
-        }
-      }
-    }
+  if (lockKeys.length === 0) {
+    return { success: false, expiresAt: 0, error: 'No tickets requested' };
   }
 
-  // If any locks failed, rollback all acquired locks
-  if (failedTickets.length > 0) {
-    // Release any locks we acquired
-    if (acquiredLocks.length > 0) {
-      const pipeline = redis.pipeline();
-      for (const lockKey of acquiredLocks) {
-        pipeline.del(lockKey);
+  // Step 1 — one pipelined GET of all lock keys to see current ownership.
+  const getPipeline = redis.pipeline();
+  for (const { lockKey } of lockKeys) {
+    getPipeline.get(lockKey);
+  }
+  const owners = await getPipeline.exec();
+
+  const heldByOthers: number[] = [];
+  // Keys we need to acquire fresh (currently free) vs. keys we already own and
+  // only need to refresh.
+  const toAcquire: { ticketNumber: number; lockKey: string }[] = [];
+  const toRefresh: string[] = [];
+
+  lockKeys.forEach(({ ticketNumber, lockKey }, i) => {
+    const owner = owners[i] == null ? null : String(owners[i]);
+    if (owner === null) {
+      toAcquire.push({ ticketNumber, lockKey });
+    } else if (owner === userId) {
+      toRefresh.push(lockKey);
+    } else {
+      heldByOthers.push(ticketNumber);
+    }
+  });
+
+  // If anything is already locked by someone else, acquire none and fail.
+  if (heldByOthers.length > 0) {
+    return {
+      success: false,
+      expiresAt: 0,
+      error: `Tickets ${heldByOthers.join(', ')} are being purchased by another user`,
+    };
+  }
+
+  // Step 2 — one pipeline: atomically SET..NX..EX every free lock and refresh
+  // the TTL of locks we already hold.
+  const acquirePipeline = redis.pipeline();
+  for (const { lockKey } of toAcquire) {
+    acquirePipeline.setNxEx(lockKey, userId, TICKET_RESERVATION_TTL);
+  }
+  for (const lockKey of toRefresh) {
+    acquirePipeline.expire(lockKey, TICKET_RESERVATION_TTL);
+  }
+  const acquireResults = await acquirePipeline.exec();
+
+  // Step 3 — verify our NX sets won. The first `toAcquire.length` results
+  // correspond to the SET..NX calls (in order); a null/falsy reply means the
+  // key already existed, i.e. another user raced us to it after step 1.
+  const wonLocks: string[] = [];
+  const lostTickets: number[] = [];
+  toAcquire.forEach(({ ticketNumber, lockKey }, i) => {
+    if (acquireResults[i]) {
+      wonLocks.push(lockKey);
+    } else {
+      lostTickets.push(ticketNumber);
+    }
+  });
+
+  // If we lost any race, release only the locks we won in THIS call (the
+  // refreshed ones were already ours and stay reserved) and fail.
+  if (lostTickets.length > 0) {
+    if (wonLocks.length > 0) {
+      const rollback = redis.pipeline();
+      for (const lockKey of wonLocks) {
+        rollback.del(lockKey);
       }
-      await pipeline.exec();
+      await rollback.exec();
     }
 
     return {
       success: false,
       expiresAt: 0,
-      error: `Tickets ${failedTickets.join(', ')} are being purchased by another user`,
+      error: `Tickets ${lostTickets.join(', ')} are being purchased by another user`,
     };
   }
 
