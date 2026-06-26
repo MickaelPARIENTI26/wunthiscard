@@ -35,6 +35,37 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     return;
   }
 
+  // PROOF OF PAYMENT — fail closed unless Stripe says the session is actually paid.
+  // This MUST come before fulfilment: an 'open'/'unpaid' Checkout Session already
+  // carries amount_total + currency, so the amount guard below is NOT sufficient on
+  // its own. The success page fulfils any not-yet-SUCCEEDED order the viewer owns, so
+  // without this a user could create a session, skip paying, hit /checkout/success,
+  // and receive tickets for free. payment_status is Stripe's documented signal for
+  // "safe to fulfil"; 'no_payment_required' covers genuinely zero-cost sessions.
+  if (
+    session.payment_status !== 'paid' &&
+    session.payment_status !== 'no_payment_required'
+  ) {
+    console.error('Refusing to fulfil order — payment not completed', {
+      orderId,
+      paymentStatus: session.payment_status,
+      sessionStatus: session.status,
+    });
+    await prisma.auditLog.create({
+      data: {
+        userId: order.userId,
+        action: 'FULFILMENT_BLOCKED_UNPAID',
+        entity: 'order',
+        entityId: order.id,
+        metadata: {
+          paymentStatus: session.payment_status ?? null,
+          sessionStatus: session.status ?? null,
+        },
+      },
+    });
+    return;
+  }
+
   // Verify Stripe actually charged what this order should cost. amount_total is in
   // pence; order.totalAmount is GBP. A mismatch means tampering or an amount/line-item
   // divergence — fail closed (don't hand out tickets) and record it for review.
