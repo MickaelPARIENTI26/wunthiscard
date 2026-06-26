@@ -234,10 +234,9 @@ export async function sendPurchaseConfirmationEmail(
   data: PurchaseConfirmationData
 ) {
   const ordersUrl = `${BASE_URL}/profile/orders`;
-  const ticketStr = data.ticketNumbers.map((n) => `#${n}`).join(', ');
-  const bonusStr = data.bonusTicketNumbers.length > 0
-    ? data.bonusTicketNumbers.map((n) => `#${n}`).join(', ')
-    : null;
+  // Ticket numbers are not surfaced to users — we only show how many they hold.
+  const paidCount = data.ticketNumbers.length;
+  const bonusCount = data.bonusTicketNumbers.length;
 
   const drawDateFormatted = new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'full',
@@ -264,10 +263,10 @@ export async function sendPurchaseConfirmationEmail(
       <p style="color: #1a1a1a; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${data.competitionTitle}</p>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Your Tickets</p>
-      <p style="color: #1a1a1a; font-size: 14px; margin: 0 0 8px;">${ticketStr}</p>
-      ${bonusStr ? `
+      <p style="color: #1a1a1a; font-size: 24px; font-weight: bold; margin: 0 0 8px;">${paidCount} ${paidCount === 1 ? 'ticket' : 'tickets'}</p>
+      ${bonusCount > 0 ? `
       <p style="color: #16a34a; font-size: 14px; margin: 0 0 16px;">
-        <strong>+ ${data.bonusTicketNumbers.length} Bonus:</strong> ${bonusStr}
+        <strong>+ ${bonusCount} bonus ${bonusCount === 1 ? 'ticket' : 'tickets'}</strong>
       </p>
       ` : ''}
 
@@ -384,8 +383,8 @@ export async function sendFreeEntryConfirmationEmail(
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Competition</p>
       <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${data.competitionTitle}</p>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Ticket Number</p>
-      <p style="color: #16a34a; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">#${data.ticketNumber}</p>
+      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Entry</p>
+      <p style="color: #16a34a; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">1 free ticket</p>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Draw Date</p>
       <p style="color: #1a1a1a; font-size: 14px; margin: 0; text-align: center;">${drawDateFormatted}</p>
