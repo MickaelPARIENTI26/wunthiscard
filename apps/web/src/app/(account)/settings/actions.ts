@@ -81,6 +81,46 @@ export async function changePassword(
   }
 }
 
+export async function updateEmailMarketing(
+  enabled: boolean
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return { success: false, error: 'You must be logged in to update your preferences' };
+    }
+
+    const parsed = z.boolean().safeParse(enabled);
+    if (!parsed.success) {
+      return { success: false, error: 'Invalid preference value' };
+    }
+
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { emailMarketing: parsed.data },
+    });
+
+    // PECR/GDPR: keep an audit trail of marketing-consent changes.
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: 'EMAIL_PREFERENCES_UPDATED',
+        entity: 'user',
+        entityId: session.user.id,
+        metadata: { emailMarketing: parsed.data },
+      },
+    });
+
+    revalidatePath('/settings');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error updating email preferences:', error);
+    return { success: false, error: 'Failed to update preferences. Please try again.' };
+  }
+}
+
 export async function deleteAccount(): Promise<{ success: boolean; error?: string }> {
   try {
     const session = await auth();

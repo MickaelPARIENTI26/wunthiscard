@@ -26,6 +26,7 @@ model User {
   phone               String?
   instagram           String?
   avatarUrl           String?
+  emailMarketing      Boolean   @default(false) // PECR opt-in: promotional / new-competition emails. Transactional emails (order, results, wins) are always sent.
   role                UserRole  @default(USER)
   isActive            Boolean   @default(true)
   isBanned            Boolean   @default(false)

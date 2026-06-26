@@ -24,6 +24,7 @@ export default async function SettingsPage() {
       id: true,
       email: true,
       passwordHash: true,
+      emailMarketing: true,
     },
   });
 
@@ -46,7 +47,7 @@ export default async function SettingsPage() {
 
       <PasswordChangeForm hasExistingPassword={hasPassword} />
 
-      <NotificationPreferences />
+      <NotificationPreferences initialEmailMarketing={user.emailMarketing} />
 
       <DeleteAccountSection email={user.email} />
     </div>
