@@ -213,7 +213,17 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   const isSoldOut = competition.status === 'SOLD_OUT';
   const isCancelled = competition.status === 'CANCELLED';
 
-  const [userTicketCount, availableTicketCount, referralFreeTickets] = isActive
+  // The draw has closed (date passed) but a winner hasn't been recorded yet, and the
+  // competition isn't in a terminal/upcoming state — show "Drawing soon", not a buy box.
+  const drawPending =
+    !isCompleted &&
+    !isCancelled &&
+    !isUpcoming &&
+    new Date(competition.drawDate) <= new Date();
+  // Entry is only possible on an ACTIVE competition whose draw date is still in the future.
+  const isOpenForEntry = isActive && !drawPending;
+
+  const [userTicketCount, availableTicketCount, referralFreeTickets] = isOpenForEntry
     ? await Promise.all([
         getUserTicketCount(competition.id, session?.user?.id),
         getAvailableTicketCount(competition.id),
@@ -324,7 +334,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               style={{ padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)', borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '14px' }}
             >
               <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
-              {isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'}
+              {drawPending ? 'DRAWING SOON' : isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'}
               {competition.soldTickets > 0 ? ` · ${competition.soldTickets.toLocaleString('en-GB')} entered` : ''}
             </div>
 
@@ -366,7 +376,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             )}
 
             {/* Verify strip — fairness/authenticity proofs right by the buy widget */}
-            {isActive && (
+            {isOpenForEntry && (
               <p className="comp-verify-line">
                 {competition.certificationNumber ? `Cert #${competition.certificationNumber} · ` : ''}
                 {competition.grade ? `${competition.grade} · ` : ''}
@@ -375,7 +385,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             )}
 
             {/* Inline Step 01: ticket picker (active comps only) */}
-            {isActive && !isFree && (
+            {isOpenForEntry && !isFree && (
               <SimpleTicketSelector
                 competitionId={competition.id}
                 competitionSlug={competition.slug}
@@ -389,7 +399,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             )}
 
             {/* Free entry button */}
-            {isActive && isFree && (
+            {isOpenForEntry && isFree && (
               <FreeEntryButton
                 competitionId={competition.id}
                 competitionSlug={competition.slug}
@@ -398,13 +408,25 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               />
             )}
 
+            {/* Draw pending — closed, awaiting the winner */}
+            {drawPending && (
+              <div style={{ marginTop: '18px' }}>
+                <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)' }}>
+                  Entries closed — drawing soon
+                </button>
+                <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--ink-faint)', letterSpacing: '0.04em', marginTop: '10px', textAlign: 'center' }}>
+                  This competition has closed. The winner is drawn by an independent third party and the result is published shortly.
+                </p>
+              </div>
+            )}
+
             {/* Non-active states */}
             {isUpcoming && (
               <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
                 Coming Soon
               </button>
             )}
-            {isSoldOut && (
+            {isSoldOut && !drawPending && (
               <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
                 Sold Out — Draw Pending
               </button>

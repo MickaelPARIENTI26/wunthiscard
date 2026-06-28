@@ -11,6 +11,9 @@ interface CompCardProps {
   totalTickets: number | null;
   soldTickets: number;
   status: string;
+  // True when the competition has closed (draw date passed) and is awaiting its draw —
+  // shown as "Drawing soon" with entry disabled.
+  pendingDraw?: boolean;
 }
 
 const gameColorMap: Record<string, { bg: string; color: string }> = {
@@ -25,14 +28,24 @@ function formatCategory(cat: string) {
   return cat.replace(/_/g, ' ').replace(/^SPORTS /i, '');
 }
 
-export function CompCard({ slug, title, mainImageUrl, category, prizeValue, ticketPrice, totalTickets, soldTickets, status }: CompCardProps) {
+export function CompCard({ slug, title, mainImageUrl, category, prizeValue, ticketPrice, totalTickets, soldTickets, status, pendingDraw = false }: CompCardProps) {
   const isUnlimited = totalTickets === null;
   const isFree = ticketPrice <= 0;
   const total = totalTickets ?? 1; // only used when !isUnlimited
   const left = total - soldTickets;
   const pct = Math.max(Math.round((soldTickets / total) * 100), 3);
-  const isOpen = status === 'ACTIVE';
+  const isOpen = status === 'ACTIVE' && !pendingDraw;
   const gamePill = gameColorMap[category] ?? { bg: 'var(--warn)', color: 'var(--ink)' };
+
+  // Status pill: correctly distinguish Open / Sold Out / Drawing soon / Coming Soon
+  // (previously everything non-ACTIVE was mislabelled "Coming Soon").
+  const statusPill = pendingDraw
+    ? { label: 'Drawing soon', bg: 'var(--warn)', color: 'var(--ink)' }
+    : isOpen
+      ? { label: 'Open', bg: 'var(--accent)', color: 'var(--ink)' }
+      : status === 'SOLD_OUT'
+        ? { label: 'Sold Out', bg: 'var(--pop)', color: '#fff' }
+        : { label: 'Coming Soon', bg: 'var(--pop)', color: '#fff' };
 
   return (
     <Link
@@ -69,11 +82,11 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
           style={{
             padding: '5px 10px', border: '1.5px solid var(--ink)', borderRadius: '6px',
             fontSize: '11px', fontWeight: 700,
-            background: isOpen ? 'var(--accent)' : 'var(--pop)',
-            color: isOpen ? 'var(--ink)' : '#fff',
+            background: statusPill.bg,
+            color: statusPill.color,
           }}
         >
-          ● {isOpen ? 'Open' : 'Coming Soon'}
+          ● {statusPill.label}
         </span>
 
         {/* Card image */}

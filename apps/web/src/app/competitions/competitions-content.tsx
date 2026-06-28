@@ -23,6 +23,7 @@ interface Competition {
   isRevealed?: boolean;
   drawType?: string;
   prizeCount?: number;
+  pendingDraw?: boolean;
 }
 
 interface Pagination {
@@ -96,17 +97,18 @@ export function CompetitionsContent({
     [updateFilters]
   );
 
-  // Sort: ACTIVE first (by urgency then draw date), then SOLD_OUT, then UPCOMING last
+  // Sort: ACTIVE first (by urgency then draw date), then SOLD_OUT, then UPCOMING, and
+  // closed-but-not-drawn ("Drawing soon") competitions always last.
   const sortedCompetitions = useMemo(() => {
     const now = Date.now();
     const statusOrder: Record<string, number> = { ACTIVE: 0, SOLD_OUT: 1, UPCOMING: 2 };
     return [...competitions].sort((a, b) => {
-      const orderA = statusOrder[a.status] ?? 3;
-      const orderB = statusOrder[b.status] ?? 3;
+      const orderA = a.pendingDraw ? 90 : (statusOrder[a.status] ?? 3);
+      const orderB = b.pendingDraw ? 90 : (statusOrder[b.status] ?? 3);
       if (orderA !== orderB) return orderA - orderB;
 
-      // Within ACTIVE: sort by urgency then draw date
-      if (a.status === 'ACTIVE' && b.status === 'ACTIVE') {
+      // Within ACTIVE-and-open: sort by urgency then draw date
+      if (a.status === 'ACTIVE' && b.status === 'ACTIVE' && !a.pendingDraw && !b.pendingDraw) {
         const diffA = new Date(a.drawDate).getTime() - now;
         const diffB = new Date(b.drawDate).getTime() - now;
         const urgA = diffA > 0 && diffA < 3 * 3600000 ? 0 : diffA > 0 && diffA < 24 * 3600000 ? 1 : 2;
@@ -189,6 +191,7 @@ export function CompetitionsContent({
               totalTickets={competition.totalTickets}
               soldTickets={competition.soldTickets}
               status={competition.status}
+              pendingDraw={competition.pendingDraw}
             />
           ))}
         </div>

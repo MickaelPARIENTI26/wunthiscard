@@ -36,18 +36,24 @@ const CATEGORY_FILTER_MAP: Record<string, string[]> = {
   other: ['YUGIOH', 'MTG', 'OTHER'],
 };
 
+// A competition whose draw date has passed (or that sold out) but hasn't been drawn
+// yet stays visible in a "Drawing soon" state for this grace window, then auto-hides
+// (the draw should have happened by then; published results live on /winners).
+const DRAW_PENDING_WINDOW_HOURS = 48;
+
 const STATUS_FILTER_MAP: Record<string, string[]> = {
-  all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING'],
+  all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING', 'DRAWING'],
   live: ['ACTIVE'],
   'ending-soon': ['ACTIVE', 'SOLD_OUT'],
   'coming-soon': ['UPCOMING'],
 };
 
-// Status priority for sorting: ACTIVE first, then SOLD_OUT, then UPCOMING
+// Status priority for sorting: ACTIVE first, then SOLD_OUT, then UPCOMING, DRAWING last
 const STATUS_PRIORITY: Record<string, number> = {
   ACTIVE: 1,
   SOLD_OUT: 2,
   UPCOMING: 3,
+  DRAWING: 4,
 };
 
 type SortOption = 'end-date' | 'price-low' | 'price-high' | 'popularity';
@@ -96,12 +102,15 @@ async function getCompetitions(searchParams: SearchParams) {
     };
   }
 
-  // Exclude competitions whose draw date has passed
-  where.drawDate = { gt: new Date() };
+  // Keep competitions visible from "open" through a grace window AFTER the draw date,
+  // so a just-closed competition shows as "Drawing soon" instead of vanishing, then
+  // auto-hides once the window passes (the draw should be done by then).
+  const now = new Date();
+  const pendingCutoff = new Date(now.getTime() - DRAW_PENDING_WINDOW_HOURS * 60 * 60 * 1000);
+  where.drawDate = { gt: pendingCutoff };
 
   // For "ending soon", filter by draw date within next 48 hours
   if (status === 'ending-soon') {
-    const now = new Date();
     const in48Hours = new Date(now.getTime() + 48 * 60 * 60 * 1000);
     where.drawDate = {
       lte: in48Hours,
@@ -169,10 +178,10 @@ async function getCompetitions(searchParams: SearchParams) {
     },
   });
 
-  // Sort competitions by status priority
+  // Sort competitions by status priority — closed-but-not-drawn ("Drawing soon") last.
   const sortedCompetitions = [...competitions].sort((a, b) => {
-    const statusA = STATUS_PRIORITY[a.status] ?? 99;
-    const statusB = STATUS_PRIORITY[b.status] ?? 99;
+    const statusA = new Date(a.drawDate) <= now ? 90 : (STATUS_PRIORITY[a.status] ?? 99);
+    const statusB = new Date(b.drawDate) <= now ? 90 : (STATUS_PRIORITY[b.status] ?? 99);
     if (statusA !== statusB) {
       return statusA - statusB;
     }
@@ -221,6 +230,8 @@ async function getCompetitions(searchParams: SearchParams) {
       isRevealed: comp.isRevealed,
       drawType: comp.drawType,
       prizeCount: Array.isArray(comp.prizes) ? (comp.prizes as unknown[]).length : 1,
+      // Closed (draw date passed) but not yet drawn — shown as "Drawing soon".
+      pendingDraw: new Date(comp.drawDate) <= now,
     })),
     pagination: {
       page,
