@@ -341,10 +341,9 @@ export async function POST(request: NextRequest) {
                 bonusTickets > 0
                   ? `Includes ${bonusTickets} bonus ticket${bonusTickets > 1 ? 's' : ''}!`
                   : null,
-                `Ticket numbers: #${ticketNumbers.join(', #')}`,
               ]
                 .filter(Boolean)
-                .join(' '),
+                .join(' ') || undefined,
               images: competition.mainImageUrl ? [competition.mainImageUrl] : [],
             },
           },

@@ -13,6 +13,38 @@ import { sendPurchaseConfirmationEmail, sendReferralRewardEmail } from '@/lib/em
  * (guarded on paymentStatus != 'SUCCEEDED') makes a webhook+success-page race safe —
  * whoever loses the claim returns early and does nothing.
  */
+/**
+ * Stripe's documented signal that a Checkout Session is safe to fulfil. An
+ * 'open'/'unpaid' session must NOT be fulfilled (it already carries amount_total, so
+ * the amount guard alone is insufficient). 'no_payment_required' covers genuinely
+ * zero-cost sessions. Exported for unit testing.
+ */
+export function isSessionPaid(
+  session: Pick<Stripe.Checkout.Session, 'payment_status'>
+): boolean {
+  return (
+    session.payment_status === 'paid' ||
+    session.payment_status === 'no_payment_required'
+  );
+}
+
+/**
+ * True when the amount Stripe charged matches what the order should cost (in pence)
+ * and the currency is GBP. A null/undefined amount_total (rare) can't be checked, so
+ * it's treated as matching — the payment_status and webhook-signature checks still
+ * apply. Exported for unit testing.
+ */
+export function isChargedAmountValid(
+  session: Pick<Stripe.Checkout.Session, 'amount_total' | 'currency'>,
+  expectedPence: number
+): boolean {
+  if (typeof session.amount_total !== 'number') return true;
+  return (
+    session.amount_total === expectedPence &&
+    (session.currency ?? 'gbp').toLowerCase() === 'gbp'
+  );
+}
+
 export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): Promise<void> {
   const orderId = session.metadata?.orderId;
 
@@ -42,10 +74,7 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
   // without this a user could create a session, skip paying, hit /checkout/success,
   // and receive tickets for free. payment_status is Stripe's documented signal for
   // "safe to fulfil"; 'no_payment_required' covers genuinely zero-cost sessions.
-  if (
-    session.payment_status !== 'paid' &&
-    session.payment_status !== 'no_payment_required'
-  ) {
+  if (!isSessionPaid(session)) {
     console.error('Refusing to fulfil order — payment not completed', {
       orderId,
       paymentStatus: session.payment_status,
@@ -74,10 +103,7 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       ? (order.totalAmount as { toNumber: () => number }).toNumber()
       : Number(order.totalAmount)) * 100
   );
-  if (
-    typeof session.amount_total === 'number' &&
-    (session.amount_total !== expectedPence || (session.currency ?? 'gbp').toLowerCase() !== 'gbp')
-  ) {
+  if (!isChargedAmountValid(session, expectedPence)) {
     console.error('Payment amount mismatch — refusing to fulfil order', {
       orderId,
       expectedPence,

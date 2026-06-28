@@ -18,6 +18,8 @@ export default defineConfig({
     alias: {
       '@winucard/shared': path.resolve(__dirname, './packages/shared/src'),
       '@winucard/database': path.resolve(__dirname, './packages/database'),
+      // Lets unit tests import apps/web modules (their deps are vi.mock'd).
+      '@': path.resolve(__dirname, './apps/web/src'),
     },
   },
 });
