@@ -856,6 +856,7 @@ export async function recordWinner(competitionId: string, ticketNumber: number) 
       prizeValue: true,
       totalTickets: true,
       winnerNotified: true,
+      drawDate: true,
     },
   });
 
@@ -865,6 +866,28 @@ export async function recordWinner(competitionId: string, ticketNumber: number) 
 
   if (competition.status === 'COMPLETED') {
     throw new Error('A winner has already been recorded for this competition.');
+  }
+
+  if (competition.status === 'CANCELLED') {
+    throw new Error('This competition was cancelled — a winner cannot be recorded.');
+  }
+
+  // Only allow a winner once the competition is actually drawable: SOLD_OUT, in
+  // DRAWING, or still ACTIVE but past its advertised draw date. The admin UI already
+  // gates the button this way, but enforce it at the server trust boundary too so the
+  // action can't be invoked early (recording a winner while tickets are still on sale,
+  // excluding people who still intended to enter). DRAFT/UPCOMING are never drawable.
+  const drawDatePassed = competition.drawDate
+    ? new Date(competition.drawDate) <= new Date()
+    : false;
+  const isDrawable =
+    competition.status === 'SOLD_OUT' ||
+    competition.status === 'DRAWING' ||
+    (competition.status === 'ACTIVE' && drawDatePassed);
+  if (!isDrawable) {
+    throw new Error(
+      'This competition is not ready to be drawn yet — it must be sold out, in drawing, or past its draw date.',
+    );
   }
 
   // Find the winning ticket (must be a participating SOLD or FREE_ENTRY ticket with a user)
