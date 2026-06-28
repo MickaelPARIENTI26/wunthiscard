@@ -110,125 +110,127 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has already claimed a free entry
-    const existingTickets = await prisma.ticket.count({
-      where: {
-        competitionId,
-        userId,
-        status: { in: ['SOLD', 'FREE_ENTRY'] },
-      },
-    });
-
-    if (existingTickets >= competition.maxTicketsPerUser) {
-      return NextResponse.json(
-        { error: 'You have already entered this competition' },
-        { status: 400 }
-      );
-    }
+    // Enforce the per-user cap AND claim the ticket ATOMICALLY.
+    //
+    // The cap is a count-then-write: read how many tickets the user already holds,
+    // then create one if under the limit. Done naively (separate count + create)
+    // it races — a user firing N free-entry requests in parallel passes the count
+    // check N times before any insert lands, farming N free entries where one (or
+    // maxTicketsPerUser) is allowed. There is no DB unique constraint on
+    // (competitionId, userId) to catch it either, and maxTicketsPerUser can be > 1
+    // so a partial unique index isn't an option.
+    //
+    // Fix: run the cap check + claim inside a Serializable transaction. Postgres SSI
+    // detects the write-skew between two such transactions (both read the same count,
+    // both insert) and aborts all but one (40001 → Prisma P2034); we retry on that.
+    const cap = competition.maxTicketsPerUser;
+    const isFinite = competition.totalTickets !== null;
+    const totalTickets = competition.totalTickets ?? 0;
+    const MAX_CLAIM_ATTEMPTS = 5;
 
     let ticketNumber = 0;
+    let claimResult: 'ok' | 'cap' | 'full' | 'conflict' = 'conflict';
 
-    if (competition.totalTickets !== null) {
-      // Finite tickets: find and claim an available pre-created ticket
-      const totalClaimed = await prisma.ticket.count({
-        where: {
-          competitionId,
-          status: { in: ['SOLD', 'FREE_ENTRY'] },
-        },
-      });
-
-      if (totalClaimed >= competition.totalTickets) {
-        return NextResponse.json(
-          { error: 'This competition is full' },
-          { status: 400 }
-        );
-      }
-
-      // Atomically find and claim the next available ticket
-      // Using updateMany with a limit-like approach to avoid race conditions
-      const availableTicket = await prisma.ticket.findFirst({
-        where: {
-          competitionId,
-          status: 'AVAILABLE',
-        },
-        orderBy: { ticketNumber: 'asc' },
-        select: { id: true, ticketNumber: true },
-      });
-
-      if (!availableTicket) {
-        return NextResponse.json(
-          { error: 'No tickets available' },
-          { status: 400 }
-        );
-      }
-
-      // Atomic update: only succeeds if ticket is still AVAILABLE (prevents race condition)
-      const updated = await prisma.ticket.updateMany({
-        where: {
-          id: availableTicket.id,
-          status: 'AVAILABLE', // Guard: another request may have claimed it
-        },
-        data: {
-          status: 'FREE_ENTRY',
-          userId,
-          isFreeEntry: true,
-        },
-      });
-
-      if (updated.count === 0) {
-        // Ticket was claimed by another request — retry or fail
-        return NextResponse.json(
-          { error: 'Ticket was claimed by another user. Please try again.' },
-          { status: 409 }
-        );
-      }
-
-      ticketNumber = availableTicket.ticketNumber;
-    } else {
-      // Unlimited tickets: create a ticket on demand. ticketNumber is allocated
-      // from an atomic, monotonic Redis INCR counter (seeded lazily from the
-      // current max in Postgres) instead of COUNT(*) + 1, so concurrent entries
-      // can't serialise on the same read or collide on the unique
-      // [competitionId, ticketNumber] index under viral load.
-      let created = false;
-      for (let attempt = 0; attempt < 6; attempt++) {
-        ticketNumber = await nextFreeEntryTicketNumber(competitionId, async () => {
+    for (let attempt = 0; attempt < MAX_CLAIM_ATTEMPTS; attempt++) {
+      // For the unlimited path, allocate a monotonic ticket number from the atomic
+      // Redis counter up front (seeded lazily from the current max in Postgres). If
+      // the transaction aborts and we retry, a fresh number is allocated — small
+      // gaps are harmless.
+      let candidateNumber = 0;
+      if (!isFinite) {
+        candidateNumber = await nextFreeEntryTicketNumber(competitionId, async () => {
           const max = await prisma.ticket.aggregate({
             where: { competitionId },
             _max: { ticketNumber: true },
           });
           return max._max.ticketNumber ?? 0;
         });
-        try {
-          await prisma.ticket.create({
-            data: {
-              competitionId,
-              ticketNumber,
-              userId,
-              status: 'FREE_ENTRY',
-              isFreeEntry: true,
-            },
-          });
-          created = true;
-          break;
-        } catch (e) {
-          const code =
-            e && typeof e === 'object' && 'code' in e
-              ? (e as { code?: string }).code
-              : undefined;
-          // A collision should be near-impossible with the atomic counter, but
-          // if a pre-existing row ever overlaps a freshly-seeded value, the next
-          // INCR advances past it — so just retry.
-          if (code === 'P2002') continue;
-          throw e;
-        }
       }
-      if (!created) {
-        return NextResponse.json(
-          { error: 'Could not register your free entry. Please try again.' },
-          { status: 409 }
+
+      try {
+        const res = await prisma.$transaction(
+          async (tx) => {
+            const heldByUser = await tx.ticket.count({
+              where: { competitionId, userId, status: { in: ['SOLD', 'FREE_ENTRY'] } },
+            });
+            if (heldByUser >= cap) return { status: 'cap' as const };
+
+            if (isFinite) {
+              const totalClaimed = await tx.ticket.count({
+                where: { competitionId, status: { in: ['SOLD', 'FREE_ENTRY'] } },
+              });
+              if (totalClaimed >= totalTickets) return { status: 'full' as const };
+
+              const available = await tx.ticket.findFirst({
+                where: { competitionId, status: 'AVAILABLE' },
+                orderBy: { ticketNumber: 'asc' },
+                select: { id: true, ticketNumber: true },
+              });
+              if (!available) return { status: 'full' as const };
+
+              const upd = await tx.ticket.updateMany({
+                where: { id: available.id, status: 'AVAILABLE' },
+                data: { status: 'FREE_ENTRY', userId, isFreeEntry: true },
+              });
+              if (upd.count === 0) return { status: 'conflict' as const };
+              return { status: 'ok' as const, ticketNumber: available.ticketNumber };
+            }
+
+            // Unlimited path: create on demand. A P2002 (number collision) rolls the
+            // tx back and propagates to the retry loop below.
+            await tx.ticket.create({
+              data: {
+                competitionId,
+                ticketNumber: candidateNumber,
+                userId,
+                status: 'FREE_ENTRY',
+                isFreeEntry: true,
+              },
+            });
+            return { status: 'ok' as const, ticketNumber: candidateNumber };
+          },
+          { isolationLevel: 'Serializable' }
         );
+
+        if (res.status === 'ok') {
+          ticketNumber = res.ticketNumber;
+          claimResult = 'ok';
+          break;
+        }
+        if (res.status === 'cap' || res.status === 'full') {
+          claimResult = res.status;
+          break;
+        }
+        // 'conflict' → retry
+      } catch (e) {
+        const code =
+          e && typeof e === 'object' && 'code' in e
+            ? (e as { code?: string }).code
+            : undefined;
+        // P2034 = serialization failure (another concurrent claim won);
+        // P2002 = ticket-number collision on the unlimited path. Both → retry.
+        if (code === 'P2034' || code === 'P2002') continue;
+        throw e;
       }
+    }
+
+    if (claimResult === 'cap') {
+      return NextResponse.json(
+        { error: 'You have already entered this competition' },
+        { status: 400 }
+      );
+    }
+    if (claimResult === 'full') {
+      return NextResponse.json(
+        { error: 'This competition is full' },
+        { status: 400 }
+      );
+    }
+    if (claimResult !== 'ok') {
+      return NextResponse.json(
+        { error: 'Could not register your free entry. Please try again.' },
+        { status: 409 }
+      );
     }
 
     // Create audit log entry

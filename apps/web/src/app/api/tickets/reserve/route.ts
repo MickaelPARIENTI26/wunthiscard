@@ -131,17 +131,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check user's existing tickets for this competition
-    const existingTickets = await prisma.ticket.count({
+    const now = new Date();
+
+    // Prevent reservation accumulation (DoS / cap bypass). A new reservation request
+    // REPLACES this user's existing holds for this competition rather than stacking on
+    // top of them. Without this, the per-user cap never bounds how many tickets a user
+    // can hold in RESERVED state: the original check counted only SOLD, so a user could
+    // reserve up to the cap, abandon the hold, and reserve again — locking large
+    // swathes of stock (up to ~quantity × rate-limit per minute) and starving real
+    // buyers until the 5-minute TTLs expire. Release the user's own active reservations
+    // (DB + Redis) first; the cap check below then bounds their concurrent holds.
+    await prisma.ticket.updateMany({
+      where: { competitionId, userId, status: 'RESERVED' },
+      data: { status: 'AVAILABLE', userId: null, reservedUntil: null },
+    });
+    try {
+      await releaseTicketsFromRedis(competitionId, userId);
+    } catch (releaseError) {
+      console.error('Redis release failed during pre-reservation cleanup:', releaseError);
+    }
+
+    // Cap on the user's CURRENTLY HELD tickets — SOLD plus any still-active RESERVED.
+    // After the release above the user holds no RESERVED of their own, so the RESERVED
+    // term here catches a concurrent sibling request that reserved in the small window
+    // between our release and this count. Counting only SOLD was the original bug.
+    const heldTickets = await prisma.ticket.count({
       where: {
         competitionId,
         userId,
-        status: 'SOLD',
+        OR: [
+          { status: 'SOLD' },
+          { status: 'RESERVED', reservedUntil: { gt: now } },
+        ],
       },
     });
 
-    const totalAfterPurchase = existingTickets + quantity;
-    const remainingAllowance = competition.maxTicketsPerUser - existingTickets;
+    const totalAfterPurchase = heldTickets + quantity;
+    const remainingAllowance = competition.maxTicketsPerUser - heldTickets;
     if (totalAfterPurchase > competition.maxTicketsPerUser) {
       return NextResponse.json(
         {
@@ -152,8 +178,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const now = new Date();
 
     // Get unavailable ticket numbers (SOLD, FREE_ENTRY, or RESERVED by others)
     const unavailableTickets = await prisma.ticket.findMany({
