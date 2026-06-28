@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { uploadObject } from '@/lib/storage';
+import { rateLimits } from '@/lib/redis';
 import { randomBytes } from 'crypto';
 
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB
@@ -30,6 +31,20 @@ export async function POST(request: NextRequest) {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Throttle uploads per user (R2 storage/egress + DB write abuse). FAIL-OPEN on a
+    // limiter error so a Redis hiccup doesn't block legitimate avatar changes.
+    try {
+      const { success } = await rateLimits.avatarUpload.limit(session.user.id);
+      if (!success) {
+        return NextResponse.json(
+          { error: 'Too many uploads. Please try again later.' },
+          { status: 429 }
+        );
+      }
+    } catch (rateErr) {
+      console.error('Avatar upload rate-limit failed (allowing):', rateErr);
     }
 
     const formData = await request.formData();

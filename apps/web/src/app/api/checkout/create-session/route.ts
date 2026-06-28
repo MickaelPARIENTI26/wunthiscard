@@ -6,6 +6,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
 import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits, CHECKOUT_RESERVATION_TTL } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
@@ -27,9 +28,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     // Rate limiting
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip = getClientIp(request.headers);
     const { success: rateLimitSuccess } = await rateLimits.checkout.limit(
       `${userId}:${ip}`
     );

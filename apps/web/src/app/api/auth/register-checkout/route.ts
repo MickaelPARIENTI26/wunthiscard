@@ -8,6 +8,7 @@ import * as Sentry from '@sentry/nextjs';
 import { rateLimits, grantCredentialsSignIn } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { sendVerificationEmail } from '@/lib/email';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const scryptAsync = promisify(scrypt);
 
@@ -61,9 +62,7 @@ async function generateVerificationToken(): Promise<string> {
 export async function POST(request: NextRequest) {
   try {
     // Get IP for rate limiting
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-               request.headers.get('x-real-ip') ??
-               'unknown';
+    const ip = getClientIp(request.headers);
 
     // Rate limiting — FAIL-OPEN. The limiter is a network call to Upstash; if
     // Redis is down/slow it throws. It's only a non-essential safety net here:

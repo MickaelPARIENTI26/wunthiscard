@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { generateCSV } from '@/lib/export';
+import { generateCSV, sanitizeCell } from '@/lib/export';
 import { formatDateTime, formatPrice } from '@winucard/shared';
 import * as XLSX from 'xlsx';
 
@@ -225,7 +225,7 @@ async function exportDetailed(
 
   if (format === 'xlsx') {
     const data = tickets.map((row) =>
-      Object.fromEntries(columns.map((col) => [col.header, col.accessor(row)]))
+      Object.fromEntries(columns.map((col) => [col.header, sanitizeCell(col.accessor(row))]))
     );
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
@@ -372,7 +372,7 @@ async function exportSummary(
 
   if (format === 'xlsx') {
     const data = summaryData.map((row) =>
-      Object.fromEntries(columns.map((col) => [col.header, col.accessor(row)]))
+      Object.fromEntries(columns.map((col) => [col.header, sanitizeCell(col.accessor(row))]))
     );
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { releaseTicketsFromRedis, getReservation } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const releaseSchema = z.object({
   competitionId: z.string().min(1),
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Log the release
-      const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
+      const ip = getClientIp(request.headers);
       await prisma.auditLog.create({
         data: {
           userId,

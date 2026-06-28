@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { sendVerificationEmail } from '@/lib/email';
 import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 import { randomBytes } from 'crypto';
 
 const resendSchema = z.object({
@@ -23,13 +24,18 @@ export async function POST(request: NextRequest) {
 
     const email = validation.data.email;
 
-    // Rate limit by email to prevent email spam. FAIL-OPEN: the limiter is a network
-    // call to Upstash; on an outage we log and allow rather than 500-ing every resend
-    // (this is only an anti-spam safety net).
+    // Rate limit by BOTH email AND IP (block if either trips). Per-email stops
+    // bombing one inbox; per-IP stops one source spraying many addresses. FAIL-OPEN:
+    // the limiter is a network call to Upstash; on an outage we log and allow rather
+    // than 500-ing every resend (this is only an anti-spam safety net).
     const emailLower = email.toLowerCase();
+    const ip = getClientIp(request.headers);
     try {
-      const { success: rateLimitOk } = await rateLimits.passwordReset.limit(emailLower);
-      if (!rateLimitOk) {
+      const [emailLimit, ipLimit] = await Promise.all([
+        rateLimits.passwordReset.limit(`resend-email:${emailLower}`),
+        rateLimits.passwordReset.limit(`resend-ip:${ip}`),
+      ]);
+      if (!emailLimit.success || !ipLimit.success) {
         return NextResponse.json(
           { error: 'Too many requests. Please try again later.' },
           { status: 429 }

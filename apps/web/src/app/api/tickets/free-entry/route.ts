@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { rateLimits, nextFreeEntryTicketNumber } from '@/lib/redis';
 import { sendFreeEntryConfirmationEmail } from '@/lib/email';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const freeEntrySchema = z.object({
   competitionId: z.string().min(1),
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
 
     // Rate limiting (reuse ticket reserve limiter)
-    const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
+    const ip = getClientIp(request.headers);
     const { success: rateLimitSuccess } = await rateLimits.ticketReserve.limit(
       `${userId}:${ip}`
     );

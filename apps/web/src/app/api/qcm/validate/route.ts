@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { verifyTurnstileToken } from '@/lib/turnstile';
+import { getClientIp } from '@/lib/get-client-ip';
 import {
   recordQcmAttempt,
   isQcmBlocked,
@@ -28,9 +29,7 @@ export async function POST(request: NextRequest) {
     // Get user ID (from session) or IP address (for anonymous users)
     const session = await auth();
     const userId = session?.user?.id;
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip = getClientIp(request.headers);
 
     // Use userId if authenticated, otherwise use IP address
     const identifier = userId || `ip:${ip}`;
@@ -191,9 +190,7 @@ export async function GET(request: NextRequest) {
     // Get user ID (from session) or IP address (for anonymous users)
     const session = await auth();
     const userId = session?.user?.id;
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               request.headers.get('x-real-ip') ||
-               'unknown';
+    const ip = getClientIp(request.headers);
 
     // Use userId if authenticated, otherwise use IP address
     const identifier = userId || `ip:${ip}`;

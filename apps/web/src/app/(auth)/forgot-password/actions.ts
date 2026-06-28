@@ -5,6 +5,7 @@ import { headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '@winucard/shared/validators';
 import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 import { sendPasswordResetEmail } from '@/lib/email';
 
 interface ForgotPasswordResult {
@@ -20,11 +21,9 @@ export async function requestPasswordReset(
   input: ForgotPasswordInput
 ): Promise<ForgotPasswordResult> {
   try {
-    // Rate limiting
+    // Rate limiting — per IP first.
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-               headersList.get('x-real-ip') ??
-               'unknown';
+    const ip = getClientIp(headersList);
     const { success: rateLimitSuccess } = await rateLimits.passwordReset.limit(ip);
     if (!rateLimitSuccess) {
       // Don't reveal rate limiting to prevent enumeration
@@ -43,6 +42,15 @@ export async function requestPasswordReset(
 
     const { email } = validationResult.data;
     const normalizedEmail = email.toLowerCase();
+
+    // ALSO rate-limit per target email so an attacker rotating IPs can't bomb one
+    // victim's inbox with reset emails. Same anti-enumeration silent success on block.
+    const { success: emailLimitOk } = await rateLimits.passwordReset.limit(
+      `reset-email:${normalizedEmail}`
+    );
+    if (!emailLimitOk) {
+      return { success: true };
+    }
 
     // Check if user exists
     const user = await prisma.user.findUnique({

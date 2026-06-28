@@ -5,6 +5,7 @@ import * as Sentry from '@sentry/nextjs';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { getReservation, rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const statusSchema = z.object({
   competitionId: z.string().min(1),
@@ -17,8 +18,7 @@ export async function POST(request: NextRequest) {
     // non-essential anti-probing safety net on a read-only status endpoint, so
     // on a limiter error we log and ALLOW the request rather than 500-ing and
     // breaking ticket-availability polling during a Redis outage.
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-               request.headers.get('x-real-ip') ?? 'unknown';
+    const ip = getClientIp(request.headers);
     try {
       const { success: rateLimitOk } = await rateLimits.globalUnauth.limit(ip);
       if (!rateLimitOk) {

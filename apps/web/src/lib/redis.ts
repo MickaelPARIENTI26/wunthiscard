@@ -348,6 +348,9 @@ export const rateLimits = {
   // Contact form: 3 attempts per hour
   contact: createRateLimiter({ requests: 3, window: '1 h', prefix: 'ratelimit:contact' }),
 
+  // Avatar upload: 10 per hour per user (prevents R2 storage/egress abuse from one account).
+  avatarUpload: createRateLimiter({ requests: 10, window: '1 h', prefix: 'ratelimit:avatar' }),
+
   // Global unauthenticated: 30 per minute (used by the public ticket-status poll)
   globalUnauth: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:global-unauth' }),
 };

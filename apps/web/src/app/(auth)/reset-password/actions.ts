@@ -1,8 +1,11 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { resetPasswordSchema, type ResetPasswordInput } from '@winucard/shared/validators';
 import { hashPassword } from '@/lib/password';
+import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 interface ResetPasswordResult {
   success: boolean;
@@ -17,6 +20,19 @@ export async function validateResetToken(token: string): Promise<ValidateTokenRe
   try {
     if (!token || token.length < 32) {
       return { valid: false };
+    }
+
+    // Throttle unauthenticated token lookups per IP so the endpoint can't be used to
+    // brute-force/probe reset tokens or hammer the DB. Generous (30/min) so a legit
+    // user reloading the reset page isn't blocked.
+    try {
+      const ip = getClientIp(await headers());
+      const { success } = await rateLimits.globalUnauth.limit(`reset-check:${ip}`);
+      if (!success) {
+        return { valid: false };
+      }
+    } catch (rateErr) {
+      console.error('reset-token validate rate-limit failed (allowing):', rateErr);
     }
 
     const verificationToken = await prisma.verificationToken.findFirst({
@@ -38,6 +54,18 @@ export async function validateResetToken(token: string): Promise<ValidateTokenRe
 
 export async function resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
   try {
+    // Throttle per IP (generous) — the action requires a valid token anyway, but this
+    // stops the endpoint being hammered.
+    try {
+      const ip = getClientIp(await headers());
+      const { success } = await rateLimits.globalUnauth.limit(`reset-do:${ip}`);
+      if (!success) {
+        return { success: false, error: 'Too many attempts. Please try again later.' };
+      }
+    } catch (rateErr) {
+      console.error('reset-password rate-limit failed (allowing):', rateErr);
+    }
+
     // Validate input with Zod
     const validationResult = resetPasswordSchema.safeParse(input);
     if (!validationResult.success) {

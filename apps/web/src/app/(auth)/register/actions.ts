@@ -9,6 +9,7 @@ import { rateLimits, grantCredentialsSignIn } from '@/lib/redis';
 import { verifyTurnstileRequired } from '@/lib/turnstile';
 import { hashPassword } from '@/lib/password';
 import { sendVerificationEmail } from '@/lib/email';
+import { getClientIp } from '@/lib/get-client-ip';
 
 interface RegisterResult {
   success: boolean;
@@ -40,9 +41,7 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
   try {
     // Rate limiting
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-               headersList.get('x-real-ip') ??
-               'unknown';
+    const ip = getClientIp(headersList);
     const { success: rateLimitSuccess } = await rateLimits.signup.limit(ip);
     if (!rateLimitSuccess) {
       return {

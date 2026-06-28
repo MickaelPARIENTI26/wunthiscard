@@ -6,6 +6,7 @@ import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
 import { verifyTurnstileRequired } from '@/lib/turnstile';
 import { sendEmail } from '@/lib/email';
+import { getClientIp } from '@/lib/get-client-ip';
 
 // Where contact-form notifications are delivered (override via env if needed).
 const CONTACT_INBOX = process.env.CONTACT_EMAIL ?? 'support@winucards.com';
@@ -67,9 +68,7 @@ export async function submitContactForm(
   // get a clear message back (never a silent "scroll to top, no feedback").
   try {
     const headersList = await headers();
-    const ip = headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-               headersList.get('x-real-ip') ??
-               'unknown';
+    const ip = getClientIp(headersList);
 
     // Rate limiting — but degrade gracefully if the limiter itself errors
     // (e.g. transient Redis issue), rather than crashing the whole submission.
