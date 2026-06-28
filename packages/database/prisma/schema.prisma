@@ -290,6 +290,10 @@ model Order {
   questionAnswered Boolean @default(false)
   questionCorrect  Boolean @default(false)
 
+  // True if this order was the referee's qualifying first purchase that granted the
+  // referrer a free ticket. Lets a full refund / lost dispute claw that reward back.
+  grantedReferralReward Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -250,6 +250,50 @@ async function voidOrderAndReleaseTickets(
         data: { status: 'ACTIVE' },
       });
     }
+
+    // Claw back the referral reward this order granted, if any. The referee's
+    // "first successful purchase" gifted the referrer a free ticket; a full refund /
+    // lost dispute means that purchase didn't stick, so reverse it and let the referee
+    // re-qualify on a genuine future purchase. Clamp at >= 0 (the referrer may have
+    // already spent the free ticket) and clear the marker so it can't reverse twice.
+    // Runs inside the same idempotent claim (count===0 returned above), so once only.
+    if (order.grantedReferralReward && order.userId) {
+      const referee = await tx.user.findUnique({
+        where: { id: order.userId },
+        select: { referredById: true },
+      });
+      if (referee?.referredById) {
+        await tx.user.updateMany({
+          where: { id: referee.referredById, referralFreeTicketsEarned: { gt: 0 } },
+          data: { referralFreeTicketsEarned: { decrement: 1 } },
+        });
+        await tx.user.updateMany({
+          where: { id: referee.referredById, referralFreeTicketsAvailable: { gt: 0 } },
+          data: { referralFreeTicketsAvailable: { decrement: 1 } },
+        });
+        await tx.user.update({
+          where: { id: order.userId },
+          data: { referralRewardGranted: false },
+        });
+        await tx.auditLog.create({
+          data: {
+            userId: referee.referredById,
+            action: 'REFERRAL_REWARD_REVERSED',
+            entity: 'order',
+            entityId: order.id,
+            metadata: {
+              orderNumber: order.orderNumber,
+              refereeUserId: order.userId,
+              reason: action === 'PAYMENT_DISPUTE_LOST' ? 'dispute_lost' : 'refund',
+            },
+          },
+        });
+      }
+      await tx.order.update({
+        where: { id: order.id },
+        data: { grantedReferralReward: false },
+      });
+    }
   });
 
   await prisma.auditLog.create({

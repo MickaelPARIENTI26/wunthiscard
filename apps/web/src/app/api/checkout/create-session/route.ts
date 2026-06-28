@@ -1,4 +1,5 @@
 import type { NextRequest } from 'next/server';
+import type Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { auth } from '@/lib/auth';
@@ -305,8 +306,14 @@ export async function POST(request: NextRequest) {
     // Get base URL for redirects
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
-    // Create Stripe Checkout Session
-    const checkoutSession = await stripe.checkout.sessions.create({
+    // Create Stripe Checkout Session. The referral free ticket was decremented
+    // atomically BEFORE this call (to stop two concurrent sessions redeeming the same
+    // ticket). If session creation throws, no expiry/cancel path will ever fire to
+    // re-credit it (the order has no stripeSessionId), so it would be lost forever —
+    // restore it here before surfacing the error.
+    let checkoutSession: Stripe.Checkout.Session;
+    try {
+      checkoutSession = await stripe.checkout.sessions.create({
       mode: 'payment',
       customer_email: user.email,
       client_reference_id: order.id,
@@ -355,7 +362,37 @@ export async function POST(request: NextRequest) {
       success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout/cancel?order_id=${order.id}`,
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes
-    });
+      });
+    } catch (stripeError) {
+      console.error('Stripe checkout session creation failed:', stripeError);
+      // Re-credit the referral free ticket decremented above so it isn't silently lost.
+      if (applyReferralTicket) {
+        try {
+          await prisma.user.update({
+            where: { id: userId },
+            data: { referralFreeTicketsAvailable: { increment: 1 } },
+          });
+          await prisma.auditLog.create({
+            data: {
+              userId,
+              action: 'REFERRAL_FREE_TICKET_RESTORED',
+              entity: 'order',
+              entityId: order.id,
+              metadata: {
+                orderNumber: order.orderNumber,
+                reason: 'stripe_session_create_failed',
+              },
+            },
+          });
+        } catch (restoreError) {
+          console.error('Failed to restore referral free ticket after Stripe failure:', restoreError);
+        }
+      }
+      return NextResponse.json(
+        { error: 'An error occurred while creating checkout session' },
+        { status: 500 }
+      );
+    }
 
     // Update order with Stripe session ID
     await prisma.order.update({

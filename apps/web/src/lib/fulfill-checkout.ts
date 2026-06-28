@@ -400,6 +400,15 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
             select: { email: true, firstName: true, referralFreeTicketsAvailable: true },
           });
 
+          // Mark THIS order as the one that granted the reward, so a later full
+          // refund / lost dispute on it can claw the reward back (see the webhook
+          // void handler). Best-effort: failing to mark only means the reward won't
+          // be auto-reversed, never that payment/fulfilment breaks.
+          await prisma.order.update({
+            where: { id: order.id },
+            data: { grantedReferralReward: true },
+          });
+
           await prisma.auditLog.create({
             data: {
               userId: buyer.referredById,
