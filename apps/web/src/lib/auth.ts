@@ -103,6 +103,7 @@ const providers: Provider[] = [
         lastName: user.lastName,
         role: user.role,
         emailVerified: user.emailVerified,
+        tokenVersion: user.tokenVersion,
       };
     },
   }),
@@ -142,6 +143,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers,
   callbacks: {
     ...authConfig.callbacks,
+    // Node-only jwt callback (overrides the edge one in auth.config.ts). On sign-in
+    // it copies the claims AND the user's current tokenVersion into the token. On
+    // every subsequent read it re-checks the DB so a password reset/change (which
+    // bumps tokenVersion) — and a ban/deactivation — takes effect immediately instead
+    // of surviving the token's 24h lifetime. The edge middleware keeps the simpler,
+    // DB-free callback (it only gates route access); real data access goes through
+    // this node `auth()`, which is where revocation must bite.
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.emailVerified = user.emailVerified ? user.emailVerified.toISOString() : null;
+        token.tokenVersion = user.tokenVersion ?? 0;
+        return token;
+      }
+
+      if (token.id) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id },
+            select: { tokenVersion: true, isBanned: true, isActive: true, role: true },
+          });
+          // Account gone / banned / deactivated → drop the session.
+          if (!dbUser || dbUser.isBanned || !dbUser.isActive) return null;
+          // Password was reset/changed after this token was issued → drop it.
+          if ((token.tokenVersion ?? 0) !== dbUser.tokenVersion) {
+            return null;
+          }
+          // Keep role fresh so a role change doesn't linger for the token's lifetime.
+          token.role = dbUser.role;
+        } catch (revocationError) {
+          // Don't mass-log-out on a transient DB error — keep the existing token.
+          // (If the DB is down the whole app is unavailable anyway.)
+          console.error('jwt revocation check failed (keeping session):', revocationError);
+        }
+      }
+      return token;
+    },
     async signIn({ user, account }) {
       // For OAuth providers, create or update user in database
       if (account?.provider === 'google') {
@@ -173,6 +214,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.firstName = existingUser.firstName;
           user.lastName = existingUser.lastName;
           user.role = existingUser.role;
+          user.tokenVersion = existingUser.tokenVersion;
         } else {
           // Resolve the referrer from the `ref_code` cookie (set by ReferralTracker),
           // mirroring the credentials registration flow so Google sign-ups are also
@@ -211,6 +253,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.firstName = newUser.firstName;
           user.lastName = newUser.lastName;
           user.role = newUser.role;
+          user.tokenVersion = newUser.tokenVersion;
 
           // Record the referral link, same as the credentials path
           if (referredById) {
@@ -243,6 +286,7 @@ declare module 'next-auth' {
     firstName: string;
     lastName: string;
     emailVerified?: Date | null;
+    tokenVersion?: number;
   }
   interface Session {
     user: {
@@ -265,5 +309,6 @@ declare module '@auth/core/jwt' {
     firstName: string;
     lastName: string;
     emailVerified?: string | null;
+    tokenVersion?: number;
   }
 }

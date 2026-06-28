@@ -56,10 +56,17 @@ export async function changePassword(
     // Hash new password
     const newPasswordHash = await hashPassword(newPassword);
 
-    // Update password in database
+    // Update password in database. Bump tokenVersion to invalidate every existing
+    // JWT session (including any the user has open elsewhere, and any attacker's
+    // stolen session) — the jwt callback rejects tokens whose version no longer
+    // matches. The current session is invalidated too, so the form signs the user
+    // out and sends them to log in again with the new password.
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { passwordHash: newPasswordHash },
+      data: {
+        passwordHash: newPasswordHash,
+        tokenVersion: { increment: 1 },
+      },
     });
 
     // Log the action

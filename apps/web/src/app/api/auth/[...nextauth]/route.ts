@@ -2,7 +2,8 @@ import { handlers } from '@/lib/auth';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
-import { rateLimits } from '@/lib/redis';
+import { rateLimits, consumeCredentialsSignIn } from '@/lib/redis';
+import { verifyTurnstileRequired } from '@/lib/turnstile';
 
 export const { GET } = handlers;
 
@@ -63,6 +64,30 @@ export async function POST(request: NextRequest) {
           },
         }
       );
+    }
+
+    // SERVER-SIDE CAPTCHA. The login form verifies Turnstile in the browser only;
+    // the actual credentials endpoint had no captcha, so a bot could script logins
+    // (credential stuffing / password spraying) and skip it entirely. Require a valid
+    // Turnstile token here — fail closed in production via verifyTurnstileRequired.
+    // EXCEPTION: a one-time sign-in grant minted by a just-completed, captcha-verified
+    // registration lets the post-register auto-login through without a second captcha.
+    const granted = email ? await consumeCredentialsSignIn(email) : false;
+    if (!granted) {
+      const turnstileToken =
+        formData.get('turnstileToken')?.toString() ??
+        formData.get('cf-turnstile-response')?.toString() ??
+        null;
+      const captcha = await verifyTurnstileRequired(
+        turnstileToken,
+        ip === 'anonymous' ? undefined : ip
+      );
+      if (!captcha.success) {
+        return NextResponse.json(
+          { error: captcha.error ?? 'Captcha verification failed. Please try again.' },
+          { status: 400 }
+        );
+      }
     }
 
     // Surface the tighter of the two remaining budgets.

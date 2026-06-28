@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 import { loginSchema, type LoginInput } from '@winucard/shared/validators';
-import { checkLoginRateLimit, logLoginSuccess, logLoginFailure, verifyLoginCaptcha } from './actions';
+import { checkLoginRateLimit, logLoginSuccess, logLoginFailure } from './actions';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
@@ -35,6 +35,7 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') ?? '/';
   const error = searchParams.get('error');
+  const passwordChanged = searchParams.get('passwordChanged') === '1';
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -66,26 +67,18 @@ export function LoginForm() {
         return;
       }
 
-      // Verify captcha when it's configured. If a site key is set, a token is
-      // REQUIRED — previously a missing token silently skipped verification, so a
-      // user who never solved the captcha could log in.
-      if (TURNSTILE_SITE_KEY) {
-        if (!turnstileToken) {
-          setServerError('Please complete the captcha before signing in.');
-          return;
-        }
-        const captchaResult = await verifyLoginCaptcha(turnstileToken);
-        if (!captchaResult.success) {
-          setServerError('Captcha verification failed. Please try again.');
-          turnstileRef.current?.reset();
-          setTurnstileToken(null);
-          return;
-        }
+      // Require the captcha token when Turnstile is configured. The REAL verification
+      // now happens server-side in the credentials endpoint — Turnstile tokens are
+      // single-use, so we must NOT verify it here too; we pass it through to signIn.
+      if (TURNSTILE_SITE_KEY && !turnstileToken) {
+        setServerError('Please complete the captcha before signing in.');
+        return;
       }
 
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
+        turnstileToken: turnstileToken ?? undefined,
         redirect: false,
       });
 
@@ -160,6 +153,22 @@ export function LoginForm() {
 
   return (
     <div className="space-y-5">
+      {passwordChanged && !displayError && (
+        <div
+          role="status"
+          style={{
+            padding: '12px 16px',
+            fontSize: '14px',
+            color: '#15803D',
+            background: 'rgba(0, 199, 106, 0.08)',
+            border: '1px solid rgba(0, 199, 106, 0.25)',
+            borderRadius: '10px',
+          }}
+        >
+          Your password has been changed. Please sign in again with your new password.
+        </div>
+      )}
+
       {displayError && (
         <div
           role="alert"

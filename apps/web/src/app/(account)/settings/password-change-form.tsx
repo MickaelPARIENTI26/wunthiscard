@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { signOut } from 'next-auth/react';
 import { Lock, Loader2, Check, X } from 'lucide-react';
 import { changePassword } from './actions';
 
@@ -170,8 +171,12 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
       });
 
       if (result.success) {
-        setMessage({ type: 'success', text: 'Password changed successfully' });
         reset();
+        // Changing the password bumped tokenVersion, which invalidates this very
+        // session. Sign out cleanly and send the user to log in again with their new
+        // password rather than letting them hit a confusing silent logout later.
+        await signOut({ callbackUrl: '/login?passwordChanged=1' });
+        return;
       } else {
         setMessage({ type: 'error', text: result.error ?? 'Failed to change password' });
       }

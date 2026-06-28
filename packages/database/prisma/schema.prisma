@@ -33,6 +33,7 @@ model User {
   banReason           String?
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
+  tokenVersion        Int       @default(0) // Bumped on password reset/change to invalidate all existing JWT sessions
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 

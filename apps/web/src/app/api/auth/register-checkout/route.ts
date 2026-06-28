@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { prisma } from '@winucard/database';
 import { passwordSchema } from '@winucard/shared/validators';
 import * as Sentry from '@sentry/nextjs';
-import { rateLimits } from '@/lib/redis';
+import { rateLimits, grantCredentialsSignIn } from '@/lib/redis';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { sendVerificationEmail } from '@/lib/email';
 
@@ -201,6 +201,11 @@ export async function POST(request: NextRequest) {
     } else {
       console.log(`[DEV] Verification token for ${data.email}: ${verificationToken}`);
     }
+
+    // Mint a one-time sign-in grant so the client's immediate auto-login
+    // (signIn('credentials')) passes the login captcha gate without a second captcha
+    // (Turnstile was already verified above for this guest-checkout registration).
+    await grantCredentialsSignIn(data.email.toLowerCase());
 
     return NextResponse.json({
       success: true,

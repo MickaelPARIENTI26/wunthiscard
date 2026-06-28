@@ -101,6 +101,10 @@ export async function resetPassword(input: ResetPasswordInput): Promise<ResetPas
           // Reset login attempts if they were locked
           failedLoginAttempts: 0,
           lockedUntil: null,
+          // Invalidate every existing JWT session: a reset is exactly how a victim
+          // locks out an attacker who holds a stolen session, so those tokens must
+          // stop working immediately (the jwt callback rejects mismatched versions).
+          tokenVersion: { increment: 1 },
         },
       });
 

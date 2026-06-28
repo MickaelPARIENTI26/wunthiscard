@@ -732,3 +732,44 @@ export async function clearQcmPassed(
   const passedKey = getQcmPassedKey(competitionId, userId);
   await redis.del(passedKey);
 }
+
+// --- Credentials sign-in grant ---------------------------------------------
+// The login endpoint (/api/auth/callback/credentials) enforces a server-side
+// Turnstile captcha. The post-registration auto-login uses the SAME endpoint but
+// has no fresh captcha token (the one solved during registration is single-use).
+// So a successful, captcha-verified registration mints a short-lived, single-use
+// "sign-in grant" keyed by email; the login wrapper accepts it in lieu of a captcha
+// token. Obtaining a grant requires completing a captcha'd, rate-limited
+// registration, so it cannot be used to bypass the login captcha.
+
+function getCredentialsSignInGrantKey(email: string): string {
+  return `signin-grant:${email.toLowerCase()}`;
+}
+
+export async function grantCredentialsSignIn(email: string): Promise<void> {
+  try {
+    await redis.set(getCredentialsSignInGrantKey(email), '1', { ex: 120 });
+  } catch (e) {
+    // Non-blocking: if the grant can't be stored the auto-login simply falls back
+    // to the captcha path (and will fail closed), which is acceptable degradation.
+    console.error('Failed to mint credentials sign-in grant (non-blocking):', e);
+  }
+}
+
+// Consume (single-use) a sign-in grant. Returns true only if a grant existed.
+// Fails CLOSED on Redis error (treated as "no grant") so a Redis hiccup can't be
+// leveraged to skip the login captcha.
+export async function consumeCredentialsSignIn(email: string): Promise<boolean> {
+  try {
+    const key = getCredentialsSignInGrantKey(email);
+    const existed = await redis.exists(key);
+    if (existed === 1) {
+      await redis.del(key);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.error('Credentials sign-in grant check failed (treating as no grant):', e);
+    return false;
+  }
+}

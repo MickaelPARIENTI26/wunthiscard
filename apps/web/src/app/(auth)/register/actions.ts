@@ -5,7 +5,7 @@ import { cookies, headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { registerSchema, type RegisterInput } from '@winucard/shared/validators';
 import { MAX_REFERRALS_PER_USER } from '@winucard/shared';
-import { rateLimits } from '@/lib/redis';
+import { rateLimits, grantCredentialsSignIn } from '@/lib/redis';
 import { verifyTurnstileRequired } from '@/lib/turnstile';
 import { hashPassword } from '@/lib/password';
 import { sendVerificationEmail } from '@/lib/email';
@@ -199,6 +199,11 @@ export async function registerUser(input: RegisterInputWithCaptcha): Promise<Reg
       // Development: surface the token so the flow can be tested without email.
       console.log(`[DEV] Verification token for ${email}: ${verificationToken}`);
     }
+
+    // Mint a one-time sign-in grant so the client's immediate auto-login
+    // (signIn('credentials')) passes the login captcha gate without solving a second
+    // captcha. We just verified Turnstile above, so this is safe.
+    await grantCredentialsSignIn(email.toLowerCase());
 
     return { success: true };
   } catch (error) {
