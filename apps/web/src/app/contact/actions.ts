@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { rateLimits } from '@/lib/redis';
-import { verifyTurnstileToken } from '@/lib/turnstile';
+import { verifyTurnstileRequired } from '@/lib/turnstile';
 import { sendEmail } from '@/lib/email';
 
 // Where contact-form notifications are delivered (override via env if needed).
@@ -85,17 +85,19 @@ export async function submitContactForm(
       console.error('Contact rate-limit check failed (allowing request):', rateErr);
     }
 
-    // Verify Turnstile captcha ONLY if a token was provided (rate limit already
-    // protects the form, so a flaky/absent invisible captcha must not block it).
+    // Verify Turnstile captcha — REQUIRED whenever Turnstile is configured (fails
+    // closed in production). The form now renders a widget, so a missing token means
+    // a scripted/bot submission and is rejected; in dev (no secret) this is a no-op.
     const turnstileToken = formData.get('cf-turnstile-response');
-    if (typeof turnstileToken === 'string' && turnstileToken.length > 0) {
-      const captchaResult = await verifyTurnstileToken(turnstileToken, ip);
-      if (!captchaResult.success) {
-        return {
-          success: false,
-          message: captchaResult.error ?? 'Captcha verification failed. Please try again.',
-        };
-      }
+    const captchaResult = await verifyTurnstileRequired(
+      typeof turnstileToken === 'string' ? turnstileToken : null,
+      ip === 'unknown' ? undefined : ip
+    );
+    if (!captchaResult.success) {
+      return {
+        success: false,
+        message: captchaResult.error ?? 'Captcha verification failed. Please try again.',
+      };
     }
 
     const rawData = {

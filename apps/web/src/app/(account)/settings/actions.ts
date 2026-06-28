@@ -219,6 +219,16 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
         data: { userId: null },
       }),
 
+      // Anonymize the winner's PLAINTEXT name + email stored on draw logs. DrawLog
+      // keeps these as non-null scalars (winnerUserId has no FK, so nothing cascades
+      // or nulls them), which would otherwise leave full PII behind after a "right to
+      // be forgotten" deletion (UK GDPR Art. 17). Keep the draw record for audit, but
+      // strip the identifying fields.
+      prisma.drawLog.updateMany({
+        where: { winnerUserId: userId },
+        data: { winnerName: '[deleted]', winnerEmail: '[deleted]' },
+      }),
+
       // Finally, delete the user
       prisma.user.delete({ where: { id: userId } }),
     ]);

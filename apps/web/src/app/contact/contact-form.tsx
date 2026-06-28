@@ -2,7 +2,10 @@
 
 import { useState, useRef } from 'react';
 import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { submitContactForm, type ContactFormState } from './actions';
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const subjects = [
   { value: 'general', label: 'General enquiry' },
@@ -22,8 +25,10 @@ const initialState: ContactFormState = {
 export function ContactForm() {
   const [state, setState] = useState<ContactFormState>(initialState);
   const [isPending, setIsPending] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const messageRef = useRef<HTMLDivElement>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   // Explicit client-side submit: preventDefault stops any native page reload,
   // we call the server action ourselves and apply the result. This guarantees
@@ -31,7 +36,17 @@ export function ContactForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
+
+    // Require the captcha when Turnstile is configured; the server verifies it
+    // (fail-closed in prod). The token is single-use, so reset the widget afterwards.
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setState({ success: false, message: 'Please complete the captcha before sending.' });
+      messageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
     const formData = new FormData(form);
+    if (turnstileToken) formData.set('cf-turnstile-response', turnstileToken);
 
     setIsPending(true);
     try {
@@ -47,6 +62,9 @@ export function ContactForm() {
         message: 'Network error — please try again, or email support@winucards.com directly.',
       });
     } finally {
+      // The token was consumed by the server — get a fresh one for any retry.
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
       setIsPending(false);
       messageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -192,6 +210,17 @@ export function ContactForm() {
           {state.errors?.message && <span className="field-error">{state.errors.message[0]}</span>}
         </div>
       </div>
+
+      {TURNSTILE_SITE_KEY && (
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={TURNSTILE_SITE_KEY}
+          onSuccess={setTurnstileToken}
+          onError={() => setTurnstileToken(null)}
+          onExpire={() => setTurnstileToken(null)}
+          options={{ size: 'invisible', theme: 'auto' }}
+        />
+      )}
 
       <div style={{ marginTop: '20px' }}>
         <button

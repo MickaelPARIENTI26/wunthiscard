@@ -23,6 +23,10 @@ const ALWAYS_ON = [
     title: 'Win notifications',
     description: 'When you win — so you can claim your prize',
   },
+  {
+    title: 'Referral rewards',
+    description: 'When you earn a free ticket from someone you referred',
+  },
 ];
 
 export function NotificationPreferences({ initialEmailMarketing }: NotificationPreferencesProps) {

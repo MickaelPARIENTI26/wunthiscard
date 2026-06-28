@@ -423,8 +423,13 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
             },
           });
 
-          // Notify the referrer about their earned free ticket (best-effort —
-          // an email failure must never break the reward or the webhook).
+          // Notify the referrer about their earned free ticket. This is a
+          // TRANSACTIONAL service message (a reward was credited to their account),
+          // not a marketing blast, so it is intentionally NOT gated on
+          // User.emailMarketing — that flag governs promotional emails (new
+          // competitions / offers / news). Any future PROMOTIONAL send MUST check
+          // emailMarketing first. Best-effort: an email failure must never break the
+          // reward or the webhook.
           try {
             await sendReferralRewardEmail(
               referrer.email,
