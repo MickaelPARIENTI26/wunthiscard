@@ -158,10 +158,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.lastName = user.lastName;
         token.emailVerified = user.emailVerified ? user.emailVerified.toISOString() : null;
         token.tokenVersion = user.tokenVersion ?? 0;
+        token.checkedAt = Date.now(); // just validated via authorize/signIn
         return token;
       }
 
-      if (token.id) {
+      // Re-validate against the DB at most once a minute rather than on EVERY
+      // authenticated request. The per-request DB round-trip added real latency to
+      // login and page loads (worse on a cold-starting serverless DB). A revoked
+      // session (password reset/change, ban, deactivation) is now dropped within ~60s
+      // instead of instantly — an acceptable trade for not querying the DB every hit.
+      const REVALIDATE_EVERY_MS = 60_000;
+      const lastCheck = typeof token.checkedAt === 'number' ? token.checkedAt : 0;
+      if (token.id && Date.now() - lastCheck > REVALIDATE_EVERY_MS) {
         try {
           const dbUser = await prisma.user.findUnique({
             where: { id: token.id },
@@ -175,6 +183,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
           // Keep role fresh so a role change doesn't linger for the token's lifetime.
           token.role = dbUser.role;
+          token.checkedAt = Date.now();
         } catch (revocationError) {
           // Don't mass-log-out on a transient DB error — keep the existing token.
           // (If the DB is down the whole app is unavailable anyway.)
@@ -310,5 +319,6 @@ declare module '@auth/core/jwt' {
     lastName: string;
     emailVerified?: string | null;
     tokenVersion?: number;
+    checkedAt?: number;
   }
 }
