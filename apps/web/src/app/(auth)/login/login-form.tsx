@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
@@ -122,7 +122,22 @@ export function LoginForm() {
 
       router.push(callbackUrl);
       router.refresh();
-    } catch {
+    } catch (err) {
+      // Auth.js v5 signIn() can THROW even when the sign-in actually succeeded (the
+      // session cookie is already set). Before showing an error, check whether we're
+      // now authenticated — if so, treat it as success and navigate.
+      try {
+        const session = await getSession();
+        if (session?.user) {
+          await logLoginSuccess(data.email);
+          router.push(callbackUrl);
+          router.refresh();
+          return;
+        }
+      } catch {
+        // fall through to the generic error below
+      }
+      console.error('Login error:', err);
       setServerError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
