@@ -93,7 +93,8 @@ export async function POST(request: NextRequest) {
         where: { competitionId, userId, status: 'SOLD' },
       });
       const perUserCap = capComp?.maxTicketsPerUser ?? 100;
-      if (providedTicketNumbers.length > perUserCap - existingOwned) {
+      // perUserCap <= 0 means "no per-user limit".
+      if (perUserCap > 0 && providedTicketNumbers.length > perUserCap - existingOwned) {
         return NextResponse.json(
           { error: `You can hold at most ${perUserCap} tickets for this competition.` },
           { status: 400 }

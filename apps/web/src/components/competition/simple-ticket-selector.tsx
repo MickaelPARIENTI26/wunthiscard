@@ -29,8 +29,10 @@ export function SimpleTicketSelector({
   const router = useRouter();
   const { status: sessionStatus } = useSession();
 
-  // Effective max considers the user's existing tickets.
-  const remainingAllowance = maxTicketsPerUser - userTicketCount;
+  // Effective max considers the user's existing tickets. maxTicketsPerUser <= 0 means
+  // "no per-user limit" — then only the stock and the 100-per-request cap apply.
+  const remainingAllowance =
+    maxTicketsPerUser > 0 ? maxTicketsPerUser - userTicketCount : availableTicketCount;
   const maxQuantity = Math.min(remainingAllowance, availableTicketCount, 100);
 
   // Default to a popular bonus-bearing bundle (10 → +1 bonus), clamped to what's allowed.

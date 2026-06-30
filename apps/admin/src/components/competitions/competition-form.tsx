@@ -60,7 +60,7 @@ const competitionFormSchema = z.object({
   ticketPrice: z.coerce.number().min(0, 'Ticket price cannot be negative'),
   totalTickets: z.coerce.number().int().min(1, 'Must have at least 1 ticket').max(100000, 'Maximum 100,000 tickets').optional(),
   unlimitedParticipants: z.boolean().default(false),
-  maxTicketsPerUser: z.coerce.number().int().min(1, 'Minimum 1 ticket per user').max(100, 'Maximum 100 tickets per user').optional(),
+  maxTicketsPerUser: z.coerce.number().int().min(0, 'Cannot be negative').max(100000, 'Too high').optional(), // 0 = unlimited
   saleStartDate: z.string().optional(),
   drawDate: z.string().min(1, 'Draw date is required'),
   mainImageUrl: z.string().url('Please enter a valid URL'),
@@ -148,7 +148,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
       ticketPrice: competition?.isFree ? 0 : (competition?.ticketPrice ?? undefined),
       totalTickets: competition?.totalTickets ?? undefined,
       unlimitedParticipants: competition?.totalTickets === null,
-      maxTicketsPerUser: competition?.maxTicketsPerUser ?? (competition?.isFree ? 1 : 50),
+      maxTicketsPerUser: competition?.maxTicketsPerUser ?? (competition?.isFree ? 1 : 0), // 0 = unlimited
       saleStartDate: competition?.saleStartDate
         ? new Date(competition.saleStartDate).toISOString().slice(0, 16)
         : '',
@@ -401,7 +401,7 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                           setValue('maxTicketsPerUser', 1);
                         } else {
                           setValue('ticketPrice', undefined as unknown as number);
-                          setValue('maxTicketsPerUser', 50);
+                          setValue('maxTicketsPerUser', 0); // 0 = unlimited per user
                           setUnlimitedParticipants(false);
                         }
                       }}
@@ -777,17 +777,16 @@ export function CompetitionForm({ competition }: CompetitionFormProps) {
                   <Input
                     id="maxTicketsPerUser"
                     type="number"
-                    min="1"
-                    max="100"
-                    placeholder={isFreeState ? '1' : '50'}
+                    min="0"
+                    max="100000"
+                    placeholder={isFreeState ? '1' : '0'}
                     {...register('maxTicketsPerUser')}
                     aria-invalid={!!errors.maxTicketsPerUser}
                   />
-                  {isFreeState && (
-                    <p className="text-xs text-muted-foreground">
-                      Default is 1 for free competitions
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {isFreeState ? 'Default is 1 for free competitions. ' : ''}
+                    Set to <strong>0</strong> for no limit (users can buy as many as they want).
+                  </p>
                   {errors.maxTicketsPerUser && (
                     <p className="text-sm text-destructive">{errors.maxTicketsPerUser.message}</p>
                   )}

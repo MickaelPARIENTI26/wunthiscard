@@ -58,8 +58,9 @@ export async function assignFreeEntry(formData: FormData) {
     },
   });
 
+  // maxTicketsPerUser <= 0 means "no per-user limit".
   const remainingAllowed = competition.maxTicketsPerUser - existingTickets;
-  if (remainingAllowed <= 0) {
+  if (competition.maxTicketsPerUser > 0 && remainingAllowed <= 0) {
     throw new Error(`User already has ${existingTickets} tickets (max ${competition.maxTicketsPerUser})`);
   }
 

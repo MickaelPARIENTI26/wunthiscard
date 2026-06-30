@@ -29,7 +29,8 @@ export function FreeEntryButton({
   // allowance. Free comps can allow more than one entry, so a single existing
   // ticket must not block further entries while under the per-user cap.
   const [enteredCount, setEnteredCount] = useState(userTicketCount);
-  const hasEntered = enteredCount >= maxTicketsPerUser;
+  // maxTicketsPerUser <= 0 means "no per-user limit" — never blocked.
+  const hasEntered = maxTicketsPerUser > 0 && enteredCount >= maxTicketsPerUser;
   const [error, setError] = useState<string | null>(null);
   // No date of birth on file (e.g. Google sign-in doesn't share it) -> show a clear
   // path to set it instead of a dead "confirm your DOB" error.

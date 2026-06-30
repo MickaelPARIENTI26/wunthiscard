@@ -99,7 +99,7 @@ export const createCompetitionSchema = z.object({
   prizeValue: z.number().positive('Prize value must be positive'),
   ticketPrice: z.number().min(0, 'Ticket price cannot be negative'),
   totalTickets: z.number().int().min(1).max(100000).nullable().default(null),
-  maxTicketsPerUser: z.number().int().min(1).max(100).default(50),
+  maxTicketsPerUser: z.number().int().min(0).max(100000).default(0), // 0 = no per-user limit
   saleStartDate: z.coerce.date().optional(),
   drawDate: z.coerce.date(),
   mainImageUrl: z.string().url('Invalid main image URL'),

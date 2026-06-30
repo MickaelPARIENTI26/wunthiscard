@@ -605,8 +605,20 @@ describe('Competition Schema Edge Cases', () => {
     expect(result.success).toBe(true);
   });
 
-  it('should reject maxTicketsPerUser > 100', () => {
-    const comp = { ...baseCompetition, maxTicketsPerUser: 101, totalTickets: 100 };
+  it('should accept maxTicketsPerUser = 0 (no per-user limit)', () => {
+    const comp = { ...baseCompetition, maxTicketsPerUser: 0, totalTickets: 100 };
+    const result = createCompetitionSchema.safeParse(comp);
+    expect(result.success).toBe(true);
+  });
+
+  it('should accept a large maxTicketsPerUser (limit lifted from 100)', () => {
+    const comp = { ...baseCompetition, maxTicketsPerUser: 5000, totalTickets: 10000 };
+    const result = createCompetitionSchema.safeParse(comp);
+    expect(result.success).toBe(true);
+  });
+
+  it('should reject a negative maxTicketsPerUser', () => {
+    const comp = { ...baseCompetition, maxTicketsPerUser: -1, totalTickets: 100 };
     const result = createCompetitionSchema.safeParse(comp);
     expect(result.success).toBe(false);
   });

@@ -154,7 +154,8 @@ export async function POST(request: NextRequest) {
             const heldByUser = await tx.ticket.count({
               where: { competitionId, userId, status: { in: ['SOLD', 'FREE_ENTRY'] } },
             });
-            if (heldByUser >= cap) return { status: 'cap' as const };
+            // cap <= 0 means "no per-user limit".
+            if (cap > 0 && heldByUser >= cap) return { status: 'cap' as const };
 
             if (isFinite) {
               const totalClaimed = await tx.ticket.count({

@@ -37,7 +37,7 @@ export async function createCompetition(formData: FormData) {
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
   const totalTicketsRaw = formData.get('totalTickets') as string;
   const totalTickets = (isFree && unlimitedParticipants) ? null : parseInt(totalTicketsRaw);
-  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 50);
+  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 0); // 0 = unlimited
   const saleStartDate = formData.get('saleStartDate') as string | null;
   const drawDate = formData.get('drawDate') as string;
   const mainImageUrl = formData.get('mainImageUrl') as string;
@@ -246,7 +246,7 @@ export async function updateCompetition(id: string, formData: FormData) {
   const unlimitedParticipants = formData.get('unlimitedParticipants') === 'true';
   const totalTicketsRaw = formData.get('totalTickets') as string;
   const totalTickets = (isFree && unlimitedParticipants) ? null : parseInt(totalTicketsRaw);
-  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 50);
+  const maxTicketsPerUser = parseInt(formData.get('maxTicketsPerUser') as string) || (isFree ? 1 : 0); // 0 = unlimited
   const saleStartDate = formData.get('saleStartDate') as string | null;
   const drawDate = formData.get('drawDate') as string;
   const mainImageUrl = (formData.get('mainImageUrl') as string) || existing.mainImageUrl;

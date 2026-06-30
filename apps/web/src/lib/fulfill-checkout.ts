@@ -160,7 +160,8 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     // order's tickets are still RESERVED), and cap the numbers we assign to what's left
     // of their allowance. The common case (within cap) leaves `ticketNumbers` untouched.
     let paidTicketsToAssign = ticketNumbers;
-    if (order.userId) {
+    // maxTicketsPerUser <= 0 means "no per-user limit" — skip the defensive cap.
+    if (order.userId && order.competition.maxTicketsPerUser > 0) {
       const alreadySold = await tx.ticket.count({
         where: {
           competitionId: order.competitionId,

@@ -169,7 +169,8 @@ export async function POST(request: NextRequest) {
 
     const totalAfterPurchase = heldTickets + quantity;
     const remainingAllowance = competition.maxTicketsPerUser - heldTickets;
-    if (totalAfterPurchase > competition.maxTicketsPerUser) {
+    // maxTicketsPerUser <= 0 means "no per-user limit".
+    if (competition.maxTicketsPerUser > 0 && totalAfterPurchase > competition.maxTicketsPerUser) {
       return NextResponse.json(
         {
           error: remainingAllowance > 0
