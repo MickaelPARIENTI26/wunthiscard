@@ -1,7 +1,7 @@
 'use server';
 
 import { headers } from 'next/headers';
-import { rateLimits } from '@/lib/redis';
+import { rateLimits, grantCredentialsSignIn } from '@/lib/redis';
 import { prisma } from '@winucard/database';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { getClientIp } from '@/lib/get-client-ip';
@@ -18,15 +18,24 @@ interface TurnstileCheckResult {
 }
 
 /**
- * Verify Turnstile captcha token
- * Call this BEFORE calling signIn() on the client
+ * Verify the Turnstile captcha token server-side and, on success, mint a one-time
+ * sign-in grant for this email. The credentials endpoint accepts a captcha token OR a
+ * grant, so the subsequent signIn() is authorised by the grant — meaning a captcha
+ * result never has to ride through signIn() (which would throw on a rejection and
+ * surface as a generic error). Call this BEFORE signIn() on the client.
  */
-export async function verifyLoginCaptcha(token: string): Promise<TurnstileCheckResult> {
+export async function verifyLoginCaptcha(
+  token: string,
+  email: string
+): Promise<TurnstileCheckResult> {
   try {
     const headersList = await headers();
     const ip = getClientIp(headersList);
 
     const result = await verifyTurnstileToken(token, ip);
+    if (result.success && email) {
+      await grantCredentialsSignIn(email.toLowerCase());
+    }
     return result;
   } catch (error) {
     console.error('Turnstile verification error:', error);

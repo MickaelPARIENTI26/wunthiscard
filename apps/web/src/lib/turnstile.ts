@@ -30,17 +30,16 @@ export async function verifyTurnstileToken(
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
   if (!secretKey) {
-    // Fail CLOSED in production: a missing secret key must not silently
-    // disable captcha protection. In non-production, skip so local dev/test
-    // flows work without Turnstile configured.
+    // Not configured → SKIP captcha (degraded mode): the request still goes through,
+    // protected by rate-limiting + the DB account-lockout. This used to fail CLOSED in
+    // production, which BRICKED login/register/contact whenever Turnstile wasn't set up
+    // on the host. Set TURNSTILE_SECRET_KEY (+ NEXT_PUBLIC_TURNSTILE_SITE_KEY) to
+    // actually enforce captcha — do this before the public launch for bot protection.
     if (process.env.NODE_ENV === 'production') {
-      console.error('TURNSTILE_SECRET_KEY not configured - rejecting request (fail closed)');
-      return {
-        success: false,
-        error: 'Captcha verification is temporarily unavailable. Please try again later.',
-      };
+      console.warn(
+        'TURNSTILE_SECRET_KEY not set in production — captcha DISABLED. Configure it to enable bot protection.'
+      );
     }
-    console.warn('TURNSTILE_SECRET_KEY not configured - skipping captcha verification');
     return { success: true };
   }
 
@@ -116,14 +115,14 @@ export async function verifyTurnstileRequired(
   token: string | undefined | null,
   ip?: string
 ): Promise<VerifyResult> {
-  // When Turnstile isn't configured: fail CLOSED in production, skip in dev/test
-  // (matches verifyTurnstileToken's behaviour).
+  // When Turnstile isn't configured, SKIP (degraded mode) rather than fail closed, so a
+  // missing key can't brick login/register/contact. Configure TURNSTILE_SECRET_KEY to
+  // enforce captcha. (Matches verifyTurnstileToken's behaviour.)
   if (!process.env.TURNSTILE_SECRET_KEY) {
     if (process.env.NODE_ENV === 'production') {
-      return {
-        success: false,
-        error: 'Captcha verification is temporarily unavailable. Please try again later.',
-      };
+      console.warn(
+        'TURNSTILE_SECRET_KEY not set in production — captcha DISABLED. Configure it to enable bot protection.'
+      );
     }
     return { success: true };
   }

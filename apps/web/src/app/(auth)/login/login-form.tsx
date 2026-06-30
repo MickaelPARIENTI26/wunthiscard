@@ -10,7 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 
 import { loginSchema, type LoginInput } from '@winucard/shared/validators';
-import { checkLoginRateLimit, logLoginSuccess, logLoginFailure } from './actions';
+import { checkLoginRateLimit, logLoginSuccess, logLoginFailure, verifyLoginCaptcha } from './actions';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
@@ -67,18 +67,28 @@ export function LoginForm() {
         return;
       }
 
-      // Require the captcha token when Turnstile is configured. The REAL verification
-      // now happens server-side in the credentials endpoint — Turnstile tokens are
-      // single-use, so we must NOT verify it here too; we pass it through to signIn.
-      if (TURNSTILE_SITE_KEY && !turnstileToken) {
-        setServerError('Please complete the captcha before signing in.');
-        return;
+      // Verify the captcha server-side BEFORE signIn. On success the server mints a
+      // one-time sign-in grant that authorises the credentials endpoint, so the captcha
+      // result never rides through signIn() (a rejection there would throw and surface
+      // as a generic error). If Turnstile isn't configured, verification is skipped
+      // server-side and login still works (protected by rate-limit + account lockout).
+      if (TURNSTILE_SITE_KEY) {
+        if (!turnstileToken) {
+          setServerError('Please complete the captcha before signing in.');
+          return;
+        }
+        const captchaResult = await verifyLoginCaptcha(turnstileToken, data.email);
+        if (!captchaResult.success) {
+          setServerError(captchaResult.error ?? 'Captcha verification failed. Please try again.');
+          turnstileRef.current?.reset();
+          setTurnstileToken(null);
+          return;
+        }
       }
 
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
-        turnstileToken: turnstileToken ?? undefined,
         redirect: false,
       });
 
