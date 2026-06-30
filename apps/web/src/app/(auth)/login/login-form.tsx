@@ -124,18 +124,21 @@ export function LoginForm() {
       router.refresh();
     } catch (err) {
       // Auth.js v5 signIn() can THROW even when the sign-in actually succeeded (the
-      // session cookie is already set). Before showing an error, check whether we're
-      // now authenticated — if so, treat it as success and navigate.
-      try {
-        const session = await getSession();
-        if (session?.user) {
-          await logLoginSuccess(data.email);
-          router.push(callbackUrl);
-          router.refresh();
-          return;
+      // session cookie is already set). Before showing an error, POLL the session a
+      // few times (cookie commit + jwt callback can lag a beat) — if we become
+      // authenticated, it was a success, so navigate instead of showing an error.
+      for (let attempt = 0; attempt < 4; attempt++) {
+        try {
+          const session = await getSession();
+          if (session?.user) {
+            router.push(callbackUrl);
+            router.refresh();
+            return;
+          }
+        } catch {
+          // ignore and retry
         }
-      } catch {
-        // fall through to the generic error below
+        await new Promise((resolve) => setTimeout(resolve, 250));
       }
       console.error('Login error:', err);
       setServerError('An unexpected error occurred. Please try again.');
