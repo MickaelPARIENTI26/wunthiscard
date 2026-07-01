@@ -307,6 +307,17 @@ export async function updateCompetition(id: string, formData: FormData) {
     );
   }
 
+  // The draw date must stay in the FUTURE while the competition is still being set up
+  // or actively selling — createCompetition enforces this, but updateCompetition didn't,
+  // so an admin could set a past date and prematurely unlock the draw. (SOLD_OUT /
+  // DRAWING / COMPLETED / CANCELLED are at or past the draw point, so they're exempt.)
+  if (['DRAFT', 'UPCOMING', 'ACTIVE'].includes(existing.status)) {
+    const newDrawDate = new Date(drawDate);
+    if (isNaN(newDrawDate.getTime()) || newDrawDate <= new Date()) {
+      throw new Error('Draw date must be in the future.');
+    }
+  }
+
   await prisma.competition.update({
     where: { id },
     data: {

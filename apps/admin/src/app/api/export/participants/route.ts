@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
 
     const competition = await prisma.competition.findUnique({
       where: { id: competitionId },
-      select: { id: true, title: true, slug: true },
+      select: { id: true, title: true, slug: true, ticketPrice: true },
     });
 
     if (!competition) {
@@ -115,12 +115,13 @@ export async function GET(request: NextRequest) {
 
     const dateStr = new Date().toISOString().slice(0, 10);
     const safeName = sanitizeFilename(competition.title);
+    const ticketPrice = Number(competition.ticketPrice);
 
     if (type === 'summary') {
-      return await exportSummary(request, currentUserId, competition, format, dateStr, safeName);
+      return await exportSummary(request, currentUserId, competition, format, dateStr, safeName, ticketPrice);
     }
 
-    return await exportDetailed(request, currentUserId, competition, format, dateStr, safeName);
+    return await exportDetailed(request, currentUserId, competition, format, dateStr, safeName, ticketPrice);
   } catch (error) {
     if (error instanceof ExportTooLargeError) {
       console.error('Participant export aborted (too large):', error.message);
@@ -141,6 +142,7 @@ async function exportDetailed(
   format: string,
   dateStr: string,
   safeName: string,
+  ticketPrice: number,
 ) {
   const tickets = await fetchAllParticipatingTickets(competition.id, {
     ticketNumber: true,
@@ -193,13 +195,12 @@ async function exportDetailed(
     {
       key: 'amountPaid' as const,
       header: 'amount_paid',
-      accessor: (row: typeof tickets[number]) => {
-        if (row.isBonus || row.isFreeEntry) return 0;
-        if (!row.order) return 0;
-        const paidTickets = row.order.ticketCount;
-        if (paidTickets === 0) return 0;
-        return Number((Number(row.order.totalAmount) / paidTickets).toFixed(2));
-      },
+      // Each paid ticket cost exactly the competition ticket price. Using the price
+      // directly (instead of totalAmount / ticketCount) is EXACT: no per-row rounding,
+      // and no distortion from ticketCount including a free referral ticket. Bonus and
+      // free-entry tickets cost nothing.
+      accessor: (row: typeof tickets[number]) =>
+        row.isBonus || row.isFreeEntry ? 0 : ticketPrice,
     },
   ];
 
@@ -257,6 +258,7 @@ async function exportSummary(
   format: string,
   dateStr: string,
   safeName: string,
+  ticketPrice: number,
 ) {
   const tickets = await fetchAllParticipatingTickets(competition.id, {
     ticketNumber: true,
@@ -322,12 +324,9 @@ async function exportSummary(
       entry.bonusTickets++;
     } else {
       entry.paidTickets++;
-      if (ticket.order) {
-        const perTicket = Number(ticket.order.totalAmount) / (tickets.filter(
-          (t) => t.orderId === ticket.orderId && !t.isBonus && !t.isFreeEntry
-        ).length || 1);
-        entry.totalPaid += perTicket;
-      }
+      // Each paid ticket cost exactly the ticket price → the per-user total is exact
+      // and matches the sum of the detailed export (no rounding drift, no O(n²) scan).
+      entry.totalPaid += ticketPrice;
     }
   }
 

@@ -184,6 +184,23 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
             `assigning ${paidTicketsToAssign.length}, ${ticketNumbers.length - paidTicketsToAssign.length} over-cap — ` +
             `manual refund of the difference required.`
         );
+        await tx.auditLog.create({
+          data: {
+            userId: order.userId,
+            action: 'ORDER_OVER_PER_USER_CAP',
+            entity: 'order',
+            entityId: order.id,
+            metadata: {
+              orderNumber: order.orderNumber,
+              competitionId: order.competitionId,
+              paidFor: ticketNumbers.length,
+              assigned: paidTicketsToAssign.length,
+              overCap: ticketNumbers.length - paidTicketsToAssign.length,
+              perUserCap: order.competition.maxTicketsPerUser,
+              refundDue: true,
+            },
+          },
+        });
       }
     }
 
@@ -244,6 +261,24 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
         console.error(
           `UNDER-DELIVERY order=${order.id}: paid for ${paidTicketsToAssign.length} tickets, only ${assignedPaidCount} assignable — manual refund of the difference required.`
         );
+        // Structured, QUERYABLE trail (not just a log line) so a shortfall / refund-due
+        // can actually be found and reconciled by admins.
+        await tx.auditLog.create({
+          data: {
+            userId: order.userId,
+            action: 'ORDER_UNDER_DELIVERED',
+            entity: 'order',
+            entityId: order.id,
+            metadata: {
+              orderNumber: order.orderNumber,
+              competitionId: order.competitionId,
+              paidFor: paidTicketsToAssign.length,
+              assigned: assignedPaidCount,
+              shortfall: paidTicketsToAssign.length - assignedPaidCount,
+              refundDue: true,
+            },
+          },
+        });
       }
     }
 
