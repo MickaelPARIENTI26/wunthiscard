@@ -116,9 +116,9 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.webmanifest',
-  alternates: {
-    canonical: 'https://winucards.com',
-  },
+  // NOTE: no site-wide canonical here — a static canonical in the root layout is
+  // inherited by EVERY page, telling Google all URLs are duplicates of the homepage.
+  // Each page self-canonicalises to its own URL (metadataBase resolves relatives).
   category: 'entertainment',
   classification: 'Prize Competitions',
   referrer: 'origin-when-cross-origin',

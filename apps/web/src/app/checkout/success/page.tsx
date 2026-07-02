@@ -13,6 +13,7 @@ import { ClearCheckoutStorage } from './clear-checkout-storage';
 export const metadata: Metadata = {
   title: 'Purchase Successful - WinUCard',
   description: 'Your ticket purchase was successful',
+  robots: { index: false, follow: false },
 };
 
 interface PageProps {

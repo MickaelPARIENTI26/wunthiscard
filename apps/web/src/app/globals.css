@@ -16,7 +16,7 @@
   /* Ink / text */
   --ink: #0d0d0d;
   --ink-dim: #555555;
-  --ink-faint: #8a8a8a;
+  --ink-faint: #666666; /* darkened from #8a8a8a for WCAG AA on all backgrounds */
 
   /* Lines / borders */
   --line: #d6d2c8;
@@ -25,7 +25,7 @@
   /* Accent palette */
   --accent: #00c76a;
   --accent-2: #00a758;
-  --hot: #ff3d57;
+  --hot: #e01e50; /* darkened from #ff3d57 so white text on hot CTAs meets WCAG AA (4.7:1) */
   --pop: #0a5fff;
   --warn: #ffb80a;
   --mauve: #b37cff;

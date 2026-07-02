@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Checkout Cancelled - WinUCard',
   description: 'Your checkout was cancelled',
+  robots: { index: false, follow: false },
 };
 
 interface PageProps {

@@ -1,18 +1,15 @@
 import { ImageResponse } from 'next/og';
 
 /**
- * Dynamic Twitter card image generation for WinUCard
- * Uses the same design as OG image but optimized for Twitter
+ * Dynamic Twitter card image for WinUCard — same brand design as the OG image,
+ * sized for Twitter's 2:1 summary_large_image. Self-contained (no external fetch).
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#twitter-image
  */
 
 export const runtime = 'edge';
 
 export const alt = 'WinUCard - Win Collectible Cards & Memorabilia';
-export const size = {
-  width: 1200,
-  height: 600, // Twitter uses 2:1 ratio for summary_large_image
-};
+export const size = { width: 1200, height: 600 };
 export const contentType = 'image/png';
 
 export default async function Image() {
@@ -26,173 +23,62 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#1e40af',
-          backgroundImage:
-            'linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #1e40af 100%)',
+          backgroundColor: '#f2f0ec',
+          border: '18px solid #0d0d0d',
+          position: 'relative',
+          fontFamily: 'sans-serif',
         }}
       >
-        {/* Background pattern - slightly smaller for Twitter */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            opacity: 0.1,
-          }}
-        >
-          {/* Card pattern */}
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div style={{ display: 'flex', alignItems: 'center', fontSize: 100, fontWeight: 800, color: '#0d0d0d', letterSpacing: -4 }}>
+          <span style={{ display: 'flex' }}>WinU</span>
+          <span style={{ display: 'flex', backgroundColor: '#00c76a', color: '#0d0d0d', padding: '4px 22px', borderRadius: 18, marginLeft: 8 }}>
+            Card
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', fontSize: 36, color: '#333333', marginTop: 24, textAlign: 'center' }}>
+          Win the card of your dreams
+        </div>
+
+        <div style={{ display: 'flex', gap: 16, marginTop: 38 }}>
+          {['Pokemon', 'One Piece', 'Sports', 'Memorabilia'].map((c) => (
             <div
-              key={i}
+              key={c}
               style={{
-                position: 'absolute',
-                width: 100,
-                height: 140,
-                borderRadius: 6,
-                backgroundColor: 'white',
-                transform: `rotate(${-10 + i * 8}deg)`,
-                left: `${12 + i * 15}%`,
-                top: `${25 + (i % 2) * 20}%`,
+                display: 'flex',
+                padding: '10px 24px',
+                border: '2px solid #0d0d0d',
+                borderRadius: 999,
+                backgroundColor: '#ffffff',
+                color: '#0d0d0d',
+                fontSize: 23,
+                fontWeight: 600,
               }}
-            />
+            >
+              {c}
+            </div>
           ))}
         </div>
 
-        {/* Main content container */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 40,
-            textAlign: 'center',
-            zIndex: 10,
-          }}
-        >
-          {/* Logo placeholder - circle with WTC text */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 100,
-              height: 100,
-              borderRadius: '50%',
-              backgroundColor: 'white',
-              marginBottom: 24,
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 40,
-                fontWeight: 'bold',
-                color: '#1e40af',
-              }}
-            >
-              WTC
-            </span>
-          </div>
-
-          {/* Main title */}
-          <div
-            style={{
-              fontSize: 56,
-              fontWeight: 'bold',
-              color: 'white',
-              marginBottom: 12,
-              textShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
-              lineHeight: 1.1,
-            }}
-          >
-            WinUCard
-          </div>
-
-          {/* Tagline */}
-          <div
-            style={{
-              fontSize: 28,
-              color: 'rgba(255, 255, 255, 0.9)',
-              marginBottom: 24,
-              maxWidth: 700,
-              lineHeight: 1.3,
-            }}
-          >
-            Win Collectible Cards & Memorabilia
-          </div>
-
-          {/* Categories */}
-          <div
-            style={{
-              display: 'flex',
-              gap: 12,
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {['Pokemon', 'One Piece', 'Sports', 'Trading Cards'].map(
-              (category) => (
-                <div
-                  key={category}
-                  style={{
-                    padding: '6px 16px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    borderRadius: 16,
-                    color: 'white',
-                    fontSize: 16,
-                    fontWeight: 500,
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                  }}
-                >
-                  {category}
-                </div>
-              )
-            )}
-          </div>
-        </div>
-
-        {/* Bottom URL bar */}
         <div
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            height: 50,
+            height: 66,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingLeft: 30,
-            paddingRight: 30,
-            backgroundColor: 'rgba(0, 0, 0, 0.2)',
+            justifyContent: 'center',
+            backgroundColor: '#0d0d0d',
           }}
         >
-          <span
-            style={{
-              fontSize: 18,
-              color: 'rgba(255, 255, 255, 0.9)',
-              letterSpacing: 1,
-            }}
-          >
-            winucards.com
-          </span>
-          <span
-            style={{
-              fontSize: 14,
-              color: 'rgba(255, 255, 255, 0.7)',
-            }}
-          >
-            UK Prize Competitions
+          <span style={{ display: 'flex', fontSize: 26, color: '#00c76a', letterSpacing: 2, fontWeight: 700 }}>
+            winucards.com · 18+
           </span>
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }

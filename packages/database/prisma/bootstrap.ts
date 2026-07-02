@@ -92,7 +92,7 @@ async function main() {
     await prisma.faqItem.createMany({
       data: [
         // Getting started
-        { category: 'Getting Started', sortOrder: 1, question: 'How does WinUCard work?', answer: 'WinUCard is a skill-based prize competition platform for collectible cards. Browse our live competitions, pick how many tickets you want, answer a short skill question, and complete your payment. When the competition closes, we run a certified random draw — and the winner gets the graded card delivered to their door.' },
+        { category: 'Getting Started', sortOrder: 1, question: 'How does WinUCard work?', answer: 'WinUCard is a skill-based prize competition platform for collectible cards. Browse our live competitions, pick how many tickets you want, answer a short skill question, and complete your payment. When the competition closes, an independent live random draw (via RandomDraws.com) selects the winner — who gets the card delivered to their door.' },
         { category: 'Getting Started', sortOrder: 2, question: 'How do I create an account?', answer: 'Click "Sign Up" in the top-right corner. You can register with your email address or sign in with Google. You\'ll need to verify your email before you can enter a competition.' },
         { category: 'Getting Started', sortOrder: 3, question: 'I forgot my password. How can I reset it?', answer: 'Click "Forgot Password" on the login page and enter your email address. We\'ll send you a link to choose a new password.' },
 
@@ -107,7 +107,7 @@ async function main() {
         { category: 'Payment', sortOrder: 2, question: 'Can I get a refund?', answer: 'Tickets are non-refundable once purchased. The only exception is if a competition is cancelled — in that case all entrants are fully refunded.' },
 
         // The draw
-        { category: 'The Draw', sortOrder: 1, question: 'How is the winner selected?', answer: 'Winners are drawn using a certified Random Number Generator (RNG). The draw is streamed live for full transparency, and the winning ticket number is published publicly.' },
+        { category: 'The Draw', sortOrder: 1, question: 'How is the winner selected?', answer: 'Winners are selected by an independent, live random draw carried out on RandomDraws.com. The draw is recorded for full transparency, and the winning ticket number is published publicly.' },
         { category: 'The Draw', sortOrder: 2, question: 'When does the draw take place?', answer: 'The draw happens either when all tickets sell out or on the scheduled draw date — whichever comes first. You\'ll see the countdown on every competition.' },
         { category: 'The Draw', sortOrder: 3, question: 'How many winners are there?', answer: 'Most competitions have a single winner. Some competitions offer multiple prizes and multiple winners — this is always shown clearly on the competition page.' },
         { category: 'The Draw', sortOrder: 4, question: 'How will I know if I\'ve won?', answer: 'We notify the winner by email within 24 hours of the draw. The winning ticket number is also posted publicly on the competition page and our winners page.' },

@@ -85,10 +85,58 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           firstName: user.firstName,
           lastName: user.lastName,
           role: user.role,
+          tokenVersion: user.tokenVersion,
         };
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    // Node-only jwt callback (overrides the edge one in auth.config.ts) that ADDS a
+    // DB revocation check. Without it, a banned / demoted / deactivated admin — or one
+    // whose password was reset after credential theft — kept full admin access until
+    // the 8h token expired. Re-validate against the DB at most once a minute.
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.tokenVersion = (user as { tokenVersion?: number }).tokenVersion ?? 0;
+        token.expiresAt = Date.now() + 8 * 60 * 60 * 1000; // 8h hard expiry
+        token.checkedAt = Date.now();
+        return token;
+      }
+
+      // Hard 8h expiry (mirrors the edge config).
+      if (token.expiresAt && Date.now() > (token.expiresAt as number)) {
+        return { ...token, expired: true };
+      }
+
+      // Throttled revocation check: drop the session if the account is gone, banned,
+      // deactivated, no longer an admin role, or its password was reset/changed.
+      const REVALIDATE_EVERY_MS = 60_000;
+      const lastCheck = typeof token.checkedAt === 'number' ? token.checkedAt : 0;
+      if (token.id && Date.now() - lastCheck > REVALIDATE_EVERY_MS) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { tokenVersion: true, isBanned: true, isActive: true, role: true },
+          });
+          if (!dbUser || dbUser.isBanned || !dbUser.isActive) return null;
+          if (dbUser.role !== 'ADMIN' && dbUser.role !== 'SUPER_ADMIN' && dbUser.role !== 'DRAW_MASTER') {
+            return null;
+          }
+          if ((token.tokenVersion ?? 0) !== dbUser.tokenVersion) return null;
+          token.role = dbUser.role;
+          token.checkedAt = Date.now();
+        } catch (revocationError) {
+          console.error('admin jwt revocation check failed (keeping session):', revocationError);
+        }
+      }
+      return token;
+    },
+  },
 });
 
 // Extend the types
@@ -98,6 +146,7 @@ declare module 'next-auth' {
     role: string;
     firstName: string;
     lastName: string;
+    tokenVersion?: number;
   }
   interface Session {
     user: {
@@ -117,5 +166,9 @@ declare module '@auth/core/jwt' {
     role: string;
     firstName: string;
     lastName: string;
+    tokenVersion?: number;
+    checkedAt?: number;
+    expiresAt?: number;
+    expired?: boolean;
   }
 }

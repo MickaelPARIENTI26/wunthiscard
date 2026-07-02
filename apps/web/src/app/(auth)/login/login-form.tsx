@@ -21,7 +21,7 @@ const isGoogleOAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 't
 const inputStyle = {
   width: '100%',
   padding: '12px 16px',
-  fontSize: '14px',
+  fontSize: '16px', // 16px avoids the iOS Safari auto-zoom-on-focus on mobile
   background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
   borderRadius: '10px',

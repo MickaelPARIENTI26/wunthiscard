@@ -41,10 +41,13 @@ async function getCompetition(slug: string) {
 export async function generateMetadata({ params }: { params: Promise<PageParams> }): Promise<Metadata> {
   const { slug } = await params;
   const competition = await getCompetition(slug);
-  if (!competition) return { title: 'Competition Not Found' };
+  // Checkout is a transactional page — never index it.
+  const robots = { index: false, follow: false } as const;
+  if (!competition) return { title: 'Competition Not Found', robots };
   return {
     title: 'Checkout - ' + competition.title,
     description: 'Complete your ticket purchase for ' + competition.title,
+    robots,
   };
 }
 
