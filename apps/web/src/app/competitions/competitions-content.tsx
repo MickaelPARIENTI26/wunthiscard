@@ -198,12 +198,12 @@ export function CompetitionsContent({
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 text-6xl">🎴</div>
-          <h3 className="mb-2 text-lg font-semibold">No competitions found</h3>
+          <h3 className="mb-2 text-lg font-semibold">No competitions live right now</h3>
           <p className="mb-6" style={{ color: 'var(--ink-dim)' }}>
-            Try adjusting your filters to find more competitions
+            New drops land regularly — check back soon.
           </p>
           <button
-            onClick={() => router.push('/competitions')}
+            onClick={() => router.push('/')}
             className="font-semibold transition-all duration-150"
             style={{
               padding: '11px 18px', fontSize: '13px', borderRadius: '10px',
@@ -211,7 +211,7 @@ export function CompetitionsContent({
               boxShadow: 'var(--shadow-sm)',
             }}
           >
-            Clear Filters
+            Back to home
           </button>
         </div>
       )}

@@ -59,6 +59,8 @@ export function CookieConsentBanner() {
 
   return (
     <div
+      role="region"
+      aria-labelledby="cookie-consent-title"
       className={`cookie-banner fixed inset-x-0 bottom-0 z-50 p-4 transition-transform duration-300 ease-out print:hidden ${
         isAnimating ? 'translate-y-0' : 'translate-y-full'
       }`}
@@ -68,7 +70,7 @@ export function CookieConsentBanner() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Text Content */}
             <div className="flex-1">
-              <h2 className="text-base font-semibold text-foreground">
+              <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground">
                 We use cookies
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">

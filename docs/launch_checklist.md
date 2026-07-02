@@ -72,8 +72,11 @@ TURNSTILE_SECRET_KEY=...
 
 # Stripe (LIVE keys)
 STRIPE_SECRET_KEY=sk_live_...
-STRIPE_PUBLISHABLE_KEY=pk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+# Publishable key: code only reads NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (admin uses it to
+# show live/test mode). The web checkout redirects to Stripe-hosted Checkout, so the
+# public site needs no publishable key. (Plain STRIPE_PUBLISHABLE_KEY is unused.)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
 
 # Email (Resend) — code reads FROM_EMAIL (NOT EMAIL_FROM)
 RESEND_API_KEY=re_...
@@ -151,7 +154,7 @@ NODE_ENV=production
 - [ ] Final build and deploy to production
 - [ ] Verify all environment variables are set
 - [ ] Test database connection
-- [ ] Test Redis connection
+- [ ] Test Redis connection — **`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` MUST be set on BOTH web and admin.** Rate limiting fails OPEN: with no Upstash config in production the code silently falls back to per-instance in-memory counters, which are useless on serverless (each request may hit a fresh instance) — brute-force/abuse protection effectively disappears. The admin logs `ADMIN REDIS MISCONFIG` on cold start if this is missing. Confirm the log is absent.
 - [ ] Verify Stripe webhook is receiving events
 
 ### Launch Verification

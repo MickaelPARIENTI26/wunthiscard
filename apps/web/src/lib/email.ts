@@ -260,7 +260,7 @@ export async function sendPurchaseConfirmationEmail(
       <p style="color: #1a1a1a; font-size: 14px; font-weight: 600; margin: 0 0 16px;">${data.orderNumber}</p>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Competition</p>
-      <p style="color: #1a1a1a; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${data.competitionTitle}</p>
+      <p style="color: #1a1a1a; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${escapeHtml(data.competitionTitle)}</p>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Your Tickets</p>
       <p style="color: #1a1a1a; font-size: 24px; font-weight: bold; margin: 0 0 8px;">${paidCount} ${paidCount === 1 ? 'ticket' : 'tickets'}</p>
@@ -381,7 +381,7 @@ export async function sendFreeEntryConfirmationEmail(
       </div>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Competition</p>
-      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${data.competitionTitle}</p>
+      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${escapeHtml(data.competitionTitle)}</p>
 
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Entry</p>
       <p style="color: #16a34a; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">1 free ticket</p>
@@ -445,7 +445,7 @@ export async function sendWinnerNotificationEmail(
       <p style="color: #16a34a; font-size: 48px; font-weight: bold; margin: 0 0 16px;">#${data.ticketNumber}</p>
 
       <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Prize</p>
-      <p style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${data.competitionTitle}</p>
+      <p style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${escapeHtml(data.competitionTitle)}</p>
       <p style="color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;">Value: ${prizeFormatted}</p>
     </div>
 

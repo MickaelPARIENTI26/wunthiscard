@@ -12,7 +12,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
         )}
         style={{
           backgroundColor: 'var(--bg-input)',
-          color: 'var(--ink-dim)',
+          color: 'var(--ink)',
           border: '1px solid var(--line)',
           borderRadius: '10px',
           outline: 'none',

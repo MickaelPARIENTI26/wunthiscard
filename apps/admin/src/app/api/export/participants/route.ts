@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { generateCSV, sanitizeCell } from '@/lib/export';
+import { getClientIp } from '@/lib/get-client-ip';
 import { formatDateTime, formatPrice } from '@winucard/shared';
 import * as XLSX from 'xlsx';
 
@@ -220,7 +221,7 @@ async function exportDetailed(
         competitionTitle: competition.title,
         filename,
       },
-      ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+      ipAddress: getClientIp(request.headers),
     },
   });
 
@@ -365,7 +366,7 @@ async function exportSummary(
         competitionTitle: competition.title,
         filename,
       },
-      ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+      ipAddress: getClientIp(request.headers),
     },
   });
 

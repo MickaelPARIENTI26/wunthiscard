@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { passwordSchema } from '@winucard/shared/validators';
 import { verifyPassword, hashPassword } from '@/lib/password';
 import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
         entity: 'user',
         entityId: session.user.id,
         metadata: {},
-        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+        ipAddress: getClientIp(request.headers),
       },
     });
 

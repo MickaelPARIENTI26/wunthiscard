@@ -52,7 +52,27 @@ export function HomeLiveComps({ competitions }: HomeLiveCompsProps) {
           </p>
         </div>
 
-        {/* Grid */}
+        {/* Empty state — no live competitions yet */}
+        {competitions.length === 0 ? (
+          <div
+            className="text-center"
+            style={{
+              padding: '48px 24px',
+              border: '1.5px dashed var(--line-2)',
+              borderRadius: '14px',
+              background: 'var(--surface)',
+            }}
+          >
+            <div style={{ fontSize: '48px', marginBottom: '12px' }}>🎴</div>
+            <p style={{ fontFamily: 'var(--display)', fontSize: '20px', fontWeight: 700, marginBottom: '6px' }}>
+              No competitions live right now
+            </p>
+            <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
+              New drops land regularly — check back soon.
+            </p>
+          </div>
+        ) : (
+        /* Grid */
         <div className="comp-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
           {competitions.map((c) => (
             <CompCard
@@ -69,6 +89,7 @@ export function HomeLiveComps({ competitions }: HomeLiveCompsProps) {
             />
           ))}
         </div>
+        )}
 
         {/* CTA */}
         <div className="text-center mt-10">

@@ -111,7 +111,7 @@ export const metadata: Metadata = {
       {
         rel: 'mask-icon',
         url: '/icons/safari-pinned-tab.svg',
-        color: '#1e40af',
+        color: '#0d0d0d',
       },
     ],
   },
@@ -123,8 +123,8 @@ export const metadata: Metadata = {
   classification: 'Prize Competitions',
   referrer: 'origin-when-cross-origin',
   other: {
-    'msapplication-TileColor': '#1e40af',
-    'msapplication-config': '/browserconfig.xml',
+    // Windows tile colour (brand ink). browserconfig.xml was removed — it 404'd.
+    'msapplication-TileColor': '#0d0d0d',
   },
 };
 

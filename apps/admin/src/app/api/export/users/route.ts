@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { generateCSV } from '@/lib/export';
+import { getClientIp } from '@/lib/get-client-ip';
 import { formatDateTime } from '@winucard/shared';
 import type { UserRole } from '@winucard/database';
 
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
           filters: { status: status || 'all' },
           filename,
         },
-        ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
+        ipAddress: getClientIp(request.headers),
       },
     });
 

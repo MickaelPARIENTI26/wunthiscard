@@ -17,14 +17,15 @@ export const metadata: Metadata = {
   },
 };
 
+// Keys must match the FaqItem.category values seeded in bootstrap.ts (and in prod),
+// otherwise headings fall back to a generic ❓ and unordered raw category string.
 const categoryConfig: Record<string, { emoji: string; label: string; order: number }> = {
-  General: { emoji: '⚖️', label: 'General', order: 1 },
-  Account: { emoji: '👤', label: 'Account & Payments', order: 5 },
-  Tickets: { emoji: '🎟', label: 'Entering Competitions', order: 2 },
-  Payment: { emoji: '💳', label: 'Account & Payments', order: 5 },
-  Draw: { emoji: '🏆', label: 'Draws & Winners', order: 3 },
-  Delivery: { emoji: '📦', label: 'Cards & Delivery', order: 4 },
-  Legal: { emoji: '⚖️', label: 'General', order: 1 },
+  'Getting Started': { emoji: '🚀', label: 'Getting Started', order: 1 },
+  'Tickets & Entry': { emoji: '🎟', label: 'Tickets & Entry', order: 2 },
+  Payment: { emoji: '💳', label: 'Payment', order: 3 },
+  'The Draw': { emoji: '🏆', label: 'The Draw', order: 4 },
+  'Winners & Delivery': { emoji: '📦', label: 'Winners & Delivery', order: 5 },
+  'Legal & Eligibility': { emoji: '⚖️', label: 'Legal & Eligibility', order: 6 },
 };
 
 async function getFaqItems() {

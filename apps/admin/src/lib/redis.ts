@@ -4,6 +4,17 @@ import { Ratelimit, type Duration } from '@upstash/ratelimit';
 // Determine which Redis client to use
 const useUpstash = !!process.env.UPSTASH_REDIS_REST_URL;
 
+// Fail LOUD (log) if we're in production without Upstash: the in-memory fallback is
+// per-instance and effectively useless on serverless (every request may hit a fresh
+// instance), so admin rate limiting would silently degrade to nothing. This warns on
+// cold start so a missing UPSTASH_REDIS_REST_URL in prod is caught, not hidden.
+if (!useUpstash && process.env.NODE_ENV === 'production') {
+  console.error(
+    'ADMIN REDIS MISCONFIG: UPSTASH_REDIS_REST_URL is not set in production — rate ' +
+      'limiting is falling back to ineffective in-memory storage. Set the Upstash env vars.'
+  );
+}
+
 // Create Upstash client for production
 const upstashClient = useUpstash
   ? new UpstashRedis({

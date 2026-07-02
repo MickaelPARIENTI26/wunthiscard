@@ -25,6 +25,8 @@
   /* Accent palette */
   --accent: #00c76a;
   --accent-2: #00a758;
+  --accent-text: #017a42; /* readable green for link/text on light bg (WCAG AA) */
+  --bg-input: #ffffff; /* base Input background */
   --hot: #e01e50; /* darkened from #ff3d57 so white text on hot CTAs meets WCAG AA (4.7:1) */
   --pop: #0a5fff;
   --warn: #ffb80a;
@@ -1335,7 +1337,7 @@ input:focus, textarea:focus, select:focus,
   .enter-tracker { justify-content: flex-start; }
 }
 @media (max-width: 380px) {
-  /* Single-column qty tiles on very narrow phones to avoid text overflow */
+  /* Force two-up qty tiles on very narrow phones to avoid text overflow */
   .qty-grid, .qty-grid-6 { grid-template-columns: 1fr 1fr; }
 }
 

@@ -2,6 +2,7 @@ import { handlers } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
 import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 export const { GET } = handlers;
 
@@ -16,9 +17,7 @@ export async function POST(request: NextRequest) {
     const formData = await clonedRequest.formData();
     const email = formData.get('email')?.toString()?.toLowerCase() || '';
 
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-               request.headers.get('x-real-ip') ||
-               'anonymous';
+    const ip = getClientIp(request.headers);
 
     // Rate limit on BOTH the email AND the IP independently, and block if
     // EITHER is exceeded. The email key throttles brute-forcing a single
