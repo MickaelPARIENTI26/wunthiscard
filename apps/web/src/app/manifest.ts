@@ -8,13 +8,13 @@ import { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'WinUCard - Win Collectible Cards & Memorabilia',
-    short_name: 'WTC',
+    short_name: 'WinUCard',
     description:
-      'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
+      'Enter to win graded collectible cards (Pokemon, One Piece, sports) and memorabilia. UK-based prize competitions with a free entry route.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#ffffff',
-    theme_color: '#1e40af', // Blue-800 for primary brand colour
+    background_color: '#f2f0ec',
+    theme_color: '#f2f0ec', // cream — matches the site background / layout theme-color
     orientation: 'portrait-primary',
     scope: '/',
     lang: 'en-GB',

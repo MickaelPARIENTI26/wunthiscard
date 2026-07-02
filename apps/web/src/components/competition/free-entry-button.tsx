@@ -145,9 +145,9 @@ export function FreeEntryButton({
             href="/profile?reason=age"
             className="w-full flex items-center justify-center"
             style={{
-              minHeight: 'var(--btn-height-lg)',
+              minHeight: '52px',
               padding: '0 24px',
-              borderRadius: 'var(--radius-btn)',
+              borderRadius: '12px',
               background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '15px',
@@ -184,9 +184,9 @@ export function FreeEntryButton({
             disabled={isSubmitting || isLoading}
             className="w-full flex items-center justify-center gap-2"
             style={{
-              minHeight: 'var(--btn-height-lg)',
+              minHeight: '52px',
               padding: '0 24px',
-              borderRadius: 'var(--radius-btn)',
+              borderRadius: '12px',
               background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '16px',

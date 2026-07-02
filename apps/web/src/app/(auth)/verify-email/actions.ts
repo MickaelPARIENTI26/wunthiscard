@@ -1,8 +1,11 @@
 'use server';
 
 import { randomBytes } from 'crypto';
+import { headers } from 'next/headers';
 import { prisma } from '@winucard/database';
 import { sendVerificationEmail } from '@/lib/email';
+import { rateLimits } from '@/lib/redis';
+import { getClientIp } from '@/lib/get-client-ip';
 
 interface VerifyEmailResult {
   success: boolean;
@@ -143,6 +146,22 @@ export async function verifyEmail(token: string): Promise<VerifyEmailResult> {
 export async function resendVerificationEmail(email: string): Promise<ResendResult> {
   try {
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Rate limit by BOTH email and IP (block if either trips) to stop this server
+    // action being used to bomb an inbox / bypass the hardened API route. Fail-open
+    // on limiter error; anti-enumeration silent success on block.
+    try {
+      const ip = getClientIp(await headers());
+      const [emailLimit, ipLimit] = await Promise.all([
+        rateLimits.passwordReset.limit(`resend-email:${normalizedEmail}`),
+        rateLimits.passwordReset.limit(`resend-ip:${ip}`),
+      ]);
+      if (!emailLimit.success || !ipLimit.success) {
+        return { success: true };
+      }
+    } catch (rateErr) {
+      console.error('resendVerificationEmail rate-limit failed (allowing):', rateErr);
+    }
 
     // Find the user
     const user = await prisma.user.findUnique({

@@ -87,7 +87,7 @@ function TermsContent() {
 
       <section id="tickets">
         <h3 className="legal-h">5. Ticket Purchases</h3>
-        <p className="legal-p">All prices are displayed in British Pounds (GBP). Payment is processed securely via Stripe. You may purchase a maximum of 50 tickets per Competition per person. Bonus tickets may be awarded based on the number of tickets purchased. Tickets are non-transferable.</p>
+        <p className="legal-p">All prices are displayed in British Pounds (GBP). Payment is processed securely via Stripe. The maximum number of tickets you may purchase is shown on each Competition (some Competitions have no per-person limit). Bonus tickets may be awarded based on the number of tickets purchased. Tickets are non-transferable.</p>
       </section>
 
       <section id="skill-question">

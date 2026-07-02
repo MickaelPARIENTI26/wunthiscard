@@ -33,7 +33,10 @@ const inputStyle = {
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
+  // Only accept same-origin relative paths (a single leading '/', not '//' or '/\')
+  // so a crafted ?callbackUrl=https://evil.com can't turn login into an open redirect.
+  const rawCallbackUrl = searchParams.get('callbackUrl');
+  const callbackUrl = rawCallbackUrl && /^\/(?![/\\])/.test(rawCallbackUrl) ? rawCallbackUrl : '/';
   const error = searchParams.get('error');
   const passwordChanged = searchParams.get('passwordChanged') === '1';
 

@@ -147,11 +147,12 @@ export function SimpleTicketSelector({
       <div className="qty-custom">
         <span className="qty-custom-label">Custom</span>
         <div className="qty-stepper">
-          <button type="button" onClick={() => handleQuantityChange(quantity - 1)}>−</button>
+          <button type="button" aria-label="Decrease quantity" onClick={() => handleQuantityChange(quantity - 1)}>−</button>
           <input
             type="number"
             inputMode="numeric"
             pattern="[0-9]*"
+            aria-label="Ticket quantity"
             value={customValue}
             onChange={e => {
               const v = e.target.value;
@@ -164,7 +165,7 @@ export function SimpleTicketSelector({
             min={1}
             max={maxQuantity}
           />
-          <button type="button" onClick={() => handleQuantityChange(quantity + 1)}>+</button>
+          <button type="button" aria-label="Increase quantity" onClick={() => handleQuantityChange(quantity + 1)}>+</button>
         </div>
         <span className="qty-custom-max">
           {maxNote ? `Max ${maxQuantity} per person` : `Max ${maxQuantity}${bonus > 0 ? ` · +${bonus} bonus` : ''}`}

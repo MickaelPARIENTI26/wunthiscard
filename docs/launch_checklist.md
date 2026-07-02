@@ -90,8 +90,9 @@ R2_PUBLIC_URL=https://<bucket>.r2.dev   # or your custom CDN domain
 ADMIN_EMAIL=admin@winucards.com
 ADMIN_PASSWORD=<strong-password, min 12 chars>
 
-# Monitoring (optional — Sentry not yet wired in code)
-SENTRY_DSN=...
+# Monitoring — Sentry IS wired in code (both apps). Set the PUBLIC DSN so browser
+# error tracking works in production; without it, client errors go unreported.
+NEXT_PUBLIC_SENTRY_DSN=...
 
 # Environment
 NODE_ENV=production

@@ -33,7 +33,7 @@ export default function DeliveryPage() {
 
       <section id="tracking">
         <h3 className="legal-h">3. Tracking & Insurance</h3>
-        <p className="legal-p">All shipments are fully tracked and insured. You will receive a tracking number by email once your prize is dispatched. Insurance covers the full declared value of the prize.</p>
+        <p className="legal-p">All shipments are fully tracked and insured. We will provide your tracking number once your prize is dispatched. Insurance covers the full declared value of the prize.</p>
       </section>
 
       <section id="timeframes">

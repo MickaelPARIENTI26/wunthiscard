@@ -115,7 +115,10 @@ const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
 export function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/';
+  // Only accept same-origin relative paths (single leading '/') to prevent an open
+  // redirect via a crafted ?callbackUrl=https://evil.com.
+  const rawCallbackUrl = searchParams.get('callbackUrl');
+  const callbackUrl = rawCallbackUrl && /^\/(?![/\\])/.test(rawCallbackUrl) ? rawCallbackUrl : '/';
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);

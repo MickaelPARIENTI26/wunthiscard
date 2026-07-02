@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { redis } from '@/lib/redis';
 
 /**
  * Lightweight health / keep-warm endpoint.
@@ -17,10 +18,26 @@ import { prisma } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  // Postgres is the critical dependency (and the keep-warm target) — a DB failure is
+  // a real outage → 503. Redis is a best-effort signal: it degrades gracefully in the
+  // app, so a Redis blip is reported but does NOT flip the endpoint to unhealthy
+  // (otherwise uptime monitors would false-alarm on a non-critical dependency).
+  let dbOk = false;
+  let redisOk = false;
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return NextResponse.json({ ok: true, ts: Date.now() });
+    dbOk = true;
   } catch {
-    return NextResponse.json({ ok: false }, { status: 503 });
+    dbOk = false;
   }
+  try {
+    await redis.set('health-check', String(Date.now()), { ex: 30 });
+    redisOk = true;
+  } catch {
+    redisOk = false;
+  }
+  return NextResponse.json(
+    { ok: dbOk, db: dbOk, redis: redisOk, ts: Date.now() },
+    { status: dbOk ? 200 : 503 }
+  );
 }

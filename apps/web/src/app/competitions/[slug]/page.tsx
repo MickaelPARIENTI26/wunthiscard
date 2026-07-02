@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -9,6 +10,8 @@ import { SimpleTicketSelector } from '@/components/competition/simple-ticket-sel
 import { FreeEntryButton } from '@/components/competition/free-entry-button';
 import { InlineCountdown } from '@/components/common/inline-countdown';
 import { TrustStrip } from '@/components/home/trust-strip';
+import { StructuredData } from '@/components/common/structured-data';
+import { generateCompetitionSchema } from '@/lib/structured-data';
 import type { CompetitionCategory, CompetitionPrize } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
 
@@ -75,7 +78,9 @@ async function getRecentWinners() {
   }));
 }
 
-async function getCompetition(slug: string) {
+// Wrapped in React cache() so generateMetadata() and the page component share a
+// single DB query per request instead of running the full lookup twice.
+const getCompetition = cache(async (slug: string) => {
   const competition = await prisma.competition.findUnique({
     where: { slug },
     include: {
@@ -146,7 +151,7 @@ async function getCompetition(slug: string) {
     soldTickets: soldTicketsCount,
     winnerDisplayName,
   };
-}
+});
 
 async function getUserTicketCount(competitionId: string, userId: string | undefined) {
   if (!userId) return 0;
@@ -271,6 +276,17 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
   return (
     <main className="comp-detail-main">
+      <StructuredData
+        data={generateCompetitionSchema({
+          slug: competition.slug,
+          title: isMysteryUnrevealed ? `Mystery ${CATEGORY_LABELS[category]} Card` : competition.title,
+          descriptionShort: competition.descriptionShort,
+          mainImageUrl: competition.mainImageUrl,
+          ticketPrice: competition.ticketPrice,
+          drawDate: competition.drawDate,
+          status: competition.status,
+        })}
+      />
       {/* Back */}
       <div className="comp-back">
         <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
@@ -333,7 +349,9 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               className="inline-flex items-center gap-2.5"
               style={{ padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)', borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '14px' }}
             >
-              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+              {isActive && !drawPending && (
+                <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+              )}
               {drawPending ? 'DRAWING SOON' : isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'}
               {competition.soldTickets > 0 ? ` · ${competition.soldTickets.toLocaleString('en-GB')} entered` : ''}
             </div>
@@ -521,7 +539,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                   71-75 Shelton Street, Covent Garden<br/>
                   London WC2H 9JQ
                 </div>
-                <span className="postal-note">One entry per person per comp · Full <Link href="/competition-rules">rules</Link></span>
+                <span className="postal-note">One entry per postcard (multiple permitted) · Full <Link href="/competition-rules">rules</Link></span>
               </div>
             </div>
           </div>

@@ -4,6 +4,8 @@ import { prisma } from '@/lib/db';
 import { FaqAccordion } from './faq-accordion';
 import { FaqSearch } from './faq-search';
 import { Button } from '@/components/ui/button';
+import { StructuredData } from '@/components/common/structured-data';
+import { generateFaqSchema } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
@@ -53,6 +55,7 @@ export default async function FaqPage() {
 
   return (
     <main>
+      <StructuredData data={generateFaqSchema(allItems)} />
       {/* Page Header */}
       <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
         <div

@@ -262,8 +262,8 @@ function PlaceholderCompetitionRulesContent() {
             randomly assigned
           </li>
           <li>
-            The maximum number of tickets per person per competition is 50
-            (including bonus tickets)
+            The maximum number of tickets per person is set for each competition
+            and shown on its page; some competitions have no per-person limit
           </li>
           <li>Tickets are non-transferable between users</li>
         </ul>

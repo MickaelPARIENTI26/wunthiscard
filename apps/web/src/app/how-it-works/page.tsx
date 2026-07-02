@@ -69,7 +69,7 @@ export default function HowItWorksPage() {
         </h1>
 
         <p style={{ fontSize: '18px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '640px', margin: '0 auto 32px' }}>
-          No gambling. No loopholes. A skill-based UK prize competition where <b style={{ color: 'var(--ink)', background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>anyone with a good memory</b> has a real shot at a PSA 10 card.
+          No gambling. No loopholes. A skill-based UK prize competition where <b style={{ color: 'var(--ink)', background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>anyone with a good memory</b> has a real shot at a grail card.
         </p>
 
         <div className="hiw-hero-marquee">

@@ -85,3 +85,58 @@ export function generateWebsiteSchema() {
 export function generateHomePageSchema() {
   return [generateOrganizationSchema(), generateWebsiteSchema()];
 }
+
+/**
+ * Product + Offer schema for a competition detail page (rich results / eligibility).
+ * The "offer" is a competition ticket at the ticket price.
+ */
+export function generateCompetitionSchema(comp: {
+  slug: string;
+  title: string;
+  descriptionShort?: string | null;
+  mainImageUrl: string;
+  ticketPrice: number;
+  drawDate: Date | string;
+  status: string;
+}) {
+  const url = `${BASE_URL}/competitions/${comp.slug}`;
+  const drawIso =
+    typeof comp.drawDate === 'string' ? comp.drawDate : comp.drawDate.toISOString();
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: comp.title,
+    image: comp.mainImageUrl,
+    description:
+      comp.descriptionShort ??
+      `Enter to win ${comp.title} — a UK skill-based prize competition with a free entry route.`,
+    url,
+    brand: { '@type': 'Brand', name: 'WinUCard' },
+    offers: {
+      '@type': 'Offer',
+      url,
+      price: comp.ticketPrice.toFixed(2),
+      priceCurrency: 'GBP',
+      priceValidUntil: drawIso.slice(0, 10),
+      availability:
+        comp.status === 'ACTIVE'
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/SoldOut',
+    },
+  };
+}
+
+/**
+ * FAQPage schema (rich FAQ results). Pass the visible question/answer pairs.
+ */
+export function generateFaqSchema(items: { question: string; answer: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((f) => ({
+      '@type': 'Question',
+      name: f.question,
+      acceptedAnswer: { '@type': 'Answer', text: f.answer },
+    })),
+  };
+}

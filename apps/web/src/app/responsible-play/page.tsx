@@ -34,7 +34,7 @@ export default function ResponsiblePlayPage() {
 
       <section id="spending-limits">
         <h3 className="legal-h">3. Spending Limits</h3>
-        <p className="legal-p">We enforce a maximum of 50 tickets per person per competition. We monitor account activity and may contact users who display unusual purchasing patterns.</p>
+        <p className="legal-p">The maximum number of tickets per person is shown on each competition (some competitions have no per-person limit). We monitor account activity and may contact users who display unusual purchasing patterns.</p>
         <p className="legal-p">We encourage all participants to set a personal budget for competition entries and to never spend more than they can afford.</p>
       </section>
 

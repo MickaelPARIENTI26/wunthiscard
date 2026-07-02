@@ -19,7 +19,7 @@ const stats = [
   { v: '£500K+', l: 'Prizes Paid', c: 'var(--accent)' },
   { v: '482', l: 'Cards Won', c: 'var(--hot)' },
   { v: '100%', l: 'Results Published', c: 'var(--pop)' },
-  { v: 'PSA 10', l: 'Every Card Graded', c: 'var(--warn)' },
+  { v: '100%', l: 'Graded & Authenticated', c: 'var(--warn)' },
 ];
 
 const pillars = [
@@ -31,14 +31,14 @@ const pillars = [
   },
   {
     mark: '02 / Provenance',
-    title: 'Only PSA 10.',
-    body: "If it isn't PSA-graded, it isn't on WinUCard. Every card is authenticated, encapsulated, and cross-referenced by cert number before we list it. You win exactly what you saw — with full documentation and a chain of custody.",
+    title: 'Graded & authenticated.',
+    body: "Every card is professionally graded and cross-referenced by its cert number before we list it, and memorabilia comes with its certificate of authenticity. You win exactly what you saw — with full documentation and a chain of custody.",
     foot: { text: 'View our', href: '/competitions', label: 'live comps' },
   },
   {
     mark: '03 / Access',
     title: 'Free postal entry, always.',
-    body: "UK law requires a free route. We don't just comply — we make it easy: handwritten postcard, one per comp per day, same odds as paid entries. If you can't pay, you can still play.",
+    body: "UK law requires a free route. We don't just comply — we make it easy: a handwritten postcard, one entry per postcard (send as many as you like), same odds as paid entries. If you can't pay, you can still play.",
     foot: { text: 'Full rules →', href: '/competition-rules', label: 'Comp Rules' },
   },
 ];

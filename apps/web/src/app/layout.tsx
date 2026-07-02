@@ -144,7 +144,7 @@ export default function RootLayout({
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold"
-            style={{ background: 'var(--accent)', color: '#ffffff' }}
+            style={{ background: 'var(--ink)', color: 'var(--accent)' }}
           >
             Skip to main content
           </a>

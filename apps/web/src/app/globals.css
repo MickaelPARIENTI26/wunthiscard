@@ -1276,6 +1276,9 @@ input:focus, textarea:focus, select:focus,
      the sticky buy bar is present, so the fixed bar overlays empty space instead
      of the footer — and there's no visible gap mid-page. */
   body:has(.buy-sticky) { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  /* When the sticky buy bar is present, lift the cookie-consent banner above it so
+     the two fixed bottom overlays don't collide for first-time visitors. */
+  body:has(.buy-sticky) .cookie-banner { bottom: calc(72px + env(safe-area-inset-bottom)); }
 }
 @media (max-width: 820px) {
   .enter-head {

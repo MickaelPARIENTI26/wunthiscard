@@ -272,7 +272,7 @@ export function QuestionForm({
       </div>
 
       {/* Answer options — 2x2 grid */}
-      <div className="skill-opts">
+      <div className="skill-opts" role="radiogroup" aria-label="Answer choices">
         {questionChoices.map((choice, index) => {
           const selected = selectedAnswer === index;
           const isCorrect = result?.correct && selected;
@@ -283,6 +283,8 @@ export function QuestionForm({
             <button
               key={index}
               type="button"
+              role="radio"
+              aria-checked={selected}
               onClick={() => !locked && setSelectedAnswer(index)}
               className={`skill-opt ${state}`}
               disabled={!!locked}
