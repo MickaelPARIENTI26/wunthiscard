@@ -179,7 +179,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
             Promotional emails
           </span>
           <span style={{ display: 'block', fontSize: '13px', color: 'var(--ink-dim)' }}>
-            New competitions, special offers and news. Unsubscribe anytime.
+            New competition drops, closing-soon reminders and news. Unsubscribe anytime.
           </span>
         </span>
         {isSaving && <Loader2 className="h-4 w-4 animate-spin" style={{ color: 'var(--ink-faint)' }} />}

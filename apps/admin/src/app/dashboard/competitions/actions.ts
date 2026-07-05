@@ -431,9 +431,14 @@ export async function updateCompetitionStatus(id: string, status: CompetitionSta
     }
   }
 
+  // First time this competition goes ACTIVE → announce it to opted-in users.
+  // Claim it atomically by stamping newCompEmailSentAt in the same update so a
+  // repeated activation (e.g. ACTIVE → DRAFT → ACTIVE) never re-blasts.
+  const shouldAnnounce = status === 'ACTIVE' && !competition.newCompEmailSentAt;
+
   await prisma.competition.update({
     where: { id },
-    data: { status },
+    data: { status, ...(shouldAnnounce ? { newCompEmailSentAt: new Date() } : {}) },
   });
 
   // Log action
@@ -446,6 +451,34 @@ export async function updateCompetitionStatus(id: string, status: CompetitionSta
       metadata: { oldStatus, newStatus: status },
     },
   });
+
+  // Send the "new competition live" marketing blast (best-effort — awaited so it
+  // completes before the serverless function returns, but never throws out of the
+  // action; a send failure just means it won't auto-retry).
+  if (shouldAnnounce) {
+    try {
+      const [{ getMarketingRecipients }, { sendNewCompetitionBlast }] = await Promise.all([
+        import('@/lib/marketing-recipients'),
+        import('@/lib/email'),
+      ]);
+      const recipients = await getMarketingRecipients();
+      if (recipients.length > 0) {
+        const { sent, total } = await sendNewCompetitionBlast(recipients, {
+          title: competition.title,
+          slug: competition.slug,
+          prizeValue: Number(competition.prizeValue),
+          ticketPrice: Number(competition.ticketPrice),
+          isFree: competition.isFree,
+          mainImageUrl: competition.mainImageUrl,
+          // Non-null here: activation to ACTIVE already threw above if drawDate was missing.
+          drawDate: competition.drawDate ?? new Date(),
+        });
+        console.log(`New-competition blast for ${id}: sent ${sent}/${total}`);
+      }
+    } catch (err) {
+      console.error('Failed to send new-competition blast:', err);
+    }
+  }
 
   revalidatePath('/dashboard/competitions');
   revalidatePath(`/dashboard/competitions/${id}`);
@@ -868,6 +901,7 @@ export async function recordWinner(competitionId: string, ticketNumber: number) 
       totalTickets: true,
       winnerNotified: true,
       drawDate: true,
+      resultsEmailSentAt: true,
     },
   });
 
@@ -1004,6 +1038,41 @@ export async function recordWinner(competitionId: string, ticketNumber: number) 
     }
   } catch (error) {
     console.error('Failed to send winner notification email:', error);
+  }
+
+  // Notify every OTHER participant that the draw is complete (transactional — the
+  // winner already got their own email above). Best-effort, batched, idempotent.
+  if (!competition.resultsEmailSentAt) {
+    try {
+      const participantTickets = await prisma.ticket.findMany({
+        where: {
+          competitionId,
+          status: { in: ['SOLD', 'FREE_ENTRY'] },
+          userId: { notIn: [winner.id] },
+        },
+        distinct: ['userId'],
+        select: { user: { select: { email: true, firstName: true } } },
+      });
+      const participants = participantTickets
+        .map((t) => t.user)
+        .filter((u): u is { email: string; firstName: string } => !!u);
+
+      if (participants.length > 0) {
+        const { sendDrawResultsBlast, anonymizeWinnerName } = await import('@/lib/email');
+        const { sent, total } = await sendDrawResultsBlast(participants, {
+          competitionTitle: competition.title,
+          winnerName: anonymizeWinnerName(winner.firstName, winner.lastName),
+          winningTicketNumber: ticketNumber,
+        });
+        console.log(`Draw-results blast for ${competitionId}: sent ${sent}/${total}`);
+      }
+      await prisma.competition.update({
+        where: { id: competitionId },
+        data: { resultsEmailSentAt: new Date() },
+      });
+    } catch (error) {
+      console.error('Failed to send draw-results blast:', error);
+    }
   }
 
   revalidatePath('/dashboard/competitions');

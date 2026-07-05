@@ -34,6 +34,7 @@ model User {
   failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
   tokenVersion        Int       @default(0) // Bumped on password reset/change to invalidate all existing JWT sessions
+  unsubscribeToken    String?   @unique // Stable per-user token for one-click marketing-email unsubscribe (no login required)
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -201,6 +202,11 @@ model Competition {
   drawProofUrl        String? // Link to video/proof
   drawnById           String? // Admin who executed the draw
   winnerNotified      Boolean @default(false) // Email sent to winner
+
+  // Lifecycle email idempotency guards (set once when the blast is sent, so it never repeats)
+  newCompEmailSentAt     DateTime? // "New competition live" marketing blast sent (on ACTIVE)
+  closingSoonEmailSentAt DateTime? // "Closing soon" marketing blast sent (cron, before draw)
+  resultsEmailSentAt     DateTime? // "Draw complete" results email sent to participants
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

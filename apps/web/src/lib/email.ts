@@ -24,9 +24,11 @@ interface SendEmailOptions {
   // Optional Reply-To address (e.g. a contact-form submitter) so replies go to
   // the right person rather than the noreply FROM_EMAIL sender.
   replyTo?: string;
+  // Extra SMTP headers (e.g. List-Unsubscribe on marketing emails).
+  headers?: Record<string, string>;
 }
 
-export async function sendEmail({ to, subject, html, text, replyTo }: SendEmailOptions) {
+export async function sendEmail({ to, subject, html, text, replyTo, headers }: SendEmailOptions) {
   if (!resend) {
     if (IS_PRODUCTION) {
       // Don't silently pretend it worked in prod — log loudly and report failure
@@ -46,6 +48,7 @@ export async function sendEmail({ to, subject, html, text, replyTo }: SendEmailO
       html,
       text: text || stripHtml(html),
       ...(replyTo ? { replyTo } : {}),
+      ...(headers ? { headers } : {}),
     });
 
     if (error) {
@@ -469,4 +472,212 @@ export async function sendWinnerNotificationEmail(
     subject: `🎉 You've WON: ${data.competitionTitle}!`,
     html,
   });
+}
+
+// ============================================================================
+// MARKETING / LIFECYCLE BLASTS
+// ----------------------------------------------------------------------------
+// Promotional emails (new competition, closing soon) are only ever sent to users
+// who opted in (User.emailMarketing = true) and MUST carry a working one-click
+// unsubscribe (PECR/GDPR + deliverability). Every marketing email therefore uses
+// marketingWrapper() (visible unsubscribe link) and a List-Unsubscribe header.
+// ============================================================================
+
+export interface MarketingRecipient {
+  email: string;
+  firstName: string;
+  unsubscribeToken: string;
+}
+
+function unsubscribeUrl(token: string): string {
+  return `${BASE_URL}/unsubscribe?token=${encodeURIComponent(token)}`;
+}
+
+// One-click unsubscribe headers (RFC 8058) — lets Gmail/Outlook show a native
+// "Unsubscribe" button that POSTs to our endpoint.
+function listUnsubscribeHeaders(token: string): Record<string, string> {
+  return {
+    'List-Unsubscribe': `<${BASE_URL}/api/unsubscribe?token=${encodeURIComponent(token)}>, <mailto:support@winucards.com?subject=unsubscribe>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+  };
+}
+
+// Marketing wrapper = branded shell + a mandatory unsubscribe footer.
+function marketingWrapper(content: string, token: string): string {
+  const url = unsubscribeUrl(token);
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WinUCard</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
+    </div>
+    <div style="padding: 32px;">
+      ${content}
+    </div>
+    <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
+      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+        YD PARTNERS LTD (trading as WinUCard) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
+      </p>
+      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+        You're receiving this because you opted in to competition updates from WinUCard.
+      </p>
+      <p style="color: #6b7280; font-size: 12px; margin: 0;">
+        <a href="${url}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> ·
+        <a href="${BASE_URL}/settings" style="color: #6b7280;">Email preferences</a> ·
+        <a href="${BASE_URL}/privacy" style="color: #6b7280;">Privacy</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+}
+
+const gbp0 = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', minimumFractionDigits: 0 });
+const gbp2 = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' });
+
+// Chunked batch send (Resend accepts up to 100 messages per batch call). Returns
+// the number successfully accepted. Never throws — logs and continues per chunk.
+async function sendMarketingBatch(
+  messages: { to: string; subject: string; html: string; headers?: Record<string, string> }[]
+): Promise<{ sent: number; total: number }> {
+  const total = messages.length;
+  if (total === 0) return { sent: 0, total: 0 };
+
+  if (!resend) {
+    if (IS_PRODUCTION) {
+      console.error(`Marketing batch NOT sent — RESEND_API_KEY missing in production (${total} messages)`);
+      return { sent: 0, total };
+    }
+    console.log(`Marketing batch would send ${total} emails (dev, no RESEND_API_KEY)`);
+    return { sent: total, total };
+  }
+
+  let sent = 0;
+  for (let i = 0; i < messages.length; i += 100) {
+    const chunk = messages.slice(i, i + 100);
+    try {
+      const { error } = await resend.batch.send(
+        chunk.map((m) => ({
+          from: `WinUCard <${FROM_EMAIL}>`,
+          to: m.to,
+          subject: m.subject,
+          html: m.html,
+          text: stripHtml(m.html),
+          ...(m.headers ? { headers: m.headers } : {}),
+        }))
+      );
+      if (error) {
+        console.error('Marketing batch chunk failed:', error);
+      } else {
+        sent += chunk.length;
+      }
+    } catch (err) {
+      console.error('Marketing batch chunk threw:', err);
+    }
+  }
+  return { sent, total };
+}
+
+// --- New competition live -------------------------------------------------
+export interface CompetitionBlastData {
+  title: string;
+  slug: string;
+  prizeValue: number;
+  ticketPrice: number;
+  isFree: boolean;
+  mainImageUrl: string;
+  drawDate: Date;
+}
+
+function competitionCard(data: CompetitionBlastData): string {
+  const prize = gbp0.format(data.prizeValue);
+  const priceLine = data.isFree
+    ? 'Free entry'
+    : `Tickets from ${gbp2.format(data.ticketPrice)}`;
+  const drawFormatted = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short' }).format(
+    new Date(data.drawDate)
+  );
+  return `
+    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
+      ${
+        data.mainImageUrl
+          ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 6px; margin-bottom: 16px;">`
+          : ''
+      }
+      <p style="color: #1a1a1a; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
+      <p style="color: #16a34a; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
+      <p style="color: #6b7280; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
+    </div>`;
+}
+
+export async function sendNewCompetitionBlast(
+  recipients: MarketingRecipient[],
+  data: CompetitionBlastData
+): Promise<{ sent: number; total: number }> {
+  const compUrl = `${BASE_URL}/competitions/${data.slug}`;
+  const messages = recipients.map((r) => {
+    const html = marketingWrapper(
+      `
+    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+      A new competition just went live on WinUCard. Get your tickets before it's gone.
+    </p>
+    ${competitionCard(data)}
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Enter now
+      </a>
+    </div>`,
+      r.unsubscribeToken
+    );
+    return {
+      to: r.email,
+      subject: `🎴 New drop: ${data.title}`,
+      html,
+      headers: listUnsubscribeHeaders(r.unsubscribeToken),
+    };
+  });
+  return sendMarketingBatch(messages);
+}
+
+// --- Closing soon ---------------------------------------------------------
+export async function sendClosingSoonBlast(
+  recipients: MarketingRecipient[],
+  data: CompetitionBlastData
+): Promise<{ sent: number; total: number }> {
+  const compUrl = `${BASE_URL}/competitions/${data.slug}`;
+  const drawFormatted = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short' }).format(
+    new Date(data.drawDate)
+  );
+  const messages = recipients.map((r) => {
+    const html = marketingWrapper(
+      `
+    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">⏳ Last chance${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+      The draw for <strong>${escapeHtml(data.title)}</strong> is coming up on ${drawFormatted}. Grab your tickets before entries close.
+    </p>
+    ${competitionCard(data)}
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Enter before it closes
+      </a>
+    </div>`,
+      r.unsubscribeToken
+    );
+    return {
+      to: r.email,
+      subject: `⏳ Closing soon: ${data.title}`,
+      html,
+      headers: listUnsubscribeHeaders(r.unsubscribeToken),
+    };
+  });
+  return sendMarketingBatch(messages);
 }
