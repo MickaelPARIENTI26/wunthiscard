@@ -300,6 +300,10 @@ model Order {
   // referrer a free ticket. Lets a full refund / lost dispute claw that reward back.
   grantedReferralReward Boolean @default(false)
 
+  // Set once an abandoned-cart recovery email has been sent for this order, so the
+  // daily cron never nudges the same abandoned checkout twice.
+  recoveryEmailSentAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -681,3 +681,61 @@ export async function sendClosingSoonBlast(
   });
   return sendMarketingBatch(messages);
 }
+
+// --- Abandoned cart recovery ----------------------------------------------
+// Sent to a user who started a checkout (created a PENDING order) but never paid.
+// Marketing under PECR (a nudge to complete a purchase) → opted-in only, with
+// unsubscribe. Links back to the competition page (the original Stripe session
+// has usually expired) so the user re-enters cleanly.
+export interface CartRecoveryItem extends MarketingRecipient {
+  title: string;
+  slug: string;
+  prizeValue: number;
+  ticketPrice: number;
+  isFree: boolean;
+  mainImageUrl: string;
+  drawDate: Date;
+  ticketCount: number;
+}
+
+export async function sendCartRecoveryEmails(
+  items: CartRecoveryItem[]
+): Promise<{ sent: number; total: number }> {
+  const messages = items.map((item) => {
+    const compUrl = `${BASE_URL}/competitions/${item.slug}`;
+    const count = item.ticketCount;
+    const ticketWord = count === 1 ? 'ticket' : 'tickets';
+    const html = marketingWrapper(
+      `
+    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">You left ${count} ${ticketWord} behind${item.firstName ? `, ${escapeHtml(item.firstName)}` : ''}</h2>
+    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+      Your checkout for <strong>${escapeHtml(item.title)}</strong> wasn't completed, so your ${ticketWord} ${count === 1 ? 'is' : 'are'} not entered yet. The competition is still live — pick up where you left off before the draw.
+    </p>
+    ${competitionCard({
+      title: item.title,
+      slug: item.slug,
+      prizeValue: item.prizeValue,
+      ticketPrice: item.ticketPrice,
+      isFree: item.isFree,
+      mainImageUrl: item.mainImageUrl,
+      drawDate: item.drawDate,
+    })}
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+        Complete my entry
+      </a>
+    </div>
+    <p style="color: #6b7280; font-size: 13px; text-align: center; margin: 24px 0 0;">
+      Tickets are limited and sell on a first-come basis — entering again takes less than a minute.
+    </p>`,
+      item.unsubscribeToken
+    );
+    return {
+      to: item.email,
+      subject: `You left ${count} ${ticketWord} behind — ${item.title}`,
+      html,
+      headers: listUnsubscribeHeaders(item.unsubscribeToken),
+    };
+  });
+  return sendMarketingBatch(messages);
+}
