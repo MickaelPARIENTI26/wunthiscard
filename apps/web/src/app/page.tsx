@@ -54,7 +54,6 @@ async function HomeContent() {
   return (
     <>
       <HomeHero competitions={competitions} />
-      <HomeDrawTrust />
       <TrustStrip />
       <HomeLiveComps competitions={competitions} />
     </>
@@ -68,6 +67,7 @@ export default function HomePage() {
         <HomeContent />
       </Suspense>
       <HomeHowItWorks />
+      <HomeDrawTrust />
       <HomeFAQPreview />
       <HomeCTABand />
     </main>
