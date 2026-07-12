@@ -138,6 +138,7 @@ export function SimpleTicketSelector({
               <div className="qty-tile-label">ticket{b > 1 ? 's' : ''}</div>
               {bb > 0 && <div className="qty-tile-bonus">+{bb}</div>}
               <div className="qty-tile-price">£{(b * price).toFixed(2)}</div>
+              {bb > 0 && <div className="qty-tile-save">−{Math.round((bb / (b + bb)) * 100)}% off</div>}
             </button>
           );
         })}
@@ -209,7 +210,7 @@ export function SimpleTicketSelector({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '14px', fontSize: '14px' }}>
           <span>
             {quantity} ticket{quantity > 1 ? 's' : ''}
-            {bonus > 0 ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> + {bonus} bonus</span> : ''}
+            {bonus > 0 ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> + {bonus} bonus (−{Math.round((bonus / (quantity + bonus)) * 100)}%)</span> : ''}
             {referralApplied ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> · 1 free referral</span> : ''}
           </span>
           <span style={{ fontFamily: 'var(--display)', fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>£{displayTotal}</span>
@@ -227,14 +228,13 @@ export function SimpleTicketSelector({
       {/* Trust / reassurance — right where the user commits */}
       <div className="buy-trust">
         <div className="buy-trust-chips">
-          <span>🔒 Secure Stripe payment</span>
+          <span>🔒 Secure payment</span>
           <span>✓ Graded &amp; authenticated</span>
           <span>🎲 Independent draw</span>
         </div>
         <p className="buy-trust-note">
           Skill-based prize competition — not a lottery. Free postal entry available ·{' '}
           <a href="/competition-rules" target="_blank" rel="noopener noreferrer">See rules</a>
-          <br />Run by YD PARTNERS LTD (UK).
         </p>
       </div>
 

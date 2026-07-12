@@ -843,6 +843,7 @@ input:focus, textarea:focus, select:focus,
   letter-spacing: 0.08em; transform: rotate(6deg);
 }
 .qty-tile-price { margin-top: 8px; font-family: var(--mono); font-size: 13px; font-weight: 700; }
+.qty-tile-save { margin-top: 3px; font-family: var(--mono); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-text); }
 .qty-tile-ribbon {
   position: absolute; top: -8px; left: -8px; z-index: 1;
   background: var(--ink); color: var(--accent);

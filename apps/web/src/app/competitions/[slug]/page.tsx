@@ -535,7 +535,6 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 <p>Send a handwritten postcard with your name, email, and answer to the skill question:</p>
                 <div className="postal-addr">
                   WinUCard — Free Entry<br/>
-                  YD PARTNERS LTD<br/>
                   71-75 Shelton Street, Covent Garden<br/>
                   London WC2H 9JQ
                 </div>

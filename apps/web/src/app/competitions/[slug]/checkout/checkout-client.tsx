@@ -456,7 +456,7 @@ export function CheckoutClient({
 
       {/* Foot */}
       <div className="enter-step-foot">
-        <span className="skill-hint">Secure payment powered by Stripe · SSL encrypted</span>
+        <span className="skill-hint">Secure payment · SSL encrypted</span>
         <button
           onClick={handleCheckout}
           disabled={isProcessing || !qcmPassed}
