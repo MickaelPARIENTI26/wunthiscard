@@ -103,7 +103,7 @@ async function main() {
         { category: 'Tickets & Entry', sortOrder: 4, question: 'Is there a free entry route?', answer: 'Yes. UK law requires a free entry route on every competition. Send a postcard with your full name, email, the competition name, your chosen ticket number(s) and your answer to the skill question to our postal address (shown on each competition page). One entry per envelope, no purchase necessary.' },
 
         // Payment
-        { category: 'Payment', sortOrder: 1, question: 'What payment methods do you accept?', answer: 'We accept all major credit and debit cards (Visa, Mastercard, American Express), processed securely through Stripe.' },
+        { category: 'Payment', sortOrder: 1, question: 'What payment methods do you accept?', answer: 'We accept all major credit and debit cards (Visa, Mastercard, American Express), processed securely.' },
         { category: 'Payment', sortOrder: 2, question: 'Can I get a refund?', answer: 'Tickets are non-refundable once purchased. The only exception is if a competition is cancelled — in that case all entrants are fully refunded.' },
 
         // The draw

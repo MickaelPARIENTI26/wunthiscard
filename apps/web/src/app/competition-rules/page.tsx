@@ -153,7 +153,7 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Correctly answer the skill question to proceed to payment
           </li>
-          <li>Complete payment via our secure checkout (powered by Stripe)</li>
+          <li>Complete payment via our secure checkout</li>
           <li>
             Receive confirmation of your entry via email with your ticket
             numbers
