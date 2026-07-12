@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { prisma } from '@winucard/database';
 import { HomeHero } from '@/components/home/home-hero';
+import { HomeDrawTrust } from '@/components/home/home-draw-trust';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { HomeLiveComps } from '@/components/home/home-live-comps';
 import { HomeHowItWorks } from '@/components/home/home-how-it-works';
@@ -53,6 +54,7 @@ async function HomeContent() {
   return (
     <>
       <HomeHero competitions={competitions} />
+      <HomeDrawTrust />
       <TrustStrip />
       <HomeLiveComps competitions={competitions} />
     </>
