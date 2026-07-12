@@ -415,6 +415,25 @@ export function CheckoutClient({
             </div>
           )}
         </div>
+
+        {/* Total — part of the receipt, not a separate clickable-looking panel */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginTop: '14px',
+            paddingTop: '14px',
+            borderTop: '1.5px dashed var(--line-2)',
+          }}
+        >
+          <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)' }}>
+            Total
+          </span>
+          <span style={{ fontFamily: 'var(--display)', fontSize: 'clamp(22px, 6vw, 28px)', fontWeight: 700, letterSpacing: '-0.03em' }}>
+            £{totalPriceLabel}
+          </span>
+        </div>
       </div>
 
       {/* Bonus banner */}
@@ -442,21 +461,10 @@ export function CheckoutClient({
         </div>
       )}
 
-      {/* Pay panel */}
-      <div className="enter-pay-panel">
-        <div className="enter-pay-total">
-          <span>Total</span>
-          <b>£{totalPriceLabel}</b>
-        </div>
-        <div className="enter-pay-chips">
-          <span>🔒 Pay with</span>
-          <span className="pay-chip">Card</span>
-        </div>
-      </div>
-
-      {/* Foot */}
-      <div className="enter-step-foot">
-        <span className="skill-hint">Secure payment · SSL encrypted</span>
+      {/* Foot — the button is the ONLY clickable element here, full-width so it can't
+          be mistaken for a non-interactive summary (see the old .enter-pay-panel,
+          which visually read as a button but did nothing when clicked). */}
+      <div className="enter-step-foot enter-step-foot--pay">
         <button
           onClick={handleCheckout}
           disabled={isProcessing || !qcmPassed}
@@ -474,6 +482,7 @@ export function CheckoutClient({
             <>Pay £{totalPriceLabel} →</>
           )}
         </button>
+        <span className="skill-hint">🔒 Secure payment · SSL encrypted · Pay with Card</span>
       </div>
 
       {/* Terms note */}

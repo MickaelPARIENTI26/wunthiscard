@@ -548,16 +548,24 @@ export function GuestCheckoutForm({
         </div>
       )}
 
-      {/* Pay panel */}
-      <div className="enter-pay-panel">
-        <div className="enter-pay-total">
-          <span>Total</span>
-          <b>£{totalPriceLabel}</b>
-        </div>
-        <div className="enter-pay-chips">
-          <span>🔒 Pay with</span>
-          <span className="pay-chip">Card</span>
-        </div>
+      {/* Order recap — plain summary line, not a clickable-looking panel */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          marginTop: '18px',
+          paddingTop: '14px',
+          borderTop: '1.5px dashed var(--line-2)',
+        }}
+      >
+        <span style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
+          {ticketCount} ticket{ticketCount !== 1 ? 's' : ''}
+          {bonusTickets > 0 ? ` + ${bonusTickets} bonus` : ''}
+        </span>
+        <span style={{ fontFamily: 'var(--display)', fontSize: 'clamp(20px, 5vw, 26px)', fontWeight: 700, letterSpacing: '-0.03em' }}>
+          £{totalPriceLabel}
+        </span>
       </div>
 
       {TURNSTILE_SITE_KEY && (
@@ -571,9 +579,9 @@ export function GuestCheckoutForm({
         />
       )}
 
-      {/* Foot */}
-      <div className="enter-step-foot">
-        <span className="skill-hint">You&apos;ll receive confirmation by email immediately.</span>
+      {/* Foot — the button is the ONLY clickable element here, full-width so it can't
+          be mistaken for a non-interactive summary. */}
+      <div className="enter-step-foot enter-step-foot--pay">
         <button
           type="submit"
           disabled={isLoading}
@@ -588,6 +596,7 @@ export function GuestCheckoutForm({
             <>Complete entry · £{totalPriceLabel} →</>
           )}
         </button>
+        <span className="skill-hint">🔒 Secure payment · You&apos;ll receive confirmation by email immediately.</span>
       </div>
     </form>
   );
