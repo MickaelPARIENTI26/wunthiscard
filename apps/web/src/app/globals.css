@@ -1345,6 +1345,14 @@ input:focus, textarea:focus, select:focus,
   background: var(--ink);
 }
 .carousel-slide img {
+  /* Force the image onto its own GPU layer immediately (the slide itself
+     can't carry this — its `transform` is overwritten per active/prev/next
+     state). Without it, the just-decoded image can finish loading without
+     ever compositing on screen — stuck showing the slide's dark placeholder
+     background — until some unrelated repaint nudges it. Visible as a solid
+     black card on first paint. Promoting the layer up front avoids the race. */
+  transform: translateZ(0);
+  backface-visibility: hidden;
   width: 100%;
   height: 100%;
   object-fit: cover;
