@@ -63,6 +63,13 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           Pokémon, One Piece &amp; sports cards. Tickets from{' '}
           <b style={{ color: 'var(--ink)' }}>£14.90</b>. Independent draws, real cards delivered.
         </p>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--ink-dim)', margin: '10px 0 0' }}>
+          <span aria-hidden>🎲</span>
+          <span>
+            Winners drawn independently by{' '}
+            <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>RandomDraws.com</strong>
+          </span>
+        </p>
       </section>
 
       {/* Desktop hero */}
@@ -114,7 +121,7 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-2.5" style={{ marginBottom: '32px' }}>
+          <div className="flex flex-wrap gap-2.5" style={{ marginBottom: '14px' }}>
             <Link
               href="/competitions"
               className="inline-flex items-center justify-center font-semibold transition-all duration-150"
@@ -142,6 +149,15 @@ export function HomeHero({ competitions }: HomeHeroProps) {
               How it works
             </Link>
           </div>
+
+          {/* Draw-provider trust note — name only, no link */}
+          <p style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--ink-dim)', margin: '0 0 30px' }}>
+            <span aria-hidden style={{ fontSize: '15px' }}>🎲</span>
+            <span>
+              Winners drawn independently by{' '}
+              <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>RandomDraws.com</strong>
+            </span>
+          </p>
 
           {/* Strip chips — factual, process-based claims only (no invented stats) */}
           <div className="flex flex-wrap items-center gap-2.5" style={{ paddingTop: '24px', borderTop: '1.5px dashed var(--ink)' }}>
