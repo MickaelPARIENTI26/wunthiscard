@@ -101,20 +101,13 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           </div>
 
           {/* Draw-provider trust note — name only, no link */}
-          <p style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--ink-dim)', margin: '0 0 24px' }}>
+          <p style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--ink-dim)', margin: 0 }}>
             <span aria-hidden style={{ fontSize: '15px' }}>🎲</span>
             <span>
               Winners drawn independently by{' '}
               <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>RandomDraws.com</strong>
             </span>
           </p>
-
-          {/* Strip chips — factual, process-based claims only (no invented stats) */}
-          <div className="hero-strip flex flex-wrap items-center gap-2.5" style={{ paddingTop: '20px', borderTop: '1.5px dashed var(--ink)' }}>
-            <span style={{ padding: '6px 13px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, background: 'var(--accent)' }}>Free postal entry</span>
-            <span style={{ padding: '6px 13px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, background: 'var(--surface)' }}>UK delivery included</span>
-            <span style={{ padding: '6px 13px', border: '1.5px solid var(--ink)', borderRadius: '999px', fontSize: '11.5px', fontWeight: 600, background: 'var(--hot)', color: '#fff' }}>Independent draws</span>
-          </div>
         </div>
 
         {/* Visual column — the card carousel, now shown at every width */}
@@ -138,9 +131,6 @@ export function HomeHero({ competitions }: HomeHeroProps) {
           .hero-visual { order: 1; margin-top: 28px; margin-bottom: 56px; }
           .hero-copy { order: 2; text-align: center; }
           .hero-copy > * { margin-left: auto !important; margin-right: auto !important; }
-          /* Trust badges already reappear as the dedicated strip right below the
-             hero (now shown on mobile too) — no need to repeat them here. */
-          .hero-strip { display: none; }
 
           /* Flatten the 3D coverflow on mobile: perspective + preserve-3d + the
              clipped rounded-corner slides can paint solid black on some mobile
