@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Loader2, X } from 'lucide-react';
 import { addAddress } from './actions';
+import { COUNTRIES } from '@winucard/shared/constants';
 
 const addressSchema = z.object({
   label: z.string().max(50).optional(),
@@ -18,31 +19,6 @@ const addressSchema = z.object({
 });
 
 type AddressFormData = z.infer<typeof addressSchema>;
-
-const COUNTRIES: { code: string; name: string }[] = [
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'IE', name: 'Ireland' },
-  { code: 'FR', name: 'France' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'BE', name: 'Belgium' },
-  { code: 'PT', name: 'Portugal' },
-  { code: 'AT', name: 'Austria' },
-  { code: 'CH', name: 'Switzerland' },
-  { code: 'SE', name: 'Sweden' },
-  { code: 'DK', name: 'Denmark' },
-  { code: 'NO', name: 'Norway' },
-  { code: 'FI', name: 'Finland' },
-  { code: 'PL', name: 'Poland' },
-  { code: 'CZ', name: 'Czech Republic' },
-  { code: 'GR', name: 'Greece' },
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'JP', name: 'Japan' },
-];
 
 export function AddressForm() {
   const [isExpanded, setIsExpanded] = useState(false);

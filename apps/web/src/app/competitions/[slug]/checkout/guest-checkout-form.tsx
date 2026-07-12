@@ -10,30 +10,9 @@ import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { calculateBonusTickets } from '@winucard/shared/utils';
+import { COUNTRIES, countryFlagEmoji } from '@winucard/shared/constants';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
-
-const COUNTRIES = [
-  { code: 'GB', name: 'United Kingdom', phoneCode: '+44', flag: '🇬🇧' },
-  { code: 'IE', name: 'Ireland', phoneCode: '+353', flag: '🇮🇪' },
-  { code: 'FR', name: 'France', phoneCode: '+33', flag: '🇫🇷' },
-  { code: 'DE', name: 'Germany', phoneCode: '+49', flag: '🇩🇪' },
-  { code: 'ES', name: 'Spain', phoneCode: '+34', flag: '🇪🇸' },
-  { code: 'IT', name: 'Italy', phoneCode: '+39', flag: '🇮🇹' },
-  { code: 'NL', name: 'Netherlands', phoneCode: '+31', flag: '🇳🇱' },
-  { code: 'BE', name: 'Belgium', phoneCode: '+32', flag: '🇧🇪' },
-  { code: 'PT', name: 'Portugal', phoneCode: '+351', flag: '🇵🇹' },
-  { code: 'AT', name: 'Austria', phoneCode: '+43', flag: '🇦🇹' },
-  { code: 'CH', name: 'Switzerland', phoneCode: '+41', flag: '🇨🇭' },
-  { code: 'SE', name: 'Sweden', phoneCode: '+46', flag: '🇸🇪' },
-  { code: 'NO', name: 'Norway', phoneCode: '+47', flag: '🇳🇴' },
-  { code: 'DK', name: 'Denmark', phoneCode: '+45', flag: '🇩🇰' },
-  { code: 'FI', name: 'Finland', phoneCode: '+358', flag: '🇫🇮' },
-  { code: 'PL', name: 'Poland', phoneCode: '+48', flag: '🇵🇱' },
-  { code: 'US', name: 'United States', phoneCode: '+1', flag: '🇺🇸' },
-  { code: 'CA', name: 'Canada', phoneCode: '+1', flag: '🇨🇦' },
-  { code: 'AU', name: 'Australia', phoneCode: '+61', flag: '🇦🇺' },
-];
 
 const guestCheckoutSchema = z
   .object({
@@ -395,7 +374,7 @@ export function GuestCheckoutForm({
             >
               {COUNTRIES.map((country) => (
                 <option key={country.code} value={country.code}>
-                  {country.flag} {country.phoneCode}
+                  {countryFlagEmoji(country.code)} {country.phoneCode}
                 </option>
               ))}
             </select>
