@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Loader2, CheckCircle, XCircle, Mail } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,15 @@ type VerificationState = 'loading' | 'success' | 'error' | 'expired' | 'already_
 export function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  // Both registration paths (plain sign-up and guest checkout) sign the user in
+  // immediately, before they've verified their email — so by the time someone
+  // clicks the verification link they are USUALLY already authenticated in that
+  // browser. A "Sign in" button then just gets bounced back home by the
+  // middleware (logged-in users are redirected away from /login), which reads
+  // as a confusing dead end. Detect that case and send them straight onward
+  // instead of asking them to sign in again.
+  const { status: sessionStatus } = useSession();
+  const isAlreadySignedIn = sessionStatus === 'authenticated';
 
   const [state, setState] = useState<VerificationState>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -94,12 +104,14 @@ export function VerifyEmailContent() {
           </div>
           <CardTitle className="text-2xl font-bold">Email verified</CardTitle>
           <CardDescription>
-            Your email has been successfully verified. You can now sign in to your account.
+            {isAlreadySignedIn
+              ? "Your email has been successfully verified. You're all set."
+              : 'Your email has been successfully verified. You can now sign in to your account.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/login" className="block">
-            <Button className="w-full">Sign in</Button>
+          <Link href={isAlreadySignedIn ? '/competitions' : '/login'} className="block">
+            <Button className="w-full">{isAlreadySignedIn ? 'Browse competitions →' : 'Sign in'}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -116,12 +128,14 @@ export function VerifyEmailContent() {
           </div>
           <CardTitle className="text-2xl font-bold">Already verified</CardTitle>
           <CardDescription>
-            Your email has already been verified. You can sign in to your account.
+            {isAlreadySignedIn
+              ? "Your email is already verified, and you're signed in."
+              : 'Your email has already been verified. You can sign in to your account.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/login" className="block">
-            <Button className="w-full">Sign in</Button>
+          <Link href={isAlreadySignedIn ? '/competitions' : '/login'} className="block">
+            <Button className="w-full">{isAlreadySignedIn ? 'Browse competitions →' : 'Sign in'}</Button>
           </Link>
         </CardContent>
       </Card>
