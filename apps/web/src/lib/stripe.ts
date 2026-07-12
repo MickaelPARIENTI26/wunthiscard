@@ -9,14 +9,11 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   typescript: true,
 });
 
-// Calculate bonus tickets based on quantity
-export function calculateBonusTickets(quantity: number): number {
-  if (quantity >= 50) return 5;
-  if (quantity >= 20) return 3;
-  if (quantity >= 15) return 2;
-  if (quantity >= 10) return 1;
-  return 0;
-}
+// Re-exported (not re-implemented) so the money path (this file, used by
+// create-session) and the UI display (simple-ticket-selector, checkout-client)
+// can never drift out of sync — a prior inline duplicate here caused exactly
+// that bug (see tests/unit/drop-ui.test.ts).
+export { calculateBonusTickets } from '@winucard/shared/utils';
 
 // Generate order number: WTC-YYYYMMDD-XXXXXXXX
 // 8 hex chars from CSPRNG (~4.3B space/day). Uniqueness is still guaranteed by the

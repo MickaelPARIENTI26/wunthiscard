@@ -32,10 +32,12 @@ describe('Drop · Bonus tickets (shared tiers)', () => {
     { qty: 15, bonus: 2, label: '15 tickets unlocks +2' },
     { qty: 19, bonus: 2, label: '19 tickets still at second tier' },
     { qty: 20, bonus: 3, label: '20 tickets unlocks +3' },
-    { qty: 25, bonus: 3, label: '25 tickets matches tier ≥20 (was 4 in buggy inline)' },
-    { qty: 49, bonus: 3, label: '49 tickets still at third tier' },
-    { qty: 50, bonus: 5, label: '50 tickets unlocks +5 (was 10 in buggy inline)' },
-    { qty: 100, bonus: 5, label: '100 tickets capped at top tier' },
+    { qty: 24, bonus: 3, label: '24 tickets still at third tier' },
+    { qty: 25, bonus: 4, label: '25 tickets unlocks +4 (own tier, discount % > the 20 tier)' },
+    { qty: 49, bonus: 4, label: '49 tickets still at fourth tier' },
+    { qty: 50, bonus: 9, label: '50 tickets unlocks +9 (discount % > the 25 tier)' },
+    { qty: 99, bonus: 9, label: '99 tickets still at fifth tier' },
+    { qty: 100, bonus: 20, label: '100 tickets unlocks +20 (top tier, highest discount %)' },
   ];
 
   cases.forEach(({ qty, bonus, label }) => {

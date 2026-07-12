@@ -1,9 +1,15 @@
-// Ticket bonus tiers (default configuration)
+// Ticket bonus tiers (default configuration). Chosen so the effective discount
+// (bonusTickets / (ticketsBought + bonusTickets)) strictly increases at each of
+// the six bundle sizes offered in the UI (1, 5, 10, 25, 50, 100) — 0%, 0%, 9.1%,
+// 13.8%, 15.3%, 16.7% — so buying a bigger bundle is never a worse deal than a
+// smaller one. 15/20 stay as intermediate steps for custom (non-bundle) quantities.
 export const DEFAULT_BONUS_TIERS = [
   { ticketsBought: 10, bonusTickets: 1 },
   { ticketsBought: 15, bonusTickets: 2 },
   { ticketsBought: 20, bonusTickets: 3 },
-  { ticketsBought: 50, bonusTickets: 5 },
+  { ticketsBought: 25, bonusTickets: 4 },
+  { ticketsBought: 50, bonusTickets: 9 },
+  { ticketsBought: 100, bonusTickets: 20 },
 ] as const;
 
 // Bonus tiers for admin configuration

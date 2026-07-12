@@ -99,7 +99,7 @@ async function main() {
         // Tickets & entry
         { category: 'Tickets & Entry', sortOrder: 1, question: 'How do I enter a competition?', answer: 'Choose a live competition, select how many tickets you want (auto-pick or choose your own numbers), answer the skill question correctly, and complete your payment. Your entry is confirmed once payment is received.' },
         { category: 'Tickets & Entry', sortOrder: 2, question: 'How many tickets can I buy?', answer: 'Each competition has a maximum number of tickets per person, shown on the competition page. You can buy any amount up to that limit while tickets remain.' },
-        { category: 'Tickets & Entry', sortOrder: 3, question: 'What are bonus tickets?', answer: 'When you buy in bundles, you get extra tickets for free: buy 10 get 1 free, 15 get 2 free, 20 get 3 free, and 50 get 5 free. The more you buy, the better your odds.' },
+        { category: 'Tickets & Entry', sortOrder: 3, question: 'What are bonus tickets?', answer: 'When you buy in bundles, you get extra tickets for free: 10 tickets get +1 free, 25 get +4 free, 50 get +9 free, and 100 get +20 free. The bigger the bundle, the better the discount.' },
         { category: 'Tickets & Entry', sortOrder: 4, question: 'Is there a free entry route?', answer: 'Yes. UK law requires a free entry route on every competition. Send a postcard with your full name, email, the competition name, your chosen ticket number(s) and your answer to the skill question to our postal address (shown on each competition page). One entry per envelope, no purchase necessary.' },
 
         // Payment

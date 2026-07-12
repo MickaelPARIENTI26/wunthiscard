@@ -43,22 +43,25 @@ describe('Money path · lib/stripe calculateBonusTickets', () => {
     expect(calculateBonusTickets(10)).toBe(1);
     expect(calculateBonusTickets(15)).toBe(2);
     expect(calculateBonusTickets(20)).toBe(3);
-    expect(calculateBonusTickets(50)).toBe(5);
+    expect(calculateBonusTickets(25)).toBe(4);
+    expect(calculateBonusTickets(50)).toBe(9);
+    expect(calculateBonusTickets(100)).toBe(20);
   });
 
   it('does not promote between thresholds', () => {
     expect(calculateBonusTickets(14)).toBe(1);
     expect(calculateBonusTickets(19)).toBe(2);
-    expect(calculateBonusTickets(49)).toBe(3);
+    expect(calculateBonusTickets(24)).toBe(3);
+    expect(calculateBonusTickets(49)).toBe(4);
+    expect(calculateBonusTickets(99)).toBe(9);
   });
 
-  it('caps at the top tier above 50 (incl. the 100-ticket max)', () => {
-    expect(calculateBonusTickets(51)).toBe(5);
-    expect(calculateBonusTickets(100)).toBe(5);
+  it('caps at the top tier above 100', () => {
+    expect(calculateBonusTickets(150)).toBe(20);
   });
 
   it('agrees with the shared (UI) implementation at every boundary', () => {
-    for (const q of [0, 1, 9, 10, 14, 15, 19, 20, 49, 50, 51, 100]) {
+    for (const q of [0, 1, 9, 10, 14, 15, 19, 20, 24, 25, 49, 50, 99, 100, 150]) {
       expect(calculateBonusTickets(q)).toBe(sharedBonus(q));
     }
   });

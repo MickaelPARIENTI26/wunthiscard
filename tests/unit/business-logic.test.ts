@@ -21,24 +21,37 @@ describe('Bonus Ticket Calculation', () => {
     expect(calculateBonusTickets(20, DEFAULT_BONUS_TIERS)).toBe(3);
   });
 
-  it('should return 5 bonus for 50 tickets', () => {
-    expect(calculateBonusTickets(50, DEFAULT_BONUS_TIERS)).toBe(5);
+  it('should return 9 bonus for 50 tickets', () => {
+    expect(calculateBonusTickets(50, DEFAULT_BONUS_TIERS)).toBe(9);
   });
 
   it('should return 0 bonus for 9 tickets', () => {
     expect(calculateBonusTickets(9, DEFAULT_BONUS_TIERS)).toBe(0);
   });
 
-  it('should return 3 bonus for 25 tickets (uses tier below)', () => {
-    expect(calculateBonusTickets(25, DEFAULT_BONUS_TIERS)).toBe(3);
+  it('should return 4 bonus for 25 tickets (own tier, not the ≥20 tier)', () => {
+    expect(calculateBonusTickets(25, DEFAULT_BONUS_TIERS)).toBe(4);
   });
 
   it('should return 0 bonus for 0 tickets', () => {
     expect(calculateBonusTickets(0, DEFAULT_BONUS_TIERS)).toBe(0);
   });
 
-  it('should return 5 bonus for 100 tickets', () => {
-    expect(calculateBonusTickets(100, DEFAULT_BONUS_TIERS)).toBe(5);
+  it('should return 20 bonus for 100 tickets', () => {
+    expect(calculateBonusTickets(100, DEFAULT_BONUS_TIERS)).toBe(20);
+  });
+
+  it('discount % is coherent across the six UI bundle sizes: never decreases, and strictly increases once a bundle has any bonus', () => {
+    const pct = (qty: number) => {
+      const bonus = calculateBonusTickets(qty, DEFAULT_BONUS_TIERS);
+      return bonus / (qty + bonus);
+    };
+    const bundles = [1, 5, 10, 25, 50, 100];
+    const pcts = bundles.map(pct);
+    for (let i = 1; i < pcts.length; i++) {
+      expect(pcts[i]).toBeGreaterThanOrEqual(pcts[i - 1]);
+      if (pcts[i - 1] > 0) expect(pcts[i]).toBeGreaterThan(pcts[i - 1]);
+    }
   });
 });
 
