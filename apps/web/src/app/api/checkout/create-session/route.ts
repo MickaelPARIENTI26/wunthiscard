@@ -315,6 +315,12 @@ export async function POST(request: NextRequest) {
     try {
       checkoutSession = await stripe.checkout.sessions.create({
       mode: 'payment',
+      // Force GBP-only display — without this, Stripe's Adaptive Pricing (a
+      // Dashboard-level default) shows an estimated conversion to the buyer's
+      // local currency alongside the real GBP charge, which is confusing for
+      // a fixed-price ticket (the actual charge is always exactly this GBP
+      // amount, never the converted estimate).
+      adaptive_pricing: { enabled: false },
       customer_email: user.email,
       client_reference_id: order.id,
       metadata: {
