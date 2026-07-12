@@ -4,6 +4,7 @@ import Image from 'next/image';
 const socialButtons = [
   { href: 'https://www.instagram.com/winucards/', label: 'Instagram' },
   { href: 'https://www.tiktok.com/@winucards', label: 'TikTok' },
+  { href: 'https://www.facebook.com/winucards', label: 'Facebook' },
 ];
 
 const platformLinks = [
