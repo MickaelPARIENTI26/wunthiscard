@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signOut } from 'next-auth/react';
 import { Lock, Loader2, Check, X } from 'lucide-react';
+import { PasswordInput } from '@/components/ui/password-input';
 import { changePassword } from './actions';
 
 const passwordChangeSchema = z
@@ -269,9 +270,8 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
               <label className="field-label" htmlFor="currentPassword">
                 Current password
               </label>
-              <input
+              <PasswordInput
                 id="currentPassword"
-                type="password"
                 className={`input ${errors.currentPassword ? 'input-error' : ''}`}
                 {...register('currentPassword')}
               />
@@ -285,9 +285,8 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
             <label className="field-label" htmlFor="newPassword">
               New password
             </label>
-            <input
+            <PasswordInput
               id="newPassword"
-              type="password"
               className={`input ${errors.newPassword ? 'input-error' : ''}`}
               {...register('newPassword')}
             />
@@ -299,9 +298,8 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
             <label className="field-label" htmlFor="confirmPassword">
               Confirm new password
             </label>
-            <input
+            <PasswordInput
               id="confirmPassword"
-              type="password"
               className={`input ${errors.confirmPassword ? 'input-error' : ''}`}
               {...register('confirmPassword')}
             />

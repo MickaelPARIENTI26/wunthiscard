@@ -11,6 +11,7 @@ import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { calculateBonusTickets } from '@winucard/shared/utils';
 import { COUNTRIES, countryFlagEmoji } from '@winucard/shared/constants';
+import { PasswordInput } from '@/components/ui/password-input';
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
@@ -448,9 +449,8 @@ export function GuestCheckoutForm({
 
         <div className="field">
           <label className="field-label" htmlFor="password">Password</label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             className={`input ${errors.password ? 'input-error' : ''}`}
             placeholder="Create a password"
             autoComplete="new-password"
@@ -462,9 +462,8 @@ export function GuestCheckoutForm({
 
         <div className="field">
           <label className="field-label" htmlFor="confirmPassword">Confirm password</label>
-          <input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             className={`input ${errors.confirmPassword ? 'input-error' : ''}`}
             placeholder="Confirm password"
             autoComplete="new-password"

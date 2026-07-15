@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, getSession } from 'next-auth/react';
 import { Loader2 } from 'lucide-react';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import { loginSchema, type LoginInput } from '@winucard/shared/validators';
 import { checkLoginRateLimit, logLoginSuccess, logLoginFailure, verifyLoginCaptcha } from './actions';
@@ -274,9 +275,8 @@ export function LoginForm() {
           {(() => {
             const { onBlur: registerOnBlur, ...passwordRegister } = register('password');
             return (
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="Enter your password"
                 autoComplete="current-password"
                 disabled={isLoading || isGoogleLoading}

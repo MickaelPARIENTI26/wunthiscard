@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, ArrowLeft, CheckCircle, XCircle, Check, X } from 'lucide-react';
+import { Loader2, ArrowLeft, CheckCircle, XCircle, Check, X, Eye, EyeOff } from 'lucide-react';
 import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
@@ -74,6 +74,8 @@ export function ResetPasswordContent() {
   const [isTokenValid, setIsTokenValid] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -217,14 +219,30 @@ export function ResetPasswordContent() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">New password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Create a secure password"
-                autoComplete="new-password"
-                disabled={isLoading}
-                {...register('password')}
-              />
+              <div style={{ position: 'relative' }}>
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Create a secure password"
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                  style={{ paddingRight: 42 }}
+                  {...register('password')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                  style={{
+                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', padding: '4px', margin: 0,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--ink-faint)',
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
 
               {/* Password Strength Indicator */}
               {password && (
@@ -273,14 +291,30 @@ export function ResetPasswordContent() {
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="Confirm your new password"
-                autoComplete="new-password"
-                disabled={isLoading}
-                {...register('confirmPassword')}
-              />
+              <div style={{ position: 'relative' }}>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Confirm your new password"
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                  style={{ paddingRight: 42 }}
+                  {...register('confirmPassword')}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((v) => !v)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  tabIndex={-1}
+                  style={{
+                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'none', border: 'none', padding: '4px', margin: 0,
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', color: 'var(--ink-faint)',
+                  }}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {errors.confirmPassword && (
                 <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
               )}

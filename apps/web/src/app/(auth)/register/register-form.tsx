@@ -9,6 +9,7 @@ import { signIn } from 'next-auth/react';
 import { Loader2, Check, X, UserPlus } from 'lucide-react';
 import { z } from 'zod';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
+import { PasswordInput } from '@/components/ui/password-input';
 
 import { registerUser } from './actions';
 
@@ -358,9 +359,8 @@ export function RegisterForm() {
           {(() => {
             const { onBlur: registerOnBlur, ...rest } = register('password');
             return (
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 placeholder="Create a secure password"
                 autoComplete="new-password"
                 disabled={isLoading || isGoogleLoading}
@@ -430,9 +430,8 @@ export function RegisterForm() {
           {(() => {
             const { onBlur: registerOnBlur, ...rest } = register('confirmPassword');
             return (
-              <input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 placeholder="Confirm your password"
                 autoComplete="new-password"
                 disabled={isLoading || isGoogleLoading}
