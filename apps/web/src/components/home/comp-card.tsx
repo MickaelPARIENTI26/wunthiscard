@@ -37,15 +37,24 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
   const isOpen = status === 'ACTIVE' && !pendingDraw;
   const gamePill = gameColorMap[category] ?? { bg: 'var(--warn)', color: 'var(--ink)' };
 
-  // Status pill: correctly distinguish Open / Sold Out / Drawing soon / Coming Soon
-  // (previously everything non-ACTIVE was mislabelled "Coming Soon").
+  // Unavailable states get a red diagonal banner stamped across the card image so
+  // it's obvious at a glance you can't enter: "SOLD OUT" (sold out) or "FINISHED"
+  // (drawn / cancelled / mid-draw). Everything still enterable or upcoming keeps the
+  // small corner status pill.
+  const banner =
+    status === 'SOLD_OUT'
+      ? 'SOLD OUT'
+      : status === 'COMPLETED' || status === 'CANCELLED' || status === 'DRAWING'
+        ? 'FINISHED'
+        : null;
+
+  // Status pill (only when there's no diagonal banner): Open / Drawing soon /
+  // Coming Soon.
   const statusPill = pendingDraw
     ? { label: 'Drawing soon', bg: 'var(--warn)', color: 'var(--ink)' }
     : isOpen
       ? { label: 'Open', bg: 'var(--accent)', color: 'var(--ink)' }
-      : status === 'SOLD_OUT'
-        ? { label: 'Sold Out', bg: 'var(--pop)', color: '#fff' }
-        : { label: 'Coming Soon', bg: 'var(--pop)', color: '#fff' };
+      : { label: 'Coming Soon', bg: 'var(--pop)', color: '#fff' };
 
   return (
     <Link
@@ -76,21 +85,26 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
           {formatCategory(category)}
         </span>
 
-        {/* Status pill */}
-        <span
-          className="absolute top-3.5 right-3.5 z-[2]"
-          style={{
-            padding: '5px 10px', border: '1.5px solid var(--ink)', borderRadius: '6px',
-            fontSize: '11px', fontWeight: 700,
-            background: statusPill.bg,
-            color: statusPill.color,
-          }}
-        >
-          ● {statusPill.label}
-        </span>
+        {/* Status pill — hidden when a diagonal banner already conveys the state */}
+        {!banner && (
+          <span
+            className="absolute top-3.5 right-3.5 z-[2]"
+            style={{
+              padding: '5px 10px', border: '1.5px solid var(--ink)', borderRadius: '6px',
+              fontSize: '11px', fontWeight: 700,
+              background: statusPill.bg,
+              color: statusPill.color,
+            }}
+          >
+            ● {statusPill.label}
+          </span>
+        )}
 
-        {/* Card image */}
-        <div className="relative transition-transform duration-400 group-hover:-translate-y-1.5 group-hover:rotate-[-2deg] group-hover:scale-[1.02]" style={{ maxHeight: '88%', maxWidth: '62%', width: '100%', height: '100%' }}>
+        {/* Card image (dimmed when unavailable) */}
+        <div
+          className="relative transition-transform duration-400 group-hover:-translate-y-1.5 group-hover:rotate-[-2deg] group-hover:scale-[1.02]"
+          style={{ maxHeight: '88%', maxWidth: '62%', width: '100%', height: '100%', opacity: banner ? 0.45 : 1 }}
+        >
           <Image
             src={mainImageUrl}
             alt={title}
@@ -99,6 +113,13 @@ export function CompCard({ slug, title, mainImageUrl, category, prizeValue, tick
             className="object-contain drop-shadow-[0_14px_30px_rgba(0,0,0,0.2)]"
           />
         </div>
+
+        {/* Red diagonal "SOLD OUT" / "FINISHED" banner across the whole card */}
+        {banner && (
+          <div className="comp-card-banner" aria-hidden="false">
+            <span className="comp-card-banner-text">{banner}</span>
+          </div>
+        )}
       </div>
 
       {/* Body */}

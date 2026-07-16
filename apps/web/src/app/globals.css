@@ -1297,6 +1297,34 @@ input:focus, textarea:focus, select:focus,
   .qty-grid, .qty-grid-6 { grid-template-columns: 1fr 1fr; }
 }
 
+/* Red diagonal SOLD OUT / FINISHED banner stamped across a competition card's image */
+.comp-card-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+.comp-card-banner-text {
+  display: block;
+  width: 150%;
+  text-align: center;
+  transform: rotate(-14deg);
+  background: var(--hot);
+  color: #fff;
+  border-top: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
+  padding: 9px 0;
+  font-family: var(--display);
+  font-size: clamp(18px, 3vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 /* === COMPETITION GRID === */
 .comp-grid {
   display: grid;

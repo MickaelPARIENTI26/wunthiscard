@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/db';
+import { FINISHED_VISIBLE_DAYS, isFinished, isWithinFinishedWindow } from '@/lib/competition-visibility';
 import { CompetitionsContent } from './competitions-content';
 import { CompetitionsLoading } from './competitions-loading';
 
@@ -36,49 +37,29 @@ const CATEGORY_FILTER_MAP: Record<string, string[]> = {
   other: ['YUGIOH', 'MTG', 'OTHER'],
 };
 
-// A competition whose draw date has passed (or that sold out) but hasn't been drawn
-// yet stays visible in a "Drawing soon" state for this grace window, then auto-hides
-// (the draw should have happened by then; published results live on /winners).
-const DRAW_PENDING_WINDOW_HOURS = 48;
+// Finished competitions (sold out / drawn) keep showing — with their red
+// "SOLD OUT" / "FINISHED" banner — for FINISHED_VISIBLE_DAYS days, then auto-hide
+// (published results live on /winners).
+const FINISHED_VISIBLE_MS = FINISHED_VISIBLE_DAYS * 24 * 60 * 60 * 1000;
 
 const STATUS_FILTER_MAP: Record<string, string[]> = {
-  all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING', 'DRAWING'],
+  all: ['ACTIVE', 'SOLD_OUT', 'UPCOMING', 'DRAWING', 'COMPLETED'],
   live: ['ACTIVE'],
   'ending-soon': ['ACTIVE', 'SOLD_OUT'],
   'coming-soon': ['UPCOMING'],
 };
 
-// Status priority for sorting: ACTIVE first, then SOLD_OUT, then UPCOMING, DRAWING last
+// Status priority for sorting: ACTIVE first, then SOLD_OUT, UPCOMING, DRAWING,
+// COMPLETED last.
 const STATUS_PRIORITY: Record<string, number> = {
   ACTIVE: 1,
   SOLD_OUT: 2,
   UPCOMING: 3,
   DRAWING: 4,
+  COMPLETED: 5,
 };
 
 type SortOption = 'end-date' | 'price-low' | 'price-high' | 'popularity';
-
-interface CompetitionWithCount {
-  id: string;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  mainImageUrl: string;
-  category: string;
-  status: string;
-  prizeValue: { toNumber: () => number } | number;
-  ticketPrice: { toNumber: () => number } | number;
-  totalTickets: number;
-  drawDate: Date;
-  drawType: string;
-  prizes: unknown;
-  isFree: boolean;
-  isMystery: boolean;
-  isRevealed: boolean;
-  _count: {
-    tickets: number;
-  };
-}
 
 async function getCompetitions(searchParams: SearchParams) {
   const category = searchParams.category ?? 'all';
@@ -102,51 +83,28 @@ async function getCompetitions(searchParams: SearchParams) {
     };
   }
 
-  // Keep competitions visible from "open" through a grace window AFTER the draw date,
-  // so a just-closed competition shows as "Drawing soon" instead of vanishing, then
-  // auto-hides once the window passes (the draw should be done by then).
+  // DB pre-filter — a deliberately loose SUPERSET of what will actually show. The
+  // precise per-competition auto-hide runs in memory below via the shared helper, so
+  // this query and the unit-tested rule stay a single source of truth. A row survives
+  // the pre-filter if its draw is still ahead, or it finished (by EITHER its scheduled
+  // or actual draw time) within the window.
   const now = new Date();
-  const pendingCutoff = new Date(now.getTime() - DRAW_PENDING_WINDOW_HOURS * 60 * 60 * 1000);
-  where.drawDate = { gt: pendingCutoff };
-
-  // For "ending soon", filter by draw date within next 48 hours
+  const finishedCutoff = new Date(now.getTime() - FINISHED_VISIBLE_MS);
   if (status === 'ending-soon') {
     const in48Hours = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-    where.drawDate = {
-      lte: in48Hours,
-      gte: now,
-    };
+    where.drawDate = { lte: in48Hours, gte: now };
+  } else {
+    where.OR = [
+      { drawDate: { gt: finishedCutoff } },
+      { actualDrawDate: { gt: finishedCutoff } },
+    ];
   }
 
-  // Build orderBy clause
-  let orderBy: Record<string, string>[] = [];
-  switch (sort) {
-    case 'end-date':
-      orderBy = [{ drawDate: 'asc' }];
-      break;
-    case 'price-low':
-      orderBy = [{ ticketPrice: 'asc' }];
-      break;
-    case 'price-high':
-      orderBy = [{ ticketPrice: 'desc' }];
-      break;
-    case 'popularity':
-      orderBy = [{ createdAt: 'desc' }];
-      break;
-    default:
-      orderBy = [{ drawDate: 'asc' }];
-  }
-
-  // Get total count
-  const totalCount = await prisma.competition.count({ where });
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
-  // Get competitions with sold ticket counts
-  const competitions = await prisma.competition.findMany({
+  // Fetch ALL candidates (no DB pagination): the auto-hide filter, the status-priority
+  // ordering, and pagination must all agree, so they're computed together in memory.
+  // At this catalogue size (a page or two of live/recent competitions) that's cheap.
+  const rows = await prisma.competition.findMany({
     where,
-    orderBy,
-    skip: (page - 1) * ITEMS_PER_PAGE,
-    take: ITEMS_PER_PAGE,
     select: {
       id: true,
       slug: true,
@@ -159,71 +117,68 @@ async function getCompetitions(searchParams: SearchParams) {
       ticketPrice: true,
       totalTickets: true,
       drawDate: true,
+      actualDrawDate: true,
       isFree: true,
       isMystery: true,
       isRevealed: true,
       drawType: true,
       prizes: true,
       _count: {
-        select: {
-          tickets: {
-            where: {
-              status: {
-                in: ['SOLD', 'FREE_ENTRY'],
-              },
-            },
-          },
-        },
+        select: { tickets: { where: { status: { in: ['SOLD', 'FREE_ENTRY'] } } } },
       },
     },
   });
 
-  // Sort competitions by status priority — closed-but-not-drawn ("Drawing soon") last.
-  const sortedCompetitions = [...competitions].sort((a, b) => {
-    const statusA = new Date(a.drawDate) <= now ? 90 : (STATUS_PRIORITY[a.status] ?? 99);
-    const statusB = new Date(b.drawDate) <= now ? 90 : (STATUS_PRIORITY[b.status] ?? 99);
-    if (statusA !== statusB) {
-      return statusA - statusB;
-    }
+  const toNum = (v: { toNumber: () => number } | number) =>
+    typeof v === 'object' && 'toNumber' in v ? v.toNumber() : Number(v);
 
+  // Precise auto-hide: a finished competition drops off FINISHED_VISIBLE_DAYS after it
+  // ACTUALLY finished (actualDrawDate for a drawn comp), not its scheduled draw date.
+  const visible = rows.filter((c) =>
+    isWithinFinishedWindow({ status: c.status, drawDate: c.drawDate, actualDrawDate: c.actualDrawDate }, now)
+  );
+
+  // Order: still-enterable / upcoming first (by status priority), finished last; then
+  // by the chosen sort within each group. Done before pagination so page 1 is the
+  // live competitions, not the finished ones.
+  const rank = (c: (typeof visible)[number]) =>
+    isFinished({ status: c.status, drawDate: c.drawDate, actualDrawDate: c.actualDrawDate }, now)
+      ? 100
+      : (STATUS_PRIORITY[c.status] ?? 99);
+  visible.sort((a, b) => {
+    const ra = rank(a);
+    const rb = rank(b);
+    if (ra !== rb) return ra - rb;
     switch (sort) {
-      case 'price-low': {
-        const priceA = typeof a.ticketPrice === 'object' && 'toNumber' in a.ticketPrice
-          ? a.ticketPrice.toNumber()
-          : Number(a.ticketPrice);
-        const priceB = typeof b.ticketPrice === 'object' && 'toNumber' in b.ticketPrice
-          ? b.ticketPrice.toNumber()
-          : Number(b.ticketPrice);
-        return priceA - priceB;
-      }
-      case 'price-high': {
-        const priceA = typeof a.ticketPrice === 'object' && 'toNumber' in a.ticketPrice
-          ? a.ticketPrice.toNumber()
-          : Number(a.ticketPrice);
-        const priceB = typeof b.ticketPrice === 'object' && 'toNumber' in b.ticketPrice
-          ? b.ticketPrice.toNumber()
-          : Number(b.ticketPrice);
-        return priceB - priceA;
-      }
+      case 'price-low':
+        return toNum(a.ticketPrice) - toNum(b.ticketPrice);
+      case 'price-high':
+        return toNum(b.ticketPrice) - toNum(a.ticketPrice);
       case 'popularity':
         return b._count.tickets - a._count.tickets;
       case 'end-date':
       default:
         return new Date(a.drawDate).getTime() - new Date(b.drawDate).getTime();
     }
-  }) as unknown as CompetitionWithCount[];
+  });
+
+  const totalCount = visible.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
+  const pageItems = visible.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return {
-    competitions: sortedCompetitions.map((comp) => ({
-      ...comp,
-      prizeValue:
-        typeof comp.prizeValue === 'object' && 'toNumber' in comp.prizeValue
-          ? comp.prizeValue.toNumber()
-          : Number(comp.prizeValue),
-      ticketPrice:
-        typeof comp.ticketPrice === 'object' && 'toNumber' in comp.ticketPrice
-          ? comp.ticketPrice.toNumber()
-          : Number(comp.ticketPrice),
+    competitions: pageItems.map((comp) => ({
+      id: comp.id,
+      slug: comp.slug,
+      title: comp.title,
+      subtitle: comp.subtitle,
+      mainImageUrl: comp.mainImageUrl,
+      category: comp.category,
+      status: comp.status,
+      prizeValue: toNum(comp.prizeValue),
+      ticketPrice: toNum(comp.ticketPrice),
+      totalTickets: comp.totalTickets,
+      drawDate: comp.drawDate,
       soldTickets: comp._count.tickets,
       isFree: comp.isFree,
       isMystery: comp.isMystery,

@@ -228,6 +228,22 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
   // Entry is only possible on an ACTIVE competition whose draw date is still in the future.
   const isOpenForEntry = isActive && !drawPending;
 
+  // State label shared by the status chip and the hero marquee, so a finished /
+  // sold-out / upcoming competition never falsely reads "LIVE NOW".
+  const stateLabel = drawPending
+    ? 'DRAWING SOON'
+    : isOpenForEntry
+      ? 'LIVE NOW'
+      : isUpcoming
+        ? 'COMING SOON'
+        : isSoldOut
+          ? 'SOLD OUT'
+          : isCompleted
+            ? 'FINISHED'
+            : isCancelled
+              ? 'CANCELLED'
+              : 'CLOSED';
+
   const [userTicketCount, availableTicketCount, referralFreeTickets] = isOpenForEntry
     ? await Promise.all([
         getUserTicketCount(competition.id, session?.user?.id),
@@ -301,7 +317,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           <div className="comp-hero-visual">
             <div className={`comp-hero-frame game-${gameClass}`}>
               <div className="comp-hero-marquee">
-                ★ LIVE NOW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE NOW · {CATEGORY_LABELS[category].toUpperCase()} · LIVE NOW ★
+                ★ {stateLabel} · {CATEGORY_LABELS[category].toUpperCase()} · {stateLabel} · {CATEGORY_LABELS[category].toUpperCase()} · {stateLabel} ★
               </div>
               <div className="comp-hero-imgwrap">
                 {competition.mainImageUrl && (
@@ -352,7 +368,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               {isActive && !drawPending && (
                 <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
               )}
-              {drawPending ? 'DRAWING SOON' : isActive ? 'LIVE NOW' : isUpcoming ? 'COMING SOON' : isSoldOut ? 'SOLD OUT' : isCompleted ? 'COMPLETED' : 'CANCELLED'}
+              {stateLabel}
               {competition.soldTickets > 0 ? ` · ${competition.soldTickets.toLocaleString('en-GB')} entered` : ''}
             </div>
 
