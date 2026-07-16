@@ -59,7 +59,7 @@ export function ContactForm() {
       console.error('Contact submit failed:', err);
       setState({
         success: false,
-        message: 'Network error — please try again, or email support@winucards.com directly.',
+        message: 'Network error — please try again, or email contact@lucky-tcg.com directly.',
       });
     } finally {
       // The token was consumed by the server — get a fresh one for any retry.

@@ -6,11 +6,11 @@ import { HomeCTABand } from '@/components/home/home-cta-band';
 export const metadata: Metadata = {
   title: 'How It Works',
   description:
-    'Learn how WinUCard prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
+    'Learn how Lucky TCG prize competitions work. Browse competitions, select tickets, answer a skill question, and win amazing collectible cards and memorabilia.',
   openGraph: {
-    title: 'How It Works | WinUCard',
+    title: 'How It Works | Lucky TCG',
     description:
-      'Learn how WinUCard prize competitions work. Browse, answer, enter, win.',
+      'Learn how Lucky TCG prize competitions work. Browse, answer, enter, win.',
   },
 };
 

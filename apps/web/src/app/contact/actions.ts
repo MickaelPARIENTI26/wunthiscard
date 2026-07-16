@@ -9,7 +9,7 @@ import { sendEmail } from '@/lib/email';
 import { getClientIp } from '@/lib/get-client-ip';
 
 // Where contact-form notifications are delivered (override via env if needed).
-const CONTACT_INBOX = process.env.CONTACT_EMAIL ?? 'support@winucards.com';
+const CONTACT_INBOX = process.env.CONTACT_EMAIL ?? 'contact@lucky-tcg.com';
 
 const contactFormSchema = z.object({
   name: z

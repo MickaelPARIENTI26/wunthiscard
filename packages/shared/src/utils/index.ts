@@ -62,7 +62,7 @@ export function calculateTotalPrice(ticketCount: number, ticketPrice: number): n
 /**
  * Generate a unique order number
  */
-export function generateOrderNumber(prefix = 'WTC'): string {
+export function generateOrderNumber(prefix = 'LTC'): string {
   const date = new Date();
   const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
   const random = Math.random().toString(36).substring(2, 6).toUpperCase();

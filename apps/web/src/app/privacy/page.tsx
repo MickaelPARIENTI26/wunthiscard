@@ -7,7 +7,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
-    'Privacy policy for WinUCard. Learn how we collect, use, and protect your personal data in compliance with UK GDPR.',
+    'Privacy policy for Lucky TCG. Learn how we collect, use, and protect your personal data in compliance with UK GDPR.',
 };
 
 interface TableOfContentsItem {
@@ -68,7 +68,7 @@ function PlaceholderPrivacyContent() {
   return (
     <>
       <p className="lead">
-        This Privacy Policy explains how YD PARTNERS LTD (trading as WinUCard) (&quot;we&quot;,
+        This Privacy Policy explains how YD PARTNERS LTD (trading as Lucky TCG) (&quot;we&quot;,
         &quot;us&quot;, or &quot;our&quot;) collects, uses, shares, and protects
         your personal data when you use our website and services. We are
         committed to protecting your privacy in compliance with the UK General
@@ -78,7 +78,7 @@ function PlaceholderPrivacyContent() {
       <section id="introduction">
         <h2>1. Introduction</h2>
         <p>
-          WinUCard operates a prize competition platform for collectible
+          Lucky TCG operates a prize competition platform for collectible
           cards and memorabilia. This policy applies to all personal data we
           collect through our website, mobile applications, and related
           services.
@@ -92,15 +92,15 @@ function PlaceholderPrivacyContent() {
 
       <section id="data-controller">
         <h2>2. Data Controller</h2>
-        <p>YD PARTNERS LTD (trading as WinUCard) is the data controller for your personal data.</p>
+        <p>YD PARTNERS LTD (trading as Lucky TCG) is the data controller for your personal data.</p>
         <ul>
-          <li>Company Name: YD PARTNERS LTD (trading as WinUCard)</li>
+          <li>Company Name: YD PARTNERS LTD (trading as Lucky TCG)</li>
           <li>Company Number: 16766570</li>
           <li>Registered in: England &amp; Wales</li>
           <li>
             Email:{' '}
-            <a href="mailto:support@winucards.com" className="text-primary">
-              support@winucards.com
+            <a href="mailto:contact@lucky-tcg.com" className="text-primary">
+              contact@lucky-tcg.com
             </a>
           </li>
           <li>Address: 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
@@ -311,8 +311,8 @@ function PlaceholderPrivacyContent() {
         </ul>
         <p>
           To exercise your rights, please contact us at{' '}
-          <a href="mailto:support@winucards.com" className="text-primary">
-            support@winucards.com
+          <a href="mailto:contact@lucky-tcg.com" className="text-primary">
+            contact@lucky-tcg.com
           </a>
           . We will respond within one month.
         </p>
@@ -408,11 +408,11 @@ function PlaceholderPrivacyContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:support@winucards.com" className="text-primary">
-              support@winucards.com
+            <a href="mailto:contact@lucky-tcg.com" className="text-primary">
+              contact@lucky-tcg.com
             </a>
           </li>
-          <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
+          <li>Post: YD PARTNERS LTD (Lucky TCG), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
         </ul>
       </section>
     </>

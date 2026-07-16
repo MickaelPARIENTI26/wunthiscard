@@ -67,15 +67,15 @@ async function main() {
         data: {
           heroTitle: 'Win Amazing Collectibles',
           heroCta: 'Browse Competitions',
-          companyName: 'YD PARTNERS LTD (trading as WinUCard)',
-          companyEmail: 'support@winucards.com',
+          companyName: 'YD PARTNERS LTD (trading as Lucky TCG)',
+          companyEmail: 'contact@lucky-tcg.com',
           bonusTiers: [
             { ticketsBought: 10, bonusTickets: 1 },
             { ticketsBought: 15, bonusTickets: 2 },
             { ticketsBought: 20, bonusTickets: 3 },
             { ticketsBought: 50, bonusTickets: 5 },
           ],
-          freeEntryAddress: 'WinUCard Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
+          freeEntryAddress: 'Lucky TCG Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
         },
       },
     });
@@ -92,7 +92,7 @@ async function main() {
     await prisma.faqItem.createMany({
       data: [
         // Getting started
-        { category: 'Getting Started', sortOrder: 1, question: 'How does WinUCard work?', answer: 'WinUCard is a skill-based prize competition platform for collectible cards. Browse our live competitions, pick how many tickets you want, answer a short skill question, and complete your payment. When the competition closes, an independent live random draw (via RandomDraws.com) selects the winner — who gets the card delivered to their door.' },
+        { category: 'Getting Started', sortOrder: 1, question: 'How does Lucky TCG work?', answer: 'Lucky TCG is a skill-based prize competition platform for collectible cards. Browse our live competitions, pick how many tickets you want, answer a short skill question, and complete your payment. When the competition closes, an independent live random draw (via RandomDraws.com) selects the winner — who gets the card delivered to their door.' },
         { category: 'Getting Started', sortOrder: 2, question: 'How do I create an account?', answer: 'Click "Sign Up" in the top-right corner. You can register with your email address or sign in with Google. You\'ll need to verify your email before you can enter a competition.' },
         { category: 'Getting Started', sortOrder: 3, question: 'I forgot my password. How can I reset it?', answer: 'Click "Forgot Password" on the login page and enter your email address. We\'ll send you a link to choose a new password.' },
 
@@ -118,10 +118,10 @@ async function main() {
         { category: 'Winners & Delivery', sortOrder: 3, question: 'Are the cards authenticated?', answer: 'Yes. Prizes are professionally graded and authenticated (for example PSA, Beckett or equivalent) where applicable, so you know exactly what you\'re winning.' },
 
         // Legal & eligibility
-        { category: 'Legal & Eligibility', sortOrder: 1, question: 'Is this a lottery?', answer: 'No. WinUCard is a skill-based prize competition, fully compliant with the UK Gambling Act 2005. Every entry requires correctly answering a skill question, and a free entry route is always available.' },
+        { category: 'Legal & Eligibility', sortOrder: 1, question: 'Is this a lottery?', answer: 'No. Lucky TCG is a skill-based prize competition, fully compliant with the UK Gambling Act 2005. Every entry requires correctly answering a skill question, and a free entry route is always available.' },
         { category: 'Legal & Eligibility', sortOrder: 2, question: 'What is the skill question?', answer: 'Each competition includes a fair multiple-choice trivia question about the card you\'re entering for. A correct answer validates your entry — this is what makes it a skill competition and not a lottery.' },
-        { category: 'Legal & Eligibility', sortOrder: 3, question: 'Who can participate?', answer: 'You must be 18 years or older to enter any WinUCard competition. Age verification may be required for larger prizes.' },
-        { category: 'Legal & Eligibility', sortOrder: 4, question: 'Who runs WinUCard?', answer: 'WinUCard is a trading name of YD PARTNERS LTD, a company registered in England & Wales (company number 16766570), with registered office at 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.' },
+        { category: 'Legal & Eligibility', sortOrder: 3, question: 'Who can participate?', answer: 'You must be 18 years or older to enter any Lucky TCG competition. Age verification may be required for larger prizes.' },
+        { category: 'Legal & Eligibility', sortOrder: 4, question: 'Who runs Lucky TCG?', answer: 'Lucky TCG is a trading name of YD PARTNERS LTD, a company registered in England & Wales (company number 16766570), with registered office at 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ.' },
       ],
     });
     console.log('✅ FAQ starter items seeded (22)');

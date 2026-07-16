@@ -64,8 +64,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             <div className="mt-8">
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 If this problem continues, please contact us at{' '}
-                <a href="mailto:support@winucards.com" className="text-blue-600 hover:underline">
-                  support@winucards.com
+                <a href="mailto:contact@lucky-tcg.com" className="text-blue-600 hover:underline">
+                  contact@lucky-tcg.com
                 </a>
               </p>
             </div>

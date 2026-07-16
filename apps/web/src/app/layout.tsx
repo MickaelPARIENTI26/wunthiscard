@@ -39,10 +39,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://winucards.com'),
+  metadataBase: new URL('https://lucky-tcg.com'),
   title: {
-    default: 'WinUCard - Win Collectible Cards & Memorabilia',
-    template: '%s | WinUCard',
+    default: 'Lucky TCG - Win Collectible Cards & Memorabilia',
+    template: '%s | Lucky TCG',
   },
   description:
     'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     'signed memorabilia',
     'skill competition',
   ],
-  authors: [{ name: 'WinUCard' }],
-  creator: 'WinUCard',
-  publisher: 'WinUCard',
+  authors: [{ name: 'Lucky TCG' }],
+  creator: 'Lucky TCG',
+  publisher: 'Lucky TCG',
   formatDetection: {
     email: false,
     address: false,
@@ -69,9 +69,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://winucards.com',
-    siteName: 'WinUCard',
-    title: 'WinUCard - Win Collectible Cards & Memorabilia',
+    url: 'https://lucky-tcg.com',
+    siteName: 'Lucky TCG',
+    title: 'Lucky TCG - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
     // No explicit `images` here: Next.js automatically serves the dynamic
@@ -79,11 +79,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'WinUCard - Win Collectible Cards & Memorabilia',
+    title: 'Lucky TCG - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
-    site: '@winucard',
-    creator: '@winucard',
+    site: '@luckytcg',
+    creator: '@luckytcg',
     // No explicit `images` here: Next.js automatically serves the dynamic
     // twitter-image.tsx route. Setting images would suppress that fallback.
   },

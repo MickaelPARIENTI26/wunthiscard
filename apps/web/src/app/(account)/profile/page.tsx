@@ -5,7 +5,7 @@ import { ProfileForm } from './profile-form';
 import { AddressSection } from './address-section';
 
 export const metadata = {
-  title: 'Profile | WinUCard',
+  title: 'Profile | Lucky TCG',
   description: 'Manage your personal information and profile settings',
 };
 

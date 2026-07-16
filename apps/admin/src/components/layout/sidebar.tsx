@@ -83,7 +83,7 @@ export function Sidebar() {
                 backgroundClip: 'text',
               }}
             >
-              WinUCard
+              Lucky TCG
             </span>
           </Link>
         )}

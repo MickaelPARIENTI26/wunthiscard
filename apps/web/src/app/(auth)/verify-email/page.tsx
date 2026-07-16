@@ -6,7 +6,7 @@ import { VerifyEmailContent } from './verify-email-content';
 
 export const metadata: Metadata = {
   title: 'Verify Email',
-  description: 'Verify your WinUCard email address',
+  description: 'Verify your Lucky TCG email address',
 };
 
 function VerifyEmailLoading() {

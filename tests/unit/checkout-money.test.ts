@@ -68,8 +68,8 @@ describe('Money path · lib/stripe calculateBonusTickets', () => {
 });
 
 describe('Money path · lib/stripe generateOrderNumber', () => {
-  it('matches the WTC-YYYYMMDD-XXXXXXXX format', () => {
-    expect(generateOrderNumber()).toMatch(/^WTC-\d{8}-[0-9A-F]{8}$/);
+  it('matches the LTC-YYYYMMDD-XXXXXXXX format', () => {
+    expect(generateOrderNumber()).toMatch(/^LTC-\d{8}-[0-9A-F]{8}$/);
   });
 
   it('produces unique values across many calls', () => {

@@ -1,14 +1,14 @@
 import { MetadataRoute } from 'next';
 
 /**
- * Web App Manifest for WinUCard
+ * Web App Manifest for Lucky TCG
  * Enables PWA features and defines app appearance
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/manifest
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'WinUCard - Win Collectible Cards & Memorabilia',
-    short_name: 'WinUCard',
+    name: 'Lucky TCG - Win Collectible Cards & Memorabilia',
+    short_name: 'Lucky TCG',
     description:
       'Enter to win graded collectible cards (Pokemon, One Piece, sports) and memorabilia. UK-based prize competitions with a free entry route.',
     start_url: '/',

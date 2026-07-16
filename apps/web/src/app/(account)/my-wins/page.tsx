@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 import { Trophy, Package, Truck, CheckCircle, ExternalLink } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Wins | WinUCard',
+  title: 'My Wins | Lucky TCG',
   description: 'View all your competition wins and delivery status',
 };
 

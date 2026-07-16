@@ -10,10 +10,10 @@ import { generateFaqSchema } from '@/lib/structured-data';
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
   description:
-    'Find answers to common questions about WinUCard prize competitions, tickets, payments, draws, delivery, and more.',
+    'Find answers to common questions about Lucky TCG prize competitions, tickets, payments, draws, delivery, and more.',
   openGraph: {
-    title: 'FAQ | WinUCard',
-    description: 'Find answers to common questions about WinUCard prize competitions.',
+    title: 'FAQ | Lucky TCG',
+    description: 'Find answers to common questions about Lucky TCG prize competitions.',
   },
 };
 

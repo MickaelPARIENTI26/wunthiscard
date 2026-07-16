@@ -2,9 +2,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const socialButtons = [
-  { href: 'https://www.instagram.com/winucards/', label: 'Instagram' },
-  { href: 'https://www.tiktok.com/@winucards', label: 'TikTok' },
-  { href: 'https://www.facebook.com/winucards', label: 'Facebook' },
+  { href: 'https://www.instagram.com/luckytcg/', label: 'Instagram' },
+  { href: 'https://www.tiktok.com/@luckytcg', label: 'TikTok' },
+  { href: 'https://www.facebook.com/luckytcg', label: 'Facebook' },
 ];
 
 const platformLinks = [
@@ -42,8 +42,8 @@ export function Footer() {
               className="inline-flex items-center gap-2 justify-center"
               style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '10px' }}
             >
-              <Image src="/logo.png" alt="WinUCard logo" width={24} height={24} />
-              WinUCard
+              <Image src="/logo.png" alt="Lucky TCG logo" width={24} height={24} />
+              Lucky TCG
             </Link>
             <p style={{ color: 'var(--ink-dim)', fontSize: '11px', lineHeight: 1.5, marginBottom: '12px' }}>
               UK&apos;s premium skill-based card competition platform. 18+.
@@ -74,8 +74,8 @@ export function Footer() {
                 className="inline-flex items-center gap-2.5"
                 style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}
               >
-                <Image src="/logo.png" alt="WinUCard logo" width={28} height={28} />
-                WinUCard
+                <Image src="/logo.png" alt="Lucky TCG logo" width={28} height={28} />
+                Lucky TCG
               </Link>
               <p style={{ color: 'var(--ink-dim)', fontSize: '13px', lineHeight: 1.55, maxWidth: '280px', marginBottom: '18px' }}>
                 UK&apos;s premium skill-based card competition platform. Must be 18+. Please play responsibly.
@@ -100,7 +100,7 @@ export function Footer() {
           className="flex flex-wrap items-center justify-between gap-3"
           style={{ borderTop: '1.5px dashed var(--ink)', paddingTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--ink-faint)', textTransform: 'uppercase' }}
         >
-          <span>© {new Date().getFullYear()} WinUCard</span>
+          <span>© {new Date().getFullYear()} Lucky TCG</span>
           <span>🔒 SSL · ⚑ UK Registered</span>
         </div>
       </div>

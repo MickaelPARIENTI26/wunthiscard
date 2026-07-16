@@ -17,10 +17,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Admin Panel | WinUCard',
-    template: '%s | WinUCard Admin',
+    default: 'Admin Panel | Lucky TCG',
+    template: '%s | Lucky TCG Admin',
   },
-  description: 'WinUCard Administration Panel',
+  description: 'Lucky TCG Administration Panel',
   robots: {
     index: false,
     follow: false,

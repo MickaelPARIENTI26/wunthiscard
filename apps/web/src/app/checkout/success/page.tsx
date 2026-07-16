@@ -11,7 +11,7 @@ import { formatPrice } from '@winucard/shared/utils';
 import { ClearCheckoutStorage } from './clear-checkout-storage';
 
 export const metadata: Metadata = {
-  title: 'Purchase Successful - WinUCard',
+  title: 'Purchase Successful - Lucky TCG',
   description: 'Your ticket purchase was successful',
   robots: { index: false, follow: false },
 };

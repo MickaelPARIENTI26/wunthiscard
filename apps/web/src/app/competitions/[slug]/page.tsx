@@ -192,13 +192,13 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
     title,
     description,
     openGraph: {
-      title: `${title} | WinUCard`,
+      title: `${title} | Lucky TCG`,
       description,
       ...(isMysteryUnrevealed ? {} : { images: [{ url: competition.mainImageUrl }] }),
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | WinUCard`,
+      title: `${title} | Lucky TCG`,
       description,
       ...(isMysteryUnrevealed ? {} : { images: [competition.mainImageUrl] }),
     },
@@ -550,7 +550,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 <div className="postal-kicker">Free postal entry</div>
                 <p>Send a handwritten postcard with your name, email, and answer to the skill question:</p>
                 <div className="postal-addr">
-                  WinUCard — Free Entry<br/>
+                  Lucky TCG — Free Entry<br/>
                   71-75 Shelton Street, Covent Garden<br/>
                   London WC2H 9JQ
                 </div>

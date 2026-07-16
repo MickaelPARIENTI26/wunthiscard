@@ -13,7 +13,7 @@ import { redis } from '@/lib/redis';
  * (pre-launch) site. A trivial `SELECT 1` resets Neon's idle timer.
  *
  * Point an uptime monitor (UptimeRobot, cron-job.org, etc.) at
- * https://www.winucards.com/api/health on a 5-minute interval.
+ * https://www.lucky-tcg.com/api/health on a 5-minute interval.
  */
 export const dynamic = 'force-dynamic';
 

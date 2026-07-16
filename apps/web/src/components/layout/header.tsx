@@ -71,8 +71,8 @@ export function Header({ user = null }: HeaderProps) {
           className="flex items-center gap-2.5"
           style={{ fontFamily: 'var(--display)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.03em' }}
         >
-          <Image src="/logo.png" alt="WinUCard logo" width={34} height={34} priority />
-          WinUCard
+          <Image src="/logo.png" alt="Lucky TCG logo" width={34} height={34} priority />
+          Lucky TCG
         </Link>
 
         {/* Desktop nav links */}

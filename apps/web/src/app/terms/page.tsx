@@ -7,7 +7,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
-    'Terms and conditions for using WinUCard prize competition platform. Read our full terms of service.',
+    'Terms and conditions for using Lucky TCG prize competition platform. Read our full terms of service.',
 };
 
 const tableOfContents = [
@@ -65,13 +65,13 @@ function TermsContent() {
         <h3 className="legal-h">1. Definitions</h3>
         <p className="legal-p">In these Terms and Conditions:</p>
         <p className="legal-p">
-          <strong>&quot;WinUCard&quot;</strong>, <strong>&quot;we&quot;</strong>, <strong>&quot;us&quot;</strong>, or <strong>&quot;our&quot;</strong> refers to YD PARTNERS LTD (trading as WinUCard), a company registered in England. <strong>&quot;Competition&quot;</strong> means any prize competition offered on our platform. <strong>&quot;Ticket&quot;</strong> means an entry into a Competition. <strong>&quot;Prize&quot;</strong> means the item(s) offered as the prize. <strong>&quot;User&quot;</strong>, <strong>&quot;you&quot;</strong>, or <strong>&quot;your&quot;</strong> refers to any person accessing or using our services.
+          <strong>&quot;Lucky TCG&quot;</strong>, <strong>&quot;we&quot;</strong>, <strong>&quot;us&quot;</strong>, or <strong>&quot;our&quot;</strong> refers to YD PARTNERS LTD (trading as Lucky TCG), a company registered in England. <strong>&quot;Competition&quot;</strong> means any prize competition offered on our platform. <strong>&quot;Ticket&quot;</strong> means an entry into a Competition. <strong>&quot;Prize&quot;</strong> means the item(s) offered as the prize. <strong>&quot;User&quot;</strong>, <strong>&quot;you&quot;</strong>, or <strong>&quot;your&quot;</strong> refers to any person accessing or using our services.
         </p>
       </section>
 
       <section id="eligibility">
         <h3 className="legal-h">2. Eligibility</h3>
-        <p className="legal-p">To participate in our Competitions, you must be at least 18 years of age, be a resident of the United Kingdom, have a valid email address, and not be an employee or immediate family member of WinUCard.</p>
+        <p className="legal-p">To participate in our Competitions, you must be at least 18 years of age, be a resident of the United Kingdom, have a valid email address, and not be an employee or immediate family member of Lucky TCG.</p>
         <p className="legal-p">We reserve the right to verify your eligibility at any time. If you are found to be ineligible, any tickets purchased will be refunded and any prizes won must be returned.</p>
       </section>
 
@@ -98,7 +98,7 @@ function TermsContent() {
 
       <section id="free-entry">
         <h3 className="legal-h">7. Free Entry Route</h3>
-        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: WinUCard Free Entry, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ. One entry per envelope. No purchase necessary.</p>
+        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: Lucky TCG Free Entry, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ. One entry per envelope. No purchase necessary.</p>
         <p className="legal-p">Free entries are treated equally to paid entries in the draw. Postal entries must be received before the Competition closing date.</p>
       </section>
 
@@ -115,8 +115,8 @@ function TermsContent() {
 
       <section id="winner-publicity">
         <h3 className="legal-h">10. Winner Publicity and Photo Requirement</h3>
-        <p className="legal-p">Upon receiving your prize, you are required to provide at least one photograph of yourself with the prize item within 7 days of delivery. By submitting your photograph, you grant WinUCard a non-exclusive, royalty-free, worldwide licence to use, reproduce, and publish your photograph and first name across our marketing channels.</p>
-        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a> within 48 hours of being notified as a winner.</p>
+        <p className="legal-p">Upon receiving your prize, you are required to provide at least one photograph of yourself with the prize item within 7 days of delivery. By submitting your photograph, you grant Lucky TCG a non-exclusive, royalty-free, worldwide licence to use, reproduce, and publish your photograph and first name across our marketing channels.</p>
+        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:contact@lucky-tcg.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@lucky-tcg.com</a> within 48 hours of being notified as a winner.</p>
       </section>
 
       <section id="refunds">
@@ -126,7 +126,7 @@ function TermsContent() {
 
       <section id="intellectual-property">
         <h3 className="legal-h">12. Intellectual Property</h3>
-        <p className="legal-p">All content on our website, including text, graphics, logos, images, and software, is the property of WinUCard or its licensors and is protected by copyright and other intellectual property laws.</p>
+        <p className="legal-p">All content on our website, including text, graphics, logos, images, and software, is the property of Lucky TCG or its licensors and is protected by copyright and other intellectual property laws.</p>
       </section>
 
       <section id="liability">
@@ -151,7 +151,7 @@ function TermsContent() {
 
       <section id="contact">
         <h3 className="legal-h">17. Contact Us</h3>
-        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a> or by post: YD PARTNERS LTD (trading as WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</p>
+        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:contact@lucky-tcg.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@lucky-tcg.com</a> or by post: YD PARTNERS LTD (trading as Lucky TCG), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</p>
       </section>
     </>
   );

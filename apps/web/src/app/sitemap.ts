@@ -1,10 +1,10 @@
 import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/db';
 
-const BASE_URL = 'https://winucards.com';
+const BASE_URL = 'https://lucky-tcg.com';
 
 /**
- * Dynamic sitemap generation for WinUCard
+ * Dynamic sitemap generation for Lucky TCG
  * Includes all public pages and competition detail pages
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
  */

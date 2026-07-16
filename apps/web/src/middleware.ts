@@ -16,7 +16,7 @@ const protectedRoutes = [
 ];
 
 /**
- * Middleware for the public WinUCard site
+ * Middleware for the public Lucky TCG site
  * - Protects account routes (requires authentication)
  * - Redirects logged-in users away from /login and /register
  */

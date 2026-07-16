@@ -55,12 +55,12 @@ function TikTokIcon({ className }: { className?: string }) {
 
 const socialLinks = [
   {
-    href: 'https://www.instagram.com/winucards/',
+    href: 'https://www.instagram.com/luckytcg/',
     label: 'Instagram',
     icon: Instagram,
   },
   {
-    href: 'https://www.tiktok.com/@winucards',
+    href: 'https://www.tiktok.com/@luckytcg',
     label: 'TikTok',
     icon: TikTokIcon,
   },
@@ -103,11 +103,11 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         <SheetHeader className="text-left">
           <SheetTitle>
             <Link href="/" onClick={onClose} className="flex items-center gap-3">
-              <Image src="/logo.png" alt="WinUCard logo" width={40} height={40} className="rounded-xl" />
+              <Image src="/logo.png" alt="Lucky TCG logo" width={40} height={40} className="rounded-xl" />
 
               <div className="flex flex-col">
                 <span className="text-lg font-bold tracking-tight font-sans font-bold">
-                  WinUCard
+                  Lucky TCG
                 </span>
                 <span className="text-[10px] text-muted-foreground -mt-0.5">
                   Premium Collectibles

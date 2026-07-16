@@ -1,5 +1,5 @@
-const BASE_URL = 'https://winucards.com';
-const SITE_NAME = 'WinUCard';
+const BASE_URL = 'https://lucky-tcg.com';
+const SITE_NAME = 'Lucky TCG';
 const DEFAULT_DESCRIPTION =
   'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.';
 // Served by the dynamic Next.js route apps/web/src/app/opengraph-image.tsx
@@ -16,9 +16,9 @@ export const siteConfig = {
   url: BASE_URL,
   ogImage: DEFAULT_IMAGE,
   links: {
-    twitter: 'https://twitter.com/winucard',
-    instagram: 'https://instagram.com/winucard',
-    facebook: 'https://facebook.com/winucard',
+    twitter: 'https://twitter.com/luckytcg',
+    instagram: 'https://instagram.com/luckytcg',
+    facebook: 'https://facebook.com/luckytcg',
   },
   locale: 'en_GB',
   currency: 'GBP',

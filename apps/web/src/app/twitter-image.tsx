@@ -1,14 +1,14 @@
 import { ImageResponse } from 'next/og';
 
 /**
- * Dynamic Twitter card image for WinUCard — same brand design as the OG image,
+ * Dynamic Twitter card image for Lucky TCG — same brand design as the OG image,
  * sized for Twitter's 2:1 summary_large_image. Self-contained (no external fetch).
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#twitter-image
  */
 
 export const runtime = 'edge';
 
-export const alt = 'WinUCard - Win Collectible Cards & Memorabilia';
+export const alt = 'Lucky TCG - Win Collectible Cards & Memorabilia';
 export const size = { width: 1200, height: 600 };
 export const contentType = 'image/png';
 
@@ -74,7 +74,7 @@ export default async function Image() {
           }}
         >
           <span style={{ display: 'flex', fontSize: 26, color: '#00c76a', letterSpacing: 2, fontWeight: 700 }}>
-            winucards.com · 18+
+            lucky-tcg.com · 18+
           </span>
         </div>
       </div>

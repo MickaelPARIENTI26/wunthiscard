@@ -3,7 +3,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 
 export const metadata: Metadata = {
   title: 'Responsible Play',
-  description: 'WinUCard responsible play policy. We take player welfare seriously.',
+  description: 'Lucky TCG responsible play policy. We take player welfare seriously.',
 };
 
 const tableOfContents = [
@@ -23,12 +23,12 @@ export default function ResponsiblePlayPage() {
     <LegalPage title="Responsible Play" lastUpdated="Last updated: 1 April 2026" toc={tableOfContents}>
       <section id="our-commitment">
         <h3 className="legal-h">1. Our Commitment</h3>
-        <p className="legal-p">WinUCard is committed to providing a safe, fair, and enjoyable experience for all participants. While our competitions are skill-based prize competitions (not gambling), we take player welfare seriously and have implemented measures to promote responsible play.</p>
+        <p className="legal-p">Lucky TCG is committed to providing a safe, fair, and enjoyable experience for all participants. While our competitions are skill-based prize competitions (not gambling), we take player welfare seriously and have implemented measures to promote responsible play.</p>
       </section>
 
       <section id="not-gambling">
         <h3 className="legal-h">2. Skill Competitions, Not Gambling</h3>
-        <p className="legal-p">WinUCard operates prize competitions under the UK Gambling Act 2005. Our competitions require participants to answer a skill-based question and offer a free postal entry route. They are not classified as gambling.</p>
+        <p className="legal-p">Lucky TCG operates prize competitions under the UK Gambling Act 2005. Our competitions require participants to answer a skill-based question and offer a free postal entry route. They are not classified as gambling.</p>
         <p className="legal-p">However, we recognise that any activity involving spending money should be approached responsibly.</p>
       </section>
 
@@ -40,7 +40,7 @@ export default function ResponsiblePlayPage() {
 
       <section id="self-exclusion">
         <h3 className="legal-h">4. Taking a Break (Self-Exclusion)</h3>
-        <p className="legal-p">If you feel you need a break from entering competitions, you can request a self-exclusion by emailing our support team at <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a>. Let us know how long you would like the break to last, and our team will action your request promptly.</p>
+        <p className="legal-p">If you feel you need a break from entering competitions, you can request a self-exclusion by emailing our support team at <a href="mailto:contact@lucky-tcg.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@lucky-tcg.com</a>. Let us know how long you would like the break to last, and our team will action your request promptly.</p>
         <p className="legal-p">Once your self-exclusion is in place, our team will restrict your account from entering competitions for the agreed period. If you are unsure what would help, just get in touch and we will talk it through with you.</p>
       </section>
 
@@ -54,7 +54,7 @@ export default function ResponsiblePlayPage() {
 
       <section id="contact">
         <h3 className="legal-h">6. Contact</h3>
-        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a>.</p>
+        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:contact@lucky-tcg.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@lucky-tcg.com</a>.</p>
       </section>
     </LegalPage>
   );

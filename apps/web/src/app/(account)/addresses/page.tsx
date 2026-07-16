@@ -5,7 +5,7 @@ import { AddressList } from './address-list';
 import { AddressForm } from './address-form';
 
 export const metadata = {
-  title: 'Addresses | WinUCard',
+  title: 'Addresses | Lucky TCG',
   description: 'Manage your delivery addresses',
 };
 

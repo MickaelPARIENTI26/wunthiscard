@@ -7,7 +7,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 export const metadata: Metadata = {
   title: 'Competition Rules',
   description:
-    'Official competition rules for WinUCard prize competitions. Learn about eligibility, entry methods, draw process, and prize claiming.',
+    'Official competition rules for Lucky TCG prize competitions. Learn about eligibility, entry methods, draw process, and prize claiming.',
 };
 
 interface TableOfContentsItem {
@@ -69,7 +69,7 @@ function PlaceholderCompetitionRulesContent() {
   return (
     <>
       <p className="lead">
-        These rules apply to all prize competitions operated by YD PARTNERS LTD (trading as WinUCard).
+        These rules apply to all prize competitions operated by YD PARTNERS LTD (trading as Lucky TCG).
         By entering any competition, you agree to be bound by these rules and
         our{' '}
         <Link href="/terms" className="text-primary hover:underline">
@@ -81,7 +81,7 @@ function PlaceholderCompetitionRulesContent() {
       <section id="overview">
         <h2>1. Overview</h2>
         <p>
-          WinUCard operates prize competitions for collectible cards,
+          Lucky TCG operates prize competitions for collectible cards,
           memorabilia, and other valuable items. Our competitions are compliant
           with the UK Gambling Act 2005 as prize competitions (not lotteries),
           which require:
@@ -102,7 +102,7 @@ function PlaceholderCompetitionRulesContent() {
       <section id="eligibility">
         <h2>2. Eligibility</h2>
         <p>
-          To enter any WinUCard competition, you must meet ALL of the
+          To enter any Lucky TCG competition, you must meet ALL of the
           following requirements:
         </p>
         <ul>
@@ -115,7 +115,7 @@ function PlaceholderCompetitionRulesContent() {
             Kingdom
           </li>
           <li>
-            <strong>Account:</strong> You must have a valid WinUCard account
+            <strong>Account:</strong> You must have a valid Lucky TCG account
             with a verified email address
           </li>
           <li>
@@ -125,7 +125,7 @@ function PlaceholderCompetitionRulesContent() {
         </ul>
         <p>The following persons are NOT eligible to enter:</p>
         <ul>
-          <li>Employees of YD PARTNERS LTD (trading as WinUCard) and their immediate family members</li>
+          <li>Employees of YD PARTNERS LTD (trading as Lucky TCG) and their immediate family members</li>
           <li>
             Anyone directly involved in the operation of the competitions
           </li>
@@ -146,7 +146,7 @@ function PlaceholderCompetitionRulesContent() {
 
         <h3>3.1 Online Entry (Paid)</h3>
         <ol>
-          <li>Create an account or log in at winucards.com</li>
+          <li>Create an account or log in at lucky-tcg.com</li>
           <li>Browse available competitions and select one to enter</li>
           <li>Choose your ticket number(s) manually or use random selection</li>
           <li>Select the number of tickets you wish to purchase</li>
@@ -191,7 +191,7 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Place in an envelope and post to:
             <br />
-            <strong>WinUCard Free Entry</strong>
+            <strong>Lucky TCG Free Entry</strong>
             <br />
             71-75 Shelton Street, Covent Garden, London WC2H 9JQ
             <br />
@@ -240,7 +240,7 @@ function PlaceholderCompetitionRulesContent() {
             minutes
           </li>
           <li>
-            The correct answer is determined by WinUCard and is final
+            The correct answer is determined by Lucky TCG and is final
           </li>
         </ul>
       </section>
@@ -494,10 +494,10 @@ function PlaceholderCompetitionRulesContent() {
           <li>
             Disputes should be submitted in writing to{' '}
             <a
-              href="mailto:support@winucards.com"
+              href="mailto:contact@lucky-tcg.com"
               className="text-primary"
             >
-              support@winucards.com
+              contact@lucky-tcg.com
             </a>
           </li>
           <li>
@@ -550,20 +550,20 @@ function PlaceholderCompetitionRulesContent() {
         <ul>
           <li>
             Email:{' '}
-            <a href="mailto:support@winucards.com" className="text-primary">
-              support@winucards.com
+            <a href="mailto:contact@lucky-tcg.com" className="text-primary">
+              contact@lucky-tcg.com
             </a>
           </li>
           <li>
             Disputes:{' '}
             <a
-              href="mailto:support@winucards.com"
+              href="mailto:contact@lucky-tcg.com"
               className="text-primary"
             >
-              support@winucards.com
+              contact@lucky-tcg.com
             </a>
           </li>
-          <li>Post: YD PARTNERS LTD (WinUCard), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
+          <li>Post: YD PARTNERS LTD (Lucky TCG), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
         </ul>
         <p>
           For full terms of use, please refer to our{' '}

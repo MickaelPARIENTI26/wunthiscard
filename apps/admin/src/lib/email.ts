@@ -8,7 +8,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@winucards.com';
+const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@lucky-tcg.com';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -33,7 +33,7 @@ export async function sendEmail({ to, subject, html, text, headers }: SendEmailO
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `WinUCard <${FROM_EMAIL}>`,
+      from: `Lucky TCG <${FROM_EMAIL}>`,
       to,
       subject,
       html,
@@ -92,11 +92,11 @@ export function getTestData(): Record<string, string> {
     competition_tickets_remaining: '36',
     competition_end_date: 'March 15, 2026',
     competition_draw_date: 'March 16, 2026 at 8:00 PM GMT',
-    competition_url: 'https://winucards.com/competitions/charizard-psa10',
+    competition_url: 'https://lucky-tcg.com/competitions/charizard-psa10',
     competition_category: 'Pokémon',
 
     // Order data
-    order_id: 'WUC-20260301-0042',
+    order_id: 'LTC-20260301-0042',
     order_total: '£90',
     order_tickets_count: '3',
     order_ticket_numbers: '#0042, #0043, #0044',
@@ -110,15 +110,15 @@ export function getTestData(): Record<string, string> {
     draw_time: '8:00 PM GMT',
 
     // Site data
-    site_url: 'https://winucards.com',
-    site_name: 'WinUCard',
-    site_logo_url: 'https://winucards.com/logo-email.png',
+    site_url: 'https://lucky-tcg.com',
+    site_name: 'Lucky TCG',
+    site_logo_url: 'https://lucky-tcg.com/logo-email.png',
     current_year: new Date().getFullYear().toString(),
 
     // Action URLs
-    unsubscribe_url: 'https://winucards.com/unsubscribe?token=test',
-    verification_url: 'https://winucards.com/verify?token=test',
-    cart_url: 'https://winucards.com/cart?recover=test',
+    unsubscribe_url: 'https://lucky-tcg.com/unsubscribe?token=test',
+    verification_url: 'https://lucky-tcg.com/verify?token=test',
+    cart_url: 'https://lucky-tcg.com/cart?recover=test',
   };
 }
 
@@ -129,13 +129,13 @@ function emailWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinUCard</title>
+  <title>Lucky TCG</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <!-- Header -->
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Lucky TCG</h1>
     </div>
 
     <!-- Content -->
@@ -146,7 +146,7 @@ function emailWrapper(content: string): string {
     <!-- Footer -->
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        WinUCard Ltd. | Registered in England & Wales
+        Lucky TCG Ltd. | Registered in England & Wales
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
@@ -217,7 +217,7 @@ export async function sendWinnerNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      If you have any questions, please contact us at support@winucards.com
+      If you have any questions, please contact us at contact@lucky-tcg.com
     </p>
   `);
 
@@ -329,7 +329,7 @@ export async function sendCancellationNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      Questions? Contact us at support@winucards.com
+      Questions? Contact us at contact@lucky-tcg.com
     </p>
   `);
 
@@ -424,7 +424,7 @@ function unsubscribeUrl(token: string): string {
 
 function listUnsubscribeHeaders(token: string): Record<string, string> {
   return {
-    'List-Unsubscribe': `<${BASE_URL}/api/unsubscribe?token=${encodeURIComponent(token)}>, <mailto:support@winucards.com?subject=unsubscribe>`,
+    'List-Unsubscribe': `<${BASE_URL}/api/unsubscribe?token=${encodeURIComponent(token)}>, <mailto:contact@lucky-tcg.com?subject=unsubscribe>`,
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
   };
 }
@@ -437,22 +437,22 @@ function marketingWrapper(content: string, token: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinUCard</title>
+  <title>Lucky TCG</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Lucky TCG</h1>
     </div>
     <div style="padding: 32px;">
       ${content}
     </div>
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        YD PARTNERS LTD (trading as WinUCard) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
+        YD PARTNERS LTD (trading as Lucky TCG) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        You're receiving this because you opted in to competition updates from WinUCard.
+        You're receiving this because you opted in to competition updates from Lucky TCG.
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${url}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> ·
@@ -488,7 +488,7 @@ async function sendBatch(
     try {
       const { error } = await resend.batch.send(
         chunk.map((m) => ({
-          from: `WinUCard <${FROM_EMAIL}>`,
+          from: `Lucky TCG <${FROM_EMAIL}>`,
           to: m.to,
           subject: m.subject,
           html: m.html,
@@ -544,7 +544,7 @@ export async function sendNewCompetitionBlast(
       `
     <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
-      A new competition just went live on WinUCard. Get your tickets before it's gone.
+      A new competition just went live on Lucky TCG. Get your tickets before it's gone.
     </p>
     ${card}
     <div style="text-align: center; margin: 32px 0;">

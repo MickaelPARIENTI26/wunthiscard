@@ -6,7 +6,7 @@ import { auth } from '@/lib/auth';
 import { ReferralClientSection } from './referral-client-section';
 
 export const metadata: Metadata = {
-  title: 'Referrals | WinUCard',
+  title: 'Referrals | Lucky TCG',
 };
 
 function generateReferralCode(firstName: string): string {
@@ -59,7 +59,7 @@ export default async function ReferralsPage() {
     where: { referredById: userId },
   });
 
-  const referralLink = `https://winucards.com/?ref=${user.referralCode}`;
+  const referralLink = `https://lucky-tcg.com/?ref=${user.referralCode}`;
 
   return (
     <div className="space-y-6">
@@ -108,7 +108,7 @@ export default async function ReferralsPage() {
             How it works
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--ink-dim)', lineHeight: 1.6, marginBottom: '6px' }}>
-            Share your link and invite your friends to join WinUCard.
+            Share your link and invite your friends to join Lucky TCG.
           </p>
           <p style={{ fontSize: '14px', color: 'var(--ink-dim)', lineHeight: 1.6 }}>
             The first time a friend makes a purchase, you get <strong style={{ color: 'var(--accent)' }}>1 free ticket</strong> — no matter how many tickets they buy.

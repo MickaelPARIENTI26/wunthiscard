@@ -182,9 +182,9 @@ describe('Winner Name Anonymization', () => {
 });
 
 describe('Order Number Generation', () => {
-  it('should generate order number with WTC prefix', () => {
+  it('should generate order number with LTC prefix', () => {
     const orderNum = generateOrderNumber();
-    expect(orderNum.startsWith('WTC-')).toBe(true);
+    expect(orderNum.startsWith('LTC-')).toBe(true);
   });
 
   it('should include date in YYYYMMDD format', () => {
@@ -193,9 +193,9 @@ describe('Order Number Generation', () => {
     expect(orderNum).toContain(today);
   });
 
-  it('should match format WTC-YYYYMMDD-XXXX', () => {
+  it('should match format LTC-YYYYMMDD-XXXX', () => {
     const orderNum = generateOrderNumber();
-    const pattern = /^WTC-\d{8}-[A-Z0-9]{4}$/;
+    const pattern = /^LTC-\d{8}-[A-Z0-9]{4}$/;
     expect(pattern.test(orderNum)).toBe(true);
   });
 

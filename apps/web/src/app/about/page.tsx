@@ -8,9 +8,9 @@ import { HomeCTABand } from '@/components/home/home-cta-band';
 export const metadata: Metadata = {
   title: 'About Us',
   description:
-    'Learn about WinUCard, the UK-based prize competition platform for collectible cards and memorabilia.',
+    'Learn about Lucky TCG, the UK-based prize competition platform for collectible cards and memorabilia.',
   openGraph: {
-    title: 'About Us | WinUCard',
+    title: 'About Us | Lucky TCG',
     description: 'Real cards. Real winners. Zero BS.',
   },
 };
@@ -61,7 +61,7 @@ export default function AboutPage() {
                 letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '28px',
               }}
             >
-              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} /> About WinUCard
+              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} /> About Lucky TCG
             </div>
             <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(36px, 8vw, 124px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9 }}>
               Real cards.<br />
@@ -83,10 +83,10 @@ export default function AboutPage() {
               &ldquo;
             </div>
             <p style={{ position: 'relative', paddingLeft: '40px' }}>
-              We started WinUCard because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £14.90 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
+              We started Lucky TCG because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £14.90 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
             </p>
             <div style={{ marginTop: '18px', paddingLeft: '40px', fontFamily: 'var(--mono)', fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 600 }}>
-              — The WinUCard team
+              — The Lucky TCG team
             </div>
           </div>
         </div>

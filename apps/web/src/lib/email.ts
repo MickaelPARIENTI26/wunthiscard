@@ -13,7 +13,7 @@ if (!process.env.RESEND_API_KEY) {
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@winucards.com';
+const FROM_EMAIL = process.env.FROM_EMAIL ?? 'noreply@lucky-tcg.com';
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
 
 interface SendEmailOptions {
@@ -42,7 +42,7 @@ export async function sendEmail({ to, subject, html, text, replyTo, headers }: S
 
   try {
     const { data, error } = await resend.emails.send({
-      from: `WinUCard <${FROM_EMAIL}>`,
+      from: `Lucky TCG <${FROM_EMAIL}>`,
       to,
       subject,
       html,
@@ -86,13 +86,13 @@ function emailWrapper(content: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinUCard</title>
+  <title>Lucky TCG</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <!-- Header -->
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Lucky TCG</h1>
     </div>
 
     <!-- Content -->
@@ -103,7 +103,7 @@ function emailWrapper(content: string): string {
     <!-- Footer -->
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        YD PARTNERS LTD (trading as WinUCard). | Registered in England & Wales · Company No. 16766570
+        YD PARTNERS LTD (trading as Lucky TCG). | Registered in England & Wales · Company No. 16766570
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
@@ -124,7 +124,7 @@ export async function sendVerificationEmail(email: string, token: string, firstN
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Welcome, ${escapeHtml(firstName)}!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Thanks for signing up for WinUCard. Please verify your email address to start entering competitions.
+      Thanks for signing up for Lucky TCG. Please verify your email address to start entering competitions.
     </p>
     <div style="text-align: center; margin: 32px 0;">
       <a href="${verifyUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
@@ -141,7 +141,7 @@ export async function sendVerificationEmail(email: string, token: string, firstN
 
   return sendEmail({
     to: email,
-    subject: 'Verify your WinUCard account',
+    subject: 'Verify your Lucky TCG account',
     html,
   });
 }
@@ -170,7 +170,7 @@ export async function sendPasswordResetEmail(email: string, token: string, first
 
   return sendEmail({
     to: email,
-    subject: 'Reset your WinUCard password',
+    subject: 'Reset your Lucky TCG password',
     html,
   });
 }
@@ -188,7 +188,7 @@ export async function sendReferralRewardEmail(
   const html = emailWrapper(`
     <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">🎁 You've earned a free ticket!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
-      Great news${firstName ? `, ${escapeHtml(firstName)}` : ''} — a friend you invited just made their first purchase on WinUCard, so we've added <strong>1 free ticket</strong> to your account.
+      Great news${firstName ? `, ${escapeHtml(firstName)}` : ''} — a friend you invited just made their first purchase on Lucky TCG, so we've added <strong>1 free ticket</strong> to your account.
     </p>
 
     <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
@@ -216,7 +216,7 @@ export async function sendReferralRewardEmail(
 
   return sendEmail({
     to: email,
-    subject: '🎁 You earned a free ticket on WinUCard',
+    subject: '🎁 You earned a free ticket on Lucky TCG',
     html,
   });
 }
@@ -463,7 +463,7 @@ export async function sendWinnerNotificationEmail(
     </div>
 
     <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
-      If you have any questions, please contact us at support@winucards.com
+      If you have any questions, please contact us at contact@lucky-tcg.com
     </p>
   `);
 
@@ -497,7 +497,7 @@ function unsubscribeUrl(token: string): string {
 // "Unsubscribe" button that POSTs to our endpoint.
 function listUnsubscribeHeaders(token: string): Record<string, string> {
   return {
-    'List-Unsubscribe': `<${BASE_URL}/api/unsubscribe?token=${encodeURIComponent(token)}>, <mailto:support@winucards.com?subject=unsubscribe>`,
+    'List-Unsubscribe': `<${BASE_URL}/api/unsubscribe?token=${encodeURIComponent(token)}>, <mailto:contact@lucky-tcg.com?subject=unsubscribe>`,
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
   };
 }
@@ -511,22 +511,22 @@ function marketingWrapper(content: string, token: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WinUCard</title>
+  <title>Lucky TCG</title>
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
   <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
     <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUCard</h1>
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Lucky TCG</h1>
     </div>
     <div style="padding: 32px;">
       ${content}
     </div>
     <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        YD PARTNERS LTD (trading as WinUCard) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
+        YD PARTNERS LTD (trading as Lucky TCG) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
-        You're receiving this because you opted in to competition updates from WinUCard.
+        You're receiving this because you opted in to competition updates from Lucky TCG.
       </p>
       <p style="color: #6b7280; font-size: 12px; margin: 0;">
         <a href="${url}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> ·
@@ -566,7 +566,7 @@ async function sendMarketingBatch(
     try {
       const { error } = await resend.batch.send(
         chunk.map((m) => ({
-          from: `WinUCard <${FROM_EMAIL}>`,
+          from: `Lucky TCG <${FROM_EMAIL}>`,
           to: m.to,
           subject: m.subject,
           html: m.html,
@@ -628,7 +628,7 @@ export async function sendNewCompetitionBlast(
       `
     <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
     <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
-      A new competition just went live on WinUCard. Get your tickets before it's gone.
+      A new competition just went live on Lucky TCG. Get your tickets before it's gone.
     </p>
     ${competitionCard(data)}
     <div style="text-align: center; margin: 32px 0;">

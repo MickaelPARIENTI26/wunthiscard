@@ -279,7 +279,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               <input
                 id="instagram"
                 className={`input ${errors.instagram ? 'input-error' : ''}`}
-                placeholder="winucard"
+                placeholder="luckytcg"
                 {...register('instagram')}
               />
             </div>

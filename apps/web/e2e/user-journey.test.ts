@@ -1,5 +1,5 @@
 /**
- * E2E Test Script - Complete User Journey on WinUCard
+ * E2E Test Script - Complete User Journey on Lucky TCG
  *
  * This script simulates a complete user journey from registration to ticket purchase.
  * Run with: npx tsx apps/web/e2e/user-journey.test.ts

@@ -3,7 +3,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 
 export const metadata: Metadata = {
   title: 'Delivery Info',
-  description: 'Delivery information for WinUCard prize wins. Free tracked UK delivery on all prizes.',
+  description: 'Delivery information for Lucky TCG prize wins. Free tracked UK delivery on all prizes.',
 };
 
 const tableOfContents = [
@@ -48,7 +48,7 @@ export default function DeliveryPage() {
 
       <section id="contact">
         <h3 className="legal-h">6. Contact</h3>
-        <p className="legal-p">For delivery enquiries, email <a href="mailto:support@winucards.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>support@winucards.com</a> or contact us via the <a href="/contact" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>Contact page</a>.</p>
+        <p className="legal-p">For delivery enquiries, email <a href="mailto:contact@lucky-tcg.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@lucky-tcg.com</a> or contact us via the <a href="/contact" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>Contact page</a>.</p>
       </section>
     </LegalPage>
   );

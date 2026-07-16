@@ -48,7 +48,7 @@ async function main() {
 
   const superAdmin = await prisma.user.create({
     data: {
-      email: 'admin@winucards.com',
+      email: 'admin@lucky-tcg.com',
       passwordHash: adminPassword,
       firstName: 'Super',
       lastName: 'Admin',
@@ -60,7 +60,7 @@ async function main() {
 
   const admin = await prisma.user.create({
     data: {
-      email: 'moderator@winucards.com',
+      email: 'moderator@lucky-tcg.com',
       passwordHash: adminPassword,
       firstName: 'Mod',
       lastName: 'Admin',
@@ -73,7 +73,7 @@ async function main() {
   const drawMasterPassword = await hashPassword(process.env.DRAW_MASTER_PASSWORD || 'DrawMaster123!');
   const drawMaster = await prisma.user.create({
     data: {
-      email: 'draw@winucards.com',
+      email: 'draw@lucky-tcg.com',
       passwordHash: drawMasterPassword,
       firstName: 'Draw',
       lastName: 'Master',
@@ -167,7 +167,7 @@ async function main() {
       questionText: 'In what year was the first Pokémon TCG Base Set released in Japan?',
       questionChoices: ['1996', '1997', '1998', '1999'],
       questionAnswer: 0,
-      metaTitle: 'Win a Charizard PSA 10 1st Edition Base Set | WinUCard',
+      metaTitle: 'Win a Charizard PSA 10 1st Edition Base Set | Lucky TCG',
       metaDescription:
         'Enter for a chance to win the most iconic Pokémon card - a PSA 10 graded 1st Edition Charizard worth £150,000!',
     },
@@ -200,7 +200,7 @@ async function main() {
       questionText: 'How many Pikachu Illustrator cards are known to exist?',
       questionChoices: ['20', '39', '50', '100'],
       questionAnswer: 1,
-      metaTitle: 'Win a Pikachu Illustrator Card | WinUCard',
+      metaTitle: 'Win a Pikachu Illustrator Card | Lucky TCG',
       metaDescription: 'The rarest Pokémon card in the world could be yours!',
     },
   });
@@ -419,7 +419,7 @@ async function main() {
   // Create orders for sold tickets
   const order1 = await prisma.order.create({
     data: {
-      orderNumber: 'WTC-20260101-TEST1',
+      orderNumber: 'LTC-20260101-TEST1',
       userId: user1.id,
       competitionId: competition1.id,
       ticketCount: 150,
@@ -434,7 +434,7 @@ async function main() {
 
   const order2 = await prisma.order.create({
     data: {
-      orderNumber: 'WTC-20260101-TEST2',
+      orderNumber: 'LTC-20260101-TEST2',
       userId: user2.id,
       competitionId: competition3.id,
       ticketCount: 85,
@@ -449,7 +449,7 @@ async function main() {
 
   const order3 = await prisma.order.create({
     data: {
-      orderNumber: 'WTC-20260101-TEST3',
+      orderNumber: 'LTC-20260101-TEST3',
       userId: user1.id,
       competitionId: competition4.id,
       ticketCount: 230,
@@ -513,15 +513,15 @@ async function main() {
       data: {
         heroTitle: 'Win Amazing Collectibles',
         heroCta: 'Browse Competitions',
-        companyName: 'YD PARTNERS LTD (trading as WinUCard)',
+        companyName: 'YD PARTNERS LTD (trading as Lucky TCG)',
         companyAddress: '71-75 Shelton Street, Covent Garden, London, WC2H 9JQ, United Kingdom',
-        companyEmail: 'support@winucards.com',
+        companyEmail: 'contact@lucky-tcg.com',
         socialLinks: {
-          instagram: 'https://instagram.com/winucard',
-          twitter: 'https://twitter.com/winucard',
-          tiktok: 'https://tiktok.com/@winucard',
-          facebook: 'https://facebook.com/winucard',
-          discord: 'https://discord.gg/winucard',
+          instagram: 'https://instagram.com/luckytcg',
+          twitter: 'https://twitter.com/luckytcg',
+          tiktok: 'https://tiktok.com/@luckytcg',
+          facebook: 'https://facebook.com/luckytcg',
+          discord: 'https://discord.gg/luckytcg',
         },
         socialFollowers: {
           instagram: 15000,
@@ -536,7 +536,7 @@ async function main() {
           { ticketsBought: 20, bonusTickets: 3 },
           { ticketsBought: 50, bonusTickets: 5 },
         ],
-        freeEntryAddress: 'WinUCard Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
+        freeEntryAddress: 'Lucky TCG Free Entry, YD PARTNERS LTD, 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ',
       },
     },
   });
@@ -603,15 +603,15 @@ async function main() {
     },
     {
       category: 'Legal',
-      question: 'Is WinUCard legal in the UK?',
+      question: 'Is Lucky TCG legal in the UK?',
       answer:
-        'Yes! WinUCard operates as a prize competition (not a lottery) under the UK Gambling Act 2005. All entries require answering a skill-based question, and a free entry route is always available.',
+        'Yes! Lucky TCG operates as a prize competition (not a lottery) under the UK Gambling Act 2005. All entries require answering a skill-based question, and a free entry route is always available.',
       sortOrder: 1,
     },
     {
       category: 'Legal',
       question: 'What is the minimum age to participate?',
-      answer: 'You must be 18 years or older to participate in any WinUCard competition.',
+      answer: 'You must be 18 years or older to participate in any Lucky TCG competition.',
       sortOrder: 2,
     },
   ];
@@ -626,10 +626,10 @@ async function main() {
       slug: 'about-us',
       title: 'About Us',
       content: `
-        <h1>About WinUCard</h1>
-        <p>WinUCard is the UK's premier prize competition platform for collectible cards and memorabilia.</p>
+        <h1>About Lucky TCG</h1>
+        <p>Lucky TCG is the UK's premier prize competition platform for collectible cards and memorabilia.</p>
         <h2>Our Mission</h2>
-        <p>We're passionate collectors who believe everyone should have the chance to own grail-tier collectibles. That's why we created WinUCard - to give you the opportunity to win cards and memorabilia that would otherwise be out of reach.</p>
+        <p>We're passionate collectors who believe everyone should have the chance to own grail-tier collectibles. That's why we created Lucky TCG - to give you the opportunity to win cards and memorabilia that would otherwise be out of reach.</p>
         <h2>Why Choose Us?</h2>
         <ul>
           <li>100% authentic, verified items</li>
@@ -665,7 +665,7 @@ async function main() {
     data: {
       slug: 'terms-and-conditions',
       title: 'Terms & Conditions',
-      content: '<h1>Terms & Conditions</h1><p>Please read these terms carefully before using WinUCard...</p>',
+      content: '<h1>Terms & Conditions</h1><p>Please read these terms carefully before using Lucky TCG...</p>',
     },
   });
 
@@ -691,7 +691,7 @@ async function main() {
   const emailHeader = `
     <tr>
       <td align="center" style="padding: 30px 20px; border-bottom: 1px solid #222;">
-        <img src="{{site_logo_url}}" alt="WinUCard" width="144" height="80" style="display: block; max-width: 144px; height: auto;" />
+        <img src="{{site_logo_url}}" alt="Lucky TCG" width="144" height="80" style="display: block; max-width: 144px; height: auto;" />
       </td>
     </tr>`;
 
@@ -701,15 +701,15 @@ async function main() {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
             <td align="center" style="padding-bottom: 20px;">
-              <a href="https://tiktok.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
-              <a href="https://instagram.com/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
-              <a href="https://youtube.com/@winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
-              <a href="https://discord.gg/winucard" style="display: inline-block; margin: 0 8px;"><img src="https://winucards.com/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>
+              <a href="https://tiktok.com/@luckytcg" style="display: inline-block; margin: 0 8px;"><img src="https://lucky-tcg.com/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
+              <a href="https://instagram.com/luckytcg" style="display: inline-block; margin: 0 8px;"><img src="https://lucky-tcg.com/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
+              <a href="https://youtube.com/@luckytcg" style="display: inline-block; margin: 0 8px;"><img src="https://lucky-tcg.com/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
+              <a href="https://discord.gg/luckytcg" style="display: inline-block; margin: 0 8px;"><img src="https://lucky-tcg.com/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>
             </td>
           </tr>
           <tr>
             <td align="center" style="color: #888; font-size: 12px; line-height: 18px;">
-              <p style="margin: 0 0 10px;">YD PARTNERS LTD (trading as WinUCard) | Registered in England &amp; Wales · No. 16766570</p>
+              <p style="margin: 0 0 10px;">YD PARTNERS LTD (trading as Lucky TCG) | Registered in England &amp; Wales · No. 16766570</p>
               <p style="margin: 0 0 10px;">71-75 Shelton Street, Covent Garden, London WC2H 9JQ</p>
               <p style="margin: 0;">
                 <a href="{{site_url}}/terms" style="color: #888; text-decoration: underline;">Terms</a> &nbsp;|&nbsp;
@@ -728,7 +728,7 @@ async function main() {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>WinUCard</title>
+  <title>Lucky TCG</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
   <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0a0a0f;">
@@ -753,7 +753,7 @@ async function main() {
     {
       slug: 'email_verification',
       name: 'Email Verification',
-      subject: 'Verify your email — WinUCard',
+      subject: 'Verify your email — Lucky TCG',
       trigger: EmailTrigger.AUTO,
       triggerDescription: 'Sent when user signs up',
       htmlContent: wrapEmail(`
@@ -764,7 +764,7 @@ async function main() {
                 Hi {{user_firstname}},
               </p>
               <p style="margin: 0 0 30px; font-size: 16px; line-height: 24px; color: #cccccc;">
-                Thanks for signing up for WinUCard! Please verify your email address to activate your account and start entering competitions.
+                Thanks for signing up for Lucky TCG! Please verify your email address to activate your account and start entering competitions.
               </p>
               <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
@@ -782,13 +782,13 @@ async function main() {
     {
       slug: 'welcome',
       name: 'Welcome',
-      subject: 'Welcome to WinUCard! 🎉',
+      subject: 'Welcome to Lucky TCG! 🎉',
       trigger: EmailTrigger.AUTO,
       triggerDescription: 'Sent after email verified',
       htmlContent: wrapEmail(`
           <tr>
             <td style="padding: 30px 40px; color: #ffffff;">
-              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">Welcome to WinUCard!</h1>
+              <h1 style="margin: 0 0 20px; font-size: 28px; color: #FFD700;">Welcome to Lucky TCG!</h1>
               <p style="margin: 0 0 20px; font-size: 16px; line-height: 24px; color: #ffffff;">
                 Hi {{user_firstname}},
               </p>
@@ -1217,7 +1217,7 @@ async function main() {
                                 <span style="color: #FFD700; font-weight: bold;">3.</span>
                               </td>
                               <td style="color: #cccccc; font-size: 14px;">
-                                Share your win on social media and tag us @WinUCard!
+                                Share your win on social media and tag us @Lucky TCG!
                               </td>
                             </tr>
                           </table>
@@ -1231,7 +1231,7 @@ async function main() {
               <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td align="center" style="padding: 20px 0;">
-                    ${ctaButton('Confirm My Address', 'mailto:support@winucards.com?subject=Winner%20Address%20Confirmation')}
+                    ${ctaButton('Confirm My Address', 'mailto:contact@lucky-tcg.com?subject=Winner%20Address%20Confirmation')}
                   </td>
                 </tr>
               </table>
@@ -1272,9 +1272,9 @@ async function main() {
   console.log('🎉 Database seeded successfully!');
   console.log('');
   console.log('Test accounts:');
-  console.log('  Super Admin: admin@winucards.com / Admin123!');
-  console.log('  Admin: moderator@winucards.com / Admin123!');
-  console.log('  Draw Master: draw@winucards.com / DrawMaster123!');
+  console.log('  Super Admin: admin@lucky-tcg.com / Admin123!');
+  console.log('  Admin: moderator@lucky-tcg.com / Admin123!');
+  console.log('  Draw Master: draw@lucky-tcg.com / DrawMaster123!');
   console.log('  User: john@example.com / User123!');
   console.log('  User: jane@example.com / User123!');
 }

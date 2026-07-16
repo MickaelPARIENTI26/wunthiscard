@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db';
 import { Calendar, Trophy } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Tickets | WinUCard',
+  title: 'My Tickets | Lucky TCG',
   description: 'View all your competition entries and ticket numbers',
 };
 

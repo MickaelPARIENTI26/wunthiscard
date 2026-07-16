@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 /**
- * Dynamic Open Graph image for WinUCard — fallback for pages without a custom OG image.
+ * Dynamic Open Graph image for Lucky TCG — fallback for pages without a custom OG image.
  * Rendered in the real brand ("DROP" aesthetic): cream background, thick black border,
  * neon-green highlight, black wordmark. No external logo/font fetch (self-contained).
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
@@ -9,7 +9,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export const alt = 'WinUCard - Win Collectible Cards & Memorabilia';
+export const alt = 'Lucky TCG - Win Collectible Cards & Memorabilia';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -88,7 +88,7 @@ export default async function Image() {
           }}
         >
           <span style={{ display: 'flex', fontSize: 26, color: '#00c76a', letterSpacing: 2, fontWeight: 700 }}>
-            winucards.com · 18+
+            lucky-tcg.com · 18+
           </span>
         </div>
       </div>

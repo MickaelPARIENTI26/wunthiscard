@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const faqItems = [
   {
-    q: 'Is WinUCard legal in the UK?',
-    a: 'Yes. WinUCard operates as a skill-based prize competition in full compliance with UK law. Every competition requires a skill question and offers a free postal entry route, as required by the Gambling Act 2005.',
+    q: 'Is Lucky TCG legal in the UK?',
+    a: 'Yes. Lucky TCG operates as a skill-based prize competition in full compliance with UK law. Every competition requires a skill question and offers a free postal entry route, as required by the Gambling Act 2005.',
   },
   {
     q: 'How is the winner selected?',

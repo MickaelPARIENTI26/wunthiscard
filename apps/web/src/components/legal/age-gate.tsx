@@ -136,7 +136,7 @@ export function AgeGate() {
                 color: 'var(--ink)',
               }}
             >
-              WinUCard
+              Lucky TCG
             </span>
           </Link>
         </div>
@@ -163,7 +163,7 @@ export function AgeGate() {
             lineHeight: 1.6,
           }}
         >
-          You must be 18 years or older to enter this website. WinUCard is a skill-based competition platform. Please confirm your age to continue.
+          You must be 18 years or older to enter this website. Lucky TCG is a skill-based competition platform. Please confirm your age to continue.
         </p>
 
         {/* Buttons */}
