@@ -15,11 +15,13 @@ export const metadata: Metadata = {
   },
 };
 
+// Forward-looking commitments only — NOT historical counts. (We deliberately don't
+// claim "£X paid" / "N cards won" numbers we can't stand behind on day one.)
 const stats = [
-  { v: '£500K+', l: 'Prizes Paid', c: 'var(--accent)' },
-  { v: '482', l: 'Cards Won', c: 'var(--hot)' },
-  { v: '100%', l: 'Results Published', c: 'var(--pop)' },
-  { v: '100%', l: 'Graded & Authenticated', c: 'var(--warn)' },
+  { v: '100%', l: 'Results Published', c: 'var(--accent)' },
+  { v: '100%', l: 'Graded & Authenticated', c: 'var(--hot)' },
+  { v: 'FREE', l: 'Postal Entry Route', c: 'var(--pop)' },
+  { v: '24H', l: 'Winner Notified', c: 'var(--warn)' },
 ];
 
 const pillars = [
