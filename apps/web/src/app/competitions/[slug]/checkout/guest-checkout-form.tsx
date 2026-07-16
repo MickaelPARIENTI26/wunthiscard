@@ -574,7 +574,7 @@ export function GuestCheckoutForm({
           onSuccess={setTurnstileToken}
           onError={() => setTurnstileToken(null)}
           onExpire={() => setTurnstileToken(null)}
-          options={{ size: 'invisible', theme: 'auto' }}
+          options={{ appearance: 'interaction-only', theme: 'auto' }}
         />
       )}
 

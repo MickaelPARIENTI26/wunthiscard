@@ -308,7 +308,7 @@ export function LoginForm() {
             onError={() => setTurnstileToken(null)}
             onExpire={() => setTurnstileToken(null)}
             options={{
-              size: 'invisible',
+              appearance: 'interaction-only',
               theme: 'auto',
             }}
           />
