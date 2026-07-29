@@ -1578,6 +1578,7 @@ a { transition: color 0.2s; }
   padding: 10px 18px; border-radius: 0; cursor: pointer;
   background: transparent; color: rgba(244, 241, 234, 0.62);
   border: 1px solid rgba(244, 241, 234, 0.24);
+  white-space: nowrap; /* multi-word labels ("One Piece") stay on one line */
   transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 .wup-chip:hover { border-color: var(--accent); }

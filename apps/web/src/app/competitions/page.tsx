@@ -211,27 +211,35 @@ export default async function CompetitionsPage({
   const params = await searchParams;
   const data = await getCompetitions(params);
 
+  const liveCount = data.competitions.filter((c) => c.status === 'ACTIVE' && !c.pendingDraw).length;
+  const prices = data.competitions.filter((c) => c.ticketPrice > 0).map((c) => c.ticketPrice);
+  const minPrice = prices.length ? Math.min(...prices) : null;
+
   return (
     <main>
-      {/* Page Header */}
-      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-        <div
-          className="inline-flex items-center gap-2.5 mb-4"
-          style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}
-        >
-          Prize Draws
+      {/* Page header on the raised panel surface */}
+      <header
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--line)',
+          padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>
+            {liveCount > 0 ? `${liveCount} live right now` : 'Prize draws'}
+          </p>
+          <h1 className="wup-h1" style={{ margin: '0 0 14px' }}>Live Competitions.</h1>
+          <p className="wup-body" style={{ maxWidth: '520px', margin: 0 }}>
+            Browse every live and upcoming competition.
+            {minPrice !== null ? ` Tickets from £${minPrice.toFixed(2)}.` : ''}
+          </p>
         </div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
-          All Competitions
-        </h1>
-        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '400px', lineHeight: 1.5 }}>
-          Browse all our live and upcoming competitions. Tickets from £14.90.
-        </p>
       </header>
 
-      {/* Competitions Content */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
-        <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '1440px' }}>
+      {/* Competitions content */}
+      <section style={{ padding: 'clamp(24px, 3.4vw, 44px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
           <Suspense fallback={<CompetitionsLoading />}>
             <CompetitionsContent
               competitions={data.competitions}

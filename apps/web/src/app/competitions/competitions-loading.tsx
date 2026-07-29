@@ -1,79 +1,47 @@
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-
-function CompetitionCardSkeleton() {
+/**
+ * Loading skeleton for the competitions list. Mirrors the real layout:
+ * a chip filter row, a results count, then fixture rows (not grid cards).
+ */
+function FixtureRowSkeleton() {
   return (
-    <Card className="overflow-hidden">
-      {/* Image skeleton */}
-      <div className="relative aspect-square">
-        <Skeleton className="h-full w-full" />
-      </div>
-
-      <CardContent className="p-4">
-        {/* Title skeleton */}
-        <Skeleton className="mb-2 h-5 w-3/4" />
-        <Skeleton className="mb-3 h-4 w-1/2" />
-
-        {/* Price skeleton */}
-        <div className="mb-3 flex items-baseline gap-1">
-          <Skeleton className="h-7 w-16" />
-          <Skeleton className="h-4 w-20" />
-        </div>
-
-        {/* Progress bar skeleton */}
-        <Skeleton className="mb-1.5 h-3 w-full" />
-        <Skeleton className="h-2 w-full" />
-
-        {/* Countdown skeleton */}
-        <div className="mt-3">
-          <Skeleton className="mb-1.5 h-3 w-24" />
-          <div className="flex gap-1">
-            <Skeleton className="h-10 w-10" />
-            <Skeleton className="h-10 w-10" />
-            <Skeleton className="h-10 w-10" />
-            <Skeleton className="h-10 w-10" />
-          </div>
-        </div>
-      </CardContent>
-
-      <CardFooter className="p-4 pt-0">
-        <Skeleton className="h-10 w-full" />
-      </CardFooter>
-    </Card>
+    <div
+      className="flex items-center animate-pulse"
+      style={{ gap: '10px', padding: 'clamp(11px, 1.4vw, 15px) 0', borderBottom: '1px solid var(--line)' }}
+    >
+      <span style={{ flex: 'none', width: '34px', height: '18px', background: 'var(--line)' }} />
+      <span style={{ flex: 'none', width: 'clamp(44px, 5vw, 58px)', aspectRatio: '1 / 1', background: 'var(--bg-3)', border: '1px solid var(--line)' }} />
+      <span style={{ flex: '1 1 160px', minWidth: '120px', paddingLeft: '4px' }}>
+        <span style={{ display: 'block', height: '19px', width: '62%', background: 'var(--line)', marginBottom: '7px' }} />
+        <span style={{ display: 'block', height: '12px', width: '40%', background: 'var(--line)' }} />
+      </span>
+      <span style={{ flex: 'none', width: 'clamp(80px, 10vw, 120px)', height: '22px', background: 'var(--line)' }} />
+      <span className="fixture-col-sold" style={{ flex: 'none', width: 'clamp(90px, 12vw, 150px)' }}>
+        <span style={{ display: 'block', height: '13px', width: '70%', background: 'var(--line)', marginBottom: '5px' }} />
+        <span style={{ display: 'block', height: '5px', background: 'var(--line)' }} />
+      </span>
+      <span className="fixture-col-closes" style={{ flex: 'none', width: 'clamp(74px, 9vw, 110px)', height: '14px', background: 'var(--line)' }} />
+    </div>
   );
 }
 
 export function CompetitionsLoading() {
   return (
     <div>
-      {/* Filters skeleton */}
-      <div className="mb-6 space-y-4">
-        {/* Category tabs skeleton */}
-        <div className="flex flex-wrap gap-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-20 rounded-full" />
-          ))}
-        </div>
-
-        {/* Status and sort skeleton */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Skeleton className="h-10 w-[140px]" />
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-4 w-16" />
-            <Skeleton className="h-10 w-[160px]" />
-          </div>
-        </div>
-
-        {/* Results count skeleton */}
-        <Skeleton className="h-4 w-48" />
-      </div>
-
-      {/* Grid skeleton */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <CompetitionCardSkeleton key={i} />
+      {/* Chip filter row */}
+      <div className="flex flex-wrap animate-pulse" style={{ gap: '8px', marginBottom: '22px' }}>
+        {Array.from({ length: 6 }).map((_, i) => (
+          <span key={i} style={{ height: '41px', width: i === 0 ? '74px' : '118px', background: 'var(--line)' }} />
         ))}
       </div>
+
+      {/* Results count */}
+      <span className="animate-pulse" style={{ display: 'block', height: '13px', width: '210px', background: 'var(--line)', marginBottom: '14px' }} />
+
+      {/* Column header rule + rows */}
+      <div style={{ height: '18px', borderBottom: '2px solid var(--accent)', marginBottom: '2px' }} />
+      {Array.from({ length: 8 }).map((_, i) => (
+        <FixtureRowSkeleton key={i} />
+      ))}
     </div>
   );
 }

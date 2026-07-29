@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CompCard } from '@/components/home/comp-card';
+import { FixtureHeader, FixtureRow } from '@/components/competition/fixture-row';
 
 interface Competition {
   id: string;
@@ -46,29 +46,20 @@ interface CompetitionsContentProps {
   filters: Filters;
 }
 
-// TODO: Réactiver les filtres quand on aura plus de compétitions simultanées
-// Category filters with emojis
-// const CATEGORY_FILTERS = [
-//   { value: 'all', label: 'All', emoji: '✨' },
-//   { value: 'pokemon', label: 'Pokemon', emoji: '🔥' },
-//   { value: 'one-piece', label: 'One Piece', emoji: '🏴‍☠️' },
-//   { value: 'sports', label: 'Sports', emoji: '⚽' },
-//   { value: 'memorabilia', label: 'Memorabilia', emoji: '🏆' },
-//   { value: 'other', label: 'Other', emoji: '🎴' },
-// ];
-
-// Status filters
-// const STATUS_FILTERS = [
-//   { value: 'all', label: 'All' },
-//   { value: 'live', label: 'Live' },
-//   { value: 'ending-soon', label: 'Ending Soon' },
-//   { value: 'coming-soon', label: 'Coming Soon' },
-// ];
+/** Values match CATEGORY_FILTER_MAP in ../page.tsx (server-side filtering). */
+const CATEGORY_FILTERS = [
+  { value: 'all', label: 'All' },
+  { value: 'pokemon', label: 'Pokémon' },
+  { value: 'one-piece', label: 'One Piece' },
+  { value: 'sports', label: 'Sports' },
+  { value: 'memorabilia', label: 'Memorabilia' },
+  { value: 'other', label: 'Other' },
+];
 
 export function CompetitionsContent({
   competitions,
   pagination,
-  filters: _filters,
+  filters,
 }: CompetitionsContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -124,93 +115,46 @@ export function CompetitionsContent({
 
   return (
     <div>
-      {/* TODO: Réactiver les filtres quand on aura plus de compétitions simultanées */}
-      {/* Category Filters - DISABLED
-      <div className="flex flex-wrap justify-center gap-2 mb-6">
+      {/* Category filter chips — server-side filtering via ?category */}
+      <div className="flex flex-wrap" style={{ gap: '8px', marginBottom: '22px' }}>
         {CATEGORY_FILTERS.map((filter) => {
           const isActive = filters.category === filter.value;
           return (
             <button
               key={filter.value}
               onClick={() => updateFilters('category', filter.value)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300"
-              style={{
-                background: isActive ? 'var(--ink)' : 'var(--surface)',
-                color: isActive ? '#ffffff' : 'var(--ink-dim)',
-                border: `1.5px solid ${isActive ? 'var(--ink)' : 'var(--line)'}`,
-                boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
-              }}
-            >
-              <span>{filter.emoji}</span>
-              <span>{filter.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      */}
-
-      {/* Status Filters - DISABLED
-      <div className="flex flex-wrap justify-center gap-2 mb-8">
-        {STATUS_FILTERS.map((filter) => {
-          const isActive = filters.status === filter.value;
-          return (
-            <button
-              key={filter.value}
-              onClick={() => updateFilters('status', filter.value)}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300"
-              style={{
-                background: isActive ? 'var(--ink)' : 'transparent',
-                color: isActive ? 'var(--accent)' : 'var(--ink-dim)',
-                border: `1.5px solid ${isActive ? 'var(--ink)' : 'var(--line)'}`,
-              }}
+              aria-pressed={isActive}
+              className="wup-chip"
             >
               {filter.label}
             </button>
           );
         })}
       </div>
-      */}
 
       {/* Results count */}
-      <div className="mb-6" style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>
+      <div className="wup-meta" style={{ marginBottom: '14px' }}>
         Showing {competitions.length} of {pagination.totalCount} competitions
       </div>
 
-      {/* Competitions Grid — sorted by urgency */}
+      {/* Fixture table — sorted by urgency */}
       {competitions.length > 0 ? (
-        <div className="comp-grid">
-          {sortedCompetitions.map((competition) => (
-            <CompCard
+        <div>
+          <FixtureHeader />
+          {sortedCompetitions.map((competition, i) => (
+            <FixtureRow
               key={competition.id}
-              slug={competition.slug}
-              title={competition.title}
-              mainImageUrl={competition.mainImageUrl}
-              category={competition.category}
-              prizeValue={competition.prizeValue}
-              ticketPrice={competition.ticketPrice}
-              totalTickets={competition.totalTickets}
-              soldTickets={competition.soldTickets}
-              status={competition.status}
-              pendingDraw={competition.pendingDraw}
+              competition={competition}
+              index={(pagination.page - 1) * 12 + i + 1}
             />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 text-6xl">🎴</div>
-          <h3 className="mb-2 text-lg font-semibold">No competitions live right now</h3>
-          <p className="mb-6" style={{ color: 'var(--ink-dim)' }}>
-            New drops land regularly — check back soon.
-          </p>
-          <button
-            onClick={() => router.push('/')}
-            className="font-semibold transition-all duration-150"
-            style={{
-              padding: '11px 18px', fontSize: '13px', borderRadius: '10px',
-              background: 'var(--surface)', border: '1.5px solid var(--ink)',
-              boxShadow: 'var(--shadow-sm)',
-            }}
-          >
+          <h3 className="wup-title mb-2">No competitions live right now</h3>
+          <p className="wup-body-sm mb-6">New drops land regularly — check back soon.</p>
+          <button onClick={() => router.push('/')} className="wup-btn wup-btn--secondary">
             Back to home
           </button>
         </div>
@@ -223,10 +167,10 @@ export function CompetitionsContent({
             disabled={!pagination.hasPrev}
             onClick={() => handlePageChange(pagination.page - 1)}
             aria-label="Previous page"
-            className="flex items-center justify-center w-10 h-10 transition-all duration-150"
+            className="flex items-center justify-center w-10 h-10 transition-colors duration-150"
             style={{
-              background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '10px',
-              boxShadow: 'var(--shadow-sm)',
+              background: 'transparent',
+              border: '1px solid var(--line-2)',
               color: pagination.hasPrev ? 'var(--ink)' : 'var(--ink-faint)',
               cursor: pagination.hasPrev ? 'pointer' : 'not-allowed',
               opacity: pagination.hasPrev ? 1 : 0.5,
@@ -251,13 +195,15 @@ export function CompetitionsContent({
                   onClick={() => handlePageChange(pageNum as number)}
                   aria-label={`Page ${pageNum}`}
                   aria-current={isCurrentPage ? 'page' : undefined}
-                  className="flex items-center justify-center w-10 h-10 font-semibold transition-all duration-150"
+                  className="flex items-center justify-center w-10 h-10 transition-colors duration-150"
                   style={{
-                    background: isCurrentPage ? 'var(--ink)' : 'var(--surface)',
-                    color: isCurrentPage ? 'var(--bg)' : 'var(--ink)',
-                    border: '1.5px solid var(--ink)',
-                    borderRadius: '10px',
-                    boxShadow: isCurrentPage ? 'var(--shadow)' : 'var(--shadow-sm)',
+                    background: isCurrentPage ? 'var(--accent)' : 'transparent',
+                    color: isCurrentPage ? '#0A0A0A' : 'var(--ink)',
+                    border: `1px solid ${isCurrentPage ? 'var(--accent)' : 'var(--line-2)'}`,
+                    fontFamily: 'var(--display)',
+                    fontWeight: 700,
+                    fontSize: '15px',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {pageNum}
@@ -270,10 +216,10 @@ export function CompetitionsContent({
             disabled={!pagination.hasNext}
             onClick={() => handlePageChange(pagination.page + 1)}
             aria-label="Next page"
-            className="flex items-center justify-center w-10 h-10 transition-all duration-150"
+            className="flex items-center justify-center w-10 h-10 transition-colors duration-150"
             style={{
-              background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '10px',
-              boxShadow: 'var(--shadow-sm)',
+              background: 'transparent',
+              border: '1px solid var(--line-2)',
               color: pagination.hasNext ? 'var(--ink)' : 'var(--ink-faint)',
               cursor: pagination.hasNext ? 'pointer' : 'not-allowed',
               opacity: pagination.hasNext ? 1 : 0.5,
