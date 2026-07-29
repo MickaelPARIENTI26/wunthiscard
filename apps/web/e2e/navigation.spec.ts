@@ -177,22 +177,22 @@ test.describe('Navigation - Breadcrumbs', () => {
 test.describe('Navigation - Page Titles', () => {
   test('should have correct title on home page', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/lucky tcg/i);
+    await expect(page).toHaveTitle(/winuprize/i);
   });
 
   test('should have correct title on competitions page', async ({ page }) => {
     await page.goto('/competitions');
-    await expect(page).toHaveTitle(/competition|lucky tcg/i);
+    await expect(page).toHaveTitle(/competition|winuprize/i);
   });
 
   test('should have correct title on FAQ page', async ({ page }) => {
     await page.goto('/faq');
-    await expect(page).toHaveTitle(/faq|frequently|questions|lucky tcg/i);
+    await expect(page).toHaveTitle(/faq|frequently|questions|winuprize/i);
   });
 
   test('should have correct title on login page', async ({ page }) => {
     await page.goto('/login');
-    await expect(page).toHaveTitle(/login|sign in|lucky tcg/i);
+    await expect(page).toHaveTitle(/login|sign in|winuprize/i);
   });
 });
 

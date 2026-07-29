@@ -8,7 +8,7 @@ import { releaseTicketsFromRedis } from '@/lib/redis';
 import { Button } from '@/components/ui/button';
 
 export const metadata: Metadata = {
-  title: 'Checkout Cancelled - Lucky TCG',
+  title: 'Checkout Cancelled - WinUPrize',
   description: 'Your checkout was cancelled',
   robots: { index: false, follow: false },
 };

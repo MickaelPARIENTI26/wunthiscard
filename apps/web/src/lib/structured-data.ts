@@ -1,6 +1,6 @@
 import { siteConfig } from './seo';
 
-const BASE_URL = 'https://lucky-tcg.com';
+const BASE_URL = 'https://winuprize.com';
 
 /**
  * Schema.org JSON-LD generators for structured data
@@ -17,7 +17,7 @@ export function generateOrganizationSchema() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     '@id': `${BASE_URL}/#organization`,
-    name: 'Lucky TCG',
+    name: 'WinUPrize',
     url: BASE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -40,7 +40,7 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      email: 'contact@lucky-tcg.com',
+      email: 'contact@winuprize.com',
       url: `${BASE_URL}/contact`,
       availableLanguage: 'English',
     },
@@ -61,7 +61,7 @@ export function generateWebsiteSchema() {
     '@type': 'WebSite',
     '@id': `${BASE_URL}/#website`,
     url: BASE_URL,
-    name: 'Lucky TCG',
+    name: 'WinUPrize',
     description: siteConfig.description,
     publisher: {
       '@id': `${BASE_URL}/#organization`,
@@ -110,7 +110,7 @@ export function generateCompetitionSchema(comp: {
       comp.descriptionShort ??
       `Enter to win ${comp.title} — a UK skill-based prize competition with a free entry route.`,
     url,
-    brand: { '@type': 'Brand', name: 'Lucky TCG' },
+    brand: { '@type': 'Brand', name: 'WinUPrize' },
     offers: {
       '@type': 'Offer',
       url,

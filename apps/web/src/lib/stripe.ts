@@ -15,7 +15,7 @@ export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 // that bug (see tests/unit/drop-ui.test.ts).
 export { calculateBonusTickets } from '@winucard/shared/utils';
 
-// Generate order number: LTC-YYYYMMDD-XXXXXXXX
+// Generate order number: WUP-YYYYMMDD-XXXXXXXX
 // 8 hex chars from CSPRNG (~4.3B space/day). Uniqueness is still guaranteed by the
 // DB @unique constraint + a retry at the call site; this just makes collisions
 // astronomically unlikely in the first place.
@@ -27,5 +27,5 @@ export function generateOrderNumber(): string {
   const random = Array.from(bytes, (b) => b.toString(16).padStart(2, '0'))
     .join('')
     .toUpperCase();
-  return `LTC-${dateStr}-${random}`;
+  return `WUP-${dateStr}-${random}`;
 }

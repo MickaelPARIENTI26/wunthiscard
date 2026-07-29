@@ -83,7 +83,7 @@ export function Sidebar() {
                 backgroundClip: 'text',
               }}
             >
-              Lucky TCG
+              WinUPrize
             </span>
           </Link>
         )}

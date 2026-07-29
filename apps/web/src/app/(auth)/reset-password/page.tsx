@@ -6,7 +6,7 @@ import { ResetPasswordContent } from './reset-password-content';
 
 export const metadata: Metadata = {
   title: 'Reset Password',
-  description: 'Reset your Lucky TCG password',
+  description: 'Reset your WinUPrize password',
 };
 
 function ResetPasswordLoading() {

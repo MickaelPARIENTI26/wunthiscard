@@ -39,10 +39,10 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://lucky-tcg.com'),
+  metadataBase: new URL('https://winuprize.com'),
   title: {
-    default: 'Lucky TCG - Win Collectible Cards & Memorabilia',
-    template: '%s | Lucky TCG',
+    default: 'WinUPrize - Win Collectible Cards & Memorabilia',
+    template: '%s | WinUPrize',
   },
   description:
     'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more. UK-based prize competitions with free entry route available.',
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     'signed memorabilia',
     'skill competition',
   ],
-  authors: [{ name: 'Lucky TCG' }],
-  creator: 'Lucky TCG',
-  publisher: 'Lucky TCG',
+  authors: [{ name: 'WinUPrize' }],
+  creator: 'WinUPrize',
+  publisher: 'WinUPrize',
   formatDetection: {
     email: false,
     address: false,
@@ -69,9 +69,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_GB',
-    url: 'https://lucky-tcg.com',
-    siteName: 'Lucky TCG',
-    title: 'Lucky TCG - Win Collectible Cards & Memorabilia',
+    url: 'https://winuprize.com',
+    siteName: 'WinUPrize',
+    title: 'WinUPrize - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
     // No explicit `images` here: Next.js automatically serves the dynamic
@@ -79,11 +79,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Lucky TCG - Win Collectible Cards & Memorabilia',
+    title: 'WinUPrize - Win Collectible Cards & Memorabilia',
     description:
       'Enter to win rare Pokemon cards, One Piece TCG, sports memorabilia and more.',
-    site: '@luckytcg',
-    creator: '@luckytcg',
+    site: '@winuprize',
+    creator: '@winuprize',
     // No explicit `images` here: Next.js automatically serves the dynamic
     // twitter-image.tsx route. Setting images would suppress that fallback.
   },

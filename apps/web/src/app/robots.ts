@@ -1,9 +1,9 @@
 import { MetadataRoute } from 'next';
 
-const BASE_URL = 'https://lucky-tcg.com';
+const BASE_URL = 'https://winuprize.com';
 
 /**
- * Robots.txt configuration for Lucky TCG
+ * Robots.txt configuration for WinUPrize
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots
  */
 export default function robots(): MetadataRoute.Robots {

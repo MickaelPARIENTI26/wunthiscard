@@ -205,7 +205,7 @@ async function exportDetailed(
     },
   ];
 
-  const filename = `Lucky TCG-${competition.id}-${safeName}-participants-${dateStr}`;
+  const filename = `WinUPrize-${competition.id}-${safeName}-participants-${dateStr}`;
 
   // Audit log
   await prisma.auditLog.create({
@@ -350,7 +350,7 @@ async function exportSummary(
     },
   ];
 
-  const filename = `Lucky TCG-${competition.id}-${safeName}-summary-${dateStr}`;
+  const filename = `WinUPrize-${competition.id}-${safeName}-summary-${dateStr}`;
 
   // Audit log
   await prisma.auditLog.create({

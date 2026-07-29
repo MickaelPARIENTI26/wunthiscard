@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright E2E Test Configuration for Lucky TCG
+ * Playwright E2E Test Configuration for WinUPrize
  *
  * Commands:
  *   npm run test:e2e          - Run all tests headless

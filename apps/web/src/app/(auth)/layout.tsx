@@ -18,8 +18,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             className="inline-flex items-center gap-2.5"
             style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700 }}
           >
-            <Image src="/logo.png" alt="Lucky TCG logo" width={36} height={36} priority />
-            Lucky TCG
+            <Image src="/logo.png" alt="WinUPrize logo" width={36} height={36} priority />
+            WinUPrize
           </Link>
         </div>
 

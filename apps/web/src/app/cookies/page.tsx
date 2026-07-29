@@ -5,7 +5,7 @@ import { LegalPage } from '@/components/legal/legal-page';
 export const metadata: Metadata = {
   title: 'Cookie Policy',
   description:
-    'Cookie policy for Lucky TCG. Learn about the cookies we use and how to manage your preferences.',
+    'Cookie policy for WinUPrize. Learn about the cookies we use and how to manage your preferences.',
 };
 
 interface TableOfContentsItem {
@@ -34,25 +34,25 @@ interface CookieInfo {
 const essentialCookies: CookieInfo[] = [
   {
     name: 'next-auth.session-token',
-    provider: 'Lucky TCG',
+    provider: 'WinUPrize',
     purpose: 'Maintains your logged-in session securely',
     expiry: '24 hours',
   },
   {
     name: 'next-auth.csrf-token',
-    provider: 'Lucky TCG',
+    provider: 'WinUPrize',
     purpose: 'Protects against cross-site request forgery attacks',
     expiry: 'Session',
   },
   {
     name: 'next-auth.callback-url',
-    provider: 'Lucky TCG',
+    provider: 'WinUPrize',
     purpose: 'Stores the URL to redirect to after authentication',
     expiry: 'Session',
   },
   {
     name: 'cookie-consent',
-    provider: 'Lucky TCG',
+    provider: 'WinUPrize',
     purpose: 'Remembers your cookie preferences',
     expiry: '1 year',
   },
@@ -101,7 +101,7 @@ export default function CookiesPage() {
     <LegalPage title="Cookie Policy" lastUpdated={`Last updated: ${lastUpdated}`} toc={tableOfContents}>
       <div>
             <p className="lead">
-              This Cookie Policy explains how YD PARTNERS LTD (trading as Lucky TCG) uses cookies and
+              This Cookie Policy explains how YD PARTNERS LTD (trading as WinUPrize) uses cookies and
               similar technologies when you visit our website. By using our
               website, you consent to the use of cookies as described in this
               policy.
@@ -388,13 +388,13 @@ export default function CookiesPage() {
                 <li>
                   Email:{' '}
                   <a
-                    href="mailto:contact@lucky-tcg.com"
+                    href="mailto:contact@winuprize.com"
                     className="text-primary"
                   >
-                    contact@lucky-tcg.com
+                    contact@winuprize.com
                   </a>
                 </li>
-                <li>Post: YD PARTNERS LTD (Lucky TCG), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
+                <li>Post: YD PARTNERS LTD (WinUPrize), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ, United Kingdom</li>
               </ul>
               <p>
                 For more information about how we handle your personal data,

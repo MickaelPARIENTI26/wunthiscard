@@ -11,11 +11,11 @@ import { formatDate, formatPrice } from '@winucard/shared/utils';
 export const metadata: Metadata = {
   title: 'Winners',
   description:
-    'See all the lucky winners of Lucky TCG prize competitions. Real prizes, real winners. You could be next!',
+    'See all the lucky winners of WinUPrize prize competitions. Real prizes, real winners. You could be next!',
   openGraph: {
-    title: 'Winners | Lucky TCG',
+    title: 'Winners | WinUPrize',
     description:
-      'See all the lucky winners of Lucky TCG prize competitions. Real prizes, real winners. You could be next!',
+      'See all the lucky winners of WinUPrize prize competitions. Real prizes, real winners. You could be next!',
   },
 };
 

@@ -7,22 +7,22 @@ import { ContactForm } from './contact-form';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
-  description: 'Get in touch with the Lucky TCG team. We reply to every message within 24 hours.',
+  description: 'Get in touch with the WinUPrize team. We reply to every message within 24 hours.',
   openGraph: {
-    title: 'Contact Us | Lucky TCG',
+    title: 'Contact Us | WinUPrize',
     description: 'Talk to a human. Our team replies from London — not a call centre.',
   },
 };
 
 const infoRows = [
-  { label: 'Email', value: 'contact@lucky-tcg.com', meta: 'General enquiries + support' },
-  { label: 'Postal / HQ', value: 'YD PARTNERS LTD (Lucky TCG)\n71-75 Shelton Street\nCovent Garden\nLondon WC2H 9JQ', meta: 'Also the address for free postal entries.' },
+  { label: 'Email', value: 'contact@winuprize.com', meta: 'General enquiries + support' },
+  { label: 'Postal / HQ', value: 'YD PARTNERS LTD (WinUPrize)\n71-75 Shelton Street\nCovent Garden\nLondon WC2H 9JQ', meta: 'Also the address for free postal entries.' },
   { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
 ];
 
 const socials = [
-  { href: 'https://www.instagram.com/luckytcg/', label: 'Instagram' },
-  { href: 'https://www.tiktok.com/@luckytcg', label: 'TikTok' },
+  { href: 'https://www.instagram.com/winuprize/', label: 'Instagram' },
+  { href: 'https://www.tiktok.com/@winuprize', label: 'TikTok' },
 ];
 
 export default function ContactPage() {
@@ -47,7 +47,7 @@ export default function ContactPage() {
         </h1>
 
         <p style={{ fontSize: '17px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '620px', margin: '0 auto' }}>
-          Question about a draw, a prize, your account, or the free postal route? Our team replies from the Lucky TCG HQ in London — not a call centre.
+          Question about a draw, a prize, your account, or the free postal route? Our team replies from the WinUPrize HQ in London — not a call centre.
         </p>
       </section>
 

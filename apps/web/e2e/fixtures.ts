@@ -5,12 +5,12 @@ import { test as base, expect, Page } from '@playwright/test';
  */
 export const TEST_USERS = {
   superAdmin: {
-    email: 'admin@lucky-tcg.com',
+    email: 'admin@winuprize.com',
     password: 'Admin123!',
     name: 'Super Admin',
   },
   admin: {
-    email: 'moderator@lucky-tcg.com',
+    email: 'moderator@winuprize.com',
     password: 'Admin123!',
     name: 'Mod Admin',
   },

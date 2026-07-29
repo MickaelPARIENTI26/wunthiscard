@@ -28,9 +28,9 @@ export function ReferralClientSection({ referralLink, referralCode: _referralCod
     }
   };
 
-  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`Join Lucky TCG and win amazing prizes! Use my referral link: ${referralLink}`)}`;
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Win collectible cards and prizes on @Lucky TCG! Use my link: ${referralLink}`)}`;
-  const emailUrl = `mailto:?subject=${encodeURIComponent('Win amazing prizes on Lucky TCG!')}&body=${encodeURIComponent(`Hey! Check out Lucky TCG - you can win collectible cards and memorabilia. Use my referral link to sign up: ${referralLink}`)}`;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`Join WinUPrize and win amazing prizes! Use my referral link: ${referralLink}`)}`;
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Win collectible cards and prizes on @WinUPrize! Use my link: ${referralLink}`)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent('Win amazing prizes on WinUPrize!')}&body=${encodeURIComponent(`Hey! Check out WinUPrize - you can win collectible cards and memorabilia. Use my referral link to sign up: ${referralLink}`)}`;
 
   return (
     <div>

@@ -93,7 +93,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
                 }}
               >
                 <span>{lastUpdated}</span>
-                <span>Questions? contact@lucky-tcg.com</span>
+                <span>Questions? contact@winuprize.com</span>
               </div>
             </article>
           </div>

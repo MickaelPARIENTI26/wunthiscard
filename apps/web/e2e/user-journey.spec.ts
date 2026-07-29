@@ -1,5 +1,5 @@
 /**
- * E2E Test — Complete User Journey on Lucky TCG
+ * E2E Test — Complete User Journey on WinUPrize
  *
  * This test simulates a complete user journey from registration to ticket purchase.
  * Run with: cd apps/web && npm run test:e2e -- user-journey.spec.ts

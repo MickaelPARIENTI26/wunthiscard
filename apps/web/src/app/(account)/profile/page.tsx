@@ -5,7 +5,7 @@ import { ProfileForm } from './profile-form';
 import { AddressSection } from './address-section';
 
 export const metadata = {
-  title: 'Profile | Lucky TCG',
+  title: 'Profile | WinUPrize',
   description: 'Manage your personal information and profile settings',
 };
 

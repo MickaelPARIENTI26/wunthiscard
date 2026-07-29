@@ -17,10 +17,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'Admin Panel | Lucky TCG',
-    template: '%s | Lucky TCG Admin',
+    default: 'Admin Panel | WinUPrize',
+    template: '%s | WinUPrize Admin',
   },
-  description: 'Lucky TCG Administration Panel',
+  description: 'WinUPrize Administration Panel',
   robots: {
     index: false,
     follow: false,

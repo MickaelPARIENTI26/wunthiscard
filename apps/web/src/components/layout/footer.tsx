@@ -2,9 +2,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 const socialButtons = [
-  { href: 'https://www.instagram.com/luckytcg/', label: 'Instagram' },
-  { href: 'https://www.tiktok.com/@luckytcg', label: 'TikTok' },
-  { href: 'https://www.facebook.com/luckytcg', label: 'Facebook' },
+  { href: 'https://www.instagram.com/winuprize/', label: 'Instagram' },
+  { href: 'https://www.tiktok.com/@winuprize', label: 'TikTok' },
+  { href: 'https://www.facebook.com/winuprize', label: 'Facebook' },
 ];
 
 const platformLinks = [
@@ -42,8 +42,8 @@ export function Footer() {
               className="inline-flex items-center gap-2 justify-center"
               style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '10px' }}
             >
-              <Image src="/logo.png" alt="Lucky TCG logo" width={24} height={24} />
-              Lucky TCG
+              <Image src="/logo.png" alt="WinUPrize logo" width={24} height={24} />
+              WinUPrize
             </Link>
             <p style={{ color: 'var(--ink-dim)', fontSize: '11px', lineHeight: 1.5, marginBottom: '12px' }}>
               UK&apos;s premium skill-based card competition platform. 18+.
@@ -74,8 +74,8 @@ export function Footer() {
                 className="inline-flex items-center gap-2.5"
                 style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}
               >
-                <Image src="/logo.png" alt="Lucky TCG logo" width={28} height={28} />
-                Lucky TCG
+                <Image src="/logo.png" alt="WinUPrize logo" width={28} height={28} />
+                WinUPrize
               </Link>
               <p style={{ color: 'var(--ink-dim)', fontSize: '13px', lineHeight: 1.55, maxWidth: '280px', marginBottom: '18px' }}>
                 UK&apos;s premium skill-based card competition platform. Must be 18+. Please play responsibly.
@@ -100,7 +100,7 @@ export function Footer() {
           className="flex flex-wrap items-center justify-between gap-3"
           style={{ borderTop: '1.5px dashed var(--ink)', paddingTop: '16px', fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.1em', color: 'var(--ink-faint)', textTransform: 'uppercase' }}
         >
-          <span>© {new Date().getFullYear()} Lucky TCG</span>
+          <span>© {new Date().getFullYear()} WinUPrize</span>
           <span>🔒 SSL · ⚑ UK Registered</span>
         </div>
       </div>
