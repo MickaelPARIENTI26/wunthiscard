@@ -1,8 +1,6 @@
-'use client';
-
 import Link from 'next/link';
-import { HeroCarousel } from './hero-carousel';
-import { Chip } from '@/components/ui/chip';
+import Image from 'next/image';
+import { ScoreboardClock } from '@/components/common/scoreboard-clock';
 
 interface Competition {
   slug: string;
@@ -10,6 +8,10 @@ interface Competition {
   mainImageUrl: string;
   category: string;
   prizeValue: number;
+  ticketPrice: number;
+  totalTickets: number | null;
+  soldTickets: number;
+  drawDate: Date;
   status: string;
 }
 
@@ -17,149 +19,192 @@ interface HomeHeroProps {
   competitions: Competition[];
 }
 
-const heroImages = [
-  { slug: 'charizard', title: 'Charizard PSA 10', mainImageUrl: '/images/hero/charizard.webp', category: 'POKEMON', prizeValue: 150000, status: 'ACTIVE' },
-  { slug: 'luffy', title: 'Luffy Gear 5 Alt Art', mainImageUrl: '/images/hero/luffy.webp', category: 'ONE_PIECE', prizeValue: 25000, status: 'ACTIVE' },
-  { slug: 'messi', title: 'Messi Signed Jersey', mainImageUrl: '/images/hero/messi.webp', category: 'SPORTS_FOOTBALL', prizeValue: 35000, status: 'ACTIVE' },
-  { slug: 'jordan', title: 'Jordan Rookie PSA 10', mainImageUrl: '/images/hero/michael-jordan.webp', category: 'SPORTS_BASKETBALL', prizeValue: 80000, status: 'ACTIVE' },
-];
+const CATEGORY_LABELS: Record<string, string> = {
+  POKEMON: 'Pokémon',
+  ONE_PIECE: 'One Piece',
+  SPORTS_FOOTBALL: 'Football',
+  SPORTS_BASKETBALL: 'Basketball',
+  SPORTS_OTHER: 'Sports',
+  MEMORABILIA: 'Memorabilia',
+  YUGIOH: 'Yu-Gi-Oh!',
+  MTG: 'MTG',
+  OTHER: 'Featured',
+};
 
+function formatPrizeValue(value: number): string {
+  return `£${value.toLocaleString('en-GB')}`;
+}
+
+/**
+ * Matchday Gold hero (spec screen 3): three decorative layers (skewed wash,
+ * orbiting rays, breathing glow), staggered entrance copy column on the left,
+ * featured-competition panel with shimmer/scanline image well, scoreboard
+ * countdown and progress bar on the right.
+ */
 export function HomeHero({ competitions }: HomeHeroProps) {
-  return (
-    <section className="mx-auto px-5 sm:px-8 pt-6 pb-10 sm:pt-12 sm:pb-16" style={{ maxWidth: '1440px' }}>
-      <div className="hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: '48px', alignItems: 'center', minHeight: '620px' }}>
-        {/* Copy column */}
-        <div className="hero-copy">
-          {/* Eyebrow pill */}
-          <div
-            className="inline-flex items-center gap-2.5"
-            style={{
-              padding: '7px 14px',
-              background: 'var(--ink)',
-              color: 'var(--accent)',
-              borderRadius: '999px',
-              fontFamily: 'var(--mono)',
-              fontSize: '11px',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              marginBottom: '20px',
-              fontWeight: 600,
-            }}
-          >
-            <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
-            {competitions.length} LIVE COMPETITION{competitions.length === 1 ? '' : 'S'}
-          </div>
+  const featured = competitions[0] ?? null;
+  const liveCount = competitions.length;
 
-          {/* Title */}
-          <h1
-            className="hero-title"
+  const prices = competitions.map((c) => c.ticketPrice).filter((p) => p > 0);
+  const minPrice = prices.length ? Math.min(...prices) : null;
+
+  const soldPct = featured?.totalTickets
+    ? Math.min(100, Math.round((featured.soldTickets / featured.totalTickets) * 100))
+    : 0;
+  const ticketsLeft = featured?.totalTickets
+    ? Math.max(0, featured.totalTickets - featured.soldTickets)
+    : null;
+
+  return (
+    <section className="wup-hero">
+      {/* Decorative layers — all pointer-events:none */}
+      <div className="wup-hero__wash" aria-hidden="true" />
+      <div className="wup-hero__rays" aria-hidden="true" />
+      <div className="wup-hero__glow" aria-hidden="true" />
+
+      <div
+        className="relative mx-auto flex flex-wrap items-center"
+        style={{
+          maxWidth: '1400px',
+          gap: 'clamp(28px, 4vw, 56px)',
+          padding: 'clamp(38px, 5.5vw, 84px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        {/* Copy column */}
+        <div style={{ flex: '1 1 420px', maxWidth: '660px' }}>
+          {/* Live badge — gold-bright fill, blinking black dot, skew-in then gold ring pulse */}
+          <span
+            className="wup-in-skew wup-ring inline-flex items-center"
             style={{
+              gap: '9px',
+              padding: '6px 13px',
+              background: 'var(--gold-bright)',
+              color: '#0A0A0A',
               fontFamily: 'var(--display)',
-              fontSize: 'clamp(38px, 8vw, 124px)',
-              lineHeight: 0.9,
-              letterSpacing: '-0.04em',
               fontWeight: 700,
-              margin: '0 0 16px',
+              fontSize: '14px',
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              marginBottom: '22px',
             }}
           >
-            Win The Card<br />
-            <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--hot)', textDecorationThickness: '5px', textUnderlineOffset: '6px' }}>
-              Of Your
-            </span>{' '}
-            <Chip color="accent">Dreams</Chip>
+            <span
+              className="wup-dot wup-onair"
+              style={{ width: '8px', height: '8px', background: '#0A0A0A' }}
+              aria-hidden="true"
+            />
+            {liveCount > 0 ? `${liveCount} Live competition${liveCount === 1 ? '' : 's'}` : 'Live draws'}
+          </span>
+
+          {/* H1 — two lines, second in gold */}
+          <h1
+            className="wup-h1-hero wup-in-slam"
+            style={{ animationDelay: '0.05s', margin: '0 0 18px' }}
+          >
+            Win the card
+            <br />
+            <span style={{ color: 'var(--accent)' }}>of your dreams</span>
           </h1>
 
-          {/* Subtitle */}
-          <p className="hero-subtitle" style={{ fontSize: '17px', lineHeight: 1.5, color: 'var(--ink-dim)', maxWidth: '460px', margin: '0 0 22px' }}>
-            UK&apos;s biggest card comps — <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>Pokémon, One Piece, Football &amp; Basketball</b>. Tickets from <b style={{ color: 'var(--ink)', fontWeight: 700, background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>£14.90</b>. Independent draws. Real cards delivered to your door.
+          {/* Body copy */}
+          <p
+            className="wup-body wup-in-wipe"
+            style={{ animationDelay: '0.3s', maxWidth: '540px', margin: '0 0 26px' }}
+          >
+            The UK&apos;s premium skill-based card competitions — Pokémon, One Piece,
+            Football &amp; Basketball.{minPrice !== null ? ` Tickets from £${minPrice.toFixed(2)}.` : ''} Independent
+            draws. Real graded cards delivered to your door.
           </p>
 
-          {/* CTAs */}
-          <div className="flex flex-wrap gap-2.5" style={{ marginBottom: '12px' }}>
-            <Link
-              href="/competitions"
-              className="hero-cta-primary inline-flex items-center justify-center font-semibold transition-all duration-150"
-              style={{
-                padding: '15px 26px', fontSize: '15px', borderRadius: '12px',
-                background: 'var(--hot)', color: '#fff',
-                border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow)',
-              }}
-            >
+          {/* Buttons */}
+          <div
+            className="wup-in-slam flex flex-wrap items-center"
+            style={{ animationDelay: '0.42s', gap: '12px', marginBottom: '20px' }}
+          >
+            <Link href="/competitions" className="wup-btn wup-btn--primary">
               Browse Competitions →
             </Link>
-            <Link
-              href="/how-it-works"
-              className="hero-cta-secondary inline-flex items-center justify-center font-semibold transition-all duration-150"
-              style={{
-                padding: '15px 26px', fontSize: '15px', borderRadius: '12px',
-                background: 'var(--surface)', color: 'var(--ink)',
-                border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow)',
-              }}
-            >
-              How it works
+            <Link href="/how-it-works" className="wup-btn wup-btn--secondary">
+              How It Works
             </Link>
           </div>
 
-          {/* Draw-provider trust note — name only, no link */}
-          <p style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--ink-dim)', margin: 0 }}>
-            <span aria-hidden style={{ fontSize: '15px' }}>🎲</span>
-            <span>
-              Winners drawn independently by{' '}
-              <strong style={{ color: 'var(--ink)', fontWeight: 700 }}>RandomDraws.com</strong>
-            </span>
+          {/* Draw-partner line */}
+          <p className="wup-in-fade" style={{ animationDelay: '0.55s', fontSize: '14.5px', color: 'var(--ink-dim)' }}>
+            🎲 Winners drawn independently by{' '}
+            <b style={{ color: 'var(--accent)', fontWeight: 600 }}>RandomDraws.com</b>
           </p>
         </div>
 
-        {/* Visual column — the card carousel, now shown at every width */}
-        <div className="hero-visual">
-          <HeroCarousel cards={heroImages} />
-        </div>
+        {/* Featured competition panel */}
+        {featured && (
+          <div className="wup-panel wup-in-slam" style={{ animationDelay: '0.25s', flex: '1 1 380px', maxWidth: '520px' }}>
+            <Link href={`/competitions/${featured.slug}`} className="block" style={{ color: 'inherit' }}>
+              {/* Image well 16/11 with shimmer sweep, scanline and diagonal-cut badge */}
+              <div className="wup-well" style={{ aspectRatio: '16 / 11' }}>
+                {featured.mainImageUrl && (
+                  <Image
+                    src={featured.mainImageUrl}
+                    alt={featured.title}
+                    fill
+                    sizes="(max-width: 980px) 100vw, 520px"
+                    style={{ objectFit: 'contain', padding: '18px' }}
+                    priority
+                  />
+                )}
+                <span className="wup-well__shimmer" aria-hidden="true" />
+                <span className="wup-well__scanline" aria-hidden="true" />
+                <span className="wup-badge-cut">{CATEGORY_LABELS[featured.category] ?? featured.category}</span>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding: 'clamp(16px, 2.2vw, 24px)' }}>
+                <h2 className="wup-title" style={{ margin: '0 0 6px' }}>{featured.title}</h2>
+                <p className="wup-meta" style={{ margin: '0 0 14px' }}>
+                  Prize value {formatPrizeValue(featured.prizeValue)}
+                  {featured.totalTickets ? ` · odds 1 in ${featured.totalTickets.toLocaleString('en-GB')}` : ''}
+                </p>
+
+                {/* Scoreboard countdown */}
+                <div style={{ marginBottom: '14px' }}>
+                  <ScoreboardClock targetDate={featured.drawDate} />
+                </div>
+
+                {/* Progress bar */}
+                <div className="wup-bar wup-bar--lg" style={{ marginBottom: '8px' }}>
+                  <div className="wup-bar__fill" style={{ width: `${Math.max(soldPct, 2)}%` }} />
+                  <span className="wup-bar__sheen" aria-hidden="true" />
+                </div>
+                <div className="flex items-baseline justify-between" style={{ marginBottom: '16px' }}>
+                  <span className="wup-meta">
+                    {featured.totalTickets
+                      ? `${featured.soldTickets.toLocaleString('en-GB')} of ${featured.totalTickets.toLocaleString('en-GB')} sold`
+                      : `${featured.soldTickets.toLocaleString('en-GB')} entries`}
+                  </span>
+                  {ticketsLeft !== null && (
+                    <span className="wup-meta" style={{ color: 'var(--accent)' }}>
+                      {ticketsLeft.toLocaleString('en-GB')} left
+                    </span>
+                  )}
+                </div>
+
+                {/* Price + CTA */}
+                <div className="flex flex-wrap items-center justify-between" style={{ gap: '12px' }}>
+                  <div>
+                    <div className="wup-meta">Per ticket</div>
+                    <div className="wup-num" style={{ fontSize: '30px', color: 'var(--accent)' }}>
+                      {featured.ticketPrice > 0 ? `£${featured.ticketPrice.toFixed(2)}` : 'FREE'}
+                    </div>
+                  </div>
+                  <span className="wup-btn wup-btn--primary" style={{ padding: '14px 24px', fontSize: '15px' }}>
+                    Enter Now
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
+        )}
       </div>
-
-      {/* Responsive */}
-      <style>{`
-        @media (max-width: 960px) {
-          .hero-grid {
-            grid-template-columns: 1fr !important;
-            min-height: auto !important;
-            gap: 8px !important;
-          }
-          /* Visual first, copy below — the card is the hook, the words follow.
-             Extra margin clears the carousel's own overlapping info pill (top)
-             and prev/next arrows (bottom), which sit outside its box via
-             position:absolute and would otherwise collide with the copy below. */
-          .hero-visual { order: 1; margin-top: 28px; margin-bottom: 56px; }
-          .hero-copy { order: 2; text-align: center; }
-          .hero-copy > * { margin-left: auto !important; margin-right: auto !important; }
-
-          /* Flatten the 3D coverflow on mobile: perspective + preserve-3d + the
-             clipped rounded-corner slides can paint solid black on some mobile
-             GPU compositors. A flat stack (no rotateY, no perspective) keeps the
-             same peeking-cards look with none of the render risk. */
-          .carousel { perspective: none; }
-          .carousel-track { transform-style: flat; }
-          .carousel-slide.prev-1 { transform: translateX(-70%) scale(0.8); }
-          .carousel-slide.next-1 { transform: translateX(70%) scale(0.8); }
-          .carousel-slide.prev-2 { transform: translateX(-125%) scale(0.62); }
-          .carousel-slide.next-2 { transform: translateX(125%) scale(0.62); }
-        }
-        @media (max-width: 640px) {
-          .carousel { height: 320px; }
-          .carousel-track { width: 230px; height: 320px; }
-          .hero-title { font-size: 42px !important; }
-          .hero-subtitle { font-size: 15px !important; }
-        }
-        @media (max-width: 380px) {
-          .carousel { height: 280px; }
-          .carousel-track { width: 200px; height: 280px; }
-        }
-        @media (hover: hover) {
-          .hero-cta-primary:hover, .hero-cta-secondary:hover {
-            box-shadow: var(--shadow-lg);
-            transform: translate(-2px, -2px);
-          }
-        }
-      `}</style>
     </section>
   );
 }
