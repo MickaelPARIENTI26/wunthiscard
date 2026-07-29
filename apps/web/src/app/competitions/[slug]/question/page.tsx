@@ -126,7 +126,7 @@ export default async function QuestionPage({ params }: { params: Promise<PagePar
       {/* Step 02 — Skill Question */}
       <section className="enter-step enter-step-live">
         <div className="enter-step-head">
-          <span className="step-num" style={{ background: 'var(--warn)' }}>
+          <span className="step-num">
             02
           </span>
           <div>

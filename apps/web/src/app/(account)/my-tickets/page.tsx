@@ -21,12 +21,12 @@ type CompetitionStatus =
 
 const STATUS_CONFIG: Record<CompetitionStatus, { label: string; bg: string; color: string }> = {
   DRAFT: { label: 'Draft', bg: 'var(--bg-2)', color: 'var(--ink-faint)' },
-  UPCOMING: { label: 'Upcoming', bg: 'var(--pop)', color: '#fff' },
+  UPCOMING: { label: 'Upcoming', bg: 'var(--pop)', color: '#0A0A0A' },
   ACTIVE: { label: 'Live', bg: 'var(--accent)', color: 'var(--ink)' },
   SOLD_OUT: { label: 'Sold out', bg: 'var(--warn)', color: 'var(--ink)' },
-  DRAWING: { label: 'Drawing', bg: 'var(--pop)', color: '#fff' },
+  DRAWING: { label: 'Drawing', bg: 'var(--pop)', color: '#0A0A0A' },
   COMPLETED: { label: 'Completed', bg: 'var(--bg-2)', color: 'var(--ink-faint)' },
-  CANCELLED: { label: 'Cancelled', bg: 'var(--hot)', color: '#fff' },
+  CANCELLED: { label: 'Cancelled', bg: 'var(--hot)', color: '#0A0A0A' },
 };
 
 function StatusPill({ status }: { status: CompetitionStatus }) {

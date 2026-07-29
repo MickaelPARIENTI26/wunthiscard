@@ -141,7 +141,7 @@ export default async function CheckoutPage({
         {enterHead}
         <section className="enter-step enter-step-live">
           <div className="enter-step-head">
-            <span className="step-num" style={{ background: 'var(--pop)', color: '#fff' }}>
+            <span className="step-num">
               03
             </span>
             <div>
@@ -170,7 +170,7 @@ export default async function CheckoutPage({
       {enterHead}
       <section className="enter-step enter-step-live">
         <div className="enter-step-head">
-          <span className="step-num" style={{ background: 'var(--pop)', color: '#fff' }}>
+          <span className="step-num">
             03
           </span>
           <div>

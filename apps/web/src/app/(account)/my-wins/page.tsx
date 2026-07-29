@@ -28,8 +28,8 @@ const DELIVERY_CONFIG: Record<
   { label: string; bg: string; color: string; icon: typeof Package }
 > = {
   pending: { label: 'Pending claim', bg: 'var(--warn)', color: 'var(--ink)', icon: Trophy },
-  claimed: { label: 'Claimed', bg: 'var(--pop)', color: '#fff', icon: Package },
-  shipped: { label: 'Shipped', bg: 'var(--pop)', color: '#fff', icon: Truck },
+  claimed: { label: 'Claimed', bg: 'var(--pop)', color: '#0A0A0A', icon: Package },
+  shipped: { label: 'Shipped', bg: 'var(--pop)', color: '#0A0A0A', icon: Truck },
   delivered: { label: 'Delivered', bg: 'var(--accent)', color: 'var(--ink)', icon: CheckCircle },
 };
 
