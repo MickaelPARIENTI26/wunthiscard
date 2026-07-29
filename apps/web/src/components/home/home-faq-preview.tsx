@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Eyebrow } from '@/components/ui/eyebrow';
-import { Button } from '@/components/ui/button';
 
 const faqItems = [
   {
@@ -25,70 +23,88 @@ const faqItems = [
 ];
 
 export function HomeFAQPreview() {
+  // Single-open accordion; the first item is open by default (spec).
   const [open, setOpen] = useState(0);
 
   return (
-    <section className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-      {/* Header */}
-      <div className="mb-10">
-        <Eyebrow>FAQ</Eyebrow>
-        <h2
-          style={{
-            fontFamily: 'var(--display)',
-            fontSize: 'clamp(28px, 5.5vw, 72px)',
-            fontWeight: 700,
-            letterSpacing: '-0.04em',
-            lineHeight: 0.96,
-            marginTop: '12px',
-          }}
-        >
-          Common{' '}
-          <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '5px', textUnderlineOffset: '6px' }}>
-            Questions
-          </span>.
-        </h2>
-      </div>
+    <section style={{ padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
+      <div className="mx-auto" style={{ maxWidth: '900px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: '26px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>FAQ</p>
+          <h2 className="wup-h2" style={{ margin: 0 }}>Common Questions.</h2>
+        </div>
 
-      {/* Accordion */}
-      <div className="flex flex-col gap-3" style={{ maxWidth: '820px', margin: '0 auto' }}>
-        {faqItems.map((f, i) => (
-          <div
-            key={i}
-            style={{
-              background: 'var(--surface)',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '12px',
-              boxShadow: 'var(--shadow-sm)',
-              overflow: 'hidden',
-            }}
-          >
-            <button
-              onClick={() => setOpen(open === i ? -1 : i)}
-              className="w-full flex items-center justify-between gap-5 text-left cursor-pointer"
-              style={{ padding: '18px 22px', fontWeight: 700 }}
-            >
-              <span>{f.q}</span>
-              <span
-                className="transition-transform duration-200 flex-shrink-0"
-                style={{ fontSize: '20px', transform: open === i ? 'rotate(45deg)' : 'none' }}
+        {/* Accordion */}
+        <div className="flex flex-col" style={{ gap: '10px' }}>
+          {faqItems.map((f, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={f.q}
+                className="wup-accordion-item"
+                style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.16)' }}
               >
-                +
-              </span>
-            </button>
-            {open === i && (
-              <div style={{ padding: '0 22px 20px', color: 'var(--ink-dim)', fontSize: '14px', lineHeight: 1.6 }}>
-                {f.a}
+                <button
+                  onClick={() => setOpen(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  className="w-full flex items-center justify-between text-left cursor-pointer"
+                  style={{ gap: '18px', padding: '17px 18px', background: 'none', border: 'none' }}
+                >
+                  <span
+                    style={{
+                      fontFamily: 'var(--display)',
+                      fontWeight: 600,
+                      fontSize: '18.5px',
+                      letterSpacing: '0.02em',
+                      color: 'var(--ink)',
+                    }}
+                  >
+                    {f.q}
+                  </span>
+                  {/* The square stays square — only the + glyph rotates to an ×. */}
+                  <span
+                    aria-hidden="true"
+                    className="grid place-items-center flex-shrink-0 transition-colors duration-[250ms]"
+                    style={{
+                      width: 26,
+                      height: 26,
+                      background: isOpen ? 'var(--accent)' : 'var(--bg-3)',
+                      color: isOpen ? '#0A0A0A' : 'var(--ink-faint)',
+                    }}
+                  >
+                    <span
+                      className="block transition-transform duration-[250ms]"
+                      style={{ fontSize: '17px', lineHeight: 1, transform: isOpen ? 'rotate(45deg)' : 'none' }}
+                    >
+                      +
+                    </span>
+                  </span>
+                </button>
+                {isOpen && (
+                  <div
+                    className="wup-in-wipe"
+                    style={{ padding: '0 18px 19px', color: 'rgba(244, 241, 234, 0.66)', fontSize: '15.5px', lineHeight: 1.68, animationDuration: '.3s' }}
+                  >
+                    {f.a}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        ))}
+            );
+          })}
+        </div>
 
-        <div className="text-center mt-3">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/faq">View all FAQs →</Link>
-          </Button>
+        <div className="text-center" style={{ marginTop: '22px' }}>
+          <Link href="/faq" className="wup-btn wup-btn--link">
+            View all FAQs →
+          </Link>
         </div>
       </div>
+
+      <style>{`
+        .wup-accordion-item { transition: border-color .2s; }
+        .wup-accordion-item:hover { border-color: rgba(201, 162, 39, .6); }
+      `}</style>
     </section>
   );
 }

@@ -6,53 +6,48 @@ const items = [
   { icon: '✓', label: 'Graded & Authenticated' },
 ];
 
-export function TrustStrip() {
+function TrustSet({ ariaHidden = false }: { ariaHidden?: boolean }) {
   return (
-    <div
-      className="flex flex-wrap justify-center items-center gap-x-3 gap-y-2.5 sm:gap-8 px-5 sm:px-8"
-      style={{
-        padding: '16px 0',
-        background: 'var(--bg-2)',
-        borderTop: '1.5px solid var(--ink)',
-        borderBottom: '1.5px solid var(--ink)',
-      }}
-    >
+    <div className="wup-marquee__set" aria-hidden={ariaHidden || undefined}>
       {items.map((item) => (
         <span
           key={item.label}
-          className="trust-item inline-flex items-center gap-2"
+          className="inline-flex items-center"
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
-            letterSpacing: '0.08em',
+            gap: '9px',
+            fontFamily: 'var(--display)',
+            fontSize: '15px',
             fontWeight: 600,
+            letterSpacing: '0.1em',
             textTransform: 'uppercase',
             color: 'var(--ink-dim)',
+            whiteSpace: 'nowrap',
           }}
         >
-          <span
-            className="grid place-items-center shrink-0"
-            style={{
-              width: 22, height: 22,
-              border: '1.5px solid var(--ink)',
-              borderRadius: '6px',
-              background: 'var(--surface)',
-              fontSize: '11px',
-              boxShadow: '1.5px 1.5px 0 var(--ink)',
-            }}
-          >
-            {item.icon}
-          </span>
+          <span aria-hidden="true">{item.icon}</span>
           {item.label}
         </span>
       ))}
+    </div>
+  );
+}
 
-      <style>{`
-        @media (min-width: 640px) {
-          .trust-item { font-size: 12px !important; letter-spacing: 0.1em !important; gap: 10px !important; }
-          .trust-item > span:first-child { width: 26px !important; height: 26px !important; font-size: 13px !important; }
-        }
-      `}</style>
+/** Trust marquee — panel band scrolling at 30s (spec screen 3). */
+export function TrustStrip() {
+  return (
+    <div
+      className="wup-marquee"
+      style={{
+        background: 'var(--surface)',
+        padding: '13px 0',
+        borderTop: '1px solid var(--line)',
+        borderBottom: '1px solid var(--line)',
+      }}
+    >
+      <div className="wup-marquee__track wup-marquee__track--slow">
+        <TrustSet />
+        <TrustSet ariaHidden />
+      </div>
     </div>
   );
 }

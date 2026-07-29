@@ -1,64 +1,59 @@
 import Link from 'next/link';
-import { Chip } from '@/components/ui/chip';
 
+/** Closing CTA — full gold band with animated diagonal stripes (spec screen 3). */
 export function HomeCTABand() {
   return (
-    <section
-      style={{
-        background: 'var(--ink)',
-        color: 'var(--bg)',
-        padding: 'clamp(56px, 12vw, 90px) clamp(20px, 6vw, 32px)',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
-    >
-      <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <h2
-          style={{
-            fontFamily: 'var(--display)',
-            fontSize: 'clamp(28px, 6.5vw, 82px)',
-            letterSpacing: '-0.04em',
-            fontWeight: 700,
-            lineHeight: 0.95,
-            margin: '0 0 20px',
-            color: '#fff',
-          }}
-        >
-          Ready to <Chip color="accent" className="!bg-[var(--accent)] !text-[var(--ink)] !rotate-[-1.5deg]">Enter</Chip>?
+    <section className="wup-band" style={{ textAlign: 'center' }}>
+      <div className="wup-band__stripes" aria-hidden="true" />
+      <div
+        className="wup-band__inner mx-auto"
+        style={{ maxWidth: '820px', padding: 'clamp(44px, 7vw, 78px) clamp(14px, 3vw, 34px)' }}
+      >
+        <h2 className="wup-h2" style={{ color: '#0A0A0A', margin: '0 0 16px' }}>
+          Ready to Enter?
         </h2>
 
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '17px', margin: '0 0 32px', lineHeight: 1.5 }}>
+        <p
+          style={{
+            color: 'rgba(10, 10, 10, 0.78)',
+            fontSize: '17px',
+            lineHeight: 1.55,
+            margin: '0 0 28px',
+          }}
+        >
           Create your free account and enter our live competitions.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-3" style={{ marginBottom: '20px' }}>
-          <Link
-            href="/register"
-            className="inline-flex items-center justify-center font-semibold transition-all duration-150"
-            style={{
-              padding: '14px 22px', fontSize: '14px', borderRadius: '10px',
-              background: 'var(--accent)', color: 'var(--ink)',
-              border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow-sm)',
-            }}
-          >
+        <div className="flex flex-wrap justify-center" style={{ gap: '12px', marginBottom: '20px' }}>
+          <Link href="/register" className="wup-btn wup-btn--on-gold">
             Sign Up Free →
           </Link>
           <Link
             href="/competitions"
-            className="inline-flex items-center justify-center font-semibold transition-all duration-150"
+            className="wup-btn"
             style={{
-              padding: '14px 22px', fontSize: '14px', borderRadius: '10px',
-              background: 'transparent', color: '#fff',
-              border: '1.5px solid #fff', boxShadow: '3px 3px 0 var(--accent)',
+              background: 'none',
+              border: '1px solid rgba(10, 10, 10, 0.5)',
+              color: '#0A0A0A',
+              fontWeight: 600,
             }}
           >
             View Competitions
           </Link>
         </div>
 
-        <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          18+ only · Free postal entry available · T&Cs apply
+        <p
+          style={{
+            fontFamily: 'var(--display)',
+            fontSize: '13px',
+            fontWeight: 600,
+            color: 'rgba(10, 10, 10, 0.7)',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            margin: 0,
+          }}
+        >
+          18+ only · Free postal entry available · T&amp;Cs apply
         </p>
       </div>
     </section>

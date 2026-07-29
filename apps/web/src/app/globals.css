@@ -1622,6 +1622,12 @@ a { transition: color 0.2s; }
   font-variant-numeric: tabular-nums;
 }
 
+/* Phones: drop the Sold and Closes columns so title + price stay readable.
+   The same counts remain on the competition detail page. */
+@media (max-width: 700px) {
+  .fixture-col-sold, .fixture-col-closes { display: none !important; }
+}
+
 /* ---- Progress bar ---- */
 .wup-bar { position: relative; height: 5px; background: var(--line); overflow: hidden; }
 .wup-bar--lg { height: 8px; }
