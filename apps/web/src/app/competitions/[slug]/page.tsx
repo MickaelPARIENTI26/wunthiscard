@@ -480,7 +480,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </div>
             )}
             {isCancelled && (
-              <div style={{ background: 'var(--hot)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ background: 'var(--hot)', color: '#0A0A0A', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
                 <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Cancelled</p>
                 <p style={{ fontSize: '14px', marginTop: '4px', opacity: 0.8 }}>All participants have been fully refunded.</p>
               </div>

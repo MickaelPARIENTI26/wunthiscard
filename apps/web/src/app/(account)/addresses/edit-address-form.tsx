@@ -185,7 +185,7 @@ export function EditAddressForm({ address, onSuccess, onCancel }: EditAddressFor
             marginTop: '14px',
             padding: '10px 14px',
             background: 'var(--hot)',
-            color: '#fff',
+            color: '#0A0A0A',
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
             fontSize: '13px',

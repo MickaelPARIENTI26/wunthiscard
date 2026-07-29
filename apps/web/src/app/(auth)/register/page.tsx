@@ -27,7 +27,7 @@ export default function RegisterPage() {
   return (
     <div>
       <div className="text-center mb-7">
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: '32px', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px' }}>
+        <h1 className="wup-title" style={{ fontSize: '32px', margin: '0 0 8px' }}>
           Create Account
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>

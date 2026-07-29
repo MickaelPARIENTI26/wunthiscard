@@ -59,8 +59,8 @@ export default async function UnsubscribePage({
               href="/competitions"
               style={{
                 display: 'inline-block',
-                background: 'var(--ink)',
-                color: '#fff',
+                background: 'var(--accent)',
+                color: '#0A0A0A',
                 padding: '12px 28px',
                 borderRadius: 0,
                 fontWeight: 600,
@@ -100,8 +100,8 @@ export default async function UnsubscribePage({
                 type="submit"
                 style={{
                   display: 'inline-block',
-                  background: 'var(--ink)',
-                  color: '#fff',
+                  background: 'var(--accent)',
+                  color: '#0A0A0A',
                   padding: '12px 28px',
                   borderRadius: 0,
                   fontWeight: 600,

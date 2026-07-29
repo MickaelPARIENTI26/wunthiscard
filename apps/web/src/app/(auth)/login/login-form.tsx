@@ -321,8 +321,8 @@ export function LoginForm() {
           style={{
             padding: '14px',
             borderRadius: 0,
-            background: 'var(--ink)',
-            color: '#ffffff',
+            background: 'var(--accent)',
+            color: '#0A0A0A',
             fontSize: '15px',
             fontWeight: 600,
             cursor: isLoading || isGoogleLoading ? 'not-allowed' : 'pointer',

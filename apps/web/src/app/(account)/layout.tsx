@@ -39,12 +39,15 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   href={item.href}
                   className="flex items-center gap-2.5 transition-colors duration-150"
                   style={{
-                    padding: '11px 14px',
+                    padding: '12px 14px',
                     borderRadius: 0,
-                    fontSize: '14px',
+                    fontFamily: 'var(--display)',
+                    fontSize: '15px',
                     fontWeight: 600,
-                    background: isActive ? 'var(--ink)' : 'transparent',
-                    color: isActive ? 'var(--accent)' : 'var(--ink)',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    background: isActive ? 'var(--accent)' : 'transparent',
+                    color: isActive ? '#0A0A0A' : 'var(--ink-dim)',
                   }}
                 >
                   <span>{item.icon}</span>{item.label}
@@ -65,14 +68,17 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   href={item.href}
                   className="flex items-center gap-1.5 whitespace-nowrap"
                   style={{
-                    padding: '8px 14px',
+                    padding: '9px 16px',
                     borderRadius: 0,
-                    fontSize: '13px',
+                    fontFamily: 'var(--display)',
+                    fontSize: '14px',
                     fontWeight: 600,
-                    background: isActive ? 'var(--ink)' : 'var(--surface)',
-                    color: isActive ? 'var(--accent)' : 'var(--ink)',
-                    border: '1px solid rgba(244, 241, 234, 0.18)',
-                    boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    background: isActive ? 'var(--accent)' : 'transparent',
+                    color: isActive ? '#0A0A0A' : 'rgba(244, 241, 234, 0.62)',
+                    border: `1px solid ${isActive ? 'var(--accent)' : 'rgba(244, 241, 234, 0.24)'}`,
+                    boxShadow: 'none',
                   }}
                 >
                   <span>{item.icon}</span>{item.label}

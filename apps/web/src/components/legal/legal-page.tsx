@@ -25,26 +25,32 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
 
   return (
     <main>
-      {/* Page Header */}
-      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-        <div
-          className="inline-flex items-center gap-2.5 mb-4"
-          style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}
-        >
-          Legal
+      {/* Page header on the raised panel surface */}
+      <header
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--line)',
+          padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        <div className="mx-auto" style={{ maxWidth: '1200px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>Legal</p>
+          <h1 className="wup-h1" style={{ margin: '0 0 14px' }}>{title}</h1>
+          <p
+            style={{
+              fontFamily: 'var(--display)', fontWeight: 600, fontSize: '13px',
+              letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-faint)', margin: 0,
+            }}
+          >
+            {lastUpdated}
+          </p>
         </div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
-          {title}
-        </h1>
-        <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
-          {lastUpdated}
-        </p>
       </header>
 
       {/* Content */}
-      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-        <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '860px' }}>
-          <div className="legal-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', alignItems: 'start' }}>
+      <section style={{ padding: 'clamp(24px, 3.4vw, 44px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '1200px' }}>
+          <div className="legal-grid" style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'clamp(22px, 3.2vw, 44px)', alignItems: 'start' }}>
             {/* Sticky ToC */}
             <aside className="legal-toc legal-toc-desktop">
               <div className="legal-toc-label">On this page</div>
@@ -67,15 +73,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
             </aside>
 
             {/* Body */}
-            <article
-              className="legal-body"
-              style={{
-                background: 'var(--surface)',
-                border: '1px solid rgba(244, 241, 234, 0.18)',
-                borderRadius: 'var(--radius)',
-                boxShadow: 'var(--shadow)',
-              }}
-            >
+            <article className="legal-body" style={{ flex: '1 1 460px', minWidth: 0 }}>
               {children}
 
               {/* Footer */}
@@ -85,11 +83,12 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
                   marginTop: '32px',
                   paddingTop: '22px',
                   borderTop: '1px solid var(--line)',
-                  fontFamily: 'var(--mono)',
-                  fontSize: '11px',
+                  fontFamily: 'var(--display)',
+                  fontWeight: 600,
+                  fontSize: '13px',
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
-                  color: 'var(--ink-dim)',
+                  color: 'var(--ink-faint)',
                 }}
               >
                 <span>{lastUpdated}</span>

@@ -77,12 +77,7 @@ export default function ForgotPasswordPage() {
             <CheckCircle style={{ width: '28px', height: '28px', color: '#22C55E' }} />
           </div>
           <h1
-            className="font-sans mb-2"
-            style={{
-              fontSize: '29px',
-              fontWeight: 700,
-              color: 'var(--ink)',
-            }}
+            className="wup-title mb-2" style={{ fontSize: '28px' }}
           >
             Check your email
           </h1>
@@ -158,12 +153,7 @@ export default function ForgotPasswordPage() {
       {/* Header */}
       <div className="text-center mb-6">
         <h1
-          className="font-sans mb-2"
-          style={{
-            fontSize: '29px',
-            fontWeight: 700,
-            color: 'var(--ink)',
-          }}
+          className="wup-title mb-2" style={{ fontSize: '28px' }}
         >
           Reset your password
         </h1>
@@ -232,8 +222,8 @@ export default function ForgotPasswordPage() {
             style={{
               padding: '14px',
               borderRadius: 0,
-              background: 'var(--ink)',
-              color: '#ffffff',
+              background: 'var(--accent)',
+              color: '#0A0A0A',
               fontSize: '15px',
               fontWeight: 600,
               cursor: isLoading ? 'not-allowed' : 'pointer',

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Image from 'next/image';
+import { BrandWordmark } from '@/components/layout/header';
 
 // Auth pages (login/register/forgot/reset) must never be indexed.
 export const metadata: Metadata = {
@@ -9,29 +9,22 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section style={{ padding: '24px 20px 40px', background: 'var(--bg)', minHeight: 'calc(100vh - 200px)' }}>
-      <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+    // Centred 440px panel over an orbiting-ray backdrop (spec screen 11).
+    <section className="wup-hero" style={{ padding: 'clamp(26px, 4vw, 56px) 20px clamp(40px, 5vw, 64px)', minHeight: 'calc(100vh - 200px)' }}>
+      <div className="wup-hero__rays" aria-hidden="true" />
+
+      <div className="relative" style={{ maxWidth: '440px', margin: '0 auto' }}>
         {/* Brand mark */}
-        <div className="flex justify-center mb-4">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2.5"
-            style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700 }}
-          >
-            <Image src="/logo.png" alt="WinUPrize logo" width={36} height={36} priority />
-            WinUPrize
+        <div className="flex justify-center" style={{ marginBottom: '18px' }}>
+          <Link href="/" aria-label="WinUPrize home" className="inline-flex items-center">
+            <BrandWordmark size="24px" />
           </Link>
         </div>
 
-        {/* Card */}
+        {/* Panel */}
         <div
-          style={{
-            background: 'var(--surface)',
-            border: '1px solid rgba(244, 241, 234, 0.18)',
-            borderRadius: 'var(--radius)',
-            padding: '24px 28px 28px',
-            boxShadow: 'var(--shadow-lg)',
-          }}
+          className="wup-panel wup-panel--accent-top wup-in-slam"
+          style={{ padding: 'clamp(22px, 3vw, 30px)', animationDuration: '.6s' }}
         >
           {children}
         </div>

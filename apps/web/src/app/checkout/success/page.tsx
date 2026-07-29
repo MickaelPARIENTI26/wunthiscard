@@ -184,7 +184,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         <div
           className="inline-flex items-center gap-2.5 justify-center"
           style={{
-            padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
+            padding: '7px 14px', background: 'var(--accent)', color: '#0A0A0A',
             borderRadius: 0, fontFamily: 'var(--mono)', fontSize: '11px',
             letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '20px',
           }}

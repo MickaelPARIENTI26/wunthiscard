@@ -260,7 +260,7 @@ export function QuestionForm({
 
       {/* Error */}
       {error && (
-        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '20px' }}>
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#0A0A0A', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '20px' }}>
           {error}
         </div>
       )}
@@ -300,7 +300,7 @@ export function QuestionForm({
 
       {/* Wrong answer message */}
       {result && !result.correct && !result.blocked && (
-        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '16px' }}>
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#0A0A0A', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '16px' }}>
           {result.message || `Incorrect. ${result.attemptsRemaining} attempt${result.attemptsRemaining !== 1 ? 's' : ''} left.`}
         </div>
       )}
