@@ -100,11 +100,6 @@ export function HomeFAQPreview() {
           </Link>
         </div>
       </div>
-
-      <style>{`
-        .wup-accordion-item { transition: border-color .2s; }
-        .wup-accordion-item:hover { border-color: rgba(201, 162, 39, .6); }
-      `}</style>
     </section>
   );
 }

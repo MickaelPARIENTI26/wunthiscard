@@ -433,52 +433,6 @@ input:focus, textarea:focus, select:focus,
   .hiw-block { grid-template-columns: 1fr; gap: 8px; }
 }
 
-/* === ABOUT === */
-.about-stats {
-  background: var(--ink);
-  color: var(--bg);
-  border-top: 1.5px solid var(--ink);
-  border-bottom: 1.5px solid var(--ink);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-}
-.about-stat {
-  padding: 44px 28px;
-  border-right: 1px solid var(--line);
-  text-align: center;
-}
-.about-stat:last-child { border-right: none; }
-.about-pillars {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-.about-vault {
-  background: var(--surface);
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.about-vault-row {
-  display: grid;
-  grid-template-columns: 220px 1fr 160px;
-  gap: 20px;
-  padding: 22px 28px;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
-  transition: background 0.15s;
-}
-.about-vault-row:last-child { border-bottom: none; }
-.about-vault-row:hover { background: var(--bg-2); }
-
-@media (max-width: 900px) {
-  .about-stats { grid-template-columns: repeat(2, 1fr); }
-  .about-stat { border-right: none; border-bottom: 1px solid var(--line); }
-  .about-pillars { grid-template-columns: 1fr; }
-  .about-vault-row { grid-template-columns: 1fr; gap: 6px; }
-}
-
 /* === LEGAL === */
 .legal-toc {
   position: sticky;
@@ -1315,9 +1269,6 @@ input:focus, textarea:focus, select:focus,
   /* On phones: hide Participants and put Card value + Per ticket side by side. */
   .comp-stats-mini { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
   .comp-stat-mobile-hide { display: none; }
-  .about-stats { grid-template-columns: 1fr; }
-  .about-stat { border-right: none; border-bottom: 1px solid var(--line); padding: 28px 24px; }
-  .about-stat:last-child { border-bottom: none; }
   /* Enter flow: trim oversized horizontal padding */
   .enter-step { padding: 22px 18px 26px; }
   /* Full-width primary button + hint above it on phones (steps 2 & 3), matching
@@ -1531,6 +1482,22 @@ a { transition: color 0.2s; }
   background: none; padding: 8px 0; color: var(--accent);
   font-weight: 600; font-size: 16px; border-bottom: 1px solid var(--accent);
 }
+
+/* ---- Accordion ---- */
+.wup-accordion-item { transition: border-color .2s; }
+.wup-accordion-item:hover { border-color: rgba(201, 162, 39, .6); }
+.wup-acc-toggle {
+  flex: none; width: 26px; height: 26px;
+  display: grid; place-items: center;
+  background: var(--bg-3); color: var(--ink-faint);
+  transition: background .25s, color .25s;
+}
+.wup-acc-toggle > span {
+  display: block; font-size: 17px; line-height: 1;
+  transition: transform .25s;
+}
+[data-state='open'] .wup-acc-toggle { background: var(--accent); color: #0A0A0A; }
+[data-state='open'] .wup-acc-toggle > span { transform: rotate(45deg); }
 
 /* ---- Chip / segmented control ---- */
 .wup-chip {

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { FaqAccordion } from './faq-accordion';
 import { FaqSearch } from './faq-search';
-import { Button } from '@/components/ui/button';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateFaqSchema } from '@/lib/structured-data';
 
@@ -57,41 +56,44 @@ export default async function FaqPage() {
   return (
     <main>
       <StructuredData data={generateFaqSchema(allItems)} />
-      {/* Page Header */}
-      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-        <div
-          className="inline-flex items-center gap-2.5 mb-4"
-          style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}
-        >
-          Help Centre
+
+      {/* Page header on the raised panel surface */}
+      <header
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--line)',
+          padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>Help centre</p>
+          <h1 className="wup-h1" style={{ margin: '0 0 14px' }}>Frequently Asked Questions</h1>
+          <p className="wup-body" style={{ maxWidth: '560px', margin: 0 }}>
+            Find answers to common questions about our prize competitions.
+          </p>
         </div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
-          Frequently Asked Questions
-        </h1>
-        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '500px', lineHeight: 1.5 }}>
-          Find answers to common questions about our prize competitions.
-        </p>
       </header>
 
-      {/* Search + FAQ content */}
-      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-        <div className="mx-auto px-5 sm:px-8" style={{ maxWidth: '820px', paddingTop: '40px', paddingBottom: '64px' }}>
-          {/* Search */}
+      {/* Search + grouped questions */}
+      <section style={{ padding: 'clamp(24px, 3.4vw, 44px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '900px' }}>
           <div style={{ marginBottom: '32px' }}>
             <FaqSearch allItems={allItems} />
           </div>
 
-          {/* Categories */}
           {sortedCategories.length > 0 ? (
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col" style={{ gap: 'clamp(26px, 3.4vw, 42px)' }}>
               {sortedCategories.map((category) => {
                 const config = categoryConfig[category] ?? { emoji: '❓', label: category, order: 99 };
                 return (
                   <div key={category}>
-                    <h3 className="flex items-center gap-2.5 mb-3.5" style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em' }}>
-                      <span>{config.emoji}</span>{config.label}
-                    </h3>
-                    <div style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+                    <h2
+                      className="wup-h2-doc flex items-center"
+                      style={{ gap: '10px', color: 'var(--accent)', borderBottomColor: 'rgba(201, 162, 39, .4)', marginBottom: '16px' }}
+                    >
+                      <span aria-hidden="true">{config.emoji}</span>{config.label}
+                    </h2>
+                    <div className="flex flex-col" style={{ gap: '10px' }}>
                       <FaqAccordion items={grouped[category] ?? []} />
                     </div>
                   </div>
@@ -99,9 +101,9 @@ export default async function FaqPage() {
               })}
             </div>
           ) : (
-            <div className="text-center" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No FAQs Available</h3>
-              <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
+            <div className="wup-panel text-center" style={{ padding: '48px 24px' }}>
+              <h3 className="wup-title" style={{ marginBottom: '8px' }}>No FAQs available</h3>
+              <p className="wup-body-sm" style={{ margin: 0 }}>
                 We are working on adding frequently asked questions. Please contact us with any questions.
               </p>
             </div>
@@ -110,16 +112,19 @@ export default async function FaqPage() {
       </section>
 
       {/* Still have questions? */}
-      <section className="drop-section" style={{ textAlign: 'center', paddingBottom: '80px' }}>
-        <h2 style={{ fontFamily: 'var(--display)', fontSize: '32px', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '12px' }}>
-          Still have questions?
-        </h2>
-        <p style={{ color: 'var(--ink-dim)', marginBottom: '24px' }}>
-          Our support team is here to help. Get in touch and we will respond as soon as possible.
-        </p>
-        <Button variant="primary" size="xl" asChild>
-          <Link href="/contact">Contact Us →</Link>
-        </Button>
+      <section style={{ padding: '0 clamp(14px, 3vw, 34px) clamp(40px, 6vw, 80px)' }}>
+        <div
+          className="wup-panel wup-panel--accent-top mx-auto text-center"
+          style={{ maxWidth: '900px', padding: 'clamp(26px, 3.4vw, 44px)' }}
+        >
+          <h2 className="wup-h2" style={{ fontSize: 'clamp(24px, 3.4vw, 38px)', margin: '0 0 12px' }}>
+            Still have questions?
+          </h2>
+          <p className="wup-body-sm" style={{ margin: '0 auto 24px', maxWidth: '520px' }}>
+            Our support team is here to help. Get in touch and we will respond as soon as possible.
+          </p>
+          <Link href="/contact" className="wup-btn wup-btn--primary">Contact Us →</Link>
+        </div>
       </section>
     </main>
   );

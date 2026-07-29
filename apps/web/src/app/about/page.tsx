@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Chip } from '@/components/ui/chip';
-import { Eyebrow } from '@/components/ui/eyebrow';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { HomeCTABand } from '@/components/home/home-cta-band';
 
@@ -18,10 +16,21 @@ export const metadata: Metadata = {
 // Forward-looking commitments only — NOT historical counts. (We deliberately don't
 // claim "£X paid" / "N cards won" numbers we can't stand behind on day one.)
 const stats = [
-  { v: '100%', l: 'Results Published', c: 'var(--accent)' },
-  { v: '100%', l: 'Graded & Authenticated', c: 'var(--hot)' },
-  { v: 'FREE', l: 'Postal Entry Route', c: 'var(--pop)' },
-  { v: '24H', l: 'Winner Notified', c: 'var(--warn)' },
+  { v: '100%', l: 'Results Published' },
+  { v: '100%', l: 'Graded & Authenticated' },
+  { v: 'FREE', l: 'Postal Entry Route' },
+  { v: '24H', l: 'Winner Notified' },
+];
+
+// Operating company details (spec screen 9). Trading name only — the legal
+// entity is unchanged.
+const companyRows: [string, string][] = [
+  ['Operating company', 'YD PARTNERS LTD (company no. 16766570)'],
+  ['Trading name', 'WinUPrize'],
+  ['Registered address', '71-75 Shelton Street, Covent Garden, London WC2H 9JQ'],
+  ['Email', 'contact@winuprize.com'],
+  ['Draw partner', 'RandomDraws.com (independent)'],
+  ['Eligibility', '18+, UK residents only'],
 ];
 
 const pillars = [
@@ -49,106 +58,90 @@ const pillars = [
 export default function AboutPage() {
   return (
     <main>
-      {/* Editorial hero */}
-      <section className="mx-auto px-5 sm:px-8" style={{ maxWidth: '1440px', padding: '80px 32px 48px' }}>
-        <div className="about-hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '48px', alignItems: 'center' }}>
-          <div>
-            <div
-              className="inline-flex items-center gap-2.5"
-              style={{
-                padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
-                borderRadius: 0, fontFamily: 'var(--mono)', fontSize: '11px',
-                letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '28px',
-              }}
-            >
-              <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} /> About WinUPrize
-            </div>
-            <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(36px, 8vw, 124px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.9 }}>
-              Real cards.<br />
-              <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '7px', textUnderlineOffset: '8px' }}>Real winners.</span><br />
-              <Chip color="accent" className="mt-2">Zero BS.</Chip>
-            </h1>
-          </div>
-
-          {/* Manifesto quote card */}
-          <div
-            className="relative"
-            style={{
-              background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)',
-              borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
-              padding: '34px 36px', fontSize: '18px', lineHeight: 1.55,
-            }}
-          >
-            <div style={{ fontFamily: 'var(--display)', fontSize: '140px', fontWeight: 700, lineHeight: 0.4, color: 'var(--accent)', position: 'absolute', top: '40px', left: '18px', pointerEvents: 'none' }}>
-              &ldquo;
-            </div>
-            <p style={{ position: 'relative', paddingLeft: '40px' }}>
-              We started WinUPrize because Grail cards shouldn&apos;t be locked away in vaults owned by the richest collectors. A Charizard PSA 10 for £14.90 a ticket? That&apos;s not a gimmick — that&apos;s how we give the hobby back to the hobbyists.
-            </p>
-            <div style={{ marginTop: '18px', paddingLeft: '40px', fontFamily: 'var(--mono)', fontSize: '12px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 600 }}>
-              — The WinUPrize team
-            </div>
-          </div>
-        </div>
-
-        {/* Responsive */}
-        <style>{`
-          @media (max-width: 900px) {
-            .about-hero-grid { grid-template-columns: 1fr !important; }
-          }
-        `}</style>
-      </section>
-
-      {/* Stats band */}
-      <section className="about-stats">
-        {stats.map((s) => (
-          <div key={s.l} className="about-stat">
-            <div style={{ fontFamily: 'var(--display)', fontSize: 'clamp(40px, 5vw, 68px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 1, marginBottom: '10px', color: s.c }}>
-              {s.v}
-            </div>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', fontWeight: 700 }}>
-              {s.l}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* Pillars */}
-      <section className="drop-section">
-        <div className="flex flex-wrap items-end justify-between gap-8 mb-10">
-          <div>
-            <Eyebrow>What We Stand For</Eyebrow>
-            <h2 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginTop: '12px' }}>
-              Three{' '}
-              <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--accent)', textDecorationThickness: '5px', textUnderlineOffset: '6px' }}>rules</span>.
-            </h2>
-          </div>
-          <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '360px', lineHeight: 1.5 }}>
-            We say no to a lot of things so we can say yes to the ones that matter.
+      {/* Hero with breathing glow */}
+      <section className="wup-hero">
+        <div className="wup-hero__glow" aria-hidden="true" />
+        <div
+          className="relative mx-auto"
+          style={{ maxWidth: '1400px', padding: 'clamp(38px, 5.5vw, 78px) clamp(14px, 3vw, 34px)' }}
+        >
+          <p className="wup-eyebrow wup-in-skew" style={{ margin: '0 0 16px' }}>About us</p>
+          <h1 className="wup-h1 wup-in-slam" style={{ animationDelay: '0.05s', margin: '0 0 20px', maxWidth: '900px' }}>
+            The UK&apos;s premium
+            <br />
+            <span style={{ color: 'var(--accent)' }}>card competitions.</span>
+          </h1>
+          <p className="wup-body wup-in-wipe" style={{ animationDelay: '0.3s', maxWidth: '640px', margin: 0 }}>
+            Real cards. Real winners. Every draw run by an independent third party
+            and published within 24 hours — with a free postal entry route on every
+            competition, as UK law requires.
           </p>
         </div>
+      </section>
 
-        <div className="about-pillars">
-          {pillars.map((p) => (
-            <article
-              key={p.mark}
-              className="flex flex-col gap-3.5 transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[var(--shadow-lg)]"
-              style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '30px 28px 24px' }}
-            >
-              <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700 }}>
-                {p.mark}
-              </span>
-              <h3 style={{ fontFamily: 'var(--display)', fontSize: '30px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.05 }}>
-                {p.title}
-              </h3>
-              <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', lineHeight: 1.6, flex: 1 }}>
-                {p.body}
-              </p>
-              <div style={{ paddingTop: '14px', borderTop: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 700 }}>
-                {p.foot.text} <Link href={p.foot.href} style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>{p.foot.label}</Link>
-              </div>
-            </article>
+      {/* Commitments */}
+      <section style={{ padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
+        <div
+          className="mx-auto"
+          style={{
+            maxWidth: '1400px',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+            gap: 'clamp(14px, 1.8vw, 22px)',
+          }}
+        >
+          {stats.map((s) => (
+            <div key={s.l} className="wup-panel wup-panel--accent-top" style={{ padding: 'clamp(18px, 2vw, 26px)' }}>
+              <div className="wup-num" style={{ fontSize: 'clamp(30px, 4vw, 44px)', color: 'var(--accent)' }}>{s.v}</div>
+              <div className="wup-meta" style={{ marginTop: '8px' }}>{s.l}</div>
+            </div>
           ))}
+        </div>
+      </section>
+
+      {/* Value pillars */}
+      <section style={{ background: 'var(--surface)', borderTop: '1px solid var(--line)', padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>What we stand for</p>
+          <h2 className="wup-h2" style={{ margin: '0 0 30px' }}>How we operate.</h2>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+              gap: 'clamp(14px, 1.8vw, 22px)',
+            }}
+          >
+            {pillars.map((p) => (
+              <article
+                key={p.mark}
+                className="wup-panel wup-panel--accent-top wup-panel--hover"
+                style={{ background: 'var(--bg)', padding: 'clamp(18px, 2vw, 26px)' }}
+              >
+                <div className="wup-meta" style={{ marginBottom: '10px' }}>{p.mark}</div>
+                <h3 className="wup-title" style={{ margin: '0 0 12px' }}>{p.title}</h3>
+                <p className="wup-body-sm" style={{ margin: '0 0 14px' }}>{p.body}</p>
+                <Link href={p.foot.href} className="wup-btn wup-btn--link" style={{ fontSize: '15px' }}>
+                  {p.foot.text}
+                </Link>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Company details */}
+      <section style={{ padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '900px' }}>
+          <h2 className="wup-h2-doc" style={{ marginBottom: '18px' }}>Company details</h2>
+          <ul className="about-card-details" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+            {companyRows.map(([k, v]) => (
+              <li key={k}>
+                <span className="about-card-k">{k}</span>
+                <span className="about-card-v">{v}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

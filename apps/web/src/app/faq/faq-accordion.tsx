@@ -22,35 +22,32 @@ interface FaqAccordionProps {
 
 export function FaqAccordion({ items }: FaqAccordionProps) {
   return (
-    <Accordion type="single" collapsible className="w-full">
+    // Each item is its own bordered panel (spec accordion), so the group is a
+    // stack of squared cards rather than one divided block.
+    <Accordion type="single" collapsible className="flex w-full flex-col gap-2.5">
       {items.map((item) => (
         <AccordionItem
           key={item.id}
           value={item.id}
-          className="border-b border-[var(--line)] last:border-b-0"
+          className="wup-accordion-item border-b-0"
+          style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.16)' }}
         >
           <AccordionTrigger
-            className="text-left px-6 py-4 hover:no-underline"
+            className="text-left hover:no-underline"
             style={{
-              fontSize: '15px',
+              padding: '17px 18px',
+              fontFamily: 'var(--display)',
+              fontSize: '18.5px',
               fontWeight: 600,
+              letterSpacing: '0.02em',
               color: 'var(--ink)',
             }}
           >
             {item.question}
           </AccordionTrigger>
-          <AccordionContent className="px-6 pb-4">
-            <div
-              style={{
-                fontSize: '14px',
-                lineHeight: 1.7,
-                color: '#555',
-              }}
-            >
-              <SafeHtml
-                html={item.answer}
-                className="prose prose-sm max-w-none"
-              />
+          <AccordionContent style={{ padding: '0 18px 19px' }}>
+            <div style={{ fontSize: '15.5px', lineHeight: 1.68, color: 'rgba(244, 241, 234, 0.66)' }}>
+              <SafeHtml html={item.answer} className="prose prose-sm max-w-none" />
             </div>
           </AccordionContent>
         </AccordionItem>

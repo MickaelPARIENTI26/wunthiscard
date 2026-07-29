@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Chip } from '@/components/ui/chip';
-import { Eyebrow } from '@/components/ui/eyebrow';
-import { Button } from '@/components/ui/button';
 import { ContactForm } from './contact-form';
 
 export const metadata: Metadata = {
@@ -28,115 +25,114 @@ const socials = [
 export default function ContactPage() {
   return (
     <main>
-      {/* Editorial hero */}
-      <section className="px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', paddingBottom: '40px' }}>
+      {/* Page header on the raised panel surface */}
+      <header
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--line)',
+          padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>Get in touch</p>
+          <h1 className="wup-h1" style={{ margin: '0 0 14px' }}>Contact.</h1>
+          <p className="wup-body" style={{ maxWidth: '560px', margin: 0 }}>
+            Talk to a human. Our team replies from London — not a call centre.
+          </p>
+        </div>
+      </header>
+
+      {/* Two columns: form left, details right */}
+      <section style={{ padding: 'clamp(24px, 3.4vw, 44px) clamp(14px, 3vw, 34px)' }}>
         <div
-          className="inline-flex items-center gap-2.5"
+          className="mx-auto"
           style={{
-            padding: '7px 14px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
-            background: 'var(--surface)', boxShadow: 'none',
-            fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em',
-            textTransform: 'uppercase', fontWeight: 600, marginBottom: '22px',
+            maxWidth: '1100px',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 'clamp(22px, 3.2vw, 44px)',
+            alignItems: 'flex-start',
           }}
         >
-          <span className="live-dot" /> Support · Average reply &lt; 24h
-        </div>
+          {/* Form */}
+          <div className="wup-panel wup-panel--accent-top" style={{ flex: '1 1 420px', padding: 'clamp(20px, 2.6vw, 32px)' }}>
+            <h2 className="wup-title" style={{ fontSize: 'clamp(20px, 2.4vw, 24px)', margin: '0 0 18px' }}>
+              Send a message
+            </h2>
+            <ContactForm />
+          </div>
 
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(32px, 7vw, 108px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.94, margin: '0 0 18px' }}>
-          Talk to a <Chip color="accent">human</Chip>.
-        </h1>
-
-        <p style={{ fontSize: '17px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '620px', margin: '0 auto' }}>
-          Question about a draw, a prize, your account, or the free postal route? Our team replies from the WinUPrize HQ in London — not a call centre.
-        </p>
-      </section>
-
-      {/* Contact grid */}
-      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-        <div className="drop-section">
-          <div className="contact-grid">
-            {/* Left: editorial info list */}
-            <aside style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '32px' }}>
-              <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', marginBottom: '24px', paddingBottom: '14px', borderBottom: '1px solid var(--line)' }}>
-                Reach us
-              </h3>
-
-              {infoRows.map((row) => (
-                <div key={row.label} className="contact-info-row">
-                  <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700, marginBottom: '6px' }}>
-                    {row.label}
-                  </div>
-                  <div style={{ fontFamily: 'var(--display)', fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', lineHeight: 1.45, marginBottom: '4px', whiteSpace: 'pre-line' }}>
-                    {row.value}
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--ink-dim)', lineHeight: 1.4 }}>
-                    {row.meta}
-                  </div>
+          {/* Details */}
+          <aside style={{ flex: '1 1 300px', minWidth: 0 }}>
+            <h2 className="wup-h2-doc" style={{ marginBottom: '18px' }}>Get in touch</h2>
+            <dl style={{ margin: 0 }}>
+              {infoRows.map((r) => (
+                <div key={r.label} style={{ padding: '14px 0', borderBottom: '1px solid var(--line)' }}>
+                  <dt className="wup-meta" style={{ marginBottom: '6px' }}>{r.label}</dt>
+                  <dd style={{ margin: 0, fontSize: '15px', color: 'var(--ink)', whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                    {r.value}
+                  </dd>
+                  <dd className="wup-fine" style={{ margin: '4px 0 0' }}>{r.meta}</dd>
                 </div>
               ))}
+            </dl>
 
-              {/* Socials */}
-              <div style={{ paddingTop: '18px', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700 }}>
-                  Socials
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {socials.map((s) => (
-                    <a
-                      key={s.label}
-                      href={s.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        padding: '10px 14px', minHeight: '44px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
-                        fontSize: '12px', fontWeight: 600, background: 'var(--surface)',
-                        boxShadow: 'none',
-                      }}
-                    >
-                      {s.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </aside>
-
-            {/* Right: the real, functional contact form */}
+            {/* Free postal entry note */}
             <div
-              style={{
-                background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)',
-                borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
-                padding: '34px 36px',
-              }}
+              className="wup-panel wup-panel--accent-left"
+              style={{ marginTop: '22px', padding: '18px 20px' }}
             >
-              <div style={{ marginBottom: '20px' }}>
-                <Eyebrow>Send a message</Eyebrow>
-                <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', lineHeight: 1.1, marginTop: '8px' }}>
-                  We reply to every single one.
-                </h3>
-              </div>
-
-              <ContactForm />
-
-              <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginTop: '14px' }}>
-                By sending you agree to our{' '}
-                <Link href="/privacy" style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>
-                  privacy policy
-                </Link>.
+              <p className="wup-eyebrow" style={{ fontSize: '13px', margin: '0 0 8px' }}>Free postal entry</p>
+              <p className="wup-body-sm" style={{ margin: '0 0 10px' }}>
+                Every competition has a free entry route by post — same odds as a paid
+                ticket. Send a handwritten postcard to the address above.
               </p>
+              <Link href="/competition-rules" className="wup-btn wup-btn--link" style={{ fontSize: '15px' }}>
+                Full rules →
+              </Link>
             </div>
-          </div>
+
+            {/* Socials */}
+            <div className="flex flex-wrap" style={{ gap: '8px', marginTop: '22px' }}>
+              {socials.map((s) => (
+                <a
+                  key={s.href}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hard-shadow"
+                  style={{
+                    padding: '8px 14px',
+                    fontFamily: 'var(--display)',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: 'var(--ink-dim)',
+                  }}
+                >
+                  {s.label}
+                </a>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
 
-      {/* Quick answers CTA */}
-      <section className="drop-section" style={{ textAlign: 'center', paddingBottom: '80px' }}>
-        <h2 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: '10px' }}>
-          Looking for quick answers?
-        </h2>
-        <p style={{ color: 'var(--ink-dim)', marginBottom: '20px' }}>Check the FAQ for the most common questions.</p>
-        <Button variant="ghost" size="lg" asChild>
-          <Link href="/faq">View FAQ</Link>
-        </Button>
+      {/* Quick answers */}
+      <section style={{ padding: '0 clamp(14px, 3vw, 34px) clamp(40px, 6vw, 80px)' }}>
+        <div
+          className="wup-panel wup-panel--accent-top mx-auto text-center"
+          style={{ maxWidth: '1100px', padding: 'clamp(26px, 3.4vw, 44px)' }}
+        >
+          <h2 className="wup-h2" style={{ fontSize: 'clamp(24px, 3.4vw, 38px)', margin: '0 0 12px' }}>
+            Looking for a quick answer?
+          </h2>
+          <p className="wup-body-sm" style={{ margin: '0 auto 24px', maxWidth: '520px' }}>
+            Most questions about entries, draws and delivery are already answered in the FAQ.
+          </p>
+          <Link href="/faq" className="wup-btn wup-btn--primary">Read the FAQ →</Link>
+        </div>
       </section>
     </main>
   );
