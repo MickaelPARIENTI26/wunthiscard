@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Trophy } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { Suspense } from 'react';
@@ -125,43 +126,52 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
 
   return (
     <main>
-      {/* Page Header */}
-      <header className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-        <div className="inline-flex items-center gap-2.5 mb-4" style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>
-          Hall of Fame
+      {/* Page header on the raised panel surface */}
+      <header
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--line)',
+          padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)',
+        }}
+      >
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          <p className="wup-eyebrow" style={{ margin: '0 0 10px' }}>Published results</p>
+          <h1 className="wup-h1" style={{ margin: '0 0 14px' }}>Winners.</h1>
+          <p className="wup-body" style={{ maxWidth: '620px', margin: 0 }}>
+            Every draw is run by an independent third party and the result is published
+            here within 24 hours. Real winners, real cards, verifiable every time.
+          </p>
         </div>
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 5.5vw, 72px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.96, marginBottom: '12px' }}>
-          Our Winners
-        </h1>
-        <p style={{ color: 'var(--ink-dim)', fontSize: '15px', maxWidth: '500px', lineHeight: 1.5 }}>
-          Real winners, real cards, real wins. Every result published and verifiable.
-        </p>
       </header>
 
-      {/* Stats + Winners */}
-      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-        <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '1100px' }}>
-          {/* Stats cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-8">
-            <div style={{ background: 'var(--accent)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
-              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Total prizes</div>
-              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>
-                {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(totalPrizeValue)}
+      <section style={{ padding: 'clamp(24px, 3.4vw, 44px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto" style={{ maxWidth: '1400px' }}>
+          {/* Stat tiles */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+              gap: 'clamp(14px, 1.8vw, 22px)',
+              marginBottom: 'clamp(22px, 3vw, 34px)',
+            }}
+          >
+            {[
+              { l: 'Total prizes', v: new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(totalPrizeValue) },
+              { l: 'Cards won', v: String(totalCount) },
+              { l: 'Winners paid', v: String(totalCount) },
+            ].map((s) => (
+              <div key={s.l} className="wup-panel wup-panel--accent-top" style={{ padding: 'clamp(18px, 2vw, 26px)' }}>
+                <div className="wup-meta">{s.l}</div>
+                <div className="wup-num" style={{ fontSize: 'clamp(30px, 4vw, 44px)', color: 'var(--accent)', marginTop: '6px' }}>
+                  {s.v}
+                </div>
               </div>
-            </div>
-            <div style={{ background: 'var(--hot)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
-              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Cards won</div>
-              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
-            </div>
-            <div style={{ background: 'var(--ink)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
-              <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--accent)' }}>Happy winners</div>
-              <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
-            </div>
+            ))}
           </div>
 
-          {/* Filter */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}>
+          {/* Count + category filter */}
+          <div className="flex flex-wrap items-center justify-between gap-4" style={{ marginBottom: '14px' }}>
+            <span className="wup-meta">
               Showing {winners.length} of {totalCount} winner{totalCount !== 1 ? 's' : ''}
             </span>
             <Suspense fallback={null}>
@@ -173,46 +183,78 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
             </Suspense>
           </div>
 
-          {/* Winners table */}
+          {/* Winners table — Prize · Winner · Ticket · Drawn */}
           {winners.length > 0 ? (
-            <div style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
-              {/* Table header */}
-              <div className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '16px 24px', borderBottom: '1px solid var(--line)', background: 'var(--ink)', color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
-                <span>Date</span><span>Winner</span><span>Prize</span><span>Ticket</span><span style={{ textAlign: 'right' }}>Value</span>
+            <div>
+              <div
+                className="flex items-center"
+                style={{ gap: '10px', padding: '0 0 10px', borderBottom: '2px solid var(--accent)' }}
+              >
+                <span className="wup-thead" style={{ flex: 'none', width: '58px' }} aria-hidden="true" />
+                <span className="wup-thead" style={{ flex: '1 1 200px', minWidth: '140px' }}>Prize</span>
+                <span className="wup-thead winners-col-who" style={{ flex: 'none', width: 'clamp(120px, 16vw, 200px)' }}>Winner</span>
+                <span className="wup-thead" style={{ flex: 'none', width: 'clamp(70px, 9vw, 110px)', textAlign: 'right' }}>Ticket</span>
+                <span className="wup-thead winners-col-when" style={{ flex: 'none', width: 'clamp(90px, 10vw, 120px)', textAlign: 'right' }}>Drawn</span>
               </div>
-              {/* Rows */}
-              {winners.map((win, i) => (
-                <div key={win.id} className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '14px 24px', borderBottom: i < winners.length - 1 ? '1px solid var(--line)' : 'none', alignItems: 'center', fontSize: '14px' }}>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--ink-dim)' }}>{formatDate(win.createdAt)}</span>
-                  <span>
-                    <b>{win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Lucky Winner'}</b>
-                  </span>
-                  <span>{win.competition.title}</span>
-                  <span style={{ fontFamily: 'var(--mono)', fontSize: '12px' }}>#{win.ticketNumber}</span>
-                  <span style={{ textAlign: 'right', fontFamily: 'var(--display)', fontWeight: 700, letterSpacing: '-0.01em' }}>{formatPrice(Number(win.competition.prizeValue))}</span>
-                </div>
-              ))}
-              {/* Mobile cards */}
+
               {winners.map((win) => (
-                <div key={`m-${win.id}`} className="sm:hidden" style={{ padding: '16px 20px', borderBottom: '1px solid var(--line)' }}>
-                  <div className="flex justify-between items-start mb-2">
-                    <b>{win.competition.title}</b>
-                    <span style={{ fontFamily: 'var(--display)', fontWeight: 700 }}>{formatPrice(Number(win.competition.prizeValue))}</span>
-                  </div>
-                  <div style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>
-                    Won by {win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Winner'} · Ticket #{win.ticketNumber} · {formatDate(win.createdAt)}
-                  </div>
+                <div key={win.id} className="wup-row" style={{ cursor: 'default' }}>
+                  <span className="wup-row__thumb" style={{ width: '58px' }}>
+                    {win.competition.mainImageUrl && (
+                      <Image
+                        src={win.competition.mainImageUrl}
+                        alt=""
+                        fill
+                        sizes="58px"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    )}
+                  </span>
+                  <span style={{ flex: '1 1 200px', minWidth: '140px', paddingLeft: '4px' }}>
+                    <span className="wup-title" style={{ display: 'block' }}>{win.competition.title}</span>
+                    <span className="wup-meta" style={{ display: 'block', marginTop: '4px' }}>
+                      {(categoryDisplayNames[win.competition.category] ?? win.competition.category)}
+                      {' · '}{formatPrice(Number(win.competition.prizeValue))}
+                    </span>
+                  </span>
+                  <span
+                    className="winners-col-who"
+                    style={{ flex: 'none', width: 'clamp(120px, 16vw, 200px)', fontSize: '15px', color: 'var(--ink)' }}
+                  >
+                    {win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Lucky Winner'}
+                  </span>
+                  <span
+                    className="wup-num"
+                    style={{ flex: 'none', width: 'clamp(70px, 9vw, 110px)', textAlign: 'right', fontSize: '19px', color: 'var(--accent)' }}
+                  >
+                    #{win.ticketNumber}
+                  </span>
+                  <span
+                    className="winners-col-when"
+                    style={{
+                      flex: 'none', width: 'clamp(90px, 10vw, 120px)', textAlign: 'right',
+                      fontFamily: 'var(--display)', fontWeight: 600, fontSize: '14px',
+                      letterSpacing: '0.06em', color: 'rgba(244, 241, 234, .6)', fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {formatDate(win.createdAt)}
+                  </span>
                 </div>
               ))}
+
+              <p className="wup-fine" style={{ marginTop: '18px' }}>
+                Draw proof is retained for every competition. Any dispute must be raised
+                within 7 days of the published result.
+              </p>
             </div>
           ) : (
-            <div className="text-center" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
-              <Trophy className="mx-auto mb-4 h-16 w-16" style={{ color: 'var(--ink-faint)' }} />
-              <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Winners Yet</h3>
-              <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '24px' }}>
+            <div className="wup-panel text-center" style={{ padding: '48px 24px' }}>
+              <Trophy className="mx-auto mb-4 h-14 w-14" style={{ color: 'var(--ink-faint)' }} />
+              <h3 className="wup-title" style={{ marginBottom: '8px' }}>No winners yet</h3>
+              <p className="wup-body-sm" style={{ marginBottom: '24px' }}>
                 {category ? 'No winners in this category yet. Be the first!' : 'Our first winners will be announced soon.'}
               </p>
-              <Link href="/competitions" className="inline-flex items-center gap-2 font-semibold" style={{ padding: '11px 18px', background: 'var(--ink)', color: 'var(--bg)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0, boxShadow: 'var(--shadow-sm)' }}>
+              <Link href="/competitions" className="wup-btn wup-btn--primary">
                 View Competitions
               </Link>
             </div>

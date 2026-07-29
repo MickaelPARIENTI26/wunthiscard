@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Chip } from '@/components/ui/chip';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { HomeCTABand } from '@/components/home/home-cta-band';
 
@@ -19,97 +18,99 @@ const steps = [
     n: '01', t: 'Browse',
     lead: 'Pick the card you want to win.',
     b: "Curated drops across Pokémon, One Piece TCG, sports cards and signed memorabilia. Each comp shows the prize value, ticket price, tickets left and draw date — no surprises, no hidden cost.",
-    swatch: 'var(--accent)',
     bullets: ['Graded & authenticated', 'Live count of tickets left', 'Countdown to draw'],
   },
   {
     n: '02', t: 'Answer',
     lead: 'One skill question per entry.',
     b: "UK prize-competition law requires a skill test — we ask you a fair trivia question about the card you're entering for. Correct answer = valid entry. Simple.",
-    swatch: 'var(--warn)',
     bullets: ['Category-specific questions', 'Multiple choice, 4 options', 'You see the answer after the draw'],
   },
   {
     n: '03', t: 'Enter',
-    lead: 'Pick your numbers. Stack your odds.',
-    b: 'Choose ticket numbers manually or let us auto-pick. Buy bundles and unlock bonus tickets — buy 10, get 1 free. The more tickets, the better your shot.',
-    swatch: 'var(--pop)',
-    bullets: ['Manual or auto-pick', 'Bonus tickets on bundles', 'Secure card payment'],
+    lead: 'Stack your odds.',
+    b: 'Ticket numbers are assigned automatically at checkout. Buy bundles and unlock bonus tickets — buy 10, get 1 free. The more tickets, the better your shot.',
+    bullets: ['Bonus tickets on bundles', 'Secure card payment', 'Instant confirmation email'],
   },
   {
     n: '04', t: 'Win',
     lead: 'Independent draw. Tracked delivery.',
     b: "When the comp sells out (or hits its end date), the winner is drawn by an independent third party. The result is published and verifiable on the competition page, and the winner is notified within 24h. Insured tracked shipping, free in the UK.",
-    swatch: 'var(--hot)',
     bullets: ['Independent third-party draw', 'Winner published publicly', 'Free UK delivery'],
   },
 ];
 
+/** Gold marquee strip: ★ Browse · Answer · Enter · Win ★ (18s per spec). */
+function MarqueeSet({ hidden = false }: { hidden?: boolean }) {
+  return (
+    <div className="wup-marquee__set" aria-hidden={hidden || undefined}>
+      {['Browse', 'Answer', 'Enter', 'Win'].map((w) => (
+        <span key={w} className="flex items-center" style={{ gap: '26px', whiteSpace: 'nowrap' }}>
+          <span aria-hidden="true">★</span>
+          {w}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 export default function HowItWorksPage() {
   return (
     <main>
-      {/* Editorial hero */}
-      <section className="hiw-hero">
+      {/* Hero with orbiting rays */}
+      <section className="wup-hero">
+        <div className="wup-hero__rays" aria-hidden="true" />
         <div
-          className="inline-flex items-center gap-2.5"
-          style={{
-            padding: '7px 14px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
-            background: 'var(--surface)', boxShadow: 'none',
-            fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em',
-            textTransform: 'uppercase', fontWeight: 600, marginBottom: '24px',
-          }}
+          className="relative mx-auto text-center"
+          style={{ maxWidth: '900px', padding: 'clamp(38px, 5.5vw, 78px) clamp(14px, 3vw, 34px)' }}
         >
-          <span className="live-dot" /> The Process · 4 Steps
-        </div>
+          <p className="wup-eyebrow wup-in-skew" style={{ margin: '0 0 16px' }}>The process · 4 steps</p>
 
-        <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(32px, 7vw, 104px)', fontWeight: 700, letterSpacing: '-0.04em', lineHeight: 0.92, margin: '0 0 22px' }}>
-          Win in <Chip color="accent">four</Chip><br />
-          <span style={{ textDecoration: 'underline', textDecorationColor: 'var(--hot)', textDecorationThickness: '6px', textUnderlineOffset: '8px' }}>simple</span> steps.
-        </h1>
+          <h1 className="wup-h1 wup-in-slam" style={{ animationDelay: '0.05s', margin: '0 0 20px' }}>
+            Win in four
+            <br />
+            <span style={{ color: 'var(--accent)' }}>simple steps.</span>
+          </h1>
 
-        <p style={{ fontSize: '18px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '640px', margin: '0 auto 32px' }}>
-          No gambling. No loopholes. A skill-based UK prize competition where <b style={{ color: 'var(--ink)', background: 'var(--accent)', padding: '1px 6px', borderRadius: 0 }}>anyone with a good memory</b> has a real shot at a grail card.
-        </p>
-
-        <div className="hiw-hero-marquee">
-          ★ BROWSE · ANSWER · ENTER · WIN · BROWSE · ANSWER · ENTER · WIN · BROWSE · ANSWER · ENTER · WIN ★
+          <p className="wup-body wup-in-wipe" style={{ animationDelay: '0.3s', maxWidth: '640px', margin: '0 auto' }}>
+            No gambling. No loopholes. A skill-based UK prize competition where anyone
+            with a good memory has a real shot at a grail card.
+          </p>
         </div>
       </section>
 
-      {/* Big numbered zigzag steps */}
-      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
-        <div className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
-          <div className="hiw-steps">
-            {steps.map((s) => (
-              <article key={s.n} className="hiw-step">
-                <aside className="hiw-step-num" style={{ background: s.swatch }}>
-                  <span style={{ fontFamily: 'var(--display)', fontSize: 'clamp(48px, 15vw, 104px)', fontWeight: 700, letterSpacing: '-0.06em', color: 'var(--ink)', position: 'relative', lineHeight: 1 }}>
-                    {s.n}
-                  </span>
-                </aside>
-                <div className="hiw-step-body" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700, marginBottom: '8px' }}>
-                    Step {s.n} · {s.t}
-                  </div>
-                  <h3 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(22px, 5vw, 34px)', fontWeight: 700, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 12px' }}>
-                    {s.lead}
-                  </h3>
-                  <p style={{ color: 'var(--ink-dim)', fontSize: '15px', lineHeight: 1.6, marginBottom: '14px' }}>
-                    {s.b}
-                  </p>
-                  <ul className="flex flex-wrap" style={{ gap: '8px 18px' }}>
-                    {s.bullets.map((b, j) => (
-                      <li key={j} className="inline-flex items-center gap-2" style={{ fontSize: '13px', fontWeight: 600 }}>
-                        <span className="grid place-items-center" style={{ width: '20px', height: '20px', borderRadius: '50%', background: s.swatch, border: '1px solid rgba(244, 241, 234, 0.18)', fontSize: '10px', flexShrink: 0 }}>✓</span>
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
+      <div className="wup-marquee wup-marquee--gold">
+        <div className="wup-marquee__track wup-marquee__track--fast">
+          <MarqueeSet />
+          <MarqueeSet hidden />
+        </div>
+      </div>
+
+      {/* Full-width horizontal step blocks with a gold left edge */}
+      <section style={{ padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
+        <div className="mx-auto flex flex-col" style={{ maxWidth: '1400px', gap: 'clamp(14px, 1.8vw, 22px)' }}>
+          {steps.map((s) => (
+            <article key={s.n} className="hiw-block">
+              <div className="hiw-block__num wup-num" aria-hidden="true">{s.n}</div>
+              <div style={{ minWidth: 0 }}>
+                <div className="wup-meta" style={{ marginBottom: '8px' }}>
+                  Step {s.n} · {s.t}
                 </div>
-              </article>
-            ))}
-          </div>
+                <h2 className="wup-title" style={{ fontSize: 'clamp(20px, 2.6vw, 28px)', margin: '0 0 12px' }}>
+                  {s.lead}
+                </h2>
+                <p className="wup-body-sm" style={{ margin: '0 0 14px', maxWidth: '780px' }}>{s.b}</p>
+                <ul className="flex flex-wrap" style={{ gap: '8px 22px', listStyle: 'none', margin: 0, padding: 0 }}>
+                  {s.bullets.map((b) => (
+                    <li key={b} className="inline-flex items-center" style={{ gap: '8px', fontSize: '14px', color: 'var(--ink-dim)' }}>
+                      <span aria-hidden="true" style={{ color: 'var(--accent)', fontWeight: 700 }}>✓</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 

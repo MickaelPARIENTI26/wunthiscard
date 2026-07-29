@@ -405,64 +405,32 @@ input:focus, textarea:focus, select:focus,
   }
 }
 
-/* === HIW HERO + TIMELINE === */
-.hiw-hero {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 80px 32px 40px;
-  text-align: center;
-}
-.hiw-hero-marquee {
-  margin: 10px -40vw 0;
-  padding: 10px 0;
-  border-top: 1.5px solid var(--ink);
-  border-bottom: 1.5px solid var(--ink);
-  background: var(--ink);
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.hiw-timeline {
-  max-width: 800px;
-  margin: 0 auto;
-  background: var(--surface);
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 10px 32px;
-  position: relative;
-}
-.hiw-timeline::before {
-  content: "";
-  position: absolute;
-  left: 130px;
-  top: 24px; bottom: 24px;
-  width: 1.5px;
-  background-image: linear-gradient(to bottom, var(--line-2) 50%, transparent 50%);
-  background-size: 2px 8px;
-}
-.hiw-timeline-row {
+/* === HOW IT WORKS — full-width step blocks (spec screen 6) === */
+.hiw-block {
   display: grid;
-  grid-template-columns: 110px 20px 1fr;
-  gap: 12px;
-  padding: 18px 0;
-  align-items: center;
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: auto 1fr;
+  gap: clamp(18px, 3vw, 40px);
+  align-items: start;
+  background: var(--surface);
+  border: 1px solid rgba(244, 241, 234, 0.18);
+  border-left: 3px solid var(--accent);
+  padding: clamp(20px, 2.6vw, 32px);
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), box-shadow .3s;
 }
-.hiw-timeline-row:last-child { border-bottom: none; }
-
-@media (max-width: 720px) {
-  .hiw-timeline::before { left: 100px; }
-  .hiw-timeline-row { grid-template-columns: 90px 20px 1fr; }
+.hiw-block:hover {
+  transform: translateX(6px);
+  box-shadow: 0 22px 46px -20px rgba(201, 162, 39, .4);
 }
-@media (max-width: 480px) {
-  .hiw-timeline::before { left: 68px; }
-  .hiw-timeline-row { grid-template-columns: 60px 16px 1fr; gap: 8px; }
+.hiw-block__num {
+  font-size: clamp(48px, 7vw, 84px);
+  color: rgba(201, 162, 39, .5);
+  line-height: .9;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hiw-block:hover { transform: none; }
+}
+@media (max-width: 640px) {
+  .hiw-block { grid-template-columns: 1fr; gap: 8px; }
 }
 
 /* === ABOUT === */
@@ -1458,52 +1426,6 @@ input:focus, textarea:focus, select:focus,
 .carousel-slide.next-2 { transform: translateX(130%) scale(0.6) rotateY(-40deg); z-index: 1; opacity: 0.2; filter: blur(3px); }
 .carousel-slide.slide-hidden { opacity: 0; pointer-events: none; }
 
-/* === HIW ZIGZAG === */
-.hiw-steps {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-.hiw-step {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 28px;
-  align-items: stretch;
-}
-.hiw-step:nth-child(even) {
-  grid-template-columns: 1fr 220px;
-}
-.hiw-step:nth-child(even) .hiw-step-num { order: 2; }
-.hiw-step:nth-child(even) .hiw-step-body { order: 1; }
-.hiw-step-num {
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  display: grid;
-  place-items: center;
-  min-height: 220px;
-  position: relative;
-  overflow: hidden;
-}
-.hiw-step-num::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: repeating-linear-gradient(-45deg, transparent, transparent 14px, rgba(0,0,0,0.06) 14px, rgba(0,0,0,0.06) 15px);
-}
-
-@media (max-width: 720px) {
-  .hiw-step,
-  .hiw-step:nth-child(even) {
-    grid-template-columns: 1fr;
-  }
-  .hiw-step:nth-child(even) .hiw-step-num { order: 0; }
-  .hiw-step-num { min-height: 120px; }
-  .hiw-step-num span { font-size: 72px; }
-}
-
 /* === KEYFRAMES === */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
@@ -1666,6 +1588,8 @@ a { transition: color 0.2s; }
    The same counts remain on the competition detail page. */
 @media (max-width: 700px) {
   .fixture-col-sold, .fixture-col-closes { display: none !important; }
+  /* Winners table keeps prize + ticket number on phones */
+  .winners-col-who, .winners-col-when { display: none !important; }
 }
 
 /* ---- Progress bar ---- */
