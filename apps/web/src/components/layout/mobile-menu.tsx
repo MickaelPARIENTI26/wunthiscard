@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   User,
@@ -11,9 +10,7 @@ import {
   Trophy,
   Settings,
   Instagram,
-  Sparkles,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
@@ -21,6 +18,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BrandWordmark } from './header';
 
 interface NavLink {
   href: string;
@@ -51,7 +49,6 @@ function TikTokIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-
 
 const socialLinks = [
   {
@@ -96,23 +93,15 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
         side="right"
         className="flex w-full flex-col sm:max-w-sm border-l"
         style={{
-          background: 'linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%)',
-          borderColor: 'var(--line)',
+          background: 'var(--bg)',
+          borderColor: 'rgba(244, 241, 234, 0.14)',
+          borderRadius: 0,
         }}
       >
         <SheetHeader className="text-left">
           <SheetTitle>
-            <Link href="/" onClick={onClose} className="flex items-center gap-3">
-              <Image src="/logo.png" alt="WinUPrize logo" width={40} height={40} className="rounded-xl" />
-
-              <div className="flex flex-col">
-                <span className="text-lg font-bold tracking-tight font-sans font-bold">
-                  WinUPrize
-                </span>
-                <span className="text-[10px] text-muted-foreground -mt-0.5">
-                  Premium Collectibles
-                </span>
-              </div>
+            <Link href="/" onClick={onClose} className="flex items-center">
+              <BrandWordmark size="22px" />
             </Link>
           </SheetTitle>
         </SheetHeader>
@@ -121,34 +110,31 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {/* User section (if logged in) */}
           {user && (
             <div
-              className="flex items-center gap-3 rounded-xl p-4"
+              className="flex items-center gap-3 p-4"
               style={{
-                background: 'linear-gradient(135deg, var(--bg-2) 0%, var(--surface) 100%)',
-                border: '1px solid var(--line)',
+                background: 'var(--surface)',
+                border: '1px solid rgba(244, 241, 234, 0.18)',
               }}
             >
-              <Avatar className="h-12 w-12 ring-2 ring-primary/30">
+              <Avatar className="h-12 w-12">
                 <AvatarImage src={user.avatarUrl} alt={user.name} />
                 <AvatarFallback
                   className="font-semibold"
-                  style={{
-                    background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
-                    color: 'var(--bg)',
-                  }}
+                  style={{ background: 'var(--accent)', color: '#0A0A0A' }}
                 >
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-xs text-muted-foreground">{user.email}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--ink)' }}>{user.name}</span>
+                <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>{user.email}</span>
               </div>
             </div>
           )}
 
-          {/* Main navigation */}
-          <nav className="flex flex-col gap-1">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+          {/* Main navigation — full-height condensed uppercase list, 1px dividers */}
+          <nav className="flex flex-col">
+            <p className="mb-2 wup-eyebrow" style={{ fontSize: '12.5px' }}>
               Menu
             </p>
             {navLinks.map((link) => (
@@ -156,15 +142,22 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                 key={link.href}
                 href={link.href}
                 onClick={onClose}
-                className="group relative rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-primary/10"
+                className="group relative transition-colors"
+                style={{
+                  fontFamily: 'var(--display)',
+                  fontWeight: 700,
+                  fontSize: '19px',
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  color: 'var(--ink)',
+                  padding: '14px 2px',
+                  borderBottom: '1px solid var(--line)',
+                }}
               >
-                <span className="relative z-10">{link.label}</span>
-                {/* Left border indicator on hover */}
+                {link.label}
                 <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full scale-y-0 transition-transform group-hover:scale-y-100"
-                  style={{
-                    background: 'var(--accent)',
-                  }}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-[3px] scale-y-0 transition-transform group-hover:scale-y-100"
+                  style={{ background: 'var(--accent)' }}
                 />
               </Link>
             ))}
@@ -173,7 +166,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {/* Account links (if logged in) */}
           {user && (
             <nav className="flex flex-col gap-1">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary/70">
+              <p className="mb-2 wup-eyebrow" style={{ fontSize: '12.5px' }}>
                 Account
               </p>
               {accountLinks.map((link) => (
@@ -181,9 +174,10 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   key={link.href}
                   href={link.href}
                   onClick={onClose}
-                  className="group flex items-center gap-3 rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-primary/10"
+                  className="group flex items-center gap-3 px-2 py-3 transition-colors"
+                  style={{ fontSize: '15px', fontWeight: 500, color: 'var(--ink-dim)' }}
                 >
-                  <link.icon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <link.icon className="h-5 w-5 transition-colors group-hover:text-[var(--accent)]" style={{ color: 'var(--ink-faint)' }} />
                   {link.label}
                 </Link>
               ))}
@@ -193,34 +187,12 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           {/* Auth buttons (if not logged in) */}
           {!user && (
             <div className="flex flex-col gap-3 pt-2">
-              <Button
-                asChild
-                size="lg"
-                className="w-full font-semibold"
-                style={{
-                  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%)',
-                  color: 'var(--bg)',
-                }}
-              >
-                <Link href="/register" onClick={onClose} className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Sign Up
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="w-full"
-                style={{
-                  background: 'transparent',
-                  borderColor: 'var(--ink)',
-                }}
-              >
-                <Link href="/login" onClick={onClose}>
-                  Log In
-                </Link>
-              </Button>
+              <Link href="/register" onClick={onClose} className="btn btn-primary btn-block">
+                Sign Up
+              </Link>
+              <Link href="/login" onClick={onClose} className="btn btn-ghost btn-block">
+                Log In
+              </Link>
             </div>
           )}
 
@@ -228,13 +200,8 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
           <div className="flex-1" />
 
           {/* Social links */}
-          <div
-            className="pt-6"
-            style={{
-              borderTop: '1px solid var(--line)',
-            }}
-          >
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-primary/70">
+          <div className="pt-6" style={{ borderTop: '1px solid var(--line)' }}>
+            <p className="mb-3 wup-eyebrow" style={{ fontSize: '12.5px' }}>
               Follow Us
             </p>
             <div className="flex flex-wrap gap-2">
@@ -244,15 +211,11 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-all hover:scale-105"
-                  style={{
-                    background: 'linear-gradient(135deg, var(--bg-2) 0%, var(--surface) 100%)',
-                    border: '1px solid var(--line)',
-                  }}
+                  className="group hard-shadow flex items-center gap-2 px-3 py-2 text-sm"
                   aria-label={`Follow us on ${social.label}`}
                 >
-                  <social.icon className="h-4 w-4 transition-colors group-hover:text-primary" />
-                  <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                  <social.icon className="h-4 w-4 transition-colors group-hover:text-[var(--accent)]" style={{ color: 'var(--ink-faint)' }} />
+                  <span className="text-xs font-medium transition-colors group-hover:text-[var(--ink)]" style={{ color: 'var(--ink-dim)' }}>
                     {social.label}
                   </span>
                 </a>
@@ -262,14 +225,24 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
 
           {/* Logout button (if logged in) */}
           {user && (
-            <Button
-              variant="ghost"
-              className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive mt-2"
+            <button
+              className="mt-2 flex items-center justify-start gap-2 px-2 py-3 transition-colors"
+              style={{
+                fontFamily: 'var(--display)',
+                fontWeight: 600,
+                fontSize: '15px',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                color: 'var(--accent)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
               onClick={handleLogout}
             >
-              <LogOut className="mr-2 h-5 w-5" />
+              <LogOut className="h-5 w-5" />
               Log Out
-            </Button>
+            </button>
           )}
         </div>
       </SheetContent>

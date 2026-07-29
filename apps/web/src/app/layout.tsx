@@ -1,29 +1,30 @@
 import type { Metadata, Viewport } from 'next';
-import { Space_Grotesk, JetBrains_Mono } from 'next/font/google';
+import { Barlow, Barlow_Condensed } from 'next/font/google';
 import './globals.css';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateHomePageSchema } from '@/lib/structured-data';
 import { CookieConsentBanner } from '@/components/legal/cookie-consent-banner';
 import { AgeGate } from '@/components/legal/age-gate';
 import { AuthHeader } from '@/components/layout/auth-header';
+import { TickerBar } from '@/components/layout/ticker-bar';
 import { Footer } from '@/components/layout/footer';
 import { SessionProvider } from '@/components/providers/session-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Suspense } from 'react';
 import { ReferralTracker } from '@/components/common/referral-tracker';
 
-const spaceGrotesk = Space_Grotesk({
+const barlow = Barlow({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-barlow',
   weight: ['400', '500', '600', '700'],
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const barlowCondensed = Barlow_Condensed({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-jetbrains-mono',
-  weight: ['400', '500', '600'],
+  variable: '--font-barlow-condensed',
+  weight: ['500', '600', '700'],
 });
 
 /**
@@ -34,8 +35,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#f2f0ec',
-  colorScheme: 'light',
+  themeColor: '#0A0A0A',
+  colorScheme: 'dark',
 };
 
 export const metadata: Metadata = {
@@ -111,7 +112,7 @@ export const metadata: Metadata = {
       {
         rel: 'mask-icon',
         url: '/icons/safari-pinned-tab.svg',
-        color: '#0d0d0d',
+        color: '#C9A227',
       },
     ],
   },
@@ -124,7 +125,7 @@ export const metadata: Metadata = {
   referrer: 'origin-when-cross-origin',
   other: {
     // Windows tile colour (brand ink). browserconfig.xml was removed — it 404'd.
-    'msapplication-TileColor': '#0d0d0d',
+    'msapplication-TileColor': '#0A0A0A',
   },
 };
 
@@ -134,7 +135,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`} data-scroll-behavior="smooth">
+    <html lang="en" className={`${barlow.variable} ${barlowCondensed.variable}`} data-scroll-behavior="smooth">
       <head>
         {/* Default structured data for Organization and WebSite */}
         <StructuredData data={generateHomePageSchema()} />
@@ -144,10 +145,11 @@ export default function RootLayout({
           <a
             href="#main-content"
             className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-lg focus:text-sm focus:font-semibold"
-            style={{ background: 'var(--ink)', color: 'var(--accent)' }}
+            style={{ background: 'var(--accent)', color: '#0A0A0A' }}
           >
             Skip to main content
           </a>
+          <TickerBar />
           <AuthHeader />
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />

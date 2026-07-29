@@ -96,47 +96,37 @@ export function AgeGate() {
         }`}
         style={{
           background: 'var(--surface)',
-          borderRadius: '24px',
+          border: '1px solid rgba(244, 241, 234, 0.18)',
+          borderTop: '3px solid var(--accent)',
+          borderRadius: 0,
           padding: '40px',
-          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.12)',
+          boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
         }}
       >
-        {/* Logo */}
+        {/* Logo — Matchday wedge wordmark */}
         <div className="flex justify-center mb-6">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            {/* Gold square with W */}
-            <div
-              className="flex items-center justify-center"
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '12px',
-                background: 'var(--accent)',
-                boxShadow: '2px 2px 0 var(--ink)',
-              }}
-            >
-              <span
-                style={{
-                  color: '#ffffff',
-                  fontSize: '18px',
-                  fontWeight: 800,
-                  fontFamily: 'var(--sans)',
-                }}
-              >
-                W
-              </span>
-            </div>
-            {/* Text */}
+          <Link href="/" className="inline-flex items-center" style={{ gap: '10px' }}>
             <span
-              className="font-sans"
+              aria-hidden="true"
               style={{
-                fontSize: '22px',
+                display: 'block',
+                width: '6px',
+                height: '26px',
+                background: 'var(--accent)',
+                transform: 'skewX(-12deg)',
+              }}
+            />
+            <span
+              style={{
+                fontFamily: 'var(--display)',
                 fontWeight: 700,
-                letterSpacing: '-0.5px',
+                fontSize: '24px',
+                letterSpacing: '0.02em',
+                textTransform: 'uppercase',
                 color: 'var(--ink)',
               }}
             >
-              WinUPrize
+              WinU<span style={{ color: 'var(--accent)' }}>Prize</span>
             </span>
           </Link>
         </div>
@@ -144,10 +134,13 @@ export function AgeGate() {
         {/* Title */}
         <h1
           id="age-gate-title"
-          className="font-sans mb-3"
+          className="mb-3"
           style={{
-            fontSize: '24px',
+            fontFamily: 'var(--display)',
+            fontSize: '28px',
             fontWeight: 700,
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
             color: 'var(--ink)',
           }}
         >
@@ -168,41 +161,20 @@ export function AgeGate() {
 
         {/* Buttons */}
         <div className="space-y-3">
-          {/* Primary Button - Yes, I'm 18+ */}
+          {/* Primary Button - Yes, I'm 18+ (gold fill, #0A0A0A text) */}
           <button
             onClick={handleConfirmAge}
-            className="w-full transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{
-              padding: '14px',
-              borderRadius: '12px',
-              background: 'var(--ink)',
-              border: '1.5px solid var(--ink)',
-              boxShadow: '3px 3px 0 var(--accent)',
-              color: '#ffffff',
-              fontSize: '15px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              outlineColor: 'var(--accent)',
-            }}
+            className="btn btn-primary btn-block"
+            style={{ padding: '16px', fontSize: '16px' }}
           >
             Yes, I&apos;m 18 or over
           </button>
 
-          {/* Secondary Button - No, I'm under 18 */}
+          {/* Secondary Button - No, I'm under 18 (outlined) */}
           <button
             onClick={handleUnderAge}
-            className="w-full transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{
-              padding: '14px',
-              borderRadius: '12px',
-              background: 'var(--surface)',
-              border: '1.5px solid var(--ink)',
-              color: 'var(--ink-dim)',
-              fontSize: '15px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              outlineColor: 'var(--accent)',
-            }}
+            className="btn btn-ghost btn-block"
+            style={{ padding: '15px', fontSize: '15px' }}
           >
             No, I&apos;m under 18
           </button>

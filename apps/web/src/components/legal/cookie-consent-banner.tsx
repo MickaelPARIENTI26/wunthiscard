@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 const COOKIE_CONSENT_KEY = 'cookie-consent';
 
@@ -66,18 +65,37 @@ export function CookieConsentBanner() {
       }`}
     >
       <div className="mx-auto max-w-4xl">
-        <div className="rounded-lg border border-border bg-card p-4 shadow-lg sm:p-6">
+        <div
+          className="p-4 sm:p-6"
+          style={{
+            background: 'var(--surface)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderTop: '3px solid var(--accent)',
+            boxShadow: '0 -12px 40px rgba(0, 0, 0, 0.55)',
+          }}
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             {/* Text Content */}
             <div className="flex-1">
-              <h2 id="cookie-consent-title" className="text-base font-semibold text-foreground">
+              <h2
+                id="cookie-consent-title"
+                style={{
+                  fontFamily: 'var(--display)',
+                  fontWeight: 700,
+                  fontSize: '18px',
+                  letterSpacing: '0.02em',
+                  textTransform: 'uppercase',
+                  color: 'var(--ink)',
+                }}
+              >
                 We use cookies
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="mt-1 text-sm" style={{ color: 'var(--ink-dim)' }}>
                 We use cookies to enhance your browsing experience, analyse site traffic, and personalise content. By clicking &quot;Accept&quot;, you consent to our use of cookies.{' '}
                 <Link
                   href="/cookies"
-                  className="text-primary underline underline-offset-2 hover:text-primary/80"
+                  className="underline underline-offset-2"
+                  style={{ color: 'var(--accent)' }}
                 >
                   Learn more
                 </Link>
@@ -86,21 +104,20 @@ export function CookieConsentBanner() {
 
             {/* Buttons */}
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => handleConsent(false)}
-                className="w-full sm:w-auto"
+                className="btn btn-ghost w-full sm:w-auto"
+                style={{ padding: '11px 20px', fontSize: '14px', justifyContent: 'center' }}
               >
                 Decline
-              </Button>
-              <Button
-                size="sm"
+              </button>
+              <button
                 onClick={() => handleConsent(true)}
-                className="w-full sm:w-auto"
+                className="btn btn-primary w-full sm:w-auto"
+                style={{ padding: '11px 22px', fontSize: '14px', justifyContent: 'center' }}
               >
                 Accept
-              </Button>
+              </button>
             </div>
           </div>
         </div>

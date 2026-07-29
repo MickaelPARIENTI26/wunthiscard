@@ -2,10 +2,8 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -28,10 +26,34 @@ interface HeaderProps {
 const navLinks = [
   { href: '/competitions', label: 'Competitions' },
   { href: '/how-it-works', label: 'How It Works' },
+  { href: '/winners', label: 'Winners' },
   { href: '/faq', label: 'FAQ' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
+
+/** Matchday wordmark: animated gold wedge + WinU (text) / Prize (gold). */
+export function BrandWordmark({ size = 'clamp(23px, 3vw, 29px)' }: { size?: string }) {
+  return (
+    <span className="flex items-center" style={{ gap: '10px' }}>
+      <span className="wup-wedge" aria-hidden="true" />
+      <span
+        style={{
+          fontFamily: 'var(--display)',
+          fontWeight: 700,
+          fontSize: size,
+          letterSpacing: '0.02em',
+          textTransform: 'uppercase',
+          lineHeight: 1,
+          color: 'var(--ink)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        WinU<span style={{ color: 'var(--accent)' }}>Prize</span>
+      </span>
+    </span>
+  );
+}
 
 export function Header({ user = null }: HeaderProps) {
   const router = useRouter();
@@ -55,50 +77,53 @@ export function Header({ user = null }: HeaderProps) {
     <nav
       className="sticky top-0 z-50"
       style={{
-        background: 'rgba(242, 240, 236, 0.92)',
-        backdropFilter: 'blur(18px)',
-        WebkitBackdropFilter: 'blur(18px)',
-        borderBottom: '1.5px solid var(--ink)',
+        background: 'rgba(10, 10, 10, 0.9)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(244, 241, 234, 0.14)',
       }}
     >
       <div
-        className="mx-auto flex items-center justify-between py-3 px-5 sm:py-3.5 sm:px-8"
-        style={{ maxWidth: '1440px', gap: '32px' }}
+        className="mx-auto flex items-center justify-between px-5 sm:px-8"
+        style={{ maxWidth: '1400px', gap: '28px', height: 'clamp(60px, 7vw, 74px)' }}
       >
         {/* Brand */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5"
-          style={{ fontFamily: 'var(--display)', fontWeight: 700, fontSize: '20px', letterSpacing: '-0.03em' }}
-        >
-          <Image src="/logo.png" alt="WinUPrize logo" width={34} height={34} priority />
-          WinUPrize
+        <Link href="/" aria-label="WinUPrize home" className="flex items-center">
+          <BrandWordmark />
         </Link>
 
-        {/* Desktop nav links */}
-        <div className="hidden lg:flex items-center" style={{ gap: '24px', fontSize: '14px', fontWeight: 500 }}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="transition-colors duration-150"
-              style={{
-                padding: '6px 0',
-                borderBottom: `2px solid ${pathname.startsWith(link.href) ? 'var(--ink)' : 'transparent'}`,
-                color: pathname.startsWith(link.href) ? 'var(--ink)' : undefined,
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--hot)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = ''; }}
-            >
-              {link.label}
-            </Link>
-          ))}
+        {/* Desktop nav links (single 980px breakpoint per the design spec) */}
+        <div className="hidden min-[980px]:flex items-center" style={{ gap: '22px' }}>
+          {navLinks.map((link) => {
+            const active = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors duration-150"
+                style={{
+                  fontFamily: 'var(--display)',
+                  fontWeight: 600,
+                  fontSize: '16px',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  padding: '6px 0 4px',
+                  borderBottom: `2px solid ${active ? 'var(--accent)' : 'transparent'}`,
+                  color: active ? 'var(--ink)' : 'rgba(244, 241, 234, 0.66)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--ink)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = active ? 'var(--ink)' : 'rgba(244, 241, 234, 0.66)'; }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Right side */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {/* Desktop auth CTAs or avatar */}
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
+          <div className="hidden min-[980px]:flex min-[980px]:items-center" style={{ gap: '10px' }}>
             {user ? (
               // modal={false}: the default (modal) dropdown locks page scroll via
               // overflow:hidden on <body>, which breaks the sticky header's
@@ -106,35 +131,35 @@ export function Header({ user = null }: HeaderProps) {
               // made the top bar jump/disappear. A nav menu doesn't need modal.
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative h-10 w-10 rounded-full p-0"
+                  <button
+                    className="relative grid h-10 w-10 place-items-center p-0"
+                    aria-label="Account menu"
+                    style={{ cursor: 'pointer' }}
                   >
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user.avatarUrl} alt={user.name} />
                       <AvatarFallback
                         className="font-semibold"
-                        style={{ background: 'var(--accent)', color: 'var(--ink)' }}
+                        style={{ background: 'var(--accent)', color: '#0A0A0A' }}
                       >
                         {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
-                  </Button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   className="w-56"
                   align="end"
                   forceMount
-                  style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow-sm)' }}
+                  style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0, boxShadow: '0 18px 40px -18px rgba(0, 0, 0, 0.8)' }}
                 >
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-sm font-medium leading-none" style={{ color: 'var(--ink)' }}>{user.name}</p>
                       <p className="text-xs leading-none" style={{ color: 'var(--ink-faint)' }}>{user.email}</p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator style={{ background: 'var(--line)' }} />
                   <DropdownMenuItem asChild>
                     <Link href="/profile" className="cursor-pointer"><User className="mr-2 h-4 w-4" />Profile</Link>
                   </DropdownMenuItem>
@@ -150,28 +175,52 @@ export function Header({ user = null }: HeaderProps) {
                   <DropdownMenuItem asChild>
                     <Link href="/settings" className="cursor-pointer"><Settings className="mr-2 h-4 w-4" />Settings</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="cursor-pointer text-[var(--hot)]" onClick={handleLogout}>
+                  <DropdownMenuSeparator style={{ background: 'var(--line)' }} />
+                  <DropdownMenuItem className="cursor-pointer" style={{ color: 'var(--accent)' }} onClick={handleLogout}>
                     Log Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={() => router.push('/login')}>Log In</Button>
-                <Button variant="primary" size="sm" onClick={() => router.push('/register')}>Sign Up</Button>
+                <button
+                  onClick={() => router.push('/login')}
+                  className="btn btn-ghost"
+                  style={{ padding: '10px 18px', fontSize: '14px' }}
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => router.push('/register')}
+                  className="btn btn-primary"
+                  style={{ padding: '10px 20px', fontSize: '14px' }}
+                >
+                  Sign Up
+                </button>
               </>
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger — 3 bars, third one gold */}
           <button
-            className="lg:hidden grid place-items-center"
+            className="min-[980px]:hidden"
             onClick={() => setIsMobileMenuOpen(true)}
             aria-label="Open menu"
-            style={{ width: 40, height: 40, borderRadius: '8px' }}
+            style={{
+              width: 44,
+              height: 44,
+              display: 'grid',
+              placeItems: 'center',
+              border: '1px solid rgba(244, 241, 234, 0.28)',
+              background: 'transparent',
+              cursor: 'pointer',
+            }}
           >
-            <Menu className="h-5 w-5" />
+            <span className="flex flex-col" style={{ gap: '5px' }} aria-hidden="true">
+              <span style={{ width: 20, height: 2, background: 'var(--ink)' }} />
+              <span style={{ width: 20, height: 2, background: 'var(--ink)' }} />
+              <span style={{ width: 20, height: 2, background: 'var(--accent)' }} />
+            </span>
           </button>
         </div>
       </div>
