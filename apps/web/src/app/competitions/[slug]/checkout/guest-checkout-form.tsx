@@ -250,7 +250,7 @@ export function GuestCheckoutForm({
 
   if (!qcmPassed) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
         <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>
           Question Not Answered
@@ -311,8 +311,8 @@ export function GuestCheckoutForm({
             marginBottom: '18px',
             background: 'var(--hot)',
             color: '#fff',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             fontSize: '13px',
             fontWeight: 600,
             boxShadow: 'var(--shadow-sm)',
@@ -532,8 +532,8 @@ export function GuestCheckoutForm({
             padding: '10px 14px',
             marginTop: '18px',
             background: 'var(--accent)',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             boxShadow: 'var(--shadow-sm)',
             fontFamily: 'var(--mono)',
             fontSize: '11px',
@@ -555,7 +555,7 @@ export function GuestCheckoutForm({
           alignItems: 'baseline',
           marginTop: '18px',
           paddingTop: '14px',
-          borderTop: '1.5px dashed var(--line-2)',
+          borderTop: '1px solid var(--line)',
         }}
       >
         <span style={{ fontSize: '13px', color: 'var(--ink-dim)' }}>

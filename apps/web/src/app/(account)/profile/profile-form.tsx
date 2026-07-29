@@ -125,7 +125,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     <div
       style={{
         background: 'var(--surface)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
         boxShadow: 'var(--shadow)',
         padding: '28px',
@@ -139,7 +139,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           gap: '18px',
           paddingBottom: '20px',
           marginBottom: '24px',
-          borderBottom: '1.5px dashed var(--line-2)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div style={{ position: 'relative', flexShrink: 0 }}>
@@ -147,9 +147,9 @@ export function ProfileForm({ user }: ProfileFormProps) {
             style={{
               width: '72px',
               height: '72px',
-              border: '1.5px solid var(--ink)',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
               borderRadius: '50%',
-              boxShadow: '3px 3px 0 var(--ink)',
+              boxShadow: 'none',
               overflow: 'hidden',
               display: 'grid',
               placeItems: 'center',
@@ -182,7 +182,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               right: '-4px',
               width: '28px',
               height: '28px',
-              border: '1.5px solid var(--ink)',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
               borderRadius: '50%',
               background: 'var(--ink)',
               color: 'var(--accent)',
@@ -190,7 +190,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               placeItems: 'center',
               cursor: isUploading ? 'not-allowed' : 'pointer',
               opacity: isUploading ? 0.6 : 1,
-              boxShadow: '2px 2px 0 var(--ink)',
+              boxShadow: 'none',
             }}
           >
             {isUploading ? (
@@ -306,8 +306,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
               marginTop: '12px',
               background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
               color: message.type === 'success' ? 'var(--ink)' : '#fff',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '10px',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
+              borderRadius: 0,
               fontSize: '13px',
               fontWeight: 600,
               boxShadow: 'var(--shadow-sm)',
@@ -324,7 +324,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             justifyContent: 'flex-end',
             marginTop: '20px',
             paddingTop: '20px',
-            borderTop: '1px dashed var(--line-2)',
+            borderTop: '1px solid var(--line)',
           }}
         >
           <button

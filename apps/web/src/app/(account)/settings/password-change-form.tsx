@@ -83,7 +83,7 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
             style={{
               height: '6px',
               flex: 1,
-              borderRadius: '3px',
+              borderRadius: 0,
               border: '1px solid var(--ink)',
               background: level <= strength.score ? color(strength.score) : 'var(--bg-2)',
               transition: 'background 0.15s',
@@ -192,7 +192,7 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
     <div
       style={{
         background: 'var(--surface)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
         boxShadow: 'var(--shadow)',
         padding: '28px',
@@ -205,17 +205,17 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
           gap: '14px',
           paddingBottom: '20px',
           marginBottom: '24px',
-          borderBottom: '1.5px dashed var(--line-2)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
           style={{
             width: '48px',
             height: '48px',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '12px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             background: 'var(--accent)',
-            boxShadow: '3px 3px 0 var(--ink)',
+            boxShadow: 'none',
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,
@@ -316,8 +316,8 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
               padding: '10px 14px',
               background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
               color: message.type === 'success' ? 'var(--ink)' : '#fff',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '10px',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
+              borderRadius: 0,
               fontSize: '13px',
               fontWeight: 600,
               boxShadow: 'var(--shadow-sm)',
@@ -333,7 +333,7 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
             justifyContent: 'flex-end',
             marginTop: '20px',
             paddingTop: '18px',
-            borderTop: '1px dashed var(--line-2)',
+            borderTop: '1px solid var(--line)',
           }}
         >
           <button

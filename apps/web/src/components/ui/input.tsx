@@ -14,7 +14,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
           backgroundColor: 'var(--bg-input)',
           color: 'var(--ink)',
           border: '1px solid var(--line)',
-          borderRadius: '10px',
+          borderRadius: 0,
           outline: 'none',
           transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
           ...style,

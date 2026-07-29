@@ -52,9 +52,9 @@ export function DeleteAccountSection({ email }: DeleteAccountSectionProps) {
     <div
       style={{
         background: 'var(--surface)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
-        boxShadow: '4px 4px 0 var(--hot)',
+        boxShadow: 'none',
         padding: '28px',
       }}
     >
@@ -65,17 +65,17 @@ export function DeleteAccountSection({ email }: DeleteAccountSectionProps) {
           gap: '14px',
           paddingBottom: '20px',
           marginBottom: '20px',
-          borderBottom: '1.5px dashed var(--line-2)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
           style={{
             width: '48px',
             height: '48px',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '12px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             background: 'var(--hot)',
-            boxShadow: '3px 3px 0 var(--ink)',
+            boxShadow: 'none',
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,
@@ -145,8 +145,8 @@ export function DeleteAccountSection({ email }: DeleteAccountSectionProps) {
               style={{
                 padding: '12px 14px',
                 background: 'var(--bg-2)',
-                border: '1px dashed var(--line-2)',
-                borderRadius: '8px',
+                border: '1px solid var(--line)',
+                borderRadius: 0,
                 fontSize: '13px',
               }}
             >
@@ -190,8 +190,8 @@ export function DeleteAccountSection({ email }: DeleteAccountSectionProps) {
                   padding: '10px 14px',
                   background: 'var(--hot)',
                   color: '#fff',
-                  border: '1.5px solid var(--ink)',
-                  borderRadius: '10px',
+                  border: '1px solid rgba(244, 241, 234, 0.18)',
+                  borderRadius: 0,
                   fontSize: '13px',
                   fontWeight: 600,
                   boxShadow: 'var(--shadow-sm)',

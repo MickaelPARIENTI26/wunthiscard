@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { SimpleTicketSelector } from '@/components/competition/simple-ticket-selector';
 import { FreeEntryButton } from '@/components/competition/free-entry-button';
-import { InlineCountdown } from '@/components/common/inline-countdown';
+import { ScoreboardClock } from '@/components/common/scoreboard-clock';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateCompetitionSchema } from '@/lib/structured-data';
@@ -316,9 +316,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           {/* LEFT: Card visual */}
           <div className="comp-hero-visual">
             <div className={`comp-hero-frame game-${gameClass}`}>
-              <div className="comp-hero-marquee">
-                ★ {stateLabel} · {CATEGORY_LABELS[category].toUpperCase()} · {stateLabel} · {CATEGORY_LABELS[category].toUpperCase()} · {stateLabel} ★
-              </div>
+              <div className="comp-hero-marquee">{CATEGORY_LABELS[category]}</div>
               <div className="comp-hero-imgwrap">
                 {competition.mainImageUrl && (
                   <div className="comp-hero-img" style={{ width: '100%', maxWidth: '380px', aspectRatio: '5 / 7' }}>
@@ -362,11 +360,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           {/* RIGHT: Title + progress + inline ticket picker */}
           <div className="comp-hero-info">
             <div
-              className="inline-flex items-center gap-2.5"
-              style={{ padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)', borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '14px' }}
+              className="inline-flex items-center"
+              style={{ gap: '9px', padding: '6px 13px', background: 'var(--gold-bright)', color: '#0A0A0A', borderRadius: 0, fontFamily: 'var(--display)', fontSize: '14px', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 700, marginBottom: '16px' }}
             >
               {isActive && !drawPending && (
-                <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+                <span className="wup-dot wup-onair" style={{ width: '8px', height: '8px', background: '#0A0A0A' }} aria-hidden="true" />
               )}
               {stateLabel}
               {competition.soldTickets > 0 ? ` · ${competition.soldTickets.toLocaleString('en-GB')} entered` : ''}
@@ -394,17 +392,23 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 <div className="comp-hero-bar">
                   <div
                     className="comp-hero-bar-fill"
-                    style={{ width: `${Math.max(soldPercentage, 3)}%`, ...(soldPercentage === 0 ? { animation: 'none' } : {}) }}
+                    style={{ width: `${Math.max(soldPercentage, 3)}%` }}
                   />
                 </div>
                 <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.04em', color: 'var(--ink-dim)', marginTop: '8px' }}>
                   Max odds 1 in {competition.totalTickets!.toLocaleString('en-GB')}
                 </div>
-                <div className="comp-progress-end">
-                  <span className="comp-progress-end-l">Draw ends in</span>
-                  <span className="comp-progress-end-v">
-                    <InlineCountdown targetDate={competition.drawDate} />
-                  </span>
+                {/* Scoreboard countdown — blinking gold-bright dot + DAYS/HRS/MIN/SEC */}
+                <div style={{ marginTop: '14px' }}>
+                  <div className="comp-progress-end" style={{ marginBottom: '9px' }}>
+                    <span
+                      className="wup-dot wup-onair"
+                      style={{ width: '8px', height: '8px', background: 'var(--gold-bright)' }}
+                      aria-hidden="true"
+                    />
+                    <span className="comp-progress-end-l">Draw closes in</span>
+                  </div>
+                  <ScoreboardClock targetDate={competition.drawDate} />
                 </div>
               </div>
             )}
@@ -445,7 +449,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             {/* Draw pending — closed, awaiting the winner */}
             {drawPending && (
               <div style={{ marginTop: '18px' }}>
-                <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)' }}>
+                <button disabled className="w-full" style={{ padding: '16px', borderRadius: 0, background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1px solid rgba(244, 241, 234, 0.18)' }}>
                   Entries closed — drawing soon
                 </button>
                 <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--ink-faint)', letterSpacing: '0.04em', marginTop: '10px', textAlign: 'center' }}>
@@ -456,17 +460,17 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
 
             {/* Non-active states */}
             {isUpcoming && (
-              <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
+              <button disabled className="w-full" style={{ padding: '16px', borderRadius: 0, background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1px solid rgba(244, 241, 234, 0.18)', marginTop: '18px' }}>
                 Coming Soon
               </button>
             )}
             {isSoldOut && !drawPending && (
-              <button disabled className="w-full" style={{ padding: '16px', borderRadius: '10px', background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1.5px solid var(--ink)', marginTop: '18px' }}>
+              <button disabled className="w-full" style={{ padding: '16px', borderRadius: 0, background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1px solid rgba(244, 241, 234, 0.18)', marginTop: '18px' }}>
                 Sold Out — Draw Pending
               </button>
             )}
             {isCompleted && competition.winningTicketNumber && (
-              <div style={{ background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ background: 'var(--accent)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
                 <Trophy style={{ width: '24px', height: '24px', margin: '0 auto 8px' }} />
                 <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Completed</p>
                 <p style={{ fontSize: '14px', color: 'var(--ink-dim)', marginTop: '4px' }}>
@@ -476,7 +480,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </div>
             )}
             {isCancelled && (
-              <div style={{ background: 'var(--hot)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ background: 'var(--hot)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
                 <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Cancelled</p>
                 <p style={{ fontSize: '14px', marginTop: '4px', opacity: 0.8 }}>All participants have been fully refunded.</p>
               </div>
@@ -506,7 +510,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
       </section>
 
       {/* ABOUT THIS CARD — full-bleed gray background */}
-      <section style={{ background: 'var(--bg-2)', borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section style={{ background: 'var(--bg-2)', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div style={{ maxWidth: '1440px', margin: '0 auto', padding: 'clamp(40px, 8vw, 80px) clamp(16px, 5vw, 32px)' }}>
           {/* Section header */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px', gap: '32px', flexWrap: 'wrap' }}>
@@ -525,7 +529,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           </div>
 
           {/* Card container — white card with border + shadow holding both columns */}
-          <div style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: '14px', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0, overflow: 'hidden' }}>
             <div className="comp-about-grid" style={{ padding: '28px' }}>
               {/* Left: Card details list */}
               <div>

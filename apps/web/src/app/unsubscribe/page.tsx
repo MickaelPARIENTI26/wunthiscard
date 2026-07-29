@@ -62,7 +62,7 @@ export default async function UnsubscribePage({
                 background: 'var(--ink)',
                 color: '#fff',
                 padding: '12px 28px',
-                borderRadius: '8px',
+                borderRadius: 0,
                 fontWeight: 600,
                 textDecoration: 'none',
               }}
@@ -103,7 +103,7 @@ export default async function UnsubscribePage({
                   background: 'var(--ink)',
                   color: '#fff',
                   padding: '12px 28px',
-                  borderRadius: '8px',
+                  borderRadius: 0,
                   fontWeight: 600,
                   border: 'none',
                   cursor: 'pointer',

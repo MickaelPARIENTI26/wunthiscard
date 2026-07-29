@@ -42,7 +42,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
       </header>
 
       {/* Content */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '860px' }}>
           <div className="legal-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: '40px', alignItems: 'start' }}>
             {/* Sticky ToC */}
@@ -71,7 +71,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
               className="legal-body"
               style={{
                 background: 'var(--surface)',
-                border: '1.5px solid var(--ink)',
+                border: '1px solid rgba(244, 241, 234, 0.18)',
                 borderRadius: 'var(--radius)',
                 boxShadow: 'var(--shadow)',
               }}
@@ -84,7 +84,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
                 style={{
                   marginTop: '32px',
                   paddingTop: '22px',
-                  borderTop: '1.5px dashed var(--line-2)',
+                  borderTop: '1px solid var(--line)',
                   fontFamily: 'var(--mono)',
                   fontSize: '11px',
                   letterSpacing: '0.12em',

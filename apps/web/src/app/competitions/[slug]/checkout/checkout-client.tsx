@@ -215,7 +215,7 @@ export function CheckoutClient({
           textAlign: 'center',
           padding: '32px',
           background: 'var(--surface)',
-          border: '1.5px solid var(--ink)',
+          border: '1px solid rgba(244, 241, 234, 0.18)',
           borderRadius: 'var(--radius)',
           boxShadow: 'var(--shadow)',
         }}
@@ -254,8 +254,8 @@ export function CheckoutClient({
             marginBottom: '18px',
             background: 'var(--hot)',
             color: '#fff',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             fontSize: '13px',
             fontWeight: 600,
             boxShadow: 'var(--shadow-sm)',
@@ -270,8 +270,8 @@ export function CheckoutClient({
             marginBottom: '18px',
             background: 'var(--warn)',
             color: 'var(--ink)',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             fontSize: '13px',
             fontWeight: 600,
             boxShadow: 'var(--shadow-sm)',
@@ -296,8 +296,8 @@ export function CheckoutClient({
             marginBottom: '18px',
             background: 'var(--hot)',
             color: '#fff',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             fontSize: '13px',
             fontWeight: 600,
             boxShadow: 'var(--shadow-sm)',
@@ -311,7 +311,7 @@ export function CheckoutClient({
       <div
         style={{
           background: 'var(--surface)',
-          border: '1.5px solid var(--ink)',
+          border: '1px solid rgba(244, 241, 234, 0.18)',
           borderRadius: 'var(--radius)',
           boxShadow: 'var(--shadow)',
           padding: '22px',
@@ -324,7 +324,7 @@ export function CheckoutClient({
             gap: '14px',
             paddingBottom: '16px',
             marginBottom: '16px',
-            borderBottom: '1.5px dashed var(--line-2)',
+            borderBottom: '1px solid var(--line)',
           }}
         >
           <div
@@ -334,9 +334,9 @@ export function CheckoutClient({
               height: '92px',
               flexShrink: 0,
               overflow: 'hidden',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '8px',
-              boxShadow: '2px 2px 0 var(--ink)',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
+              borderRadius: 0,
+              boxShadow: 'none',
             }}
           >
             <Image src={mainImageUrl} alt={competitionTitle} fill className="object-cover" sizes="72px" />
@@ -424,7 +424,7 @@ export function CheckoutClient({
             alignItems: 'baseline',
             marginTop: '14px',
             paddingTop: '14px',
-            borderTop: '1.5px dashed var(--line-2)',
+            borderTop: '1px solid var(--line)',
           }}
         >
           <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)' }}>
@@ -446,8 +446,8 @@ export function CheckoutClient({
             padding: '10px 14px',
             marginBottom: '10px',
             background: 'var(--accent)',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             boxShadow: 'var(--shadow-sm)',
             fontFamily: 'var(--mono)',
             fontSize: '11px',

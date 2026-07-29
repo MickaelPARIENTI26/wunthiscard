@@ -53,9 +53,9 @@ export default async function ProfilePage({
           style={{
             marginBottom: '24px',
             padding: '14px 18px',
-            borderRadius: '12px',
+            borderRadius: 0,
             background: 'var(--warn)',
-            border: '1.5px solid var(--ink)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
             boxShadow: 'var(--shadow-sm)',
             fontSize: '14px',
             color: 'var(--ink)',
@@ -72,7 +72,7 @@ export default async function ProfilePage({
         style={{
           marginBottom: '32px',
           paddingBottom: '22px',
-          borderBottom: '1.5px solid var(--ink)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div

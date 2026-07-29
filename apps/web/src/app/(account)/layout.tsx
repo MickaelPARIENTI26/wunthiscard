@@ -23,7 +23,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           <nav
             style={{
               background: 'var(--surface)',
-              border: '1.5px solid var(--ink)',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
               borderRadius: 'var(--radius)',
               boxShadow: 'var(--shadow)',
               padding: '8px',
@@ -40,7 +40,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   className="flex items-center gap-2.5 transition-colors duration-150"
                   style={{
                     padding: '11px 14px',
-                    borderRadius: '8px',
+                    borderRadius: 0,
                     fontSize: '14px',
                     fontWeight: 600,
                     background: isActive ? 'var(--ink)' : 'transparent',
@@ -66,12 +66,12 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   className="flex items-center gap-1.5 whitespace-nowrap"
                   style={{
                     padding: '8px 14px',
-                    borderRadius: '999px',
+                    borderRadius: 0,
                     fontSize: '13px',
                     fontWeight: 600,
                     background: isActive ? 'var(--ink)' : 'var(--surface)',
                     color: isActive ? 'var(--accent)' : 'var(--ink)',
-                    border: '1.5px solid var(--ink)',
+                    border: '1px solid rgba(244, 241, 234, 0.18)',
                     boxShadow: isActive ? 'var(--shadow-sm)' : 'none',
                   }}
                 >

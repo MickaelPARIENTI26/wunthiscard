@@ -185,7 +185,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           className="inline-flex items-center gap-2.5 justify-center"
           style={{
             padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
-            borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px',
+            borderRadius: 0, fontFamily: 'var(--mono)', fontSize: '11px',
             letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '20px',
           }}
         >
@@ -202,8 +202,8 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         {/* Order summary card */}
         <div className="drop-card" style={{ textAlign: 'left', marginBottom: '32px' }}>
           {/* Competition info */}
-          <div className="flex gap-4 mb-4 pb-4" style={{ borderBottom: '1px dashed var(--line-2)' }}>
-            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden" style={{ borderRadius: '8px', border: '1.5px solid var(--ink)' }}>
+          <div className="flex gap-4 mb-4 pb-4" style={{ borderBottom: '1px solid var(--line)' }}>
+            <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden" style={{ borderRadius: 0, border: '1px solid rgba(244, 241, 234, 0.18)' }}>
               <Image src={order.competition.mainImageUrl} alt={order.competition.title} fill className="object-cover" sizes="80px" />
             </div>
             <div className="flex-1 min-w-0">
@@ -215,11 +215,11 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           </div>
 
           {/* Order details */}
-          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+          <div className="flex justify-between py-3" style={{ borderBottom: '1px solid var(--line)' }}>
             <span style={{ color: 'var(--ink-dim)' }}>Order ID</span>
             <b>#{order.orderNumber}</b>
           </div>
-          <div className="flex justify-between py-3" style={{ borderBottom: '1px dashed var(--line-2)' }}>
+          <div className="flex justify-between py-3" style={{ borderBottom: '1px solid var(--line)' }}>
             <span style={{ color: 'var(--ink-dim)' }}>Tickets</span>
             <b>{paidTickets.length}{bonusTickets.length > 0 ? ` + ${bonusTickets.length} bonus` : ''}</b>
           </div>

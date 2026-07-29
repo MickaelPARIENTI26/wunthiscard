@@ -33,8 +33,8 @@ export default function ContactPage() {
         <div
           className="inline-flex items-center gap-2.5"
           style={{
-            padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px',
-            background: 'var(--surface)', boxShadow: '2px 2px 0 var(--ink)',
+            padding: '7px 14px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
+            background: 'var(--surface)', boxShadow: 'none',
             fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em',
             textTransform: 'uppercase', fontWeight: 600, marginBottom: '22px',
           }}
@@ -52,12 +52,12 @@ export default function ContactPage() {
       </section>
 
       {/* Contact grid */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div className="drop-section">
           <div className="contact-grid">
             {/* Left: editorial info list */}
-            <aside style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '32px' }}>
-              <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', marginBottom: '24px', paddingBottom: '14px', borderBottom: '1.5px solid var(--ink)' }}>
+            <aside style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '32px' }}>
+              <h3 style={{ fontFamily: 'var(--display)', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.025em', marginBottom: '24px', paddingBottom: '14px', borderBottom: '1px solid var(--line)' }}>
                 Reach us
               </h3>
 
@@ -88,9 +88,9 @@ export default function ContactPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
-                        padding: '10px 14px', minHeight: '44px', border: '1.5px solid var(--ink)', borderRadius: '999px',
+                        padding: '10px 14px', minHeight: '44px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
                         fontSize: '12px', fontWeight: 600, background: 'var(--surface)',
-                        boxShadow: '1.5px 1.5px 0 var(--ink)',
+                        boxShadow: 'none',
                       }}
                     >
                       {s.label}
@@ -103,7 +103,7 @@ export default function ContactPage() {
             {/* Right: the real, functional contact form */}
             <div
               style={{
-                background: 'var(--surface)', border: '1.5px solid var(--ink)',
+                background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)',
                 borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
                 padding: '34px 36px',
               }}

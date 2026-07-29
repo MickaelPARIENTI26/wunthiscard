@@ -25,7 +25,7 @@ const inputStyle = {
   fontSize: '16px', // 16px avoids the iOS Safari auto-zoom-on-focus on mobile
   background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '10px',
+  borderRadius: 0,
   color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
@@ -194,7 +194,7 @@ export function LoginForm() {
             color: '#15803D',
             background: 'rgba(0, 199, 106, 0.08)',
             border: '1px solid rgba(0, 199, 106, 0.25)',
-            borderRadius: '10px',
+            borderRadius: 0,
           }}
         >
           Your password has been changed. Please sign in again with your new password.
@@ -210,7 +210,7 @@ export function LoginForm() {
             color: '#DC2626',
             background: 'rgba(220, 38, 38, 0.08)',
             border: '1px solid rgba(220, 38, 38, 0.2)',
-            borderRadius: '10px',
+            borderRadius: 0,
           }}
         >
           {displayError}
@@ -320,7 +320,7 @@ export function LoginForm() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '10px',
+            borderRadius: 0,
             background: 'var(--ink)',
             color: '#ffffff',
             fontSize: '15px',
@@ -372,7 +372,7 @@ export function LoginForm() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '10px',
+              borderRadius: 0,
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
               color: 'var(--ink)',

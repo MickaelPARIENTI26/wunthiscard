@@ -11,7 +11,7 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderColor: 'rgba(255, 255, 255, 0.06)',
-        borderRadius: '20px',
+        borderRadius: 0,
         boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 24px rgba(0, 0, 0, 0.2)',
         color: 'var(--ink)',
         ...style,

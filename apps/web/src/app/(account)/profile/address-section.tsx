@@ -25,7 +25,7 @@ export function AddressSection({ addresses }: AddressSectionProps) {
     <div
       style={{
         background: 'var(--surface)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
         boxShadow: 'var(--shadow)',
         padding: '28px',
@@ -38,17 +38,17 @@ export function AddressSection({ addresses }: AddressSectionProps) {
           gap: '14px',
           paddingBottom: '20px',
           marginBottom: '24px',
-          borderBottom: '1.5px dashed var(--line-2)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
           style={{
             width: '48px',
             height: '48px',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '12px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             background: 'var(--warn)',
-            boxShadow: '3px 3px 0 var(--ink)',
+            boxShadow: 'none',
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,

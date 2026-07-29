@@ -64,7 +64,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
     <div
       style={{
         background: 'var(--surface)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
         boxShadow: 'var(--shadow)',
         padding: '28px',
@@ -77,17 +77,17 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
           gap: '14px',
           paddingBottom: '20px',
           marginBottom: '24px',
-          borderBottom: '1.5px dashed var(--line-2)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
           style={{
             width: '48px',
             height: '48px',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '12px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             background: 'var(--accent)',
-            boxShadow: '3px 3px 0 var(--ink)',
+            boxShadow: 'none',
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,
@@ -141,8 +141,8 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
           textAlign: 'left',
           padding: '16px',
           background: enabled ? 'var(--accent-soft, var(--bg-2))' : 'var(--bg-2)',
-          border: '1.5px solid var(--ink)',
-          borderRadius: '12px',
+          border: '1px solid rgba(244, 241, 234, 0.18)',
+          borderRadius: 0,
           cursor: isSaving ? 'default' : 'pointer',
           opacity: isSaving ? 0.7 : 1,
         }}
@@ -155,8 +155,8 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
             flexShrink: 0,
             width: '46px',
             height: '28px',
-            borderRadius: '999px',
-            border: '1.5px solid var(--ink)',
+            borderRadius: 0,
+            border: '1px solid rgba(244, 241, 234, 0.18)',
             background: enabled ? 'var(--accent)' : 'var(--surface)',
             transition: 'background 0.15s',
           }}
@@ -168,7 +168,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
               left: enabled ? '20px' : '2px',
               width: '20px',
               height: '20px',
-              borderRadius: '999px',
+              borderRadius: 0,
               background: 'var(--ink)',
               transition: 'left 0.15s',
             }}
@@ -192,8 +192,8 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
             padding: '10px 14px',
             background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
             color: message.type === 'success' ? 'var(--ink)' : '#fff',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             fontSize: '13px',
             fontWeight: 600,
             boxShadow: 'var(--shadow-sm)',
@@ -208,7 +208,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
         style={{
           marginTop: '24px',
           paddingTop: '18px',
-          borderTop: '1px dashed var(--line-2)',
+          borderTop: '1px solid var(--line)',
         }}
       >
         <div

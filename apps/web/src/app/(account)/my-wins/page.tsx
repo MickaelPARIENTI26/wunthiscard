@@ -45,8 +45,8 @@ function DeliveryPill({ status }: { status: DeliveryStatus }) {
         padding: '3px 10px',
         background: config.bg,
         color: config.color,
-        border: '1.5px solid var(--ink)',
-        borderRadius: '6px',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
+        borderRadius: 0,
         fontFamily: 'var(--mono)',
         fontSize: '10px',
         letterSpacing: '0.15em',
@@ -102,7 +102,7 @@ export default async function MyWinsPage() {
         style={{
           marginBottom: '32px',
           paddingBottom: '22px',
-          borderBottom: '1.5px solid var(--ink)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
@@ -139,7 +139,7 @@ export default async function MyWinsPage() {
         <div
           style={{
             background: 'var(--surface)',
-            border: '1.5px solid var(--ink)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 'var(--radius)',
             boxShadow: 'var(--shadow)',
             padding: '64px 24px',
@@ -183,9 +183,9 @@ export default async function MyWinsPage() {
                 style={{
                   overflow: 'hidden',
                   background: 'var(--surface)',
-                  border: '1.5px solid var(--ink)',
+                  border: '1px solid rgba(244, 241, 234, 0.18)',
                   borderRadius: 'var(--radius)',
-                  boxShadow: '4px 4px 0 var(--accent)',
+                  boxShadow: 'none',
                   display: 'flex',
                 }}
                 className="flex-col sm:flex-row"
@@ -259,8 +259,8 @@ export default async function MyWinsPage() {
                         style={{
                           padding: '2px 8px',
                           background: 'var(--accent)',
-                          border: '1.5px solid var(--ink)',
-                          borderRadius: '6px',
+                          border: '1px solid rgba(244, 241, 234, 0.18)',
+                          borderRadius: 0,
                           fontFamily: 'var(--mono)',
                           fontSize: '11.5px',
                           fontWeight: 700,
@@ -285,8 +285,8 @@ export default async function MyWinsPage() {
                         marginTop: '14px',
                         padding: '12px 14px',
                         background: 'var(--bg-2)',
-                        border: '1px dashed var(--line-2)',
-                        borderRadius: '8px',
+                        border: '1px solid var(--line)',
+                        borderRadius: 0,
                       }}
                     >
                       <div

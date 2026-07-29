@@ -16,7 +16,7 @@ const inputStyle = {
   fontSize: '14px',
   background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '10px',
+  borderRadius: 0,
   color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
             style={{
               width: '56px',
               height: '56px',
-              borderRadius: '16px',
+              borderRadius: 0,
               background: 'rgba(34, 197, 94, 0.1)',
             }}
           >
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
           style={{
             padding: '16px',
             background: 'var(--bg-2)',
-            borderRadius: '10px',
+            borderRadius: 0,
             marginBottom: '24px',
           }}
         >
@@ -122,7 +122,7 @@ export default function ForgotPasswordPage() {
             className="w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '10px',
+              borderRadius: 0,
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
               color: 'var(--ink)',
@@ -139,7 +139,7 @@ export default function ForgotPasswordPage() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '10px',
+              borderRadius: 0,
               color: 'var(--ink-dim)',
               fontSize: '14px',
               fontWeight: 500,
@@ -182,7 +182,7 @@ export default function ForgotPasswordPage() {
               color: '#DC2626',
               background: 'rgba(220, 38, 38, 0.08)',
               border: '1px solid rgba(220, 38, 38, 0.2)',
-              borderRadius: '10px',
+              borderRadius: 0,
             }}
           >
             {serverError}
@@ -231,7 +231,7 @@ export default function ForgotPasswordPage() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '10px',
+              borderRadius: 0,
               background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '15px',
@@ -256,7 +256,7 @@ export default function ForgotPasswordPage() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '10px',
+            borderRadius: 0,
             color: 'var(--ink-dim)',
             fontSize: '14px',
             fontWeight: 500,

@@ -57,7 +57,7 @@ export default function AboutPage() {
               className="inline-flex items-center gap-2.5"
               style={{
                 padding: '7px 14px', background: 'var(--ink)', color: 'var(--accent)',
-                borderRadius: '999px', fontFamily: 'var(--mono)', fontSize: '11px',
+                borderRadius: 0, fontFamily: 'var(--mono)', fontSize: '11px',
                 letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '28px',
               }}
             >
@@ -74,7 +74,7 @@ export default function AboutPage() {
           <div
             className="relative"
             style={{
-              background: 'var(--surface)', border: '1.5px solid var(--ink)',
+              background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)',
               borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-lg)',
               padding: '34px 36px', fontSize: '18px', lineHeight: 1.55,
             }}
@@ -133,7 +133,7 @@ export default function AboutPage() {
             <article
               key={p.mark}
               className="flex flex-col gap-3.5 transition-all duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[var(--shadow-lg)]"
-              style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '30px 28px 24px' }}
+              style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '30px 28px 24px' }}
             >
               <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700 }}>
                 {p.mark}
@@ -144,7 +144,7 @@ export default function AboutPage() {
               <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', lineHeight: 1.6, flex: 1 }}>
                 {p.body}
               </p>
-              <div style={{ paddingTop: '14px', borderTop: '1px dashed var(--line-2)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 700 }}>
+              <div style={{ paddingTop: '14px', borderTop: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)', fontWeight: 700 }}>
                 {p.foot.text} <Link href={p.foot.href} style={{ color: 'var(--ink)', borderBottom: '1.5px solid var(--accent)' }}>{p.foot.label}</Link>
               </div>
             </article>

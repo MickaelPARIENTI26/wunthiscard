@@ -27,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div
           style={{
             background: 'var(--surface)',
-            border: '1.5px solid var(--ink)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 'var(--radius)',
             padding: '24px 28px 28px',
             boxShadow: 'var(--shadow-lg)',

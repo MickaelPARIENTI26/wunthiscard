@@ -54,8 +54,8 @@ export default function HowItWorksPage() {
         <div
           className="inline-flex items-center gap-2.5"
           style={{
-            padding: '7px 14px', border: '1.5px solid var(--ink)', borderRadius: '999px',
-            background: 'var(--surface)', boxShadow: '2px 2px 0 var(--ink)',
+            padding: '7px 14px', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0,
+            background: 'var(--surface)', boxShadow: 'none',
             fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em',
             textTransform: 'uppercase', fontWeight: 600, marginBottom: '24px',
           }}
@@ -69,7 +69,7 @@ export default function HowItWorksPage() {
         </h1>
 
         <p style={{ fontSize: '18px', color: 'var(--ink-dim)', lineHeight: 1.55, maxWidth: '640px', margin: '0 auto 32px' }}>
-          No gambling. No loopholes. A skill-based UK prize competition where <b style={{ color: 'var(--ink)', background: 'var(--accent)', padding: '1px 6px', borderRadius: '5px' }}>anyone with a good memory</b> has a real shot at a grail card.
+          No gambling. No loopholes. A skill-based UK prize competition where <b style={{ color: 'var(--ink)', background: 'var(--accent)', padding: '1px 6px', borderRadius: 0 }}>anyone with a good memory</b> has a real shot at a grail card.
         </p>
 
         <div className="hiw-hero-marquee">
@@ -78,7 +78,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Big numbered zigzag steps */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div className="mx-auto px-5 sm:px-8 py-15 sm:py-20" style={{ maxWidth: '1440px' }}>
           <div className="hiw-steps">
             {steps.map((s) => (
@@ -88,7 +88,7 @@ export default function HowItWorksPage() {
                     {s.n}
                   </span>
                 </aside>
-                <div className="hiw-step-body" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div className="hiw-step-body" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '28px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                   <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink-faint)', fontWeight: 700, marginBottom: '8px' }}>
                     Step {s.n} · {s.t}
                   </div>
@@ -101,7 +101,7 @@ export default function HowItWorksPage() {
                   <ul className="flex flex-wrap" style={{ gap: '8px 18px' }}>
                     {s.bullets.map((b, j) => (
                       <li key={j} className="inline-flex items-center gap-2" style={{ fontSize: '13px', fontWeight: 600 }}>
-                        <span className="grid place-items-center" style={{ width: '20px', height: '20px', borderRadius: '50%', background: s.swatch, border: '1.5px solid var(--ink)', fontSize: '10px', flexShrink: 0 }}>✓</span>
+                        <span className="grid place-items-center" style={{ width: '20px', height: '20px', borderRadius: '50%', background: s.swatch, border: '1px solid rgba(244, 241, 234, 0.18)', fontSize: '10px', flexShrink: 0 }}>✓</span>
                         {b}
                       </li>
                     ))}

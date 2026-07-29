@@ -119,9 +119,9 @@ export function FreeEntryButton({
           role="alert"
           style={{
             padding: '14px 16px',
-            borderRadius: '12px',
+            borderRadius: 0,
             background: 'var(--surface)',
-            border: '1.5px solid var(--ink)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
           }}
         >
           <p
@@ -147,7 +147,7 @@ export function FreeEntryButton({
             style={{
               minHeight: '52px',
               padding: '0 24px',
-              borderRadius: '12px',
+              borderRadius: 0,
               background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '15px',
@@ -167,7 +167,7 @@ export function FreeEntryButton({
               role="alert"
               style={{
                 padding: '12px 16px',
-                borderRadius: '12px',
+                borderRadius: 0,
                 background: 'rgba(220, 38, 38, 0.08)',
                 border: '1px solid rgba(220, 38, 38, 0.2)',
                 color: '#DC2626',
@@ -186,7 +186,7 @@ export function FreeEntryButton({
             style={{
               minHeight: '52px',
               padding: '0 24px',
-              borderRadius: '12px',
+              borderRadius: 0,
               background: 'var(--ink)',
               color: '#ffffff',
               fontSize: '16px',

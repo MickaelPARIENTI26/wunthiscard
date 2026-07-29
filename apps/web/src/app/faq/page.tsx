@@ -74,7 +74,7 @@ export default async function FaqPage() {
       </header>
 
       {/* Search + FAQ content */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div className="mx-auto px-5 sm:px-8" style={{ maxWidth: '820px', paddingTop: '40px', paddingBottom: '64px' }}>
           {/* Search */}
           <div style={{ marginBottom: '32px' }}>
@@ -91,7 +91,7 @@ export default async function FaqPage() {
                     <h3 className="flex items-center gap-2.5 mb-3.5" style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em' }}>
                       <span>{config.emoji}</span>{config.label}
                     </h3>
-                    <div style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
+                    <div style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow-sm)', overflow: 'hidden' }}>
                       <FaqAccordion items={grouped[category] ?? []} />
                     </div>
                   </div>
@@ -99,7 +99,7 @@ export default async function FaqPage() {
               })}
             </div>
           ) : (
-            <div className="text-center" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
+            <div className="text-center" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No FAQs Available</h3>
               <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
                 We are working on adding frequently asked questions. Please contact us with any questions.

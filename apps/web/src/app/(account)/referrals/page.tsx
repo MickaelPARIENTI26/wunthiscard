@@ -75,7 +75,7 @@ export default async function ReferralsPage() {
       <div
         style={{
           background: 'var(--surface)',
-          border: '1.5px solid var(--ink)',
+          border: '1px solid rgba(244, 241, 234, 0.18)',
           borderRadius: 'var(--radius)',
           boxShadow: 'var(--shadow)',
           padding: '32px',
@@ -98,7 +98,7 @@ export default async function ReferralsPage() {
             marginBottom: '32px',
             padding: '20px',
             background: 'var(--bg-2)',
-            borderRadius: '14px',
+            borderRadius: 0,
           }}
         >
           <h2
@@ -129,7 +129,7 @@ export default async function ReferralsPage() {
               style={{
                 padding: '16px',
                 background: 'var(--bg-2)',
-                borderRadius: '12px',
+                borderRadius: 0,
               }}
             >
               <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginBottom: '4px' }}>Friends invited</p>
@@ -139,7 +139,7 @@ export default async function ReferralsPage() {
               style={{
                 padding: '16px',
                 background: 'var(--bg-2)',
-                borderRadius: '12px',
+                borderRadius: 0,
               }}
             >
               <p style={{ fontSize: '12px', color: 'var(--ink-dim)', marginBottom: '4px' }}>Free tickets earned</p>
@@ -151,7 +151,7 @@ export default async function ReferralsPage() {
             style={{
               padding: '20px',
               background: user.referralFreeTicketsAvailable > 0 ? 'rgba(0, 199, 106, 0.06)' : 'var(--bg-2)',
-              borderRadius: '12px',
+              borderRadius: 0,
               border: user.referralFreeTicketsAvailable > 0 ? '1px solid rgba(22, 163, 74, 0.2)' : '1px solid transparent',
               display: 'flex',
               alignItems: 'center',

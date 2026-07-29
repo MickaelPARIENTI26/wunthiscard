@@ -225,7 +225,7 @@ export function QuestionForm({
 
   if (error && !reservation) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
         <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Reservation Expired</h3>
         <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>{error}</p>
@@ -237,7 +237,7 @@ export function QuestionForm({
   // Show blocked state
   if (result?.blocked) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
+      <div style={{ textAlign: 'center', padding: '32px', background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)' }}>
         <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚫</div>
         <h3 style={{ fontFamily: 'var(--display)', fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>Too Many Incorrect Attempts</h3>
         <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '20px' }}>{result.message}</p>
@@ -253,14 +253,14 @@ export function QuestionForm({
     <div>
       {/* Reservation timer */}
       {reservation && countdown && (
-        <div style={{ padding: '10px 14px', background: countdown === 'expired' ? 'var(--hot)' : 'var(--warn)', color: 'var(--ink)', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', boxShadow: 'var(--shadow-sm)', marginBottom: '20px' }}>
+        <div style={{ padding: '10px 14px', background: countdown === 'expired' ? 'var(--hot)' : 'var(--warn)', color: 'var(--ink)', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', boxShadow: 'var(--shadow-sm)', marginBottom: '20px' }}>
           {countdown === 'expired' ? 'Timer expired — submit now to keep your tickets' : `⏱ Tickets reserved for ${countdown}`}
         </div>
       )}
 
       {/* Error */}
       {error && (
-        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', marginBottom: '20px' }}>
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '20px' }}>
           {error}
         </div>
       )}
@@ -300,7 +300,7 @@ export function QuestionForm({
 
       {/* Wrong answer message */}
       {result && !result.correct && !result.blocked && (
-        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, border: '1.5px solid var(--ink)', marginBottom: '16px' }}>
+        <div style={{ padding: '10px 14px', background: 'var(--hot)', color: '#fff', borderRadius: 0, fontSize: '13px', fontWeight: 600, border: '1px solid rgba(244, 241, 234, 0.18)', marginBottom: '16px' }}>
           {result.message || `Incorrect. ${result.attemptsRemaining} attempt${result.attemptsRemaining !== 1 ? 's' : ''} left.`}
         </div>
       )}

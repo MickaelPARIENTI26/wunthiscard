@@ -139,21 +139,21 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
       </header>
 
       {/* Stats + Winners */}
-      <section className="section-gray" style={{ borderTop: '1.5px solid var(--ink)', borderBottom: '1.5px solid var(--ink)' }}>
+      <section className="section-gray" style={{ borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)' }}>
         <div className="mx-auto px-5 sm:px-8 py-10 sm:py-12" style={{ maxWidth: '1100px' }}>
           {/* Stats cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-8">
-            <div style={{ background: 'var(--accent)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+            <div style={{ background: 'var(--accent)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Total prizes</div>
               <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>
                 {new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 }).format(totalPrizeValue)}
               </div>
             </div>
-            <div style={{ background: 'var(--hot)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+            <div style={{ background: 'var(--hot)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700 }}>Cards won</div>
               <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
             </div>
-            <div style={{ background: 'var(--ink)', color: '#fff', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
+            <div style={{ background: 'var(--ink)', color: '#fff', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '24px' }}>
               <div style={{ fontFamily: 'var(--mono)', fontSize: '10px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--accent)' }}>Happy winners</div>
               <div style={{ fontFamily: 'var(--display)', fontSize: '40px', fontWeight: 700, letterSpacing: '-0.03em', marginTop: '6px' }}>{totalCount}</div>
             </div>
@@ -175,14 +175,14 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
 
           {/* Winners table */}
           {winners.length > 0 ? (
-            <div style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
+            <div style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
               {/* Table header */}
-              <div className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '16px 24px', borderBottom: '1.5px solid var(--ink)', background: 'var(--ink)', color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+              <div className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '16px 24px', borderBottom: '1px solid var(--line)', background: 'var(--ink)', color: 'var(--accent)', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
                 <span>Date</span><span>Winner</span><span>Prize</span><span>Ticket</span><span style={{ textAlign: 'right' }}>Value</span>
               </div>
               {/* Rows */}
               {winners.map((win, i) => (
-                <div key={win.id} className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '14px 24px', borderBottom: i < winners.length - 1 ? '1px dashed var(--line-2)' : 'none', alignItems: 'center', fontSize: '14px' }}>
+                <div key={win.id} className="hidden sm:grid" style={{ gridTemplateColumns: '120px 1fr 1fr 120px 120px', padding: '14px 24px', borderBottom: i < winners.length - 1 ? '1px solid var(--line)' : 'none', alignItems: 'center', fontSize: '14px' }}>
                   <span style={{ fontFamily: 'var(--mono)', fontSize: '12px', color: 'var(--ink-dim)' }}>{formatDate(win.createdAt)}</span>
                   <span>
                     <b>{win.user ? anonymizeWinnerInitials(win.user.firstName, win.user.lastName) : 'Lucky Winner'}</b>
@@ -194,7 +194,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
               ))}
               {/* Mobile cards */}
               {winners.map((win) => (
-                <div key={`m-${win.id}`} className="sm:hidden" style={{ padding: '16px 20px', borderBottom: '1px dashed var(--line-2)' }}>
+                <div key={`m-${win.id}`} className="sm:hidden" style={{ padding: '16px 20px', borderBottom: '1px solid var(--line)' }}>
                   <div className="flex justify-between items-start mb-2">
                     <b>{win.competition.title}</b>
                     <span style={{ fontFamily: 'var(--display)', fontWeight: 700 }}>{formatPrice(Number(win.competition.prizeValue))}</span>
@@ -206,13 +206,13 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
               ))}
             </div>
           ) : (
-            <div className="text-center" style={{ background: 'var(--surface)', border: '1.5px solid var(--ink)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
+            <div className="text-center" style={{ background: 'var(--surface)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '48px 24px' }}>
               <Trophy className="mx-auto mb-4 h-16 w-16" style={{ color: 'var(--ink-faint)' }} />
               <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>No Winners Yet</h3>
               <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '24px' }}>
                 {category ? 'No winners in this category yet. Be the first!' : 'Our first winners will be announced soon.'}
               </p>
-              <Link href="/competitions" className="inline-flex items-center gap-2 font-semibold" style={{ padding: '11px 18px', background: 'var(--ink)', color: 'var(--bg)', border: '1.5px solid var(--ink)', borderRadius: '10px', boxShadow: 'var(--shadow-sm)' }}>
+              <Link href="/competitions" className="inline-flex items-center gap-2 font-semibold" style={{ padding: '11px 18px', background: 'var(--ink)', color: 'var(--bg)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 0, boxShadow: 'var(--shadow-sm)' }}>
                 View Competitions
               </Link>
             </div>

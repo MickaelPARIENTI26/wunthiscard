@@ -96,7 +96,7 @@ const inputStyle = {
   fontSize: '16px', // 16px avoids the iOS Safari auto-zoom-on-focus on mobile
   background: 'var(--bg-2)',
   border: '1px solid rgba(0, 0, 0, 0.1)',
-  borderRadius: '10px',
+  borderRadius: 0,
   color: 'var(--ink)',
   outline: 'none',
   transition: 'all 0.2s ease',
@@ -238,7 +238,7 @@ export function RegisterForm() {
             color: 'var(--ink-dim)',
             background: 'rgba(0, 199, 106, 0.06)',
             border: '1px solid rgba(0, 199, 106, 0.2)',
-            borderRadius: '10px',
+            borderRadius: 0,
           }}
         >
           <UserPlus className="h-3.5 w-3.5 flex-shrink-0" style={{ color: 'var(--accent-text)' }} />
@@ -255,7 +255,7 @@ export function RegisterForm() {
             color: '#DC2626',
             background: 'rgba(220, 38, 38, 0.08)',
             border: '1px solid rgba(220, 38, 38, 0.2)',
-            borderRadius: '10px',
+            borderRadius: 0,
           }}
         >
           {serverError}
@@ -384,7 +384,7 @@ export function RegisterForm() {
               <div
                 style={{
                   height: '4px',
-                  borderRadius: '2px',
+                  borderRadius: 0,
                   background: 'var(--line)',
                   overflow: 'hidden',
                 }}
@@ -536,7 +536,7 @@ export function RegisterForm() {
           className="flex items-center justify-center gap-2 w-full transition-all duration-200"
           style={{
             padding: '14px',
-            borderRadius: '10px',
+            borderRadius: 0,
             background: 'var(--ink)',
             color: '#ffffff',
             fontSize: '15px',
@@ -588,7 +588,7 @@ export function RegisterForm() {
             className="flex items-center justify-center gap-2 w-full transition-all duration-200"
             style={{
               padding: '14px',
-              borderRadius: '10px',
+              borderRadius: 0,
               background: 'transparent',
               border: '1.5px solid rgba(0, 0, 0, 0.12)',
               color: 'var(--ink)',

@@ -91,7 +91,7 @@ export function AddressForm() {
           background: 'var(--surface)',
           color: 'var(--ink)',
           border: '1.5px dashed var(--ink)',
-          borderRadius: '10px',
+          borderRadius: 0,
           fontFamily: 'var(--mono)',
           fontSize: '11px',
           letterSpacing: '0.15em',
@@ -113,7 +113,7 @@ export function AddressForm() {
       style={{
         padding: '18px',
         background: 'var(--bg-2)',
-        border: '1.5px solid var(--ink)',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 'var(--radius)',
         boxShadow: 'var(--shadow-sm)',
       }}
@@ -153,8 +153,8 @@ export function AddressForm() {
             display: 'grid',
             placeItems: 'center',
             background: 'var(--surface)',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '6px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             cursor: 'pointer',
           }}
         >
@@ -253,8 +253,8 @@ export function AddressForm() {
               padding: '10px 14px',
               background: message.type === 'success' ? 'var(--accent)' : 'var(--hot)',
               color: message.type === 'success' ? 'var(--ink)' : '#fff',
-              border: '1.5px solid var(--ink)',
-              borderRadius: '10px',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
+              borderRadius: 0,
               fontSize: '13px',
               fontWeight: 600,
               boxShadow: 'var(--shadow-sm)',

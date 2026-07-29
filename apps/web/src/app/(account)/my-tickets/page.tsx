@@ -38,8 +38,8 @@ function StatusPill({ status }: { status: CompetitionStatus }) {
         padding: '3px 10px',
         background: config.bg,
         color: config.color,
-        border: '1.5px solid var(--ink)',
-        borderRadius: '6px',
+        border: '1px solid rgba(244, 241, 234, 0.18)',
+        borderRadius: 0,
         fontFamily: 'var(--mono)',
         fontSize: '10px',
         letterSpacing: '0.15em',
@@ -129,7 +129,7 @@ export default async function MyTicketsPage() {
         style={{
           marginBottom: '32px',
           paddingBottom: '22px',
-          borderBottom: '1.5px solid var(--ink)',
+          borderBottom: '1px solid var(--line)',
         }}
       >
         <div
@@ -167,7 +167,7 @@ export default async function MyTicketsPage() {
         <div
           style={{
             background: 'var(--surface)',
-            border: '1.5px solid var(--ink)',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 'var(--radius)',
             boxShadow: 'var(--shadow)',
             padding: '64px 24px',
@@ -233,7 +233,7 @@ export default async function MyTicketsPage() {
                       flexShrink: 0,
                       alignSelf: 'center',
                       marginLeft: '14px',
-                      borderRadius: '10px',
+                      borderRadius: 0,
                       overflow: 'hidden',
                     }}
                     className="max-sm:hidden"
@@ -280,8 +280,8 @@ export default async function MyTicketsPage() {
                             padding: '3px 10px',
                             background: 'var(--accent)',
                             color: 'var(--ink)',
-                            border: '1.5px solid var(--ink)',
-                            borderRadius: '6px',
+                            border: '1px solid rgba(244, 241, 234, 0.18)',
+                            borderRadius: 0,
                             fontFamily: 'var(--mono)',
                             fontSize: '10px',
                             letterSpacing: '0.15em',
@@ -348,8 +348,8 @@ export default async function MyTicketsPage() {
                             marginTop: '10px',
                             padding: '10px 12px',
                             background: 'var(--bg-2)',
-                            border: '1px dashed var(--line-2)',
-                            borderRadius: '8px',
+                            border: '1px solid var(--line)',
+                            borderRadius: 0,
                             fontSize: '12.5px',
                           }}
                         >

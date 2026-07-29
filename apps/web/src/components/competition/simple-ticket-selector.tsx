@@ -180,8 +180,8 @@ export function SimpleTicketSelector({
           style={{
             marginTop: '14px',
             padding: '12px 14px',
-            border: '1.5px solid var(--ink)',
-            borderRadius: '10px',
+            border: '1px solid rgba(244, 241, 234, 0.18)',
+            borderRadius: 0,
             background: referralApplied ? 'rgba(0, 199, 106, 0.08)' : 'var(--surface)',
             cursor: canUseReferralTicket ? 'pointer' : 'not-allowed',
             opacity: canUseReferralTicket ? 1 : 0.6,
@@ -206,7 +206,7 @@ export function SimpleTicketSelector({
       )}
 
       {/* Summary + CTA */}
-      <div style={{ marginTop: '18px', paddingTop: '18px', borderTop: '1.5px dashed var(--line-2)' }}>
+      <div style={{ marginTop: '18px', paddingTop: '18px', borderTop: '1px solid var(--line)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '14px', fontSize: '14px' }}>
           <span>
             {quantity} ticket{quantity > 1 ? 's' : ''}
