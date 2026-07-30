@@ -90,10 +90,10 @@ export function AddressForm() {
           padding: '14px',
           background: 'var(--surface)',
           color: 'var(--ink)',
-          border: '1.5px dashed var(--ink)',
+          border: '1px solid var(--line-2)',
           borderRadius: 0,
-          fontFamily: 'var(--mono)',
-          fontSize: '11px',
+          fontFamily: 'var(--display)',
+          fontSize: '12.5px',
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
           fontWeight: 700,
@@ -129,8 +129,8 @@ export function AddressForm() {
         <div>
           <div
             style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
+              fontFamily: 'var(--display)',
+              fontSize: '12.5px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--ink-faint)',

@@ -283,8 +283,8 @@ export function GuestCheckoutForm({
       >
         <span
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',
@@ -535,11 +535,11 @@ export function GuestCheckoutForm({
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
             boxShadow: 'var(--shadow-sm)',
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'var(--ink)',
+            color: '#0A0A0A',
             fontWeight: 700,
           }}
         >
@@ -574,7 +574,7 @@ export function GuestCheckoutForm({
           onSuccess={setTurnstileToken}
           onError={() => setTurnstileToken(null)}
           onExpire={() => setTurnstileToken(null)}
-          options={{ appearance: 'interaction-only', theme: 'auto' }}
+          options={{ appearance: 'interaction-only', theme: 'dark' }}
         />
       )}
 

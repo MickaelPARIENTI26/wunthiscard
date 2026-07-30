@@ -24,7 +24,7 @@ const inputStyle = {
   padding: '12px 16px',
   fontSize: '16px', // 16px avoids the iOS Safari auto-zoom-on-focus on mobile
   background: 'var(--bg-2)',
-  border: '1px solid rgba(0, 0, 0, 0.1)',
+  border: '1px solid rgba(244, 241, 234, 0.2)',
   borderRadius: 0,
   color: 'var(--ink)',
   outline: 'none',
@@ -191,9 +191,9 @@ export function LoginForm() {
           style={{
             padding: '12px 16px',
             fontSize: '14px',
-            color: '#15803D',
-            background: 'rgba(0, 199, 106, 0.08)',
-            border: '1px solid rgba(0, 199, 106, 0.25)',
+            color: 'var(--accent)',
+            background: 'rgba(201, 162, 39, 0.10)',
+            border: '1px solid rgba(201, 162, 39, 0.3)',
             borderRadius: 0,
           }}
         >
@@ -207,9 +207,9 @@ export function LoginForm() {
           style={{
             padding: '12px 16px',
             fontSize: '14px',
-            color: '#DC2626',
-            background: 'rgba(220, 38, 38, 0.08)',
-            border: '1px solid rgba(220, 38, 38, 0.2)',
+            color: 'var(--warn)',
+            background: 'rgba(217, 160, 138, 0.10)',
+            border: '1px solid rgba(217, 160, 138, 0.3)',
             borderRadius: 0,
           }}
         >
@@ -221,7 +221,7 @@ export function LoginForm() {
         <div className="space-y-2">
           <label
             htmlFor="email"
-            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+            style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
           >
             Email
           </label>
@@ -237,10 +237,10 @@ export function LoginForm() {
                 style={inputStyle}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent)';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201, 162, 39, 0.22)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(244, 241, 234, 0.2)';
                   e.currentTarget.style.boxShadow = 'none';
                   registerOnBlur(e);
                 }}
@@ -249,7 +249,7 @@ export function LoginForm() {
             );
           })()}
           {errors.email && (
-            <p style={{ fontSize: '13px', color: '#DC2626' }}>{errors.email.message}</p>
+            <p style={{ fontSize: '13px', color: 'var(--warn)' }}>{errors.email.message}</p>
           )}
         </div>
 
@@ -257,7 +257,7 @@ export function LoginForm() {
           <div className="flex items-center justify-between">
             <label
               htmlFor="password"
-              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+              style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
             >
               Password
             </label>
@@ -283,10 +283,10 @@ export function LoginForm() {
                 style={inputStyle}
                 onFocus={(e) => {
                   e.currentTarget.style.borderColor = 'var(--accent)';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201, 162, 39, 0.22)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(244, 241, 234, 0.2)';
                   e.currentTarget.style.boxShadow = 'none';
                   registerOnBlur(e);
                 }}
@@ -295,7 +295,7 @@ export function LoginForm() {
             );
           })()}
           {errors.password && (
-            <p style={{ fontSize: '13px', color: '#DC2626' }}>{errors.password.message}</p>
+            <p style={{ fontSize: '13px', color: 'var(--warn)' }}>{errors.password.message}</p>
           )}
         </div>
 
@@ -309,7 +309,7 @@ export function LoginForm() {
             onExpire={() => setTurnstileToken(null)}
             options={{
               appearance: 'interaction-only',
-              theme: 'auto',
+              theme: 'dark',
             }}
           />
         )}
@@ -374,7 +374,7 @@ export function LoginForm() {
               padding: '14px',
               borderRadius: 0,
               background: 'transparent',
-              border: '1.5px solid rgba(0, 0, 0, 0.12)',
+              border: '1px solid var(--line-2)',
               color: 'var(--ink)',
               fontSize: '15px',
               fontWeight: 500,

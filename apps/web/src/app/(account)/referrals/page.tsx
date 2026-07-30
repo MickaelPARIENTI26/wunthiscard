@@ -84,8 +84,8 @@ export default async function ReferralsPage() {
         {/* Section 1: Referral Link */}
         <div style={{ marginBottom: '32px' }}>
           <h2
-            className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '12px' }}
+            className="wup-title"
+            style={{ fontSize: '18px', marginBottom: '12px' }}
           >
             Your referral link
           </h2>
@@ -102,8 +102,8 @@ export default async function ReferralsPage() {
           }}
         >
           <h2
-            className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '8px' }}
+            className="wup-title"
+            style={{ fontSize: '18px', marginBottom: '8px' }}
           >
             How it works
           </h2>
@@ -118,8 +118,8 @@ export default async function ReferralsPage() {
         {/* Section 3: Stats */}
         <div>
           <h2
-            className="font-sans"
-            style={{ fontSize: '16px', fontWeight: 600, color: 'var(--ink)', marginBottom: '16px' }}
+            className="wup-title"
+            style={{ fontSize: '18px', marginBottom: '16px' }}
           >
             Your stats
           </h2>
@@ -150,9 +150,9 @@ export default async function ReferralsPage() {
           <div
             style={{
               padding: '20px',
-              background: user.referralFreeTicketsAvailable > 0 ? 'rgba(0, 199, 106, 0.06)' : 'var(--bg-2)',
+              background: user.referralFreeTicketsAvailable > 0 ? 'rgba(201, 162, 39, 0.08)' : 'var(--bg-2)',
               borderRadius: 0,
-              border: user.referralFreeTicketsAvailable > 0 ? '1px solid rgba(22, 163, 74, 0.2)' : '1px solid transparent',
+              border: user.referralFreeTicketsAvailable > 0 ? '1px solid rgba(201, 162, 39, 0.25)' : '1px solid transparent',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',

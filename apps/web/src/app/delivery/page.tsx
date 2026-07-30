@@ -48,7 +48,7 @@ export default function DeliveryPage() {
 
       <section id="contact">
         <h3 className="legal-h">6. Contact</h3>
-        <p className="legal-p">For delivery enquiries, email <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@winuprize.com</a> or contact us via the <a href="/contact" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>Contact page</a>.</p>
+        <p className="legal-p">For delivery enquiries, email <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>contact@winuprize.com</a> or contact us via the <a href="/contact" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Contact page</a>.</p>
       </section>
     </LegalPage>
   );

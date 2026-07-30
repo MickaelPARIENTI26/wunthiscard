@@ -82,7 +82,7 @@ export function ContactForm() {
               padding: '16px 18px',
               marginBottom: '18px',
               background: 'var(--accent)',
-              color: 'var(--ink)',
+              color: '#0A0A0A',
               border: '1px solid rgba(244, 241, 234, 0.18)',
               borderRadius: 0,
               boxShadow: 'var(--shadow)',
@@ -218,7 +218,7 @@ export function ContactForm() {
           onSuccess={setTurnstileToken}
           onError={() => setTurnstileToken(null)}
           onExpire={() => setTurnstileToken(null)}
-          options={{ appearance: 'interaction-only', theme: 'auto' }}
+          options={{ appearance: 'interaction-only', theme: 'dark' }}
         />
       )}
 

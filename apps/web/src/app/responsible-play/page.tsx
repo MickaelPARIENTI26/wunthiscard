@@ -40,21 +40,21 @@ export default function ResponsiblePlayPage() {
 
       <section id="self-exclusion">
         <h3 className="legal-h">4. Taking a Break (Self-Exclusion)</h3>
-        <p className="legal-p">If you feel you need a break from entering competitions, you can request a self-exclusion by emailing our support team at <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@winuprize.com</a>. Let us know how long you would like the break to last, and our team will action your request promptly.</p>
+        <p className="legal-p">If you feel you need a break from entering competitions, you can request a self-exclusion by emailing our support team at <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>contact@winuprize.com</a>. Let us know how long you would like the break to last, and our team will action your request promptly.</p>
         <p className="legal-p">Once your self-exclusion is in place, our team will restrict your account from entering competitions for the agreed period. If you are unsure what would help, just get in touch and we will talk it through with you.</p>
       </section>
 
       <section id="support">
         <h3 className="legal-h">5. Support & Resources</h3>
         <p className="legal-p">If you or someone you know needs help with problem gambling or compulsive spending, the following free and confidential services are available:</p>
-        <p className="legal-p"><strong>GamCare</strong> — 0808 8020 133 — <a href="https://www.gamcare.org.uk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>gamcare.org.uk</a></p>
-        <p className="legal-p"><strong>GambleAware</strong> — <a href="https://www.begambleaware.org" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>begambleaware.org</a></p>
+        <p className="legal-p"><strong>GamCare</strong> — 0808 8020 133 — <a href="https://www.gamcare.org.uk" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>gamcare.org.uk</a></p>
+        <p className="legal-p"><strong>GambleAware</strong> — <a href="https://www.begambleaware.org" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>begambleaware.org</a></p>
         <p className="legal-p"><strong>National Gambling Helpline</strong> — 0808 8020 133 (free, 24/7)</p>
       </section>
 
       <section id="contact">
         <h3 className="legal-h">6. Contact</h3>
-        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@winuprize.com</a>.</p>
+        <p className="legal-p">For any questions about responsible play or to request self-exclusion, email <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>contact@winuprize.com</a>.</p>
       </section>
     </LegalPage>
   );

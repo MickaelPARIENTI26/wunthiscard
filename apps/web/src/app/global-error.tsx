@@ -9,6 +9,13 @@ interface GlobalErrorProps {
   reset: () => void;
 }
 
+// This boundary renders its own <html>, so globals.css may not be loaded —
+// every colour is hardcoded to the Matchday Gold palette on purpose.
+const INK = '#0A0A0A';
+const PANEL = '#141312';
+const GOLD = '#C9A227';
+const TEXT = '#F4F1EA';
+
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   useEffect(() => {
     // Report to Sentry (no-op until a DSN is configured) and keep the console log.
@@ -18,53 +25,66 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
-        <main className="flex min-h-screen flex-col items-center justify-center px-4 py-16">
-          <div className="text-center">
+      <body style={{ margin: 0, background: INK, color: TEXT, fontFamily: 'Barlow, system-ui, sans-serif' }}>
+        <main style={{ display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 16px' }}>
+          <div style={{ textAlign: 'center', maxWidth: '560px' }}>
             {/* Error Icon */}
-            <div className="mb-8 flex justify-center">
-              <div className="rounded-full bg-red-100 p-6 dark:bg-red-900/30">
-                <AlertTriangle className="h-12 w-12 text-red-600 dark:text-red-400" />
+            <div style={{ marginBottom: '28px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ background: PANEL, border: `1px solid rgba(244, 241, 234, 0.18)`, borderTop: `3px solid ${GOLD}`, padding: '22px' }}>
+                <AlertTriangle style={{ height: '44px', width: '44px', color: GOLD }} />
               </div>
             </div>
 
             {/* Error Message */}
-            <h1 className="mb-4 text-2xl font-bold sm:text-3xl">Critical Error</h1>
-            <p className="mb-8 max-w-md text-gray-600 dark:text-gray-400">
+            <h1 style={{ margin: '0 0 14px', fontSize: '30px', fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase' }}>
+              Critical Error
+            </h1>
+            <p style={{ margin: '0 auto 24px', maxWidth: '440px', color: 'rgba(244, 241, 234, 0.7)', lineHeight: 1.6 }}>
               We apologise for the inconvenience. A critical error has occurred. Please refresh the
               page or return to the homepage.
             </p>
 
             {/* Error Digest (for debugging) */}
             {error.digest && (
-              <p className="mb-6 font-mono text-xs text-gray-500">
+              <p style={{ margin: '0 0 22px', fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(244, 241, 234, 0.45)' }}>
                 Error Reference: {error.digest}
               </p>
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
               <button
                 onClick={reset}
-                className="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  background: GOLD, color: INK, border: 'none', borderRadius: 0,
+                  padding: '14px 26px', fontSize: '14px', fontWeight: 700,
+                  letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer',
+                }}
               >
-                <RefreshCw className="mr-2 h-4 w-4" />
+                <RefreshCw style={{ height: '16px', width: '16px' }} />
                 Try Again
               </button>
               <a
                 href="/"
-                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '8px',
+                  background: 'transparent', color: TEXT,
+                  border: '1px solid rgba(244, 241, 234, 0.28)', borderRadius: 0,
+                  padding: '13px 26px', fontSize: '14px', fontWeight: 600,
+                  letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none',
+                }}
               >
-                <Home className="mr-2 h-4 w-4" />
+                <Home style={{ height: '16px', width: '16px' }} />
                 Go Home
               </a>
             </div>
 
             {/* Support Info */}
-            <div className="mt-8">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div style={{ marginTop: '28px' }}>
+              <p style={{ margin: 0, fontSize: '14px', color: 'rgba(244, 241, 234, 0.55)' }}>
                 If this problem continues, please contact us at{' '}
-                <a href="mailto:contact@winuprize.com" className="text-blue-600 hover:underline">
+                <a href="mailto:contact@winuprize.com" style={{ color: GOLD, textDecoration: 'underline' }}>
                   contact@winuprize.com
                 </a>
               </p>

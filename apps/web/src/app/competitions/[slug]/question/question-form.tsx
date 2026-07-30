@@ -313,7 +313,7 @@ export function QuestionForm({
           onSuccess={setTurnstileToken}
           onError={() => setTurnstileToken(null)}
           onExpire={() => setTurnstileToken(null)}
-          options={{ appearance: 'interaction-only', theme: 'auto' }}
+          options={{ appearance: 'interaction-only', theme: 'dark' }}
         />
       )}
 

@@ -269,7 +269,7 @@ export function CheckoutClient({
             padding: '12px 16px',
             marginBottom: '18px',
             background: 'var(--warn)',
-            color: 'var(--ink)',
+            color: '#0A0A0A',
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
             fontSize: '13px',
@@ -344,8 +344,8 @@ export function CheckoutClient({
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
-                fontFamily: 'var(--mono)',
-                fontSize: '10px',
+                fontFamily: 'var(--display)',
+                fontSize: '12.5px',
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 color: 'var(--ink-faint)',
@@ -387,7 +387,7 @@ export function CheckoutClient({
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                color: 'var(--accent-2)',
+                color: 'var(--gold-bright)',
                 fontWeight: 600,
               }}
             >
@@ -403,7 +403,7 @@ export function CheckoutClient({
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                color: 'var(--accent-2)',
+                color: 'var(--gold-bright)',
                 fontWeight: 600,
               }}
             >
@@ -427,7 +427,7 @@ export function CheckoutClient({
             borderTop: '1px solid var(--line)',
           }}
         >
-          <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)' }}>
+          <span style={{ fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)' }}>
             Total
           </span>
           <span style={{ fontFamily: 'var(--display)', fontSize: 'clamp(22px, 6vw, 28px)', fontWeight: 700, letterSpacing: '-0.03em' }}>
@@ -449,11 +449,11 @@ export function CheckoutClient({
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
             boxShadow: 'var(--shadow-sm)',
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'var(--ink)',
+            color: '#0A0A0A',
             fontWeight: 700,
           }}
         >

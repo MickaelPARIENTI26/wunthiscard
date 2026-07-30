@@ -36,7 +36,7 @@ export default function LogoutPage() {
   return (
     <Card>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold">
+        <CardTitle className="wup-title" style={{ fontSize: '24px' }}>
           {status === 'cleaning' ? 'Cleaning up...' : 'Signing out...'}
         </CardTitle>
         <CardDescription>

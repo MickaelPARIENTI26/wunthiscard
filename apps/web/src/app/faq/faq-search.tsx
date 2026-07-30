@@ -65,7 +65,7 @@ export function FaqSearch({ allItems }: FaqSearchProps) {
       </div>
 
       {searchQuery && (
-        <div className="rounded-lg border bg-card p-4">
+        <div className="border border-[var(--line)] bg-[var(--surface)] p-4">
           {filteredItems.length > 0 ? (
             <>
               <p className="mb-4 text-sm text-muted-foreground">
@@ -79,7 +79,7 @@ export function FaqSearch({ allItems }: FaqSearchProps) {
                     <AccordionTrigger className="text-left">
                       <div>
                         <span>{item.question}</span>
-                        <span className="ml-2 inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                        <span className="ml-2 inline-flex items-center bg-[var(--bg-3)] border border-[var(--line)] px-2 py-0.5 font-[family-name:var(--display)] text-[11.5px] font-semibold uppercase tracking-[0.12em] text-[var(--ink-faint)]">
                           {item.category}
                         </span>
                       </div>

@@ -61,7 +61,7 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
 
   const color = (score: number): string => {
     if (score <= 1) return 'var(--hot)';
-    if (score <= 2) return '#ff8a3d';
+    if (score <= 2) return 'var(--gold-deep)';
     if (score <= 3) return 'var(--warn)';
     return 'var(--accent)';
   };
@@ -84,7 +84,7 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
               height: '6px',
               flex: 1,
               borderRadius: 0,
-              border: '1px solid var(--ink)',
+              border: '1px solid rgba(244, 241, 234, 0.18)',
               background: level <= strength.score ? color(strength.score) : 'var(--bg-2)',
               transition: 'background 0.15s',
             }}
@@ -94,8 +94,8 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
       <p
         style={{
           marginTop: '6px',
-          fontFamily: 'var(--mono)',
-          fontSize: '11px',
+          fontFamily: 'var(--display)',
+          fontSize: '12.5px',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
           color: 'var(--ink-faint)',
@@ -120,7 +120,7 @@ function PasswordStrengthIndicator({ password }: { password: string }) {
             return (
               <div key={r.key} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {met ? (
-                  <Check className="h-3 w-3" style={{ color: 'var(--accent-2)' }} />
+                  <Check className="h-3 w-3" style={{ color: 'var(--accent)' }} />
                 ) : (
                   <X className="h-3 w-3" style={{ color: 'var(--ink-faint)' }} />
                 )}
@@ -226,8 +226,8 @@ export function PasswordChangeForm({ hasExistingPassword }: PasswordChangeFormPr
         <div>
           <div
             style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
+              fontFamily: 'var(--display)',
+              fontSize: '12.5px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--ink-faint)',

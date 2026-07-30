@@ -50,8 +50,8 @@ export function EmailNotVerifiedContent() {
       <div className="container mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center justify-center px-4 py-8">
         <Card className="w-full">
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <Mail className="h-6 w-6 text-green-600" />
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+              <Mail className="h-6 w-6 text-[var(--accent)]" />
             </div>
             <CardTitle className="text-2xl font-bold">Check your inbox</CardTitle>
             <CardDescription>
@@ -60,7 +60,7 @@ export function EmailNotVerifiedContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+            <div className="bg-[var(--bg-3)] border border-[var(--line)] p-4 text-sm text-muted-foreground">
               <p>Click the link in the email to verify your account.</p>
               <p className="mt-1">The link will expire in 24 hours.</p>
               <p className="mt-1">If you don&apos;t see the email, check your spam folder.</p>
@@ -80,8 +80,8 @@ export function EmailNotVerifiedContent() {
     <div className="container mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center justify-center px-4 py-8">
       <Card className="w-full">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-            <AlertCircle className="h-6 w-6 text-yellow-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+            <AlertCircle className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
           <CardDescription>
@@ -90,12 +90,12 @@ export function EmailNotVerifiedContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           {error && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+            <div className="bg-[rgba(217,160,138,0.10)] border border-[var(--warn)] p-3 text-sm text-[var(--warn)]">
               {error}
             </div>
           )}
 
-          <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+          <div className="bg-[var(--bg-3)] border border-[var(--line)] p-4 text-sm text-muted-foreground">
             <p>
               We sent a verification email to{' '}
               <span className="font-medium">{session?.user?.email}</span> when you registered.

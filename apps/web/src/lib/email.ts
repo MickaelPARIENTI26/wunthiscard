@@ -88,11 +88,11 @@ function emailWrapper(content: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WinUPrize</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<body style="font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0A0A0A; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #141312; border: 1px solid #2E2B26; border-radius: 0; overflow: hidden;">
     <!-- Header -->
-    <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUPrize</h1>
+    <div style="background-color: #141312; padding: 24px; text-align: center; border-bottom: 2px solid #C9A227;">
+      <h1 style="color: #F4F1EA; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">WinU<span style="color: #C9A227;">Prize</span></h1>
     </div>
 
     <!-- Content -->
@@ -101,14 +101,14 @@ function emailWrapper(content: string): string {
     </div>
 
     <!-- Footer -->
-    <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+    <div style="background-color: #050505; padding: 24px; text-align: center; border-top: 1px solid #2E2B26;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         YD PARTNERS LTD (trading as WinUPrize). | Registered in England & Wales · Company No. 16766570
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0;">
-        <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
-        <a href="${BASE_URL}/privacy" style="color: #6b7280;">Privacy</a> ·
-        <a href="${BASE_URL}/contact" style="color: #6b7280;">Contact</a>
+      <p style="color: #9A958B; font-size: 12px; margin: 0;">
+        <a href="${BASE_URL}/terms" style="color: #9A958B;">Terms</a> ·
+        <a href="${BASE_URL}/privacy" style="color: #9A958B;">Privacy</a> ·
+        <a href="${BASE_URL}/contact" style="color: #9A958B;">Contact</a>
       </p>
     </div>
   </div>
@@ -122,19 +122,19 @@ export async function sendVerificationEmail(email: string, token: string, firstN
   const verifyUrl = `${BASE_URL}/verify-email?token=${token}`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Welcome, ${escapeHtml(firstName)}!</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Welcome, ${escapeHtml(firstName)}!</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Thanks for signing up for WinUPrize. Please verify your email address to start entering competitions.
     </p>
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${verifyUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${verifyUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Verify Email Address
       </a>
     </div>
-    <p style="color: #6b7280; font-size: 14px; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; margin: 24px 0 0;">
       If you didn't create an account, you can safely ignore this email.
     </p>
-    <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0;">
+    <p style="color: #7A766D; font-size: 12px; margin: 16px 0 0;">
       Or copy this link: ${verifyUrl}
     </p>
   `);
@@ -151,19 +151,19 @@ export async function sendPasswordResetEmail(email: string, token: string, first
   const resetUrl = `${BASE_URL}/reset-password?token=${token}`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Reset Your Password</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, we received a request to reset your password. Click the button below to choose a new password.
     </p>
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${resetUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${resetUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Reset Password
       </a>
     </div>
-    <p style="color: #6b7280; font-size: 14px; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; margin: 24px 0 0;">
       This link will expire in 1 hour. If you didn't request a password reset, you can safely ignore this email.
     </p>
-    <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0;">
+    <p style="color: #7A766D; font-size: 12px; margin: 16px 0 0;">
       Or copy this link: ${resetUrl}
     </p>
   `);
@@ -186,30 +186,30 @@ export async function sendReferralRewardEmail(
   const competitionsUrl = `${BASE_URL}/competitions`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">🎁 You've earned a free ticket!</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">🎁 You've earned a free ticket!</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Great news${firstName ? `, ${escapeHtml(firstName)}` : ''} — a friend you invited just made their first purchase on WinUPrize, so we've added <strong>1 free ticket</strong> to your account.
     </p>
 
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Free tickets available</p>
-      <p style="color: #16a34a; font-size: 32px; font-weight: 800; margin: 0;">${freeTicketsAvailable}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Free tickets available</p>
+      <p style="color: #C9A227; font-size: 32px; font-weight: 800; margin: 0;">${freeTicketsAvailable}</p>
     </div>
 
-    <p style="color: #4b5563; font-size: 14px; line-height: 22px; margin: 0 0 24px;">
+    <p style="color: #CFCAC0; font-size: 14px; line-height: 22px; margin: 0 0 24px;">
       Use it at checkout on any competition when you buy 2 or more tickets — one ticket will be on us.
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Browse Competitions
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; margin: 24px 0 0;">
       Keep sharing your link to earn more — every friend who makes their first purchase gets you another free ticket.
     </p>
-    <p style="color: #9ca3af; font-size: 12px; margin: 16px 0 0;">
+    <p style="color: #7A766D; font-size: 12px; margin: 16px 0 0;">
       View your referrals: ${referralsUrl}
     </p>
   `);
@@ -252,43 +252,43 @@ export async function sendPurchaseConfirmationEmail(
   }).format(data.totalAmount);
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Order Confirmed! 🎉</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Order Confirmed! 🎉</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, your ticket purchase has been confirmed. Good luck!
     </p>
 
     <!-- Order Details -->
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Order</p>
-      <p style="color: #1a1a1a; font-size: 14px; font-weight: 600; margin: 0 0 16px;">${data.orderNumber}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Order</p>
+      <p style="color: #F4F1EA; font-size: 14px; font-weight: 600; margin: 0 0 16px;">${data.orderNumber}</p>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Competition</p>
-      <p style="color: #1a1a1a; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${escapeHtml(data.competitionTitle)}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Competition</p>
+      <p style="color: #F4F1EA; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${escapeHtml(data.competitionTitle)}</p>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Your Tickets</p>
-      <p style="color: #1a1a1a; font-size: 24px; font-weight: bold; margin: 0 0 8px;">${paidCount} ${paidCount === 1 ? 'ticket' : 'tickets'}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Your Tickets</p>
+      <p style="color: #F4F1EA; font-size: 24px; font-weight: bold; margin: 0 0 8px;">${paidCount} ${paidCount === 1 ? 'ticket' : 'tickets'}</p>
       ${bonusCount > 0 ? `
-      <p style="color: #16a34a; font-size: 14px; margin: 0 0 16px;">
+      <p style="color: #C9A227; font-size: 14px; margin: 0 0 16px;">
         <strong>+ ${bonusCount} bonus ${bonusCount === 1 ? 'ticket' : 'tickets'}</strong>
       </p>
       ` : ''}
 
-      <p style="color: #6b7280; font-size: 12px; margin: 16px 0 4px; text-transform: uppercase;">Draw Date</p>
-      <p style="color: #1a1a1a; font-size: 14px; margin: 0 0 16px;">${drawDateFormatted}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 16px 0 4px; text-transform: uppercase;">Draw Date</p>
+      <p style="color: #F4F1EA; font-size: 14px; margin: 0 0 16px;">${drawDateFormatted}</p>
 
-      <div style="border-top: 1px solid #e5e7eb; padding-top: 16px; margin-top: 16px;">
-        <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Total Paid</p>
-        <p style="color: #1a1a1a; font-size: 24px; font-weight: bold; margin: 0;">${totalFormatted}</p>
+      <div style="border-top: 1px solid #2E2B26; padding-top: 16px; margin-top: 16px;">
+        <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Total Paid</p>
+        <p style="color: #F4F1EA; font-size: 24px; font-weight: bold; margin: 0;">${totalFormatted}</p>
       </div>
     </div>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${ordersUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${ordersUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         View My Tickets
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       We'll notify you when the draw takes place. Good luck! 🍀
     </p>
   `);
@@ -315,30 +315,30 @@ export async function sendDrawCompleteNotificationEmail(
   const competitionsUrl = `${BASE_URL}/competitions`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, the draw for <strong>${escapeHtml(data.competitionTitle)}</strong> has been completed.
     </p>
 
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
-      <p style="color: #1a1a1a; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
+      <p style="color: #F4F1EA; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
 
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 4px;">Winner</p>
-      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0;">${data.winnerName}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 4px;">Winner</p>
+      <p style="color: #F4F1EA; font-size: 18px; font-weight: 600; margin: 0;">${data.winnerName}</p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       Unfortunately, your ticket wasn't selected this time. Better luck next time!
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Browse More Competitions
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       Thank you for participating! 🍀
     </p>
   `);
@@ -371,39 +371,39 @@ export async function sendFreeEntryConfirmationEmail(
   }).format(new Date(data.drawDate));
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Free Entry Confirmed</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Free Entry Confirmed</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, your free entry has been confirmed. Good luck!
     </p>
 
-    <div style="background-color: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 24px; margin: 24px 0;">
+    <div style="background-color: #050505; border: 1px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0;">
       <div style="text-align: center; margin-bottom: 16px;">
-        <span style="display: inline-block; background-color: #16a34a; color: #ffffff; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 9999px; text-transform: uppercase;">
+        <span style="display: inline-block; background-color: #C9A227; color: #0A0A0A; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 0; text-transform: uppercase;">
           Free Entry
         </span>
       </div>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Competition</p>
-      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${escapeHtml(data.competitionTitle)}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Competition</p>
+      <p style="color: #F4F1EA; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${escapeHtml(data.competitionTitle)}</p>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Entry</p>
-      <p style="color: #16a34a; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">1 free ticket</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Entry</p>
+      <p style="color: #C9A227; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">1 free ticket</p>
 
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Draw Date</p>
-      <p style="color: #1a1a1a; font-size: 14px; margin: 0; text-align: center;">${drawDateFormatted}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Draw Date</p>
+      <p style="color: #F4F1EA; font-size: 14px; margin: 0; text-align: center;">${drawDateFormatted}</p>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #9A958B; font-size: 14px; margin: 0 0 24px; text-align: center;">
       Entry method: ${data.entryMethod === 'postal' ? 'Postal Entry' : 'Email Entry'}
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${competitionUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Browse More Competitions
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       We'll notify you when the draw takes place. Good luck! 🍀
     </p>
   `);
@@ -437,32 +437,32 @@ export async function sendWinnerNotificationEmail(
 
   const html = emailWrapper(`
     <div style="text-align: center;">
-      <h2 style="color: #16a34a; font-size: 28px; margin: 0 0 16px;">🎉 CONGRATULATIONS! 🎉</h2>
-      <p style="color: #4b5563; font-size: 20px; line-height: 28px; margin: 0 0 24px;">
+      <h2 style="color: #C9A227; font-size: 28px; margin: 0 0 16px;">🎉 CONGRATULATIONS! 🎉</h2>
+      <p style="color: #CFCAC0; font-size: 20px; line-height: 28px; margin: 0 0 24px;">
         ${escapeHtml(firstName)}, you've WON!
       </p>
     </div>
 
-    <div style="background-color: #f0fdf4; border: 2px solid #16a34a; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Your winning ticket</p>
-      <p style="color: #16a34a; font-size: 48px; font-weight: bold; margin: 0 0 16px;">#${data.ticketNumber}</p>
+    <div style="background-color: #050505; border: 2px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Your winning ticket</p>
+      <p style="color: #C9A227; font-size: 48px; font-weight: bold; margin: 0 0 16px;">#${data.ticketNumber}</p>
 
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Prize</p>
-      <p style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${escapeHtml(data.competitionTitle)}</p>
-      <p style="color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;">Value: ${prizeFormatted}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Prize</p>
+      <p style="color: #F4F1EA; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${escapeHtml(data.competitionTitle)}</p>
+      <p style="color: #C9A227; font-size: 24px; font-weight: bold; margin: 0;">Value: ${prizeFormatted}</p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       Our team will be in touch shortly to arrange delivery of your prize!
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${winsUrl}" style="display: inline-block; background-color: #16a34a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${winsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         View My Wins
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       If you have any questions, please contact us at contact@winuprize.com
     </p>
   `);
@@ -513,25 +513,25 @@ function marketingWrapper(content: string, token: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WinUPrize</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUPrize</h1>
+<body style="font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0A0A0A; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #141312; border: 1px solid #2E2B26; border-radius: 0; overflow: hidden;">
+    <div style="background-color: #141312; padding: 24px; text-align: center; border-bottom: 2px solid #C9A227;">
+      <h1 style="color: #F4F1EA; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">WinU<span style="color: #C9A227;">Prize</span></h1>
     </div>
     <div style="padding: 32px;">
       ${content}
     </div>
-    <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+    <div style="background-color: #050505; padding: 24px; text-align: center; border-top: 1px solid #2E2B26;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         YD PARTNERS LTD (trading as WinUPrize) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         You're receiving this because you opted in to competition updates from WinUPrize.
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0;">
-        <a href="${url}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> ·
-        <a href="${BASE_URL}/settings" style="color: #6b7280;">Email preferences</a> ·
-        <a href="${BASE_URL}/privacy" style="color: #6b7280;">Privacy</a>
+      <p style="color: #9A958B; font-size: 12px; margin: 0;">
+        <a href="${url}" style="color: #9A958B; text-decoration: underline;">Unsubscribe</a> ·
+        <a href="${BASE_URL}/settings" style="color: #9A958B;">Email preferences</a> ·
+        <a href="${BASE_URL}/privacy" style="color: #9A958B;">Privacy</a>
       </p>
     </div>
   </div>
@@ -606,15 +606,15 @@ function competitionCard(data: CompetitionBlastData): string {
     new Date(data.drawDate)
   );
   return `
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
       ${
         data.mainImageUrl
-          ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 6px; margin-bottom: 16px;">`
+          ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 0; margin-bottom: 16px;">`
           : ''
       }
-      <p style="color: #1a1a1a; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
-      <p style="color: #16a34a; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
-      <p style="color: #6b7280; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
+      <p style="color: #F4F1EA; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
+      <p style="color: #C9A227; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
     </div>`;
 }
 
@@ -626,13 +626,13 @@ export async function sendNewCompetitionBlast(
   const messages = recipients.map((r) => {
     const html = marketingWrapper(
       `
-    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
       A new competition just went live on WinUPrize. Get your tickets before it's gone.
     </p>
     ${competitionCard(data)}
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Enter now
       </a>
     </div>`,
@@ -660,13 +660,13 @@ export async function sendClosingSoonBlast(
   const messages = recipients.map((r) => {
     const html = marketingWrapper(
       `
-    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">⏳ Last chance${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">⏳ Last chance${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
       The draw for <strong>${escapeHtml(data.title)}</strong> is coming up on ${drawFormatted}. Grab your tickets before entries close.
     </p>
     ${competitionCard(data)}
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Enter before it closes
       </a>
     </div>`,
@@ -707,8 +707,8 @@ export async function sendCartRecoveryEmails(
     const ticketWord = count === 1 ? 'ticket' : 'tickets';
     const html = marketingWrapper(
       `
-    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">You left ${count} ${ticketWord} behind${item.firstName ? `, ${escapeHtml(item.firstName)}` : ''}</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">You left ${count} ${ticketWord} behind${item.firstName ? `, ${escapeHtml(item.firstName)}` : ''}</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
       Your checkout for <strong>${escapeHtml(item.title)}</strong> wasn't completed, so your ${ticketWord} ${count === 1 ? 'is' : 'are'} not entered yet. The competition is still live — pick up where you left off before the draw.
     </p>
     ${competitionCard({
@@ -721,11 +721,11 @@ export async function sendCartRecoveryEmails(
       drawDate: item.drawDate,
     })}
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Complete my entry
       </a>
     </div>
-    <p style="color: #6b7280; font-size: 13px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 13px; text-align: center; margin: 24px 0 0;">
       Tickets are limited and sell on a first-come basis — entering again takes less than a minute.
     </p>`,
       item.unsubscribeToken

@@ -22,8 +22,8 @@ type CompetitionStatus =
 const STATUS_CONFIG: Record<CompetitionStatus, { label: string; bg: string; color: string }> = {
   DRAFT: { label: 'Draft', bg: 'var(--bg-2)', color: 'var(--ink-faint)' },
   UPCOMING: { label: 'Upcoming', bg: 'var(--pop)', color: '#0A0A0A' },
-  ACTIVE: { label: 'Live', bg: 'var(--accent)', color: 'var(--ink)' },
-  SOLD_OUT: { label: 'Sold out', bg: 'var(--warn)', color: 'var(--ink)' },
+  ACTIVE: { label: 'Live', bg: 'var(--accent)', color: '#0A0A0A' },
+  SOLD_OUT: { label: 'Sold out', bg: 'var(--warn)', color: '#0A0A0A' },
   DRAWING: { label: 'Drawing', bg: 'var(--pop)', color: '#0A0A0A' },
   COMPLETED: { label: 'Completed', bg: 'var(--bg-2)', color: 'var(--ink-faint)' },
   CANCELLED: { label: 'Cancelled', bg: 'var(--hot)', color: '#0A0A0A' },
@@ -40,8 +40,8 @@ function StatusPill({ status }: { status: CompetitionStatus }) {
         color: config.color,
         border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 0,
-        fontFamily: 'var(--mono)',
-        fontSize: '10px',
+        fontFamily: 'var(--display)',
+        fontSize: '12.5px',
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
         fontWeight: 700,
@@ -134,8 +134,8 @@ export default async function MyTicketsPage() {
       >
         <div
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',
@@ -214,7 +214,7 @@ export default async function MyTicketsPage() {
                   background: 'var(--surface)',
                   border: `1.5px solid ${isWinner ? 'var(--accent)' : 'var(--ink)'}`,
                   borderRadius: 'var(--radius)',
-                  boxShadow: isWinner ? `4px 4px 0 var(--accent)` : 'var(--shadow)',
+                  boxShadow: 'none',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
@@ -279,11 +279,11 @@ export default async function MyTicketsPage() {
                             gap: '4px',
                             padding: '3px 10px',
                             background: 'var(--accent)',
-                            color: 'var(--ink)',
+                            color: '#0A0A0A',
                             border: '1px solid rgba(244, 241, 234, 0.18)',
                             borderRadius: 0,
-                            fontFamily: 'var(--mono)',
-                            fontSize: '10px',
+                            fontFamily: 'var(--display)',
+                            fontSize: '12.5px',
                             letterSpacing: '0.15em',
                             textTransform: 'uppercase',
                             fontWeight: 700,
@@ -295,12 +295,12 @@ export default async function MyTicketsPage() {
                       <StatusPill status={competition.status as CompetitionStatus} />
                       <span
                         style={{
-                          fontFamily: 'var(--mono)',
-                          fontSize: '11px',
+                          fontFamily: 'var(--display)',
+                          fontSize: '12.5px',
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
                           fontWeight: 700,
-                          color: 'var(--accent-2)',
+                          color: 'var(--accent)',
                         }}
                       >
                         {Number(competition.prizeValue).toLocaleString('en-GB', {
@@ -364,8 +364,8 @@ export default async function MyTicketsPage() {
                     <div style={{ marginTop: '14px' }}>
                       <div
                         style={{
-                          fontFamily: 'var(--mono)',
-                          fontSize: '10px',
+                          fontFamily: 'var(--display)',
+                          fontSize: '12.5px',
                           letterSpacing: '0.15em',
                           textTransform: 'uppercase',
                           color: 'var(--ink-faint)',

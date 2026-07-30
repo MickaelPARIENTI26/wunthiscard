@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const badgeVariants = cva(
-  'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  'inline-flex items-center rounded-none border px-2.5 py-0.5 font-[family-name:var(--display)] text-[12.5px] font-semibold uppercase tracking-[0.12em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
   {
     variants: {
       variant: {
@@ -29,13 +29,14 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
+// Anything on a gold/warn fill reads #0A0A0A, never white/off-white.
 const variantStyles: Record<string, React.CSSProperties> = {
-  default: { backgroundColor: 'var(--accent)', color: 'var(--ink)' },
+  default: { backgroundColor: 'var(--accent)', color: '#0A0A0A' },
   secondary: { backgroundColor: 'var(--bg-2)', color: 'var(--ink)' },
-  destructive: { backgroundColor: 'var(--hot)', color: '#ffffff' },
-  outline: { backgroundColor: 'transparent', color: 'var(--ink)', borderColor: 'var(--ink)' },
-  success: { backgroundColor: 'var(--accent)', color: 'var(--ink)' },
-  warning: { backgroundColor: 'var(--warn)', color: 'var(--ink)' },
+  destructive: { backgroundColor: 'var(--hot)', color: '#0A0A0A' },
+  outline: { backgroundColor: 'transparent', color: 'var(--ink)', borderColor: 'var(--line-2)' },
+  success: { backgroundColor: 'var(--accent)', color: '#0A0A0A' },
+  warning: { backgroundColor: 'var(--warn)', color: '#0A0A0A' },
 };
 
 function Badge({ className, variant, style, ...props }: BadgeProps) {

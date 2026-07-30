@@ -185,15 +185,15 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           className="inline-flex items-center gap-2.5 justify-center"
           style={{
             padding: '7px 14px', background: 'var(--accent)', color: '#0A0A0A',
-            borderRadius: 0, fontFamily: 'var(--mono)', fontSize: '11px',
+            borderRadius: 0, fontFamily: 'var(--display)', fontSize: '12.5px',
             letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600, marginBottom: '20px',
           }}
         >
-          <span className="live-dot" style={{ boxShadow: '0 0 10px var(--accent)' }} />
+          <span className="live-dot" style={{ background: "#0A0A0A", boxShadow: "none" }} />
           ENTRY CONFIRMED
         </div>
         <h1 style={{ fontFamily: 'var(--display)', fontSize: 'clamp(28px, 6vw, 64px)', fontWeight: 700, letterSpacing: '-0.045em', lineHeight: 0.95, margin: '20px 0' }}>
-          You&apos;re <span className="inline-block bg-[var(--ink)] text-[var(--accent)] px-[0.18em] pb-[2px] rounded-[12px] rotate-[-2deg] font-bold">in</span>.
+          You&apos;re <span className="inline-block bg-[var(--accent)] text-[#0A0A0A] px-[0.18em] pb-[2px] font-bold">in</span>.
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '17px', lineHeight: 1.6, marginBottom: '32px' }}>
           We&apos;ve emailed your confirmation with your ticket numbers. When the countdown hits zero, an independent third party draws the winner and we publish the result right here.
@@ -208,7 +208,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-bold text-sm">{order.competition.title}</h3>
-              <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              <p style={{ fontFamily: 'var(--display)', fontSize: '12.5px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                 Draw: {formatDate(order.competition.drawDate)}
               </p>
             </div>
@@ -240,7 +240,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         </div>
 
         {/* Email note */}
-        <p style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '24px' }}>
+        <p style={{ fontFamily: 'var(--display)', fontSize: '12.5px', color: 'var(--ink-faint)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '24px' }}>
           Confirmation sent to {session.user.email}
         </p>
       </section>

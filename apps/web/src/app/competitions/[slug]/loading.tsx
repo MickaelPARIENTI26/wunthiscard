@@ -11,10 +11,10 @@ export default function CompetitionDetailLoading() {
         <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
           {/* Left Column - Image Gallery Skeleton */}
           <div>
-            <Skeleton className="aspect-square w-full rounded-lg" />
+            <Skeleton className="aspect-square w-full" />
             <div className="mt-3 flex gap-2">
               {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-16 w-16 flex-shrink-0 rounded-md" />
+                <Skeleton key={i} className="h-16 w-16 flex-shrink-0" />
               ))}
             </div>
           </div>
@@ -22,7 +22,7 @@ export default function CompetitionDetailLoading() {
           {/* Right Column - Details Skeleton */}
           <div className="space-y-6">
             {/* Category Badge */}
-            <Skeleton className="h-6 w-24 rounded-full" />
+            <Skeleton className="h-6 w-24" />
 
             {/* Title */}
             <div>
@@ -33,7 +33,7 @@ export default function CompetitionDetailLoading() {
             {/* Prize Value Card */}
             <Card>
               <CardContent className="flex items-center gap-4 p-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
+                <Skeleton className="h-12 w-12" />
                 <div>
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="mt-1 h-8 w-32" />
@@ -42,11 +42,11 @@ export default function CompetitionDetailLoading() {
             </Card>
 
             {/* Countdown Timer */}
-            <div className="rounded-lg border p-4">
+            <div className=" border p-4">
               <Skeleton className="mx-auto mb-3 h-4 w-40" />
               <div className="flex justify-center gap-3">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <Skeleton key={i} className="h-20 w-20 rounded-lg" />
+                  <Skeleton key={i} className="h-20 w-20" />
                 ))}
               </div>
             </div>
@@ -57,7 +57,7 @@ export default function CompetitionDetailLoading() {
                 <Skeleton className="h-4 w-40" />
                 <Skeleton className="h-4 w-12" />
               </div>
-              <Skeleton className="h-2.5 w-full rounded-full" />
+              <Skeleton className="h-2.5 w-full" />
             </div>
 
             {/* Ticket Price */}
@@ -70,13 +70,13 @@ export default function CompetitionDetailLoading() {
             </div>
 
             {/* Bonus Notice */}
-            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full" />
 
             {/* CTA Button */}
-            <Skeleton className="h-12 w-full rounded-lg" />
+            <Skeleton className="h-12 w-full" />
 
             {/* Free Entry Notice */}
-            <Skeleton className="h-32 w-full rounded-lg" />
+            <Skeleton className="h-32 w-full" />
           </div>
         </div>
 
@@ -89,8 +89,8 @@ export default function CompetitionDetailLoading() {
               <Skeleton className="h-4 w-16" />
             </div>
           </div>
-          <Skeleton className="h-10 w-full rounded-md" />
-          <Skeleton className="h-48 w-full rounded-lg" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-48 w-full" />
         </div>
 
         {/* Additional Information */}
@@ -119,7 +119,7 @@ export default function CompetitionDetailLoading() {
                   </div>
                   <div className="flex justify-between">
                     <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16" />
                   </div>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function CompetitionDetailLoading() {
                   </div>
                   <div className="flex justify-between">
                     <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16" />
                   </div>
                 </div>
               </div>

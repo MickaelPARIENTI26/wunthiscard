@@ -58,10 +58,10 @@ function getPasswordStrengthLabel(strength: number): string {
 }
 
 function getPasswordStrengthColor(strength: number): string {
-  if (strength < 40) return 'bg-destructive';
-  if (strength < 60) return 'bg-orange-500';
-  if (strength < 80) return 'bg-yellow-500';
-  return 'bg-green-500';
+  if (strength < 40) return 'bg-[var(--warn)]';
+  if (strength < 60) return 'bg-[var(--gold-deep)]';
+  if (strength < 80) return 'bg-[var(--accent)]';
+  return 'bg-[var(--accent)]';
 }
 
 export function ResetPasswordContent() {
@@ -160,10 +160,10 @@ export function ResetPasswordContent() {
     return (
       <Card>
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <XCircle className="h-6 w-6 text-destructive" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(217,160,138,0.12)] border border-[var(--line-2)]">
+            <XCircle className="h-6 w-6 text-[var(--warn)]" />
           </div>
-          <CardTitle className="font-bold font-sans" style={{ fontSize: '29px', color: 'var(--ink)' }}>Invalid or expired link</CardTitle>
+          <CardTitle className="wup-title" style={{ fontSize: '26px' }}>Invalid or expired link</CardTitle>
           <CardDescription>
             This password reset link is invalid or has expired. Please request a new one.
           </CardDescription>
@@ -183,12 +183,12 @@ export function ResetPasswordContent() {
       <Card>
         <CardHeader className="space-y-1 text-center">
           <div
-            className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
-            style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)' }}
+            className="mx-auto mb-4 flex h-12 w-12 items-center justify-center"
+            style={{ backgroundColor: 'rgba(201, 162, 39, 0.15)' }}
           >
-            <CheckCircle className="h-6 w-6" style={{ color: '#22C55E' }} />
+            <CheckCircle className="h-6 w-6" style={{ color: 'var(--accent)' }} />
           </div>
-          <CardTitle className="font-bold font-sans font-bold" style={{ fontSize: '29px' }}>Password reset successful</CardTitle>
+          <CardTitle className="wup-title" style={{ fontSize: '29px' }}>Password reset successful</CardTitle>
           <CardDescription>
             Your password has been reset. You can now sign in with your new password.
           </CardDescription>
@@ -205,13 +205,13 @@ export function ResetPasswordContent() {
   return (
     <Card>
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="font-bold font-sans font-bold" style={{ fontSize: '29px' }}>Reset your password</CardTitle>
+        <CardTitle className="wup-title" style={{ fontSize: '29px' }}>Reset your password</CardTitle>
         <CardDescription>Enter your new password below</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
           {serverError && (
-            <div className="p-3 text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md">
+            <div className="p-3 text-sm text-[var(--warn)] bg-destructive/10 border border-destructive/20 rounded-md">
               {serverError}
             </div>
           )}
@@ -252,10 +252,10 @@ export function ResetPasswordContent() {
                     <span
                       className={
                         passwordStrength < 60
-                          ? 'text-destructive'
+                          ? 'text-[var(--warn)]'
                           : passwordStrength < 100
-                            ? 'text-yellow-600'
-                            : 'text-green-600'
+                            ? 'text-[var(--accent)]'
+                            : 'text-[var(--accent)]'
                       }
                     >
                       {getPasswordStrengthLabel(passwordStrength)}
@@ -273,7 +273,7 @@ export function ResetPasswordContent() {
                       <li
                         key={req.label}
                         className={`flex items-center gap-1.5 ${
-                          req.met ? 'text-green-600' : 'text-muted-foreground'
+                          req.met ? 'text-[var(--accent)]' : 'text-muted-foreground'
                         }`}
                       >
                         {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
@@ -285,7 +285,7 @@ export function ResetPasswordContent() {
               )}
 
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-[var(--warn)]">{errors.password.message}</p>
               )}
             </div>
 
@@ -316,7 +316,7 @@ export function ResetPasswordContent() {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-[var(--warn)]">{errors.confirmPassword.message}</p>
               )}
             </div>
 

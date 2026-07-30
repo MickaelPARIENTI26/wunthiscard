@@ -99,8 +99,8 @@ export function VerifyEmailContent() {
     return (
       <Card>
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-6 w-6 text-green-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+            <CheckCircle className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <CardTitle className="text-2xl font-bold">Email verified</CardTitle>
           <CardDescription>
@@ -123,8 +123,8 @@ export function VerifyEmailContent() {
     return (
       <Card>
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <CheckCircle className="h-6 w-6 text-blue-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+            <CheckCircle className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <CardTitle className="text-2xl font-bold">Already verified</CardTitle>
           <CardDescription>
@@ -148,8 +148,8 @@ export function VerifyEmailContent() {
       return (
         <Card>
           <CardHeader className="space-y-1 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <Mail className="h-6 w-6 text-green-600" />
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+              <Mail className="h-6 w-6 text-[var(--accent)]" />
             </div>
             <CardTitle className="text-2xl font-bold">Email sent</CardTitle>
             <CardDescription>
@@ -158,7 +158,7 @@ export function VerifyEmailContent() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+            <div className="bg-[var(--bg-3)] border border-[var(--line)] p-4 text-sm text-muted-foreground">
               <p>The link will expire in 24 hours.</p>
               <p className="mt-1">If you don&apos;t see the email, check your spam folder.</p>
             </div>
@@ -175,8 +175,8 @@ export function VerifyEmailContent() {
     return (
       <Card>
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100">
-            <XCircle className="h-6 w-6 text-yellow-600" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(201,162,39,0.12)] border border-[var(--line-2)]">
+            <XCircle className="h-6 w-6 text-[var(--accent)]" />
           </div>
           <CardTitle className="text-2xl font-bold">Link expired</CardTitle>
           <CardDescription>
@@ -218,7 +218,7 @@ export function VerifyEmailContent() {
   return (
     <Card>
       <CardHeader className="space-y-1 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[rgba(217,160,138,0.12)] border border-[var(--line-2)]">
           <XCircle className="h-6 w-6 text-destructive" />
         </div>
         <CardTitle className="text-2xl font-bold">Verification failed</CardTitle>

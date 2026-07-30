@@ -82,9 +82,9 @@ export function FreeEntryButton({
           disabled
           className="w-full flex items-center justify-center gap-2"
           style={{
-            minHeight: 'var(--btn-height-lg)',
+            minHeight: '52px',
             padding: '0 24px',
-            borderRadius: 'var(--radius-btn)',
+            borderRadius: 0,
             background: 'var(--bg-3)',
             color: 'var(--ink-faint)',
             fontSize: '16px',
@@ -168,9 +168,9 @@ export function FreeEntryButton({
               style={{
                 padding: '12px 16px',
                 borderRadius: 0,
-                background: 'rgba(220, 38, 38, 0.08)',
-                border: '1px solid rgba(220, 38, 38, 0.2)',
-                color: '#DC2626',
+                background: 'rgba(217, 160, 138, 0.10)',
+                border: '1px solid rgba(217, 160, 138, 0.3)',
+                color: 'var(--warn)',
                 fontSize: '14px',
               }}
             >

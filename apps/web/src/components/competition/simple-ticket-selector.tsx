@@ -182,7 +182,7 @@ export function SimpleTicketSelector({
             padding: '12px 14px',
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
-            background: referralApplied ? 'rgba(0, 199, 106, 0.08)' : 'var(--surface)',
+            background: referralApplied ? 'rgba(201, 162, 39, 0.10)' : 'var(--surface)',
             cursor: canUseReferralTicket ? 'pointer' : 'not-allowed',
             opacity: canUseReferralTicket ? 1 : 0.6,
             alignItems: 'center',
@@ -210,8 +210,8 @@ export function SimpleTicketSelector({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '14px', fontSize: '14px' }}>
           <span>
             {quantity} ticket{quantity > 1 ? 's' : ''}
-            {bonus > 0 ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> + {bonus} bonus (−{Math.round((bonus / (quantity + bonus)) * 100)}%)</span> : ''}
-            {referralApplied ? <span style={{ color: 'var(--accent-2)', fontWeight: 700 }}> · 1 free referral</span> : ''}
+            {bonus > 0 ? <span style={{ color: 'var(--gold-bright)', fontWeight: 700 }}> + {bonus} bonus (−{Math.round((bonus / (quantity + bonus)) * 100)}%)</span> : ''}
+            {referralApplied ? <span style={{ color: 'var(--gold-bright)', fontWeight: 700 }}> · 1 free referral</span> : ''}
           </span>
           <span style={{ fontFamily: 'var(--display)', fontSize: '24px', fontWeight: 700, letterSpacing: '-0.03em' }}>£{displayTotal}</span>
         </div>

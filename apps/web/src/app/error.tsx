@@ -21,7 +21,7 @@ export default function Error({ error, reset }: ErrorProps) {
       <div className="text-center">
         {/* Error Icon */}
         <div className="mb-8 flex justify-center">
-          <div className="rounded-full bg-destructive/10 p-6">
+          <div className="bg-[var(--bg-3)] border border-[var(--line-2)] p-6">
             <AlertTriangle className="h-12 w-12 text-destructive" />
           </div>
         </div>

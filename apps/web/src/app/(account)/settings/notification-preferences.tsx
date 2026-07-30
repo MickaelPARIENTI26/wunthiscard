@@ -98,8 +98,8 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
         <div>
           <div
             style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
+              fontFamily: 'var(--display)',
+              fontSize: '12.5px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--ink-faint)',
@@ -140,7 +140,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
           gap: '14px',
           textAlign: 'left',
           padding: '16px',
-          background: enabled ? 'var(--accent-soft, var(--bg-2))' : 'var(--bg-2)',
+          background: enabled ? 'rgba(201, 162, 39, 0.10)' : 'var(--bg-2)',
           border: '1px solid rgba(244, 241, 234, 0.18)',
           borderRadius: 0,
           cursor: isSaving ? 'default' : 'pointer',
@@ -169,7 +169,7 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
               width: '20px',
               height: '20px',
               borderRadius: 0,
-              background: 'var(--ink)',
+              background: '#0A0A0A',
               transition: 'left 0.15s',
             }}
           />
@@ -213,8 +213,8 @@ export function NotificationPreferences({ initialEmailMarketing }: NotificationP
       >
         <div
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '10px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.15em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',

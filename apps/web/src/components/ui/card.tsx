@@ -5,14 +5,13 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
   ({ className, style, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn('rounded-xl border text-card-foreground', className)}
+      className={cn('rounded-none border text-card-foreground', className)}
       style={{
-        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderColor: 'rgba(255, 255, 255, 0.06)',
+        // Matchday panel: flat raised surface, hairline border, no resting shadow.
+        background: 'var(--surface)',
+        borderColor: 'rgba(244, 241, 234, 0.18)',
         borderRadius: 0,
-        boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 24px rgba(0, 0, 0, 0.2)',
+        boxShadow: 'none',
         color: 'var(--ink)',
         ...style,
       }}

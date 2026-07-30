@@ -31,13 +31,13 @@ function LoginFormSkeleton() {
     <div className="space-y-4 animate-pulse">
       <div className="space-y-2">
         <div className="h-4 w-12 rounded" style={{ background: 'var(--bg-2)' }} />
-        <div className="h-11 w-full rounded-[10px]" style={{ background: 'var(--bg-2)' }} />
+        <div className="h-11 w-full" style={{ background: 'var(--bg-2)' }} />
       </div>
       <div className="space-y-2">
         <div className="h-4 w-16 rounded" style={{ background: 'var(--bg-2)' }} />
-        <div className="h-11 w-full rounded-[10px]" style={{ background: 'var(--bg-2)' }} />
+        <div className="h-11 w-full" style={{ background: 'var(--bg-2)' }} />
       </div>
-      <div className="h-12 w-full rounded-[10px]" style={{ background: 'var(--bg-2)' }} />
+      <div className="h-12 w-full" style={{ background: 'var(--bg-2)' }} />
     </div>
   );
 }

@@ -27,10 +27,10 @@ const DELIVERY_CONFIG: Record<
   DeliveryStatus,
   { label: string; bg: string; color: string; icon: typeof Package }
 > = {
-  pending: { label: 'Pending claim', bg: 'var(--warn)', color: 'var(--ink)', icon: Trophy },
+  pending: { label: 'Pending claim', bg: 'var(--warn)', color: '#0A0A0A', icon: Trophy },
   claimed: { label: 'Claimed', bg: 'var(--pop)', color: '#0A0A0A', icon: Package },
   shipped: { label: 'Shipped', bg: 'var(--pop)', color: '#0A0A0A', icon: Truck },
-  delivered: { label: 'Delivered', bg: 'var(--accent)', color: 'var(--ink)', icon: CheckCircle },
+  delivered: { label: 'Delivered', bg: 'var(--accent)', color: '#0A0A0A', icon: CheckCircle },
 };
 
 function DeliveryPill({ status }: { status: DeliveryStatus }) {
@@ -47,8 +47,8 @@ function DeliveryPill({ status }: { status: DeliveryStatus }) {
         color: config.color,
         border: '1px solid rgba(244, 241, 234, 0.18)',
         borderRadius: 0,
-        fontFamily: 'var(--mono)',
-        fontSize: '10px',
+        fontFamily: 'var(--display)',
+        fontSize: '12.5px',
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
         fontWeight: 700,
@@ -107,8 +107,8 @@ export default async function MyWinsPage() {
       >
         <div
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',
@@ -213,7 +213,7 @@ export default async function MyWinsPage() {
                       inset: 0,
                       display: 'grid',
                       placeItems: 'center',
-                      background: 'rgba(13, 13, 13, 0.6)',
+                      background: 'rgba(10, 10, 10, 0.6)',
                     }}
                   >
                     <Trophy className="h-10 w-10" style={{ color: 'var(--accent)' }} />
@@ -245,7 +245,7 @@ export default async function MyWinsPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '13.5px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span style={{ color: 'var(--ink-dim)' }}>Prize value</span>
-                      <span style={{ fontWeight: 700, color: 'var(--accent-2)' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--accent)' }}>
                         {Number(win.competition.prizeValue).toLocaleString('en-GB', {
                           style: 'currency',
                           currency: 'GBP',
@@ -261,10 +261,10 @@ export default async function MyWinsPage() {
                           background: 'var(--accent)',
                           border: '1px solid rgba(244, 241, 234, 0.18)',
                           borderRadius: 0,
-                          fontFamily: 'var(--mono)',
-                          fontSize: '11.5px',
+                          fontFamily: 'var(--display)',
+                          fontSize: '12.5px',
                           fontWeight: 700,
-                          color: 'var(--ink)',
+                          color: '#0A0A0A',
                         }}
                       >
                         #{win.ticketNumber}
@@ -291,8 +291,8 @@ export default async function MyWinsPage() {
                     >
                       <div
                         style={{
-                          fontFamily: 'var(--mono)',
-                          fontSize: '10px',
+                          fontFamily: 'var(--display)',
+                          fontSize: '12.5px',
                           letterSpacing: '0.15em',
                           textTransform: 'uppercase',
                           color: 'var(--ink-faint)',

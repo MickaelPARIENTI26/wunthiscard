@@ -81,13 +81,13 @@ export function DeleteAccountSection({ email }: DeleteAccountSectionProps) {
             flexShrink: 0,
           }}
         >
-          <AlertTriangle className="h-5 w-5" style={{ color: '#fff' }} />
+          <AlertTriangle className="h-5 w-5" style={{ color: '#0A0A0A' }} />
         </div>
         <div>
           <div
             style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
+              fontFamily: 'var(--display)',
+              fontSize: '12.5px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--hot)',

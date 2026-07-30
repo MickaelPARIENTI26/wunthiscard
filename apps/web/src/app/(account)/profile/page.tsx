@@ -58,7 +58,7 @@ export default async function ProfilePage({
             border: '1px solid rgba(244, 241, 234, 0.18)',
             boxShadow: 'var(--shadow-sm)',
             fontSize: '14px',
-            color: 'var(--ink)',
+            color: '#0A0A0A',
             lineHeight: 1.5,
           }}
         >
@@ -77,8 +77,8 @@ export default async function ProfilePage({
       >
         <div
           style={{
-            fontFamily: 'var(--mono)',
-            fontSize: '11px',
+            fontFamily: 'var(--display)',
+            fontSize: '12.5px',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
             color: 'var(--ink-faint)',

@@ -80,10 +80,10 @@ function getPasswordStrengthLabel(strength: number): string {
 }
 
 function getPasswordStrengthColor(strength: number): string {
-  if (strength < 40) return '#DC2626';
-  if (strength < 60) return '#F97316';
-  if (strength < 80) return '#EAB308';
-  return '#22C55E';
+  if (strength < 40) return 'var(--warn)';
+  if (strength < 60) return 'var(--gold-deep)';
+  if (strength < 80) return 'var(--accent)';
+  return 'var(--accent)';
 }
 
 // Check if Google OAuth is enabled via public env variable
@@ -95,7 +95,7 @@ const inputStyle = {
   padding: '12px 16px',
   fontSize: '16px', // 16px avoids the iOS Safari auto-zoom-on-focus on mobile
   background: 'var(--bg-2)',
-  border: '1px solid rgba(0, 0, 0, 0.1)',
+  border: '1px solid rgba(244, 241, 234, 0.2)',
   borderRadius: 0,
   color: 'var(--ink)',
   outline: 'none',
@@ -105,11 +105,11 @@ const inputStyle = {
 // Focus/blur handlers for input styling
 const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
   e.currentTarget.style.borderColor = 'var(--accent)';
-  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0, 199, 106, 0.15)';
+  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(201, 162, 39, 0.22)';
 };
 
 const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-  e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+  e.currentTarget.style.borderColor = 'rgba(244, 241, 234, 0.2)';
   e.currentTarget.style.boxShadow = 'none';
 };
 
@@ -236,8 +236,8 @@ export function RegisterForm() {
             padding: '10px 14px',
             fontSize: '13px',
             color: 'var(--ink-dim)',
-            background: 'rgba(0, 199, 106, 0.06)',
-            border: '1px solid rgba(0, 199, 106, 0.2)',
+            background: 'rgba(201, 162, 39, 0.08)',
+            border: '1px solid rgba(201, 162, 39, 0.25)',
             borderRadius: 0,
           }}
         >
@@ -252,9 +252,9 @@ export function RegisterForm() {
           style={{
             padding: '12px 16px',
             fontSize: '14px',
-            color: '#DC2626',
-            background: 'rgba(220, 38, 38, 0.08)',
-            border: '1px solid rgba(220, 38, 38, 0.2)',
+            color: 'var(--warn)',
+            background: 'rgba(217, 160, 138, 0.10)',
+            border: '1px solid rgba(217, 160, 138, 0.3)',
             borderRadius: 0,
           }}
         >
@@ -267,7 +267,7 @@ export function RegisterForm() {
           <div className="space-y-1.5">
             <label
               htmlFor="firstName"
-              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+              style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
             >
               First name
             </label>
@@ -288,14 +288,14 @@ export function RegisterForm() {
               );
             })()}
             {errors.firstName && (
-              <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.firstName.message}</p>
+              <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.firstName.message}</p>
             )}
           </div>
 
           <div className="space-y-1.5">
             <label
               htmlFor="lastName"
-              style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+              style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
             >
               Last name
             </label>
@@ -316,7 +316,7 @@ export function RegisterForm() {
               );
             })()}
             {errors.lastName && (
-              <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.lastName.message}</p>
+              <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.lastName.message}</p>
             )}
           </div>
         </div>
@@ -324,7 +324,7 @@ export function RegisterForm() {
         <div className="space-y-1.5">
           <label
             htmlFor="email"
-            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+            style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
           >
             Email
           </label>
@@ -345,14 +345,14 @@ export function RegisterForm() {
             );
           })()}
           {errors.email && (
-            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.email.message}</p>
+            <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.email.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
           <label
             htmlFor="password"
-            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+            style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
           >
             Password
           </label>
@@ -416,14 +416,14 @@ export function RegisterForm() {
           )}
 
           {errors.password && (
-            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.password.message}</p>
+            <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.password.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
           <label
             htmlFor="confirmPassword"
-            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+            style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
           >
             Confirm Password
           </label>
@@ -443,14 +443,14 @@ export function RegisterForm() {
             );
           })()}
           {errors.confirmPassword && (
-            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.confirmPassword.message}</p>
+            <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.confirmPassword.message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
           <label
             htmlFor="dateOfBirth"
-            style={{ fontSize: '14px', fontWeight: 500, color: 'var(--ink)' }}
+            style={{ fontFamily: 'var(--display)', fontSize: '12.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-dim)' }}
           >
             Date of Birth
           </label>
@@ -472,7 +472,7 @@ export function RegisterForm() {
           })()}
           <p style={{ fontSize: '12px', color: 'var(--ink-dim)' }}>You must be at least 18 years old</p>
           {errors.dateOfBirth && (
-            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.dateOfBirth.message}</p>
+            <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.dateOfBirth.message}</p>
           )}
         </div>
 
@@ -511,7 +511,7 @@ export function RegisterForm() {
             </span>
           </label>
           {errors.acceptTerms && (
-            <p style={{ fontSize: '12px', color: '#DC2626' }}>{errors.acceptTerms.message}</p>
+            <p style={{ fontSize: '12px', color: 'var(--warn)' }}>{errors.acceptTerms.message}</p>
           )}
         </div>
 
@@ -525,7 +525,7 @@ export function RegisterForm() {
             onExpire={() => setTurnstileToken(null)}
             options={{
               appearance: 'interaction-only',
-              theme: 'auto',
+              theme: 'dark',
             }}
           />
         )}
@@ -590,7 +590,7 @@ export function RegisterForm() {
               padding: '14px',
               borderRadius: 0,
               background: 'transparent',
-              border: '1.5px solid rgba(0, 0, 0, 0.12)',
+              border: '1px solid var(--line-2)',
               color: 'var(--ink)',
               fontSize: '15px',
               fontWeight: 500,

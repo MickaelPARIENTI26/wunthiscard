@@ -305,7 +305,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
       />
       {/* Back */}
       <div className="comp-back">
-        <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
+        <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
           ← Back to Competitions
         </Link>
       </div>
@@ -395,7 +395,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                     style={{ width: `${Math.max(soldPercentage, 3)}%` }}
                   />
                 </div>
-                <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.04em', color: 'var(--ink-dim)', marginTop: '8px' }}>
+                <div style={{ fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.04em', color: 'var(--ink-dim)', marginTop: '8px' }}>
                   Max odds 1 in {competition.totalTickets!.toLocaleString('en-GB')}
                 </div>
                 {/* Scoreboard countdown — blinking gold-bright dot + DAYS/HRS/MIN/SEC */}
@@ -452,7 +452,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
                 <button disabled className="w-full" style={{ padding: '16px', borderRadius: 0, background: 'var(--bg-2)', color: 'var(--ink-dim)', fontSize: '16px', fontWeight: 600, cursor: 'not-allowed', border: '1px solid rgba(244, 241, 234, 0.18)' }}>
                   Entries closed — drawing soon
                 </button>
-                <p style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--ink-faint)', letterSpacing: '0.04em', marginTop: '10px', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'var(--display)', fontSize: '12.5px', color: 'var(--ink-faint)', letterSpacing: '0.04em', marginTop: '10px', textAlign: 'center' }}>
                   This competition has closed. The winner is drawn by an independent third party and the result is published shortly.
                 </p>
               </div>
@@ -470,11 +470,11 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               </button>
             )}
             {isCompleted && competition.winningTicketNumber && (
-              <div style={{ background: 'var(--accent)', border: '1px solid rgba(244, 241, 234, 0.18)', borderRadius: 'var(--radius)', padding: '24px', textAlign: 'center', marginTop: '18px', boxShadow: 'var(--shadow)' }}>
+              <div style={{ background: 'var(--accent)', color: '#0A0A0A', border: 'none', borderRadius: 0, padding: '24px', textAlign: 'center', marginTop: '18px' }}>
                 <Trophy style={{ width: '24px', height: '24px', margin: '0 auto 8px' }} />
                 <p style={{ fontSize: '18px', fontWeight: 700 }}>Competition Completed</p>
-                <p style={{ fontSize: '14px', color: 'var(--ink-dim)', marginTop: '4px' }}>
-                  Winning ticket: <b style={{ fontWeight: 700, color: 'var(--ink)' }}>#{competition.winningTicketNumber}</b>
+                <p style={{ fontSize: '14px', color: 'rgba(10, 10, 10, 0.75)', marginTop: '4px' }}>
+                  Winning ticket: <b style={{ fontWeight: 700, color: '#0A0A0A' }}>#{competition.winningTicketNumber}</b>
                   {competition.winnerDisplayName && <> — {competition.winnerDisplayName}</>}
                 </p>
               </div>
@@ -515,7 +515,7 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           {/* Section header */}
           <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px', gap: '32px', flexWrap: 'wrap' }}>
             <div>
-              <div style={{ fontFamily: 'var(--mono)', fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink)', fontWeight: 700, marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--ink)', fontWeight: 700, marginBottom: '12px', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ width: '20px', height: '2px', background: 'var(--ink)', display: 'block' }} />
                 About the Card
               </div>

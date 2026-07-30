@@ -116,7 +116,7 @@ function TermsContent() {
       <section id="winner-publicity">
         <h3 className="legal-h">10. Winner Publicity and Photo Requirement</h3>
         <p className="legal-p">Upon receiving your prize, you are required to provide at least one photograph of yourself with the prize item within 7 days of delivery. By submitting your photograph, you grant WinUPrize a non-exclusive, royalty-free, worldwide licence to use, reproduce, and publish your photograph and first name across our marketing channels.</p>
-        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@winuprize.com</a> within 48 hours of being notified as a winner.</p>
+        <p className="legal-p">We will only publish your first name and last initial. You may opt out by emailing <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>contact@winuprize.com</a> within 48 hours of being notified as a winner.</p>
       </section>
 
       <section id="refunds">
@@ -136,7 +136,7 @@ function TermsContent() {
 
       <section id="privacy">
         <h3 className="legal-h">14. Privacy</h3>
-        <p className="legal-p">Your privacy is important to us. Please review our <Link href="/privacy" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>Privacy Policy</Link> for information on how we collect, use, and protect your personal data.</p>
+        <p className="legal-p">Your privacy is important to us. Please review our <Link href="/privacy" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Privacy Policy</Link> for information on how we collect, use, and protect your personal data.</p>
       </section>
 
       <section id="changes">
@@ -151,7 +151,7 @@ function TermsContent() {
 
       <section id="contact">
         <h3 className="legal-h">17. Contact Us</h3>
-        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent-2)', textDecoration: 'underline' }}>contact@winuprize.com</a> or by post: YD PARTNERS LTD (trading as WinUPrize), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</p>
+        <p className="legal-p">If you have any questions, please contact us at <a href="mailto:contact@winuprize.com" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>contact@winuprize.com</a> or by post: YD PARTNERS LTD (trading as WinUPrize), 71-75 Shelton Street, Covent Garden, London WC2H 9JQ.</p>
       </section>
     </>
   );

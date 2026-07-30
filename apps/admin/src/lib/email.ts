@@ -131,11 +131,11 @@ function emailWrapper(content: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WinUPrize</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+<body style="font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0A0A0A; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #141312; border: 1px solid #2E2B26; border-radius: 0; overflow: hidden;">
     <!-- Header -->
-    <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUPrize</h1>
+    <div style="background-color: #141312; padding: 24px; text-align: center; border-bottom: 2px solid #C9A227;">
+      <h1 style="color: #F4F1EA; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">WinU<span style="color: #C9A227;">Prize</span></h1>
     </div>
 
     <!-- Content -->
@@ -144,14 +144,14 @@ function emailWrapper(content: string): string {
     </div>
 
     <!-- Footer -->
-    <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+    <div style="background-color: #050505; padding: 24px; text-align: center; border-top: 1px solid #2E2B26;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         WinUPrize Ltd. | Registered in England & Wales
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0;">
-        <a href="${BASE_URL}/terms" style="color: #6b7280;">Terms</a> ·
-        <a href="${BASE_URL}/privacy" style="color: #6b7280;">Privacy</a> ·
-        <a href="${BASE_URL}/contact" style="color: #6b7280;">Contact</a>
+      <p style="color: #9A958B; font-size: 12px; margin: 0;">
+        <a href="${BASE_URL}/terms" style="color: #9A958B;">Terms</a> ·
+        <a href="${BASE_URL}/privacy" style="color: #9A958B;">Privacy</a> ·
+        <a href="${BASE_URL}/contact" style="color: #9A958B;">Contact</a>
       </p>
     </div>
   </div>
@@ -184,39 +184,39 @@ export async function sendWinnerNotificationEmail(
 
   const html = emailWrapper(`
     <div style="text-align: center;">
-      <h2 style="color: #16a34a; font-size: 28px; margin: 0 0 16px;">CONGRATULATIONS!</h2>
-      <p style="color: #4b5563; font-size: 20px; line-height: 28px; margin: 0 0 24px;">
+      <h2 style="color: #C9A227; font-size: 28px; margin: 0 0 16px;">CONGRATULATIONS!</h2>
+      <p style="color: #CFCAC0; font-size: 20px; line-height: 28px; margin: 0 0 24px;">
         ${firstName}, you've WON!
       </p>
     </div>
 
-    <div style="background-color: #f0fdf4; border: 2px solid #16a34a; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Your winning ticket</p>
-      <p style="color: #16a34a; font-size: 48px; font-weight: bold; margin: 0 0 16px;">#${data.ticketNumber}</p>
+    <div style="background-color: #050505; border: 2px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Your winning ticket</p>
+      <p style="color: #C9A227; font-size: 48px; font-weight: bold; margin: 0 0 16px;">#${data.ticketNumber}</p>
 
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Prize</p>
-      <p style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${data.competitionTitle}</p>
-      <p style="color: #16a34a; font-size: 24px; font-weight: bold; margin: 0;">Value: ${formatPrice(data.prizeValue)}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Prize</p>
+      <p style="color: #F4F1EA; font-size: 20px; font-weight: 600; margin: 0 0 8px;">${data.competitionTitle}</p>
+      <p style="color: #C9A227; font-size: 24px; font-weight: bold; margin: 0;">Value: ${formatPrice(data.prizeValue)}</p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 16px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 16px; text-align: center;">
       Our team will be in touch shortly to arrange delivery of your prize!
     </p>
 
-    <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 16px; margin: 0 0 24px;">
-      <p style="color: #92400e; font-size: 14px; line-height: 20px; margin: 0; text-align: center;">
+    <div style="background-color: #050505; border: 1px solid #C9A227; border-radius: 0; padding: 16px; margin: 0 0 24px;">
+      <p style="color: #C9A227; font-size: 14px; line-height: 20px; margin: 0; text-align: center;">
         <strong>Important:</strong> Please claim your prize within <strong>14 days</strong> of this notification.
         After this period, the prize may be forfeited.
       </p>
     </div>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${winsUrl}" style="display: inline-block; background-color: #16a34a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${winsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         View My Wins
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       If you have any questions, please contact us at contact@winuprize.com
     </p>
   `);
@@ -243,30 +243,30 @@ export async function sendDrawCompleteNotificationEmail(
   const competitionsUrl = `${BASE_URL}/competitions`;
 
   const html = emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${firstName}, the draw for <strong>${data.competitionTitle}</strong> has been completed.
     </p>
 
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
-      <p style="color: #1a1a1a; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
+      <p style="color: #F4F1EA; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
 
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 4px;">Winner</p>
-      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0;">${data.winnerName}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 4px;">Winner</p>
+      <p style="color: #F4F1EA; font-size: 18px; font-weight: 600; margin: 0;">${data.winnerName}</p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       Unfortunately, your ticket wasn't selected this time. Better luck next time!
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Browse More Competitions
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       Thank you for participating!
     </p>
   `);
@@ -301,34 +301,34 @@ export async function sendCancellationNotificationEmail(
   const competitionsUrl = `${BASE_URL}/competitions`;
 
   const html = emailWrapper(`
-    <h2 style="color: #dc2626; font-size: 20px; margin: 0 0 16px;">Competition Cancelled</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #D9A08A; font-size: 20px; margin: 0 0 16px;">Competition Cancelled</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${firstName}, we're sorry to inform you that <strong>${data.competitionTitle}</strong> has been cancelled.
     </p>
 
-    <div style="background-color: #f0fdf4; border: 1px solid #16a34a; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #16a34a; font-size: 18px; font-weight: 600; margin: 0 0 8px;">
+    <div style="background-color: #050505; border: 1px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #C9A227; font-size: 18px; font-weight: 600; margin: 0 0 8px;">
         Full Refund Issued
       </p>
-      <p style="color: #4b5563; font-size: 14px; margin: 0;">
+      <p style="color: #CFCAC0; font-size: 14px; margin: 0;">
         Your payment of <strong>${formatPrice(data.refundAmount)}</strong> has been refunded to your original payment method.
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 8px 0 0;">
+      <p style="color: #9A958B; font-size: 12px; margin: 8px 0 0;">
         Please allow 5-10 business days for the refund to appear on your statement.
       </p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       We apologize for any inconvenience. Check out our other competitions below!
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Browse Competitions
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       Questions? Contact us at contact@winuprize.com
     </p>
   `);
@@ -355,34 +355,34 @@ export async function sendWinVoidedEmail({
   const contactUrl = `${BASE_URL}/contact`;
 
   const html = emailWrapper(`
-    <h2 style="color: #dc2626; font-size: 20px; margin: 0 0 16px;">Prize Claim Expired</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #D9A08A; font-size: 20px; margin: 0 0 16px;">Prize Claim Expired</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${firstName}, we regret to inform you that your prize claim for <strong>${competitionTitle}</strong> has expired.
     </p>
 
-    <div style="background-color: #fef2f2; border: 1px solid #dc2626; border-radius: 8px; padding: 24px; margin: 24px 0;">
-      <p style="color: #dc2626; font-size: 16px; font-weight: 600; margin: 0 0 8px;">
+    <div style="background-color: #050505; border: 1px solid #D9A08A; border-radius: 0; padding: 24px; margin: 24px 0;">
+      <p style="color: #D9A08A; font-size: 16px; font-weight: 600; margin: 0 0 8px;">
         What happened?
       </p>
-      <p style="color: #4b5563; font-size: 14px; line-height: 20px; margin: 0;">
+      <p style="color: #CFCAC0; font-size: 14px; line-height: 20px; margin: 0;">
         As per our terms and conditions, winners must claim their prize within 14 days of the draw.
         As we did not receive your claim within this period, your prize has been forfeited and
         a re-draw will be conducted to select a new winner.
       </p>
     </div>
 
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       If you believe this is an error, or if you experienced circumstances that prevented you from claiming,
       please contact us as soon as possible.
     </p>
 
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${contactUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${contactUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
         Contact Support
       </a>
     </div>
 
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       We're sorry this happened and hope to see you in future competitions.
     </p>
   `);
@@ -439,25 +439,25 @@ function marketingWrapper(content: string, token: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WinUPrize</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 20px;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-    <div style="background-color: #1a1a1a; padding: 24px; text-align: center;">
-      <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">WinUPrize</h1>
+<body style="font-family: 'Barlow', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0A0A0A; margin: 0; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: #141312; border: 1px solid #2E2B26; border-radius: 0; overflow: hidden;">
+    <div style="background-color: #141312; padding: 24px; text-align: center; border-bottom: 2px solid #C9A227;">
+      <h1 style="color: #F4F1EA; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">WinU<span style="color: #C9A227;">Prize</span></h1>
     </div>
     <div style="padding: 32px;">
       ${content}
     </div>
-    <div style="background-color: #f3f4f6; padding: 24px; text-align: center; border-top: 1px solid #e5e7eb;">
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+    <div style="background-color: #050505; padding: 24px; text-align: center; border-top: 1px solid #2E2B26;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         YD PARTNERS LTD (trading as WinUPrize) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         You're receiving this because you opted in to competition updates from WinUPrize.
       </p>
-      <p style="color: #6b7280; font-size: 12px; margin: 0;">
-        <a href="${url}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> ·
-        <a href="${BASE_URL}/settings" style="color: #6b7280;">Email preferences</a> ·
-        <a href="${BASE_URL}/privacy" style="color: #6b7280;">Privacy</a>
+      <p style="color: #9A958B; font-size: 12px; margin: 0;">
+        <a href="${url}" style="color: #9A958B; text-decoration: underline;">Unsubscribe</a> ·
+        <a href="${BASE_URL}/settings" style="color: #9A958B;">Email preferences</a> ·
+        <a href="${BASE_URL}/privacy" style="color: #9A958B;">Privacy</a>
       </p>
     </div>
   </div>
@@ -530,11 +530,11 @@ export async function sendNewCompetitionBlast(
     new Date(data.drawDate)
   );
   const card = `
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      ${data.mainImageUrl ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 6px; margin-bottom: 16px;">` : ''}
-      <p style="color: #1a1a1a; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
-      <p style="color: #16a34a; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
-      <p style="color: #6b7280; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      ${data.mainImageUrl ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 0; margin-bottom: 16px;">` : ''}
+      <p style="color: #F4F1EA; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
+      <p style="color: #C9A227; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
     </div>`;
 
   const messages = recipients.map((r) => ({
@@ -542,13 +542,13 @@ export async function sendNewCompetitionBlast(
     subject: `🎴 New drop: ${data.title}`,
     html: marketingWrapper(
       `
-    <h2 style="color: #1a1a1a; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">🎴 New drop is live${r.firstName ? `, ${escapeHtml(r.firstName)}` : ''}!</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
       A new competition just went live on WinUPrize. Get your tickets before it's gone.
     </p>
     ${card}
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${compUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">Enter now</a>
+      <a href="${compUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">Enter now</a>
     </div>`,
       r.unsubscribeToken
     ),
@@ -576,23 +576,23 @@ export async function sendDrawResultsBlast(
     to: p.email,
     subject: `Draw Complete: ${data.competitionTitle}`,
     html: emailWrapper(`
-    <h2 style="color: #1a1a1a; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Competition Complete</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(p.firstName)}, the draw for <strong>${title}</strong> has been completed.
     </p>
-    <div style="background-color: #f9fafb; border-radius: 8px; padding: 24px; margin: 24px 0; text-align: center;">
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
-      <p style="color: #1a1a1a; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
-      <p style="color: #6b7280; font-size: 14px; margin: 0 0 4px;">Winner</p>
-      <p style="color: #1a1a1a; font-size: 18px; font-weight: 600; margin: 0;">${winner}</p>
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 8px;">Winning Ticket</p>
+      <p style="color: #F4F1EA; font-size: 32px; font-weight: bold; margin: 0 0 16px;">#${data.winningTicketNumber}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0 0 4px;">Winner</p>
+      <p style="color: #F4F1EA; font-size: 18px; font-weight: 600; margin: 0;">${winner}</p>
     </div>
-    <p style="color: #4b5563; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px; text-align: center;">
       Your ticket wasn't selected this time. Better luck next time!
     </p>
     <div style="text-align: center; margin: 32px 0;">
-      <a href="${competitionsUrl}" style="display: inline-block; background-color: #1a1a1a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 6px; font-weight: 600;">Browse More Competitions</a>
+      <a href="${competitionsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">Browse More Competitions</a>
     </div>
-    <p style="color: #6b7280; font-size: 14px; text-align: center; margin: 24px 0 0;">Thank you for participating!</p>
+    <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">Thank you for participating!</p>
   `),
   }));
 

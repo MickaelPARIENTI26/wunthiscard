@@ -47,7 +47,7 @@ export function AddressSection({ addresses }: AddressSectionProps) {
             height: '48px',
             border: '1px solid rgba(244, 241, 234, 0.18)',
             borderRadius: 0,
-            background: 'var(--warn)',
+            background: 'var(--accent)',
             boxShadow: 'none',
             display: 'grid',
             placeItems: 'center',
@@ -59,8 +59,8 @@ export function AddressSection({ addresses }: AddressSectionProps) {
         <div>
           <div
             style={{
-              fontFamily: 'var(--mono)',
-              fontSize: '10px',
+              fontFamily: 'var(--display)',
+              fontSize: '12.5px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: 'var(--ink-faint)',
