@@ -2,8 +2,9 @@ import { ImageResponse } from 'next/og';
 
 /**
  * Dynamic Open Graph image for WinUPrize — fallback for pages without a custom OG image.
- * Rendered in the real brand ("DROP" aesthetic): cream background, thick black border,
- * neon-green highlight, black wordmark. No external logo/font fetch (self-contained).
+ * Rendered in the "Matchday Gold" identity: near-black field, antique-gold accent,
+ * squared geometry, skewed wedge + WinU/Prize wordmark. Self-contained (no external
+ * logo or font fetch), so it renders on the edge runtime.
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image
  */
 
@@ -24,48 +25,46 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f2f0ec',
-          border: '18px solid #0d0d0d',
+          backgroundColor: '#0A0A0A',
+          border: '10px solid #C9A227',
           position: 'relative',
           fontFamily: 'sans-serif',
         }}
       >
-        {/* Wordmark: WinU + green "Card" chip */}
-        <div style={{ display: 'flex', alignItems: 'center', fontSize: 104, fontWeight: 800, color: '#0d0d0d', letterSpacing: -4 }}>
-          <span style={{ display: 'flex' }}>WinU</span>
-          <span
+        {/* Wordmark: skewed gold wedge + WinU / Prize */}
+        <div style={{ display: 'flex', alignItems: 'center', fontSize: 104, fontWeight: 800, letterSpacing: 2 }}>
+          <div
             style={{
               display: 'flex',
-              backgroundColor: '#00c76a',
-              color: '#0d0d0d',
-              padding: '4px 22px',
-              borderRadius: 18,
-              marginLeft: 8,
+              width: 20,
+              height: 96,
+              backgroundColor: '#C9A227',
+              transform: 'skewX(-12deg)',
+              marginRight: 30,
             }}
-          >
-            Card
-          </span>
+          />
+          <span style={{ display: 'flex', color: '#F4F1EA' }}>WINU</span>
+          <span style={{ display: 'flex', color: '#C9A227' }}>PRIZE</span>
         </div>
 
         {/* Tagline */}
-        <div style={{ display: 'flex', fontSize: 38, color: '#333333', marginTop: 26, textAlign: 'center' }}>
+        <div style={{ display: 'flex', fontSize: 38, color: 'rgba(244,241,234,0.7)', marginTop: 26, textAlign: 'center' }}>
           Win the card of your dreams
         </div>
 
-        {/* Category pills */}
-        <div style={{ display: 'flex', gap: 16, marginTop: 40 }}>
-          {['Pokemon', 'One Piece', 'Sports', 'Memorabilia'].map((c) => (
+        {/* Category pills — squared, outlined */}
+        <div style={{ display: 'flex', gap: 16, marginTop: 44 }}>
+          {['Pokémon', 'One Piece', 'Sports', 'Memorabilia'].map((c) => (
             <div
               key={c}
               style={{
                 display: 'flex',
                 padding: '10px 24px',
-                border: '2px solid #0d0d0d',
-                borderRadius: 999,
-                backgroundColor: '#ffffff',
-                color: '#0d0d0d',
+                border: '1px solid rgba(244,241,234,0.28)',
+                color: 'rgba(244,241,234,0.66)',
                 fontSize: 24,
                 fontWeight: 600,
+                letterSpacing: 2,
               }}
             >
               {c}
@@ -73,7 +72,7 @@ export default async function Image() {
           ))}
         </div>
 
-        {/* Bottom bar */}
+        {/* Bottom gold band */}
         <div
           style={{
             position: 'absolute',
@@ -84,11 +83,11 @@ export default async function Image() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#0d0d0d',
+            backgroundColor: '#C9A227',
           }}
         >
-          <span style={{ display: 'flex', fontSize: 26, color: '#00c76a', letterSpacing: 2, fontWeight: 700 }}>
-            winuprize.com · 18+
+          <span style={{ display: 'flex', fontSize: 26, color: '#0A0A0A', letterSpacing: 3, fontWeight: 700 }}>
+            WINUPRIZE.COM · INDEPENDENT DRAWS · 18+
           </span>
         </div>
       </div>

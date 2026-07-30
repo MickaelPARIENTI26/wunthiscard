@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Reveal } from '@/components/common/reveal';
 
 const steps = [
   {
@@ -60,9 +61,11 @@ export function HomeHowItWorks() {
             gap: 'clamp(14px, 1.8vw, 22px)',
           }}
         >
-          {steps.map((s) => (
-            <article
+          {steps.map((s, i) => (
+            <Reveal
               key={s.n}
+              as="article"
+              index={i}
               className="wup-panel wup-panel--accent-top wup-panel--hover"
               style={{ background: 'var(--bg)', padding: 'clamp(18px, 2vw, 26px)' }}
             >
@@ -82,7 +85,7 @@ export function HomeHowItWorks() {
                   </li>
                 ))}
               </ul>
-            </article>
+            </Reveal>
           ))}
         </div>
 

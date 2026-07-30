@@ -2,47 +2,43 @@
 
 import Link from 'next/link';
 import { Home, ArrowLeft, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-16">
-      <div className="text-center">
-        {/* 404 Visual */}
-        <div className="mb-8">
-          <h1 className="text-9xl font-bold text-primary/20">404</h1>
+    <main className="wup-hero flex flex-col items-center justify-center px-4" style={{ minHeight: '70vh', padding: 'clamp(50px, 8vw, 110px) 20px' }}>
+      <div className="wup-hero__rays" aria-hidden="true" />
+
+      <div className="relative text-center" style={{ maxWidth: '620px' }}>
+        <div className="wup-num" style={{ fontSize: 'clamp(90px, 18vw, 200px)', color: 'rgba(201, 162, 39, .5)', lineHeight: .9 }}>
+          404
         </div>
 
-        {/* Error Message */}
-        <h2 className="mb-4 text-2xl font-bold sm:text-3xl">Page Not Found</h2>
-        <p className="mb-8 max-w-md text-muted-foreground">
-          Sorry, we couldn&apos;t find the page you&apos;re looking for. It may have been moved,
-          deleted, or the URL might be incorrect.
+        <h1 className="wup-h2" style={{ fontSize: 'clamp(26px, 4vw, 42px)', margin: '14px 0 14px' }}>
+          Page not found
+        </h1>
+        <p className="wup-body" style={{ margin: '0 auto 28px', maxWidth: '460px' }}>
+          Sorry, we couldn&apos;t find the page you&apos;re looking for. It may have been
+          moved, deleted, or the URL might be incorrect.
         </p>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Button asChild size="lg">
-            <Link href="/">
-              <Home className="mr-2 h-4 w-4" />
-              Go Home
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg">
-            <Link href="/competitions">
-              <Search className="mr-2 h-4 w-4" />
-              Browse Competitions
-            </Link>
-          </Button>
+        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link href="/" className="wup-btn wup-btn--primary">
+            <Home className="h-4 w-4" />
+            Go Home
+          </Link>
+          <Link href="/competitions" className="wup-btn wup-btn--secondary">
+            <Search className="h-4 w-4" />
+            Browse Competitions
+          </Link>
         </div>
 
-        {/* Back Link */}
-        <div className="mt-8">
+        <div style={{ marginTop: '26px' }}>
           <button
             onClick={() => window.history.back()}
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
+            className="wup-btn wup-btn--link inline-flex items-center"
+            style={{ gap: '6px' }}
           >
-            <ArrowLeft className="mr-1 h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" />
             Go back to previous page
           </button>
         </div>

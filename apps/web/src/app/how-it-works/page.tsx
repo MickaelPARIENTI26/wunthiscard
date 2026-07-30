@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Reveal } from '@/components/common/reveal';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { HomeCTABand } from '@/components/home/home-cta-band';
 
@@ -89,8 +90,8 @@ export default function HowItWorksPage() {
       {/* Full-width horizontal step blocks with a gold left edge */}
       <section style={{ padding: 'clamp(30px, 4.4vw, 66px) clamp(14px, 3vw, 34px)' }}>
         <div className="mx-auto flex flex-col" style={{ maxWidth: '1400px', gap: 'clamp(14px, 1.8vw, 22px)' }}>
-          {steps.map((s) => (
-            <article key={s.n} className="hiw-block">
+          {steps.map((s, i) => (
+            <Reveal key={s.n} as="article" index={i} className="hiw-block">
               <div className="hiw-block__num wup-num" aria-hidden="true">{s.n}</div>
               <div style={{ minWidth: 0 }}>
                 <div className="wup-meta" style={{ marginBottom: '8px' }}>
@@ -109,7 +110,7 @@ export default function HowItWorksPage() {
                   ))}
                 </ul>
               </div>
-            </article>
+            </Reveal>
           ))}
         </div>
       </section>

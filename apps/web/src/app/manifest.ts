@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
       'Enter to win graded collectible cards (Pokemon, One Piece, sports) and memorabilia. UK-based prize competitions with a free entry route.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f2f0ec',
-    theme_color: '#f2f0ec', // cream — matches the site background / layout theme-color
+    background_color: '#0A0A0A',
+    theme_color: '#0A0A0A', // ink — matches the site background / layout theme-color
     orientation: 'portrait-primary',
     scope: '/',
     lang: 'en-GB',
