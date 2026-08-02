@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { User, Mail, Shield, Calendar, Lock, Loader2, Check } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
