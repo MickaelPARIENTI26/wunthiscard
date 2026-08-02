@@ -124,8 +124,10 @@ export function ComingSoonOverlay() {
                       key={card.src}
                       className="wup-well"
                       style={{
-                        height: 'clamp(190px, 32vh, 330px)',
-                        aspectRatio: '3 / 4',
+                        height: 'clamp(200px, 34vh, 340px)',
+                        // Graded-slab proportions; contain below guarantees the
+                        // full card is visible top to bottom, never cropped.
+                        aspectRatio: '5 / 8',
                         border: '1px solid var(--line)',
                         flex: 'none',
                       }}
@@ -135,7 +137,7 @@ export function ComingSoonOverlay() {
                         alt={hidden ? '' : card.alt}
                         fill
                         sizes="260px"
-                        style={{ objectFit: 'cover' }}
+                        style={{ objectFit: 'contain' }}
                         priority={!hidden && i < 4}
                       />
                       <span className="wup-well__shimmer" aria-hidden="true" style={{ animationDelay: `${i * 0.7}s` }} />
