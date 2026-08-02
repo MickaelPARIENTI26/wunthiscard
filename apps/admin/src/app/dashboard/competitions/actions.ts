@@ -478,6 +478,40 @@ export async function updateCompetitionStatus(id: string, status: CompetitionSta
     } catch (err) {
       console.error('Failed to send new-competition blast:', err);
     }
+
+    // Pre-launch waiting list: subscribers who asked to be told when we launch.
+    // Claim the batch BEFORE sending (stamp notifiedAt on the exact ids we
+    // fetched) so a concurrent/repeated activation can never double-email them;
+    // a send failure after the claim just means those addresses miss out rather
+    // than getting spammed twice.
+    try {
+      const pending = await prisma.waitlistSubscriber.findMany({
+        where: { notifiedAt: null },
+        select: { id: true, email: true },
+      });
+      if (pending.length > 0) {
+        await prisma.waitlistSubscriber.updateMany({
+          where: { id: { in: pending.map((p) => p.id) } },
+          data: { notifiedAt: new Date() },
+        });
+        const { sendWaitlistLaunchBlast } = await import('@/lib/email');
+        const { sent, total } = await sendWaitlistLaunchBlast(
+          pending.map((p) => p.email),
+          {
+            title: competition.title,
+            slug: competition.slug,
+            prizeValue: Number(competition.prizeValue),
+            ticketPrice: Number(competition.ticketPrice),
+            isFree: competition.isFree,
+            mainImageUrl: competition.mainImageUrl,
+            drawDate: competition.drawDate ?? new Date(),
+          }
+        );
+        console.log(`Waitlist launch blast for ${id}: sent ${sent}/${total}`);
+      }
+    } catch (err) {
+      console.error('Failed to send waitlist launch blast:', err);
+    }
   }
 
   revalidatePath('/dashboard/competitions');

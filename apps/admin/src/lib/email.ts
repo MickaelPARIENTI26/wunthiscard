@@ -558,6 +558,55 @@ export async function sendNewCompetitionBlast(
   return sendBatch(messages);
 }
 
+// --- Waiting-list launch announcement (one-time) ---------------------------
+/**
+ * One-time launch email to pre-launch waiting-list signups (WaitlistSubscriber
+ * rows with notifiedAt = null). These subscribers explicitly asked to be told
+ * when we launch; the email says so and gives a contact for removal. The
+ * caller stamps notifiedAt after sending so nobody is ever emailed twice.
+ */
+export async function sendWaitlistLaunchBlast(
+  emails: string[],
+  data: CompetitionBlastData
+): Promise<{ sent: number; total: number }> {
+  const compUrl = `${BASE_URL}/competitions/${data.slug}`;
+  const prize = formatPrice(data.prizeValue);
+  const priceLine = data.isFree ? 'Free entry' : `Tickets from ${formatPrice(data.ticketPrice)}`;
+  const drawFormatted = new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short' }).format(
+    new Date(data.drawDate)
+  );
+
+  const card = `
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      ${data.mainImageUrl ? `<img src="${escapeHtml(data.mainImageUrl)}" alt="${escapeHtml(data.title)}" style="max-width: 100%; height: auto; border-radius: 0; margin-bottom: 16px;">` : ''}
+      <p style="color: #F4F1EA; font-size: 20px; font-weight: 700; margin: 0 0 8px;">${escapeHtml(data.title)}</p>
+      <p style="color: #C9A227; font-size: 16px; font-weight: 600; margin: 0 0 4px;">Prize value ${prize}</p>
+      <p style="color: #9A958B; font-size: 14px; margin: 0;">${priceLine} · Draw ${drawFormatted}</p>
+    </div>`;
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">🏆 We're live!</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 8px;">
+      You joined the WinUPrize waiting list — and the wait is over. Our first
+      competition is live right now. Every entry is a skill-based UK prize
+      competition with an independent draw and a free postal entry route.
+    </p>
+    ${card}
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${compUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">Enter the first drop</a>
+    </div>
+    <p style="color: #9A958B; font-size: 12px; line-height: 18px; margin: 24px 0 0;">
+      This is the one-time launch announcement you signed up for on the WinUPrize
+      waiting list — we won't email this address again unless you create an
+      account. Didn't sign up, or want removing? Just reply or email
+      contact@winuprize.com.
+    </p>`);
+
+  return sendBatch(
+    emails.map((to) => ({ to, subject: "🏆 WinUPrize is live — our first drop is open", html }))
+  );
+}
+
 // --- Draw results to participants (transactional) -------------------------
 export interface DrawResultsRecipient {
   email: string;

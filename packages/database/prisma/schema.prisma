@@ -480,3 +480,14 @@ model DrawLog {
   @@index([drawnById])
   @@index([createdAt])
 }
+
+// Pre-launch waiting list: email-only signups from the coming-soon gate.
+// notifiedAt is stamped when the one-time launch announcement is sent.
+model WaitlistSubscriber {
+  id         String    @id @default(cuid())
+  email      String    @unique
+  createdAt  DateTime  @default(now())
+  notifiedAt DateTime?
+
+  @@map("waitlist_subscribers")
+}

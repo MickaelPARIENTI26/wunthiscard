@@ -1,73 +1,19 @@
-import { Suspense } from 'react';
-import { prisma } from '@winucard/database';
-import { HomeHero } from '@/components/home/home-hero';
-import { TrustStrip } from '@/components/home/trust-strip';
-import { HomeLiveComps } from '@/components/home/home-live-comps';
-import { HomeHowItWorks } from '@/components/home/home-how-it-works';
-import { HomeFAQPreview } from '@/components/home/home-faq-preview';
-import { HomeCTABand } from '@/components/home/home-cta-band';
+import { HomeScreen } from '@/components/home/home-screen';
+import { ComingSoonOverlay } from '@/components/home/coming-soon-overlay';
 
 export const revalidate = 60;
 
-async function getLiveCompetitions() {
-  const competitions = await prisma.competition.findMany({
-    where: { status: 'ACTIVE', drawDate: { gt: new Date() } },
-    orderBy: { drawDate: 'asc' },
-    take: 6,
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      mainImageUrl: true,
-      category: true,
-      prizeValue: true,
-      ticketPrice: true,
-      totalTickets: true,
-      drawDate: true,
-      status: true,
-      _count: {
-        select: {
-          tickets: { where: { status: { in: ['SOLD', 'FREE_ENTRY'] } } },
-        },
-      },
-    },
-  });
+export default function HomePage() {
+  // Pre-launch gate: set COMING_SOON_MODE=on (Vercel env) to layer the
+  // non-dismissable waiting-list overlay over the homepage. Flip it off (or
+  // remove it) at launch — no code change needed. /test always renders the
+  // ungated homepage for parallel testing while the gate is up.
+  const comingSoon = process.env.COMING_SOON_MODE === 'on';
 
-  return competitions.map((comp) => ({
-    id: comp.id,
-    slug: comp.slug,
-    title: comp.title,
-    mainImageUrl: comp.mainImageUrl,
-    category: comp.category,
-    prizeValue: Number(comp.prizeValue),
-    ticketPrice: Number(comp.ticketPrice),
-    totalTickets: comp.totalTickets,
-    soldTickets: comp._count.tickets,
-    drawDate: comp.drawDate,
-    status: comp.status,
-  }));
-}
-
-async function HomeContent() {
-  const competitions = await getLiveCompetitions();
   return (
     <>
-      <HomeHero competitions={competitions} />
-      <TrustStrip />
-      <HomeLiveComps competitions={competitions} />
+      {comingSoon && <ComingSoonOverlay />}
+      <HomeScreen />
     </>
-  );
-}
-
-export default function HomePage() {
-  return (
-    <main>
-      <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
-        <HomeContent />
-      </Suspense>
-      <HomeHowItWorks />
-      <HomeFAQPreview />
-      <HomeCTABand />
-    </main>
   );
 }

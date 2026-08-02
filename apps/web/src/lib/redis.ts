@@ -353,6 +353,10 @@ export const rateLimits = {
 
   // Global unauthenticated: 30 per minute (used by the public ticket-status poll)
   globalUnauth: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:global-unauth' }),
+
+  // Coming-soon waiting list: 5 signups per hour per IP (unique-email upsert
+  // dedupes anyway; this just blunts scripted spam).
+  waitlist: createRateLimiter({ requests: 5, window: '1 h', prefix: 'ratelimit:waitlist' }),
 };
 
 // Ticket reservation lock constants
