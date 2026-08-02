@@ -76,10 +76,10 @@ export function ComingSoonOverlay() {
       >
         <div
           className="wup-panel wup-panel--accent-top wup-in-slam text-center"
-          style={{ width: '100%', maxWidth: '820px', padding: 'clamp(24px, 4vw, 44px)' }}
+          style={{ width: '100%', maxWidth: '860px', padding: 'clamp(18px, 2.6vw, 30px)' }}
         >
           {/* Wordmark */}
-          <div className="flex items-center justify-center" style={{ gap: '10px', marginBottom: '18px' }}>
+          <div className="flex items-center justify-center" style={{ gap: '10px', marginBottom: '12px' }}>
             <span className="wup-wedge" aria-hidden="true" />
             <span
               style={{
@@ -96,43 +96,54 @@ export function ComingSoonOverlay() {
             </span>
           </div>
 
-          <p className="wup-eyebrow" style={{ margin: '0 0 12px' }}>The UK&apos;s premium card competitions</p>
+          <p className="wup-eyebrow" style={{ fontSize: '13px', margin: '0 0 8px' }}>The UK&apos;s premium card competitions</p>
 
-          <h1 id="coming-soon-title" className="wup-h2" style={{ fontSize: 'clamp(34px, 6vw, 58px)', margin: '0 0 12px' }}>
+          <h1 id="coming-soon-title" className="wup-h2" style={{ fontSize: 'clamp(30px, 4.6vw, 48px)', margin: '0 0 10px' }}>
             Coming <span style={{ color: 'var(--accent)' }}>soon.</span>
           </h1>
 
-          <p className="wup-body-sm" style={{ margin: '0 auto 24px', maxWidth: '520px' }}>
+          <p className="wup-body-sm" style={{ fontSize: '14.5px', margin: '0 auto 18px', maxWidth: '520px' }}>
             Graded grails, independent draws, free postal entry. Join the waiting
             list and be first in when our launch drops go live.
           </p>
 
-          {/* The six launch cards */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 'clamp(8px, 1.4vw, 14px)',
-              marginBottom: '26px',
-            }}
-          >
-            {CARDS.map((card, i) => (
-              <div
-                key={card.src}
-                className="wup-well"
-                style={{ aspectRatio: '3 / 4', border: '1px solid var(--line)' }}
-              >
-                <Image
-                  src={card.src}
-                  alt={card.alt}
-                  fill
-                  sizes="(max-width: 820px) 33vw, 260px"
-                  style={{ objectFit: 'cover' }}
-                  priority={i < 3}
-                />
-                <span className="wup-well__shimmer" aria-hidden="true" style={{ animationDelay: `${i * 0.7}s` }} />
-              </div>
-            ))}
+          {/* The six launch cards — one auto-rotating line (marquee), ~3 in view.
+              Same duplicate-track mechanic as the site ticker; pauses under
+              prefers-reduced-motion via the global wup-marquee kill rule. */}
+          <div className="wup-marquee" style={{ margin: '0 0 20px' }}>
+            <div className="wup-marquee__track" style={{ animationDuration: '28s' }}>
+              {[false, true].map((hidden) => (
+                <div
+                  key={hidden ? 'dup' : 'main'}
+                  className="wup-marquee__set"
+                  aria-hidden={hidden || undefined}
+                  style={{ gap: 'clamp(8px, 1.4vw, 14px)', paddingRight: 'clamp(8px, 1.4vw, 14px)' }}
+                >
+                  {CARDS.map((card, i) => (
+                    <div
+                      key={card.src}
+                      className="wup-well"
+                      style={{
+                        height: 'clamp(190px, 32vh, 330px)',
+                        aspectRatio: '3 / 4',
+                        border: '1px solid var(--line)',
+                        flex: 'none',
+                      }}
+                    >
+                      <Image
+                        src={card.src}
+                        alt={hidden ? '' : card.alt}
+                        fill
+                        sizes="260px"
+                        style={{ objectFit: 'cover' }}
+                        priority={!hidden && i < 4}
+                      />
+                      <span className="wup-well__shimmer" aria-hidden="true" style={{ animationDelay: `${i * 0.7}s` }} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Waiting list form */}
@@ -196,7 +207,7 @@ export function ComingSoonOverlay() {
             </p>
           )}
 
-          <p className="wup-fine" style={{ margin: '16px 0 0' }}>
+          <p className="wup-fine" style={{ margin: '12px 0 0' }}>
             One email at launch — no spam. 18+ · UK residents only.
           </p>
         </div>
