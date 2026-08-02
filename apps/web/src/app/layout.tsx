@@ -108,13 +108,6 @@ export const metadata: Metadata = {
     apple: [
       { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/icons/safari-pinned-tab.svg',
-        color: '#C9A227',
-      },
-    ],
   },
   manifest: '/manifest.webmanifest',
   // NOTE: no site-wide canonical here — a static canonical in the root layout is
