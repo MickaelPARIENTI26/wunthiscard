@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { SafeHtml } from '@/components/common/safe-html';
 import { LegalPage } from '@/components/legal/legal-page';
+import { DEFAULT_BONUS_TIERS } from '@winucard/shared/constants';
 
 export const metadata: Metadata = {
   title: 'Competition Rules',
@@ -281,26 +282,13 @@ function PlaceholderCompetitionRulesContent() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>10</td>
-                <td>+1 free</td>
-                <td>11</td>
-              </tr>
-              <tr>
-                <td>15</td>
-                <td>+2 free</td>
-                <td>17</td>
-              </tr>
-              <tr>
-                <td>20</td>
-                <td>+3 free</td>
-                <td>23</td>
-              </tr>
-              <tr>
-                <td>50</td>
-                <td>+5 free</td>
-                <td>55</td>
-              </tr>
+              {DEFAULT_BONUS_TIERS.map((tier) => (
+                <tr key={tier.ticketsBought}>
+                  <td>{tier.ticketsBought}</td>
+                  <td>+{tier.bonusTickets} free</td>
+                  <td>{tier.ticketsBought + tier.bonusTickets}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -309,8 +297,10 @@ function PlaceholderCompetitionRulesContent() {
             Bonus tickets are automatically assigned random available numbers
           </li>
           <li>
-            The total number of tickets (purchased + bonus) cannot exceed 50 per
-            user per competition
+            Where a competition sets a per-person limit, purchased and bonus
+            tickets both count towards it. Many competitions have no per-person
+            limit — the limit that applies is always shown on the competition
+            page
           </li>
           <li>Bonus tier thresholds may vary and are subject to change</li>
         </ul>

@@ -49,7 +49,7 @@ const pillars = [
   {
     mark: '03 / Access',
     title: 'Free postal entry, always.',
-    body: "UK law requires a free route. We don't just comply — we make it easy: a handwritten postcard, one entry per postcard (send as many as you like), same odds as paid entries. If you can't pay, you can still play.",
+    body: "UK law requires a free route. We don't just comply — we make it easy: write your details on a postcard or piece of paper and post it to us in an envelope, one entry per envelope (send as many as you like), same odds as paid entries. If you can't pay, you can still play.",
     foot: { text: 'Full rules →', href: '/competition-rules', label: 'Comp Rules' },
   },
 ];

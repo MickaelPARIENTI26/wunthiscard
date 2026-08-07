@@ -552,13 +552,13 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               {/* Right: Free postal entry card (green) */}
               <div className="postal-card">
                 <div className="postal-kicker">Free postal entry</div>
-                <p>Send a handwritten postcard with your name, email, and answer to the skill question:</p>
+                <p>Post your full name, email, date of birth, this competition&apos;s name and your answer to the skill question, in an envelope to:</p>
                 <div className="postal-addr">
                   WinUPrize — Free Entry<br/>
                   71-75 Shelton Street, Covent Garden<br/>
                   London WC2H 9JQ
                 </div>
-                <span className="postal-note">One entry per postcard (multiple permitted) · Full <Link href="/competition-rules">rules</Link></span>
+                <span className="postal-note">One entry per envelope (multiple permitted) · Full <Link href="/competition-rules">rules</Link></span>
               </div>
             </div>
           </div>

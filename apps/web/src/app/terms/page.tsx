@@ -98,7 +98,7 @@ function TermsContent() {
 
       <section id="free-entry">
         <h3 className="legal-h">7. Free Entry Route</h3>
-        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: WinUPrize Free Entry, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ. One entry per envelope. No purchase necessary.</p>
+        <p className="legal-p">A free entry route is available for all Competitions via postal entry. Write your full name, email address, date of birth, the Competition name, your preferred ticket number(s), and your answer to the skill question on a postcard or piece of paper. Post it to: WinUPrize Free Entry, 71-75 Shelton Street, Covent Garden, London WC2H 9JQ. One entry per envelope. No purchase necessary.</p>
         <p className="legal-p">Free entries are treated equally to paid entries in the draw. Postal entries must be received before the Competition closing date.</p>
       </section>
 

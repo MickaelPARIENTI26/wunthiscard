@@ -85,7 +85,8 @@ export default function ContactPage() {
               <p className="wup-eyebrow" style={{ fontSize: '13px', margin: '0 0 8px' }}>Free postal entry</p>
               <p className="wup-body-sm" style={{ margin: '0 0 10px' }}>
                 Every competition has a free entry route by post — same odds as a paid
-                ticket. Send a handwritten postcard to the address above.
+                ticket. Post your details in an envelope to the address above —
+                one entry per envelope.
               </p>
               <Link href="/competition-rules" className="wup-btn wup-btn--link" style={{ fontSize: '15px' }}>
                 Full rules →
