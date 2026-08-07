@@ -36,7 +36,7 @@ export function FixtureHeader() {
       style={{ gap: '10px', padding: '0 0 10px', borderBottom: '2px solid var(--accent)' }}
     >
       <span className="wup-thead" style={{ flex: 'none', width: '34px' }}>#</span>
-      <span className="wup-thead" style={{ flex: 'none', width: 'clamp(44px, 5vw, 58px)' }} aria-hidden="true" />
+      <span className="wup-thead" style={{ flex: 'none', width: 'clamp(74px, 8vw, 96px)' }} aria-hidden="true" />
       <span className="wup-thead" style={{ flex: '1 1 160px', minWidth: '120px', paddingLeft: '4px' }}>Prize</span>
       <span className="wup-thead" style={{ flex: 'none', width: 'clamp(80px, 10vw, 120px)', textAlign: 'right' }}>Ticket</span>
       <span className="wup-thead fixture-col-sold" style={{ flex: 'none', width: 'clamp(90px, 12vw, 150px)' }}>Sold</span>
@@ -74,8 +74,8 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
             src={c.mainImageUrl}
             alt=""
             fill
-            sizes="58px"
-            style={{ objectFit: 'cover', opacity: finished || soldOut ? 0.4 : 1 }}
+            sizes="96px"
+            style={{ objectFit: 'contain', opacity: finished || soldOut ? 0.4 : 1 }}
           />
         )}
       </span>

@@ -190,7 +190,7 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
                 className="flex items-center"
                 style={{ gap: '10px', padding: '0 0 10px', borderBottom: '2px solid var(--accent)' }}
               >
-                <span className="wup-thead" style={{ flex: 'none', width: '58px' }} aria-hidden="true" />
+                <span className="wup-thead" style={{ flex: 'none', width: 'clamp(74px, 8vw, 96px)' }} aria-hidden="true" />
                 <span className="wup-thead" style={{ flex: '1 1 200px', minWidth: '140px' }}>Prize</span>
                 <span className="wup-thead winners-col-who" style={{ flex: 'none', width: 'clamp(120px, 16vw, 200px)' }}>Winner</span>
                 <span className="wup-thead" style={{ flex: 'none', width: 'clamp(70px, 9vw, 110px)', textAlign: 'right' }}>Ticket</span>
@@ -199,14 +199,14 @@ export default async function WinnersPage({ searchParams }: WinnersPageProps) {
 
               {winners.map((win) => (
                 <div key={win.id} className="wup-row" style={{ cursor: 'default' }}>
-                  <span className="wup-row__thumb" style={{ width: '58px' }}>
+                  <span className="wup-row__thumb">
                     {win.competition.mainImageUrl && (
                       <Image
                         src={win.competition.mainImageUrl}
                         alt=""
                         fill
-                        sizes="58px"
-                        style={{ objectFit: 'cover' }}
+                        sizes="96px"
+                        style={{ objectFit: 'contain' }}
                       />
                     )}
                   </span>

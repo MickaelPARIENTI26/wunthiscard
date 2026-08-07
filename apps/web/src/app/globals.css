@@ -1430,8 +1430,8 @@ a { transition: color 0.2s; }
 
 /* ---- Fixture row — the core list primitive ---- */
 .wup-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: clamp(11px, 1.4vw, 15px) 0;
+  display: flex; align-items: center; gap: clamp(10px, 1.4vw, 16px);
+  padding: clamp(14px, 1.8vw, 20px) 0;
   border-bottom: 1px solid var(--line);
   cursor: pointer;
   transition: background 0.25s, transform 0.25s;
@@ -1446,7 +1446,9 @@ a { transition: color 0.2s; }
   color: rgba(244, 241, 234, 0.4);
 }
 .wup-row__thumb {
-  flex: none; width: clamp(44px, 5vw, 58px); aspect-ratio: 1 / 1;
+  /* Portrait (cards are taller than wide) and big enough to actually read —
+     the old 44-58px square cropped every prize into an unrecognisable chip. */
+  flex: none; width: clamp(74px, 8vw, 96px); aspect-ratio: 5 / 7;
   background: var(--bg-3); border: 1px solid var(--line);
   overflow: hidden; position: relative;
 }
