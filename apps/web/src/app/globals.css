@@ -820,6 +820,15 @@ input:focus, textarea:focus, select:focus,
   width: 74px; height: 54px; border: 1px solid var(--accent); background: var(--bg-3);
   text-align: center; font-family: var(--display); font-size: 28px; font-weight: 700;
   color: var(--ink); outline: none; border-radius: 0; font-variant-numeric: tabular-nums;
+  /* Hide the native number spinners — they sit inside the field and push the
+     value off-centre; the −/+ buttons already cover stepping. */
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.qty-stepper input::-webkit-outer-spin-button,
+.qty-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .qty-custom-max { font-size: 13px; color: var(--ink-faint); }
 
