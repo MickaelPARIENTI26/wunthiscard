@@ -9,7 +9,7 @@ const MESSAGES = [
   'Free postal entry route available',
   'Free insured UK delivery',
   'Graded & authenticated prizes',
-  '18+ UK residents only',
+  '18+ only',
 ];
 
 function MessageSet({ ariaHidden = false }: { ariaHidden?: boolean }) {

@@ -210,7 +210,7 @@ export function ComingSoonOverlay() {
           )}
 
           <p className="wup-fine" style={{ margin: '12px 0 0' }}>
-            One email at launch — no spam. 18+ · UK residents only.
+            One email at launch — no spam. 18+ only.
           </p>
         </div>
       </div>

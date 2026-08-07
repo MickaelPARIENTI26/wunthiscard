@@ -30,7 +30,7 @@ const companyRows: [string, string][] = [
   ['Registered address', '71-75 Shelton Street, Covent Garden, London WC2H 9JQ'],
   ['Email', 'contact@winuprize.com'],
   ['Draw partner', 'RandomDraws.com (independent)'],
-  ['Eligibility', '18+, UK residents only'],
+  ['Eligibility', '18+'],
 ];
 
 const pillars = [
