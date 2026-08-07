@@ -52,7 +52,7 @@ function TikTokIcon({ className }: { className?: string }) {
 
 const socialLinks = [
   {
-    href: 'https://www.instagram.com/winuprize/',
+    href: 'https://www.instagram.com/winuprize.official/',
     label: 'Instagram',
     icon: Instagram,
   },

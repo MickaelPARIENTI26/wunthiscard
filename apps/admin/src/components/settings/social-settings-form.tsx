@@ -41,7 +41,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialInstagram"
               type="url"
               defaultValue={settings.socialInstagram ?? ''}
-              placeholder="https://instagram.com/winuprize"
+              placeholder="https://instagram.com/winuprize.official"
             />
           </div>
 

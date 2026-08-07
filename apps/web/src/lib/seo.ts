@@ -17,7 +17,7 @@ export const siteConfig = {
   ogImage: DEFAULT_IMAGE,
   links: {
     twitter: 'https://twitter.com/winuprize',
-    instagram: 'https://instagram.com/winuprize',
+    instagram: 'https://instagram.com/winuprize.official',
     facebook: 'https://facebook.com/winuprize',
   },
   locale: 'en_GB',
