@@ -4,7 +4,7 @@ import { ContactForm } from './contact-form';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
-  description: 'Get in touch with the WinUPrize team. We reply to every message within 24 hours.',
+  description: 'Get in touch with the WinUPrize team. We reply to every message within 1–2 working days.',
   openGraph: {
     title: 'Contact Us | WinUPrize',
     description: 'Talk to a human. Our team replies from London — not a call centre.',
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const infoRows = [
   { label: 'Email', value: 'contact@winuprize.com', meta: 'General enquiries + support' },
   { label: 'Postal / HQ', value: 'YD PARTNERS LTD (WinUPrize)\n71-75 Shelton Street\nCovent Garden\nLondon WC2H 9JQ', meta: 'Also the address for free postal entries.' },
-  { label: 'Response', value: 'Within 24h (Mon–Fri)', meta: 'We triage by urgency — prize/win issues first.' },
+  { label: 'Response', value: '1–2 working days', meta: 'Mon–Fri. We triage by urgency — prize/win issues first.' },
 ];
 
 const socials = [

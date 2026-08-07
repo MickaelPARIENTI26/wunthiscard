@@ -1,7 +1,7 @@
 const items = [
   { icon: '🔒', label: 'Secure Payments' },
   { icon: '🎲', label: 'Independent Draws' },
-  { icon: '🚚', label: 'Free Delivery' },
+  { icon: '🚚', label: 'Free UK Delivery' },
   { icon: '✉️', label: 'Free Postal Entry' },
   { icon: '✓', label: 'Graded & Authenticated' },
 ];

@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "webmain5",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd /Users/elinoreparienti/Documents/winthiscard/apps/web && exec npx next dev -p 3005"],
+      "port": 3005
+    },
+    {
+      "name": "predix",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "cd /Users/elinoreparienti/Documents/predix && exec npx next dev -p 3130"],
+      "port": 3130
+    }
+  ]
+}

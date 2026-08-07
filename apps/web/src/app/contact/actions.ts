@@ -163,7 +163,7 @@ export async function submitContactForm(
     return {
       success: true,
       message:
-        'Thank you for your message! We will get back to you as soon as possible.',
+        'Thank you for your message! We will get back to you within 1–2 working days.',
     };
   } catch (error) {
     console.error('Failed to save contact message:', error);

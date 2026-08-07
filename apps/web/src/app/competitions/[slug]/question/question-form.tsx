@@ -33,7 +33,7 @@ export function QuestionForm({
     blockUntil?: number;
   } | null>(null);
   const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
-  const [_pendingQuantity, setPendingQuantity] = useState<number>(0);
+  const [pendingQuantity, setPendingQuantity] = useState<number>(0);
   const [reservation, setReservation] = useState<{ expiresAt: number } | null>(null);
   const [countdown, setCountdown] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -125,7 +125,9 @@ export function QuestionForm({
           // Store that they passed in sessionStorage before redirecting
           sessionStorage.setItem(`qcm_passed_${competitionId}`, 'true');
           // Already passed - redirect directly to checkout
-          router.push(`/competitions/${competitionSlug}/checkout`);
+          router.push(
+            `/competitions/${competitionSlug}/checkout${pendingQuantity ? `?tickets=${pendingQuantity}` : ''}`
+          );
           return;
         } else if (data.blocked) {
           setResult({
@@ -193,7 +195,9 @@ export function QuestionForm({
         }
 
         // Redirect directly to checkout - no intermediate success page
-        router.push(`/competitions/${competitionSlug}/checkout`);
+        router.push(
+            `/competitions/${competitionSlug}/checkout${pendingQuantity ? `?tickets=${pendingQuantity}` : ''}`
+          );
         return;
       }
     } catch {

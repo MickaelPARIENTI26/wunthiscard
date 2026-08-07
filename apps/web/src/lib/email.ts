@@ -236,7 +236,7 @@ export async function sendPurchaseConfirmationEmail(
   firstName: string,
   data: PurchaseConfirmationData
 ) {
-  const ordersUrl = `${BASE_URL}/profile/orders`;
+  const ordersUrl = `${BASE_URL}/my-tickets`;
   // Ticket numbers are not surfaced to users — we only show how many they hold.
   const paidCount = data.ticketNumbers.length;
   const bonusCount = data.bonusTicketNumbers.length;

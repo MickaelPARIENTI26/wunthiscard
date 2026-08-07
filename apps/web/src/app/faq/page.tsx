@@ -121,7 +121,7 @@ export default async function FaqPage() {
             Still have questions?
           </h2>
           <p className="wup-body-sm" style={{ margin: '0 auto 24px', maxWidth: '520px' }}>
-            Our support team is here to help. Get in touch and we will respond as soon as possible.
+            Our support team is here to help. Get in touch and we will respond within 1–2 working days.
           </p>
           <Link href="/contact" className="wup-btn wup-btn--primary">Contact Us →</Link>
         </div>

@@ -64,7 +64,8 @@ export default async function CheckoutPage({
   const competition = await getCompetition(slug);
   if (!competition) notFound();
 
-  const ticketCount = tickets ? parseInt(tickets, 10) : 1;
+  const parsedTickets = tickets ? parseInt(tickets, 10) : 1;
+  const ticketCount = Number.isFinite(parsedTickets) && parsedTickets > 0 ? parsedTickets : 1;
   const formatCategory = (cat: string) => cat.replace(/_/g, ' ').replace(/^SPORTS /i, '');
 
   const enterHead = (
@@ -108,7 +109,8 @@ export default async function CheckoutPage({
             <span>Auto pick</span>
             <span>·</span>
             <span>
-              Total <b>£{competition.ticketPrice.toFixed(2)}</b>
+              {ticketCount} ticket{ticketCount === 1 ? '' : 's'} · Total{' '}
+              <b>£{(competition.ticketPrice * ticketCount).toFixed(2)}</b>
             </span>
           </div>
         </div>

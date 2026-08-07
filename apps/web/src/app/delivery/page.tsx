@@ -38,7 +38,7 @@ export default function DeliveryPage() {
 
       <section id="timeframes">
         <h3 className="legal-h">4. Delivery Timeframes</h3>
-        <p className="legal-p">UK delivery typically takes 1–3 working days from dispatch. We aim to dispatch all prizes within 7 working days of the draw. International delivery may take 5–14 working days depending on destination.</p>
+        <p className="legal-p">Prizes are delivered within 7–14 working days of the draw. Dispatch is typically within 7 working days, and UK delivery then takes 1–3 working days. International delivery may take 5–14 working days depending on destination.</p>
       </section>
 
       <section id="issues">

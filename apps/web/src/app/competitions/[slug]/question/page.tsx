@@ -49,10 +49,22 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
   };
 }
 
-export default async function QuestionPage({ params }: { params: Promise<PageParams> }) {
+export default async function QuestionPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<PageParams>;
+  searchParams: Promise<{ tickets?: string }>;
+}) {
   const { slug } = await params;
+  const { tickets } = await searchParams;
   const competition = await getCompetition(slug);
   if (!competition) notFound();
+
+  // Quantity chosen in the ticket picker, carried in the URL so this header can
+  // show the real order total instead of one ticket's price.
+  const parsedTickets = tickets ? parseInt(tickets, 10) : 1;
+  const ticketCount = Number.isFinite(parsedTickets) && parsedTickets > 0 ? parsedTickets : 1;
 
   const formatCategory = (cat: string) => cat.replace(/_/g, ' ').replace(/^SPORTS /i, '');
 
@@ -103,7 +115,8 @@ export default async function QuestionPage({ params }: { params: Promise<PagePar
             <span>Auto pick</span>
             <span>·</span>
             <span>
-              Total <b>£{competition.ticketPrice.toFixed(2)}</b>
+              {ticketCount} ticket{ticketCount === 1 ? '' : 's'} · Total{' '}
+              <b>£{(competition.ticketPrice * ticketCount).toFixed(2)}</b>
             </span>
           </div>
         </div>

@@ -101,7 +101,9 @@ export function SimpleTicketSelector({
       sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
     }
 
-    router.push(`/competitions/${competitionSlug}/${nextStep}`);
+    // ?tickets= lets the server-rendered step header show the real order
+    // total; sessionStorage remains the source of truth for the reservation.
+    router.push(`/competitions/${competitionSlug}/${nextStep}?tickets=${quantity}`);
   };
 
   const price = ticketPrice; // ticketPrice is stored in pounds
