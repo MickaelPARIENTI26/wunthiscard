@@ -345,8 +345,10 @@ export const rateLimits = {
   // Checkout: 5 attempts per 5 minutes
   checkout: createRateLimiter({ requests: 5, window: '5 m', prefix: 'ratelimit:checkout' }),
 
-  // Contact form: 3 attempts per hour
-  contact: createRateLimiter({ requests: 3, window: '1 h', prefix: 'ratelimit:contact' }),
+  // Contact form: 5 per hour per IP. Kept generous because the key is the IP —
+  // people on a shared connection (office, campus, mobile carrier NAT) would
+  // otherwise lock each other out after a couple of genuine messages.
+  contact: createRateLimiter({ requests: 5, window: '1 h', prefix: 'ratelimit:contact' }),
 
   // Avatar upload: 10 per hour per user (prevents R2 storage/egress abuse from one account).
   avatarUpload: createRateLimiter({ requests: 10, window: '1 h', prefix: 'ratelimit:avatar' }),

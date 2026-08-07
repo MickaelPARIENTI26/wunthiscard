@@ -77,7 +77,10 @@ export async function submitContactForm(
       if (!rateLimitSuccess) {
         return {
           success: false,
-          message: 'Too many messages sent. Please try again later.',
+          message:
+            'You have sent too many messages. Please try again in an hour — or email us directly at ' +
+            CONTACT_INBOX +
+            '.',
         };
       }
     } catch (rateErr) {
