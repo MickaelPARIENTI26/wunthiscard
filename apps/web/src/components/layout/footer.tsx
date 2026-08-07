@@ -110,13 +110,18 @@ function FooterColumn({ title, links, compact = false }: { title: string; links:
       <h5 style={{ fontFamily: 'var(--display)', fontSize: compact ? '12.5px' : '14px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: compact ? '9px' : '14px', fontWeight: 700 }}>
         {title}
       </h5>
-      <ul className="flex flex-col" style={{ gap: compact ? '7px' : '10px' }}>
+      <ul className="flex flex-col" style={{ gap: compact ? '2px' : '4px' }}>
         {links.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="transition-colors duration-150 hover:text-[var(--ink)]"
-              style={{ fontSize: compact ? '13px' : '14.5px', color: 'var(--ink-dim)' }}
+              className="inline-block transition-colors duration-150 hover:text-[var(--ink)]"
+              // Padding, not gap: it grows the tap target itself (was 16px tall).
+              style={{
+                fontSize: compact ? '13px' : '14.5px',
+                color: 'var(--ink-dim)',
+                padding: '6px 0',
+              }}
             >
               {link.label}
             </Link>

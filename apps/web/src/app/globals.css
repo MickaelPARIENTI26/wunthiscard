@@ -339,7 +339,8 @@ input:focus, textarea:focus, select:focus,
   padding: 14px 15px;
   border: 1px solid rgba(244, 241, 234, 0.2);
   border-radius: 0;
-  font-size: 15.5px;
+  /* 16px min — below this iOS Safari auto-zooms the page on focus. */
+  font-size: 16px;
   background: var(--bg-input);
   color: var(--ink);
   box-shadow: none;
@@ -354,7 +355,8 @@ input:focus, textarea:focus, select:focus,
   padding: 14px 15px;
   border: 1px solid rgba(244, 241, 234, 0.2);
   border-radius: 0;
-  font-size: 15.5px;
+  /* 16px min — below this iOS Safari auto-zooms the page on focus. */
+  font-size: 16px;
   background: var(--bg-input);
   color: var(--ink);
   box-shadow: none;
@@ -390,10 +392,6 @@ input:focus, textarea:focus, select:focus,
 @media (max-width: 640px) {
   .drop-section {
     padding: 60px 20px;
-  }
-  /* 16px minimum on form fields so iOS Safari doesn't auto-zoom on focus. */
-  .input, .select, .textarea {
-    font-size: 16px;
   }
 }
 
@@ -455,6 +453,8 @@ input:focus, textarea:focus, select:focus,
 .legal-body { padding: 0; max-width: 820px; overflow-wrap: anywhere; }
 /* h2 under a 2px gold rule, anchored */
 .legal-h {
+  /* Sections carry no spacing of their own — the heading owns the gap. */
+  margin-top: 38px;
   font-family: var(--display);
   font-size: clamp(21px, 2.8vw, 30px);
   font-weight: 700;
@@ -465,6 +465,8 @@ input:focus, textarea:focus, select:focus,
   scroll-margin-top: 96px;
   margin-bottom: 14px;
 }
+.legal-body > section:first-of-type .legal-h,
+.legal-body > .legal-h:first-child { margin-top: 0; }
 .legal-p {
   color: var(--ink-dim);
   font-size: 16px;
@@ -482,8 +484,36 @@ input:focus, textarea:focus, select:focus,
 .legal-body .lead { font-size: 17px; }
 
 @media (max-width: 860px) {
-  .legal-toc { position: static; }
-  .legal-toc-desktop { display: none; }
+  /* min-width:0 — without it the grid track sizes to the scroll row's
+     max-content width (~2200px) and pushes the body text off-screen. */
+  .legal-toc { position: static; min-width: 0; max-width: 100%; }
+  /* Keep the jump-links on phones — these pages run to 17+ sections — but as
+     one swipeable row, so the nav costs ~50px instead of a whole screen. */
+  .legal-toc-desktop { display: block; margin-bottom: 22px; }
+  .legal-toc ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .legal-toc ul.legal-toc-sections {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .legal-toc ul.legal-toc-sections::-webkit-scrollbar { display: none; }
+  .legal-toc ul.legal-toc-sections li { flex: 0 0 auto; scroll-snap-align: start; }
+  .legal-toc a {
+    display: block;
+    border: 1px solid var(--line);
+    border-left-width: 1px;
+    padding: 8px 11px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
 }
 
 /* === CONTACT === */
@@ -1034,6 +1064,7 @@ input:focus, textarea:focus, select:focus,
 .phone-cc { padding: 0 12px; display: grid; place-items: center; border: 1px solid rgba(244, 241, 234, 0.2); border-radius: 0; background: var(--bg-3); font-weight: 700; font-size: 14px; white-space: nowrap; }
 .phone-cc-select {
   appearance: none;
+  font-size: 16px;
   cursor: pointer;
   padding: 0 32px 0 12px;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1L5 5L9 1' stroke='%23C9A227' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
@@ -1062,7 +1093,8 @@ input:focus, textarea:focus, select:focus,
   padding: 14px 15px;
   border: 1px solid rgba(244, 241, 234, 0.2);
   border-radius: 0;
-  font-size: 15.5px;
+  /* 16px min — below this iOS Safari auto-zooms the page on focus. */
+  font-size: 16px;
   font-weight: 400;
   background: var(--bg-input);
   box-shadow: none;
@@ -1081,7 +1113,8 @@ input:focus, textarea:focus, select:focus,
   padding: 14px 15px;
   border: 1px solid rgba(244, 241, 234, 0.2);
   border-radius: 0;
-  font-size: 15.5px;
+  /* 16px min — below this iOS Safari auto-zooms the page on focus. */
+  font-size: 16px;
   font-weight: 400;
   background: var(--bg-input);
   box-shadow: none;
@@ -1102,7 +1135,8 @@ input:focus, textarea:focus, select:focus,
   padding: 14px 15px;
   border: 1px solid rgba(244, 241, 234, 0.2);
   border-radius: 0;
-  font-size: 15.5px;
+  /* 16px min — below this iOS Safari auto-zooms the page on focus. */
+  font-size: 16px;
   font-weight: 400;
   background: var(--bg-input);
   box-shadow: none;

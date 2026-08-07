@@ -54,7 +54,7 @@ export function LegalPage({ title, lastUpdated, toc, otherDocs, children }: Lega
             {/* Sticky ToC */}
             <aside className="legal-toc legal-toc-desktop">
               <div className="legal-toc-label">On this page</div>
-              <ul>
+              <ul className="legal-toc-sections">
                 {toc.map((item) => (
                   <li key={item.id}>
                     <a href={`#${item.id}`}>{item.title}</a>
