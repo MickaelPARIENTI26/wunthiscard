@@ -111,10 +111,6 @@ function PlaceholderCompetitionRulesContent() {
             of entry
           </li>
           <li>
-            <strong>Residency:</strong> You must be a resident of the United
-            Kingdom
-          </li>
-          <li>
             <strong>Account:</strong> You must have a valid WinUPrize account
             with a verified email address
           </li>

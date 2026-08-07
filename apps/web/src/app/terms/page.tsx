@@ -71,7 +71,7 @@ function TermsContent() {
 
       <section id="eligibility">
         <h3 className="legal-h">2. Eligibility</h3>
-        <p className="legal-p">To participate in our Competitions, you must be at least 18 years of age, be a resident of the United Kingdom, have a valid email address, and not be an employee or immediate family member of WinUPrize.</p>
+        <p className="legal-p">To participate in our Competitions, you must be at least 18 years of age, have a valid email address, and not be an employee or immediate family member of WinUPrize.</p>
         <p className="legal-p">We reserve the right to verify your eligibility at any time. If you are found to be ineligible, any tickets purchased will be refunded and any prizes won must be returned.</p>
       </section>
 
