@@ -449,7 +449,7 @@ function marketingWrapper(content: string, token: string): string {
     </div>
     <div style="background-color: #050505; padding: 24px; text-align: center; border-top: 1px solid #2E2B26;">
       <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
-        YD PARTNERS LTD (trading as WinUPrize) · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
+        WinUPrize · 71-75 Shelton Street, Covent Garden, London, WC2H 9JQ · Company No. 16766570
       </p>
       <p style="color: #9A958B; font-size: 12px; margin: 0 0 8px;">
         You're receiving this because you opted in to competition updates from WinUPrize.

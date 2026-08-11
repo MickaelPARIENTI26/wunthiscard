@@ -709,7 +709,7 @@ async function main() {
           </tr>
           <tr>
             <td align="center" style="color: #888; font-size: 12px; line-height: 18px;">
-              <p style="margin: 0 0 10px;">YD PARTNERS LTD (trading as WinUPrize) | Registered in England &amp; Wales · No. 16766570</p>
+              <p style="margin: 0 0 10px;">WinUPrize | Registered in England &amp; Wales · No. 16766570</p>
               <p style="margin: 0 0 10px;">71-75 Shelton Street, Covent Garden, London WC2H 9JQ</p>
               <p style="margin: 0;">
                 <a href="{{site_url}}/terms" style="color: #888; text-decoration: underline;">Terms</a> &nbsp;|&nbsp;
