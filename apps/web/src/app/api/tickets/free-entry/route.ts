@@ -82,6 +82,8 @@ export async function POST(request: NextRequest) {
       select: {
         id: true,
         title: true,
+        slug: true,
+        mainImageUrl: true,
         drawDate: true,
         status: true,
         isFree: true,
@@ -256,6 +258,8 @@ export async function POST(request: NextRequest) {
     try {
       await sendFreeEntryConfirmationEmail(user.email, user.firstName, {
         competitionTitle: competition.title,
+        competitionSlug: competition.slug,
+        mainImageUrl: competition.mainImageUrl,
         ticketNumber,
         drawDate: competition.drawDate,
         entryMethod: 'email',

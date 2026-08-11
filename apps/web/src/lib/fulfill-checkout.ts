@@ -403,6 +403,8 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     await sendPurchaseConfirmationEmail(order.user.email, order.user.firstName, {
       orderNumber: order.orderNumber,
       competitionTitle: order.competition.title,
+      competitionSlug: order.competition.slug,
+      mainImageUrl: order.competition.mainImageUrl,
       ticketNumbers: paidTicketNumbers,
       bonusTicketNumbers,
       totalAmount,

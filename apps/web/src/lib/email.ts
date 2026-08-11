@@ -222,9 +222,25 @@ export async function sendReferralRewardEmail(
 }
 
 // Purchase Confirmation
+/**
+ * Prize image banner for the order/free-entry confirmations. `mainImageUrl` is
+ * required in the schema, but stays optional here so an older caller (or a
+ * blank string) degrades to no banner rather than a broken image.
+ */
+function prizeBanner(imageUrl: string | undefined, title: string, href?: string): string {
+  if (!imageUrl) return '';
+  const img = `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}" width="536" style="width: 100%; max-width: 536px; height: auto; display: block; border: 0; border-radius: 0;">`;
+  return `
+    <div style="margin: 0 0 24px; background-color: #050505; border: 1px solid #2E2B26;">
+      ${href ? `<a href="${escapeHtml(href)}" style="display: block; text-decoration: none;">${img}</a>` : img}
+    </div>`;
+}
+
 interface PurchaseConfirmationData {
   orderNumber: string;
   competitionTitle: string;
+  competitionSlug?: string;
+  mainImageUrl?: string;
   ticketNumbers: number[];
   bonusTicketNumbers: number[];
   totalAmount: number;
@@ -251,11 +267,17 @@ export async function sendPurchaseConfirmationEmail(
     currency: 'GBP',
   }).format(data.totalAmount);
 
+  const competitionUrl = data.competitionSlug
+    ? `${BASE_URL}/competitions/${data.competitionSlug}`
+    : undefined;
+
   const html = emailWrapper(`
     <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Order Confirmed! 🎉</h2>
     <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, your ticket purchase has been confirmed. Good luck!
     </p>
+
+    ${prizeBanner(data.mainImageUrl, data.competitionTitle, competitionUrl)}
 
     <!-- Order Details -->
     <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0;">
@@ -353,6 +375,8 @@ export async function sendDrawCompleteNotificationEmail(
 // Free Entry Confirmation
 interface FreeEntryConfirmationData {
   competitionTitle: string;
+  competitionSlug?: string;
+  mainImageUrl?: string;
   ticketNumber: number;
   drawDate: Date;
   entryMethod: 'postal' | 'email';
@@ -370,11 +394,17 @@ export async function sendFreeEntryConfirmationEmail(
     timeStyle: 'short',
   }).format(new Date(data.drawDate));
 
+  const thisCompetitionUrl = data.competitionSlug
+    ? `${BASE_URL}/competitions/${data.competitionSlug}`
+    : undefined;
+
   const html = emailWrapper(`
     <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">Free Entry Confirmed</h2>
     <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
       Hi ${escapeHtml(firstName)}, your free entry has been confirmed. Good luck!
     </p>
+
+    ${prizeBanner(data.mainImageUrl, data.competitionTitle, thisCompetitionUrl)}
 
     <div style="background-color: #050505; border: 1px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0;">
       <div style="text-align: center; margin-bottom: 16px;">
