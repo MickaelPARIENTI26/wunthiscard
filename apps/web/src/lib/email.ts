@@ -223,17 +223,39 @@ export async function sendReferralRewardEmail(
 
 // Purchase Confirmation
 /**
- * Prize image banner for the order/free-entry confirmations. `mainImageUrl` is
- * required in the schema, but stays optional here so an older caller (or a
- * blank string) degrades to no banner rather than a broken image.
+ * Thumbnail + "Competition / <title>" pair, used by both confirmations.
+ *
+ * A table, not flex/float: Outlook on Windows renders neither. The image is
+ * fixed at 64px because the cards are 5:7 portrait — full width made the email
+ * a wall of card. `mainImageUrl` is required in the schema, but stays optional
+ * here so a blank value degrades to the plain title instead of a broken image.
  */
-function prizeBanner(imageUrl: string | undefined, title: string, href?: string): string {
-  if (!imageUrl) return '';
-  const img = `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(title)}" width="536" style="width: 100%; max-width: 536px; height: auto; display: block; border: 0; border-radius: 0;">`;
+function competitionRow(
+  imageUrl: string | undefined,
+  title: string,
+  href?: string,
+  align: 'left' | 'center' = 'left'
+): string {
+  const titleSize = align === 'center' ? 17 : 16;
+  const text = `
+        <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Competition</p>
+        <p style="color: #F4F1EA; font-size: ${titleSize}px; font-weight: 600; margin: 0;">${escapeHtml(title)}</p>`;
+
+  if (!imageUrl) {
+    return `<div style="margin: 0 0 16px; text-align: ${align};">${text}</div>`;
+  }
+
+  const img = `<img src="${escapeHtml(imageUrl)}" alt="" width="64" style="width: 64px; height: auto; display: block; border: 0;">`;
   return `
-    <div style="margin: 0 0 24px; background-color: #050505; border: 1px solid #2E2B26;">
-      ${href ? `<a href="${escapeHtml(href)}" style="display: block; text-decoration: none;">${img}</a>` : img}
-    </div>`;
+    <table role="presentation" border="0" cellpadding="0" cellspacing="0" ${align === 'center' ? 'align="center" ' : ''}style="margin: 0 0 16px;">
+      <tr>
+        <td width="64" valign="top" style="width: 64px; padding-right: 14px;">
+          ${href ? `<a href="${escapeHtml(href)}" style="text-decoration: none;">${img}</a>` : img}
+        </td>
+        <td valign="middle" style="text-align: left;">${text}
+        </td>
+      </tr>
+    </table>`;
 }
 
 interface PurchaseConfirmationData {
@@ -277,15 +299,12 @@ export async function sendPurchaseConfirmationEmail(
       Hi ${escapeHtml(firstName)}, your ticket purchase has been confirmed. Good luck!
     </p>
 
-    ${prizeBanner(data.mainImageUrl, data.competitionTitle, competitionUrl)}
-
     <!-- Order Details -->
     <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0;">
       <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Order</p>
       <p style="color: #F4F1EA; font-size: 14px; font-weight: 600; margin: 0 0 16px;">${data.orderNumber}</p>
 
-      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Competition</p>
-      <p style="color: #F4F1EA; font-size: 16px; font-weight: 600; margin: 0 0 16px;">${escapeHtml(data.competitionTitle)}</p>
+      ${competitionRow(data.mainImageUrl, data.competitionTitle, competitionUrl)}
 
       <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Your Tickets</p>
       <p style="color: #F4F1EA; font-size: 24px; font-weight: bold; margin: 0 0 8px;">${paidCount} ${paidCount === 1 ? 'ticket' : 'tickets'}</p>
@@ -404,8 +423,6 @@ export async function sendFreeEntryConfirmationEmail(
       Hi ${escapeHtml(firstName)}, your free entry has been confirmed. Good luck!
     </p>
 
-    ${prizeBanner(data.mainImageUrl, data.competitionTitle, thisCompetitionUrl)}
-
     <div style="background-color: #050505; border: 1px solid #C9A227; border-radius: 0; padding: 24px; margin: 24px 0;">
       <div style="text-align: center; margin-bottom: 16px;">
         <span style="display: inline-block; background-color: #C9A227; color: #0A0A0A; font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 0; text-transform: uppercase;">
@@ -413,8 +430,7 @@ export async function sendFreeEntryConfirmationEmail(
         </span>
       </div>
 
-      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Competition</p>
-      <p style="color: #F4F1EA; font-size: 18px; font-weight: 600; margin: 0 0 16px; text-align: center;">${escapeHtml(data.competitionTitle)}</p>
+      ${competitionRow(data.mainImageUrl, data.competitionTitle, thisCompetitionUrl, 'center')}
 
       <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase; text-align: center;">Your Entry</p>
       <p style="color: #C9A227; font-size: 32px; font-weight: bold; margin: 0 0 16px; text-align: center;">1 free ticket</p>
