@@ -39,7 +39,7 @@ const CATEGORY_FILTER_MAP: Record<string, string[]> = {
 
 // Finished competitions (sold out / drawn) keep showing — with their red
 // "SOLD OUT" / "FINISHED" banner — for FINISHED_VISIBLE_DAYS days, then auto-hide
-// (published results live on /winners).
+// (results are published on our Instagram lives).
 const FINISHED_VISIBLE_MS = FINISHED_VISIBLE_DAYS * 24 * 60 * 60 * 1000;
 
 const STATUS_FILTER_MAP: Record<string, string[]> = {

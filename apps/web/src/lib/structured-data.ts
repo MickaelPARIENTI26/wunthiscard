@@ -10,7 +10,7 @@ const BASE_URL = 'https://winuprize.com';
 
 /**
  * Organization schema for the site
- * Used on homepage and about page
+ * Used on the homepage
  */
 export function generateOrganizationSchema() {
   return {
