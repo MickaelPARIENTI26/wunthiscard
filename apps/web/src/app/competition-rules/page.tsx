@@ -416,7 +416,7 @@ function PlaceholderCompetitionRulesContent() {
         <h2>11. Prize Delivery</h2>
         <ul>
           <li>
-            Prizes are shipped free of charge to UK addresses
+            Prizes are shipped free of charge
           </li>
           <li>
             All prizes are sent via tracked and insured delivery (Royal Mail

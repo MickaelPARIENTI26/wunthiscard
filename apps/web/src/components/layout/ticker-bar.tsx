@@ -7,7 +7,7 @@
 const MESSAGES = [
   'Winners drawn independently by RandomDraws.com',
   'Free postal entry route available',
-  'Free insured UK delivery',
+  'Free insured delivery',
   'Graded & authenticated prizes',
   '18+ only',
 ];

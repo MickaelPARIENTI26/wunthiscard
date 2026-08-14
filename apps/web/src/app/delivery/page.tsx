@@ -3,11 +3,11 @@ import { LegalPage } from '@/components/legal/legal-page';
 
 export const metadata: Metadata = {
   title: 'Delivery Info',
-  description: 'Delivery information for WinUPrize prize wins. Free tracked UK delivery on all prizes.',
+  description: 'Delivery information for WinUPrize prize wins. Free tracked, insured delivery on all prizes.',
 };
 
 const tableOfContents = [
-  { id: 'uk-delivery', title: '1. UK Delivery' },
+  { id: 'uk-delivery', title: '1. Prize Delivery' },
   { id: 'international', title: '2. International Delivery' },
   { id: 'tracking', title: '3. Tracking & Insurance' },
   { id: 'timeframes', title: '4. Delivery Timeframes' },
@@ -21,14 +21,14 @@ export default function DeliveryPage() {
   return (
     <LegalPage title="Delivery Info" lastUpdated="Last updated: 1 April 2026" toc={tableOfContents}>
       <section id="uk-delivery">
-        <h3 className="legal-h">1. UK Delivery</h3>
-        <p className="legal-p">All prizes are delivered to UK winners free of charge via insured, tracked courier. We use Royal Mail Special Delivery or DPD for all prize shipments.</p>
+        <h3 className="legal-h">1. Prize Delivery</h3>
+        <p className="legal-p">All prizes are delivered free of charge via insured, tracked courier, wherever you are. We use Royal Mail Special Delivery or DPD in the UK, and an equivalent tracked and insured service elsewhere.</p>
         <p className="legal-p">Every parcel is photographed before dispatch and shipped with full tracking and insurance covering the prize value.</p>
       </section>
 
       <section id="international">
         <h3 className="legal-h">2. International Delivery</h3>
-        <p className="legal-p">International winners are responsible for any customs duties, import taxes, or additional shipping costs. We will contact you after the draw to arrange international shipping.</p>
+        <p className="legal-p">Shipping is on us, but customs duties and import taxes charged by your own country are outside our control and remain your responsibility. We will contact you after the draw to arrange international shipping.</p>
       </section>
 
       <section id="tracking">
@@ -38,7 +38,7 @@ export default function DeliveryPage() {
 
       <section id="timeframes">
         <h3 className="legal-h">4. Delivery Timeframes</h3>
-        <p className="legal-p">Prizes are delivered within 7–14 working days of the draw. Dispatch is typically within 7 working days, and UK delivery then takes 1–3 working days. International delivery may take 5–14 working days depending on destination.</p>
+        <p className="legal-p">Prizes are delivered within 7–14 working days of the draw. Dispatch is typically within 7 working days, and delivery then takes 1–3 working days in the UK. International delivery may take 5–14 working days depending on destination.</p>
       </section>
 
       <section id="issues">

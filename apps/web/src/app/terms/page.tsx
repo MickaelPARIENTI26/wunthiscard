@@ -110,7 +110,7 @@ function TermsContent() {
 
       <section id="prizes">
         <h3 className="legal-h">9. Prizes</h3>
-        <p className="legal-p">Prizes are as described on the Competition page. We guarantee authenticity of all items, accurate grading information where applicable, and free delivery to UK addresses via tracked and insured shipping. Prizes cannot be exchanged for cash.</p>
+        <p className="legal-p">Prizes are as described on the Competition page. We guarantee authenticity of all items, accurate grading information where applicable, and free delivery via tracked and insured shipping. Prizes cannot be exchanged for cash.</p>
       </section>
 
       <section id="winner-publicity">

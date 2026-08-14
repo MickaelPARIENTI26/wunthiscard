@@ -28,7 +28,7 @@ const steps = [
     t: 'Win',
     lead: 'Independent draw. Tracked delivery.',
     body: 'When the comp closes, an independent third party draws the winner. We publish the result on the competition page and notify the winner within 24h. Insured tracked shipping, free in the UK.',
-    bullets: ['Drawn by RandomDraws.com', 'Winner notified within 24h', 'Free insured UK delivery'],
+    bullets: ['Drawn by RandomDraws.com', 'Winner notified within 24h', 'Free insured delivery'],
   },
 ];
 
