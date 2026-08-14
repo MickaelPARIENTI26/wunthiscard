@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 const tableOfContents = [
-  { id: 'uk-delivery', title: '1. Prize Delivery' },
+  { id: 'prize-delivery', title: '1. Prize Delivery' },
   { id: 'international', title: '2. International Delivery' },
   { id: 'tracking', title: '3. Tracking & Insurance' },
   { id: 'timeframes', title: '4. Delivery Timeframes' },
@@ -20,7 +20,7 @@ const tableOfContents = [
 export default function DeliveryPage() {
   return (
     <LegalPage title="Delivery Info" lastUpdated="Last updated: 1 April 2026" toc={tableOfContents}>
-      <section id="uk-delivery">
+      <section id="prize-delivery">
         <h3 className="legal-h">1. Prize Delivery</h3>
         <p className="legal-p">All prizes are delivered free of charge via insured, tracked courier, wherever you are. We use Royal Mail Special Delivery or DPD in the UK, and an equivalent tracked and insured service elsewhere.</p>
         <p className="legal-p">Every parcel is photographed before dispatch and shipped with full tracking and insurance covering the prize value.</p>

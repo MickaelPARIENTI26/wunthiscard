@@ -36,7 +36,7 @@ const steps = [
   {
     n: '04', t: 'Win',
     lead: 'Independent draw. Tracked delivery.',
-    b: "When the comp sells out (or hits its end date), the winner is drawn by an independent third party. The result is published and verifiable on the competition page, and the winner is notified within 24h. Insured tracked shipping, free in the UK.",
+    b: "When the comp sells out (or hits its end date), the winner is drawn by an independent third party. The result is published and verifiable on the competition page, and the winner is notified within 24h. Insured tracked shipping, free wherever you are.",
     bullets: ['Independent third-party draw', 'Winner published publicly', 'Free insured delivery'],
   },
 ];
