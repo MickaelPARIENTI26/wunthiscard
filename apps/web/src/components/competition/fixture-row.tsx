@@ -109,16 +109,28 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
       <span className="wup-row__price wup-num">{isFree ? 'FREE' : `£${c.ticketPrice.toFixed(2)}`}</span>
 
       <span className="wup-row__sold fixture-col-sold">
-        <span
-          className="wup-num"
-          style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--ink-dim)', marginBottom: '5px' }}
-        >
-          {total ? `${sold.toLocaleString('en-GB')}/${total.toLocaleString('en-GB')}` : `${sold.toLocaleString('en-GB')} in`}
-        </span>
-        <span className="wup-bar" style={{ display: 'block' }}>
-          <span className="wup-bar__fill" style={{ display: 'block', width: `${Math.max(pct, 2)}%` }} />
-          <span className="wup-bar__sheen" aria-hidden="true" />
-        </span>
+        {total ? (
+          <>
+            <span
+              className="wup-num"
+              style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--ink-dim)', marginBottom: '5px' }}
+            >
+              {`${sold.toLocaleString('en-GB')}/${total.toLocaleString('en-GB')}`}
+            </span>
+            <span className="wup-bar" style={{ display: 'block' }}>
+              <span className="wup-bar__fill" style={{ display: 'block', width: `${Math.max(pct, 2)}%` }} />
+              <span className="wup-bar__sheen" aria-hidden="true" />
+            </span>
+          </>
+        ) : (
+          /* No ticket cap: an entrant count has no denominator to read it
+             against, and a progress bar would be meaningless. */
+          <span
+            style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--ink-dim)' }}
+          >
+            Unlimited
+          </span>
+        )}
       </span>
 
       <span className="wup-row__closes fixture-col-closes">

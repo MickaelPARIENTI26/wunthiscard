@@ -170,16 +170,18 @@ export function HomeHero({ competitions }: HomeHeroProps) {
                   <ScoreboardClock targetDate={featured.drawDate} />
                 </div>
 
-                {/* Progress bar */}
-                <div className="wup-bar wup-bar--lg" style={{ marginBottom: '8px' }}>
-                  <div className="wup-bar__fill" style={{ width: `${Math.max(soldPct, 2)}%` }} />
-                  <span className="wup-bar__sheen" aria-hidden="true" />
-                </div>
+                {/* Progress bar — only meaningful when there is a ticket cap */}
+                {featured.totalTickets !== null && (
+                  <div className="wup-bar wup-bar--lg" style={{ marginBottom: '8px' }}>
+                    <div className="wup-bar__fill" style={{ width: `${Math.max(soldPct, 2)}%` }} />
+                    <span className="wup-bar__sheen" aria-hidden="true" />
+                  </div>
+                )}
                 <div className="flex items-baseline justify-between" style={{ marginBottom: '16px' }}>
                   <span className="wup-meta">
                     {featured.totalTickets
                       ? `${featured.soldTickets.toLocaleString('en-GB')} of ${featured.totalTickets.toLocaleString('en-GB')} sold`
-                      : `${featured.soldTickets.toLocaleString('en-GB')} entries`}
+                      : 'Unlimited entries'}
                   </span>
                   {ticketsLeft !== null && (
                     <span className="wup-meta" style={{ color: 'var(--accent)' }}>

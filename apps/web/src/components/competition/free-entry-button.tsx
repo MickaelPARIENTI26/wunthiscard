@@ -108,9 +108,11 @@ export function FreeEntryButton({
     <div className="space-y-3">
       {/* Ticket limit info */}
       <p style={{ fontSize: '14px', color: 'var(--ink-dim)' }}>
-        {maxTicketsPerUser === 1
-          ? '1 free ticket per account'
-          : `Up to ${maxTicketsPerUser} free ticket${maxTicketsPerUser > 1 ? 's' : ''} per account`}
+        {maxTicketsPerUser <= 0
+          ? 'No limit per account'
+          : maxTicketsPerUser === 1
+            ? '1 free ticket per account'
+            : `Up to ${maxTicketsPerUser} free tickets per account`}
       </p>
 
       {needsAge ? (
