@@ -1,6 +1,21 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { InlineCountdown } from '@/components/common/inline-countdown';
+
+// Draw times are UK times, and this row also renders inside a client component
+// (competitions-content), so the zone is pinned rather than left to the
+// visitor's locale — otherwise server and client could format different days.
+const CLOSES_DATE = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'Europe/London',
+});
+const CLOSES_TIME = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+  timeZone: 'Europe/London',
+});
 
 export interface FixtureCompetition {
   id: string;
@@ -40,7 +55,7 @@ export function FixtureHeader() {
       <span className="wup-thead" style={{ flex: '1 1 160px', minWidth: '120px', paddingLeft: '4px' }}>Prize</span>
       <span className="wup-thead" style={{ flex: 'none', width: 'clamp(80px, 10vw, 120px)', textAlign: 'right' }}>Ticket</span>
       <span className="wup-thead fixture-col-sold" style={{ flex: 'none', width: 'clamp(90px, 12vw, 150px)' }}>Sold</span>
-      <span className="wup-thead fixture-col-closes" style={{ flex: 'none', width: 'clamp(74px, 9vw, 110px)', textAlign: 'right' }}>Closes</span>
+      <span className="wup-thead fixture-col-closes" style={{ flex: 'none', width: 'clamp(74px, 9vw, 110px)', textAlign: 'right' }}>Ends</span>
     </div>
   );
 }
@@ -63,6 +78,7 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
   const isFree = c.ticketPrice <= 0;
   const finished = c.status === 'COMPLETED' || c.status === 'CANCELLED' || c.status === 'DRAWING';
   const soldOut = c.status === 'SOLD_OUT';
+  const closesAt = new Date(c.drawDate);
 
   return (
     <Link href={`/competitions/${c.slug}`} className="wup-row" style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -106,7 +122,18 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
       </span>
 
       <span className="wup-row__closes fixture-col-closes">
-        {finished ? 'Drawn' : <InlineCountdown targetDate={c.drawDate} compact />}
+        {finished ? (
+          'Drawn'
+        ) : (
+          <>
+            <span style={{ display: 'block' }}>{CLOSES_DATE.format(closesAt)}</span>
+            <span
+              style={{ display: 'block', marginTop: '2px', fontSize: '11px', color: 'var(--ink-faint)' }}
+            >
+              {CLOSES_TIME.format(closesAt)}
+            </span>
+          </>
+        )}
       </span>
     </Link>
   );
