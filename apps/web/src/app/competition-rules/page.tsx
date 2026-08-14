@@ -390,7 +390,7 @@ function PlaceholderCompetitionRulesContent() {
             passport, driving licence)
           </li>
           <li>
-            Confirm your delivery address (must be a UK address)
+            Confirm your delivery address
           </li>
           <li>
             Complete any additional verification required for high-value prizes
