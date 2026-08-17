@@ -79,6 +79,9 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
   const finished = c.status === 'COMPLETED' || c.status === 'CANCELLED' || c.status === 'DRAWING';
   const soldOut = c.status === 'SOLD_OUT';
   const closesAt = new Date(c.drawDate);
+  // Draw date passed but the winner isn't recorded yet. Printing the date here
+  // read as if entries were still open until that day — which had already gone.
+  const closed = !finished && closesAt.getTime() <= Date.now();
 
   return (
     <Link href={`/competitions/${c.slug}`} className="wup-row" style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -136,6 +139,8 @@ export function FixtureRow({ competition: c, index }: FixtureRowProps) {
       <span className="wup-row__closes fixture-col-closes">
         {finished ? (
           'Drawn'
+        ) : closed ? (
+          <span style={{ color: 'var(--warn)' }}>Closed</span>
         ) : (
           <>
             <span style={{ display: 'block' }}>{CLOSES_DATE.format(closesAt)}</span>
