@@ -64,6 +64,16 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // /winners and /about were removed but were in the sitemap, so they may be
+  // indexed and linked. 308 keeps whatever signal they had and stops the dead
+  // links from 404ing.
+  async redirects() {
+    return [
+      { source: '/winners', destination: '/competitions', permanent: true },
+      { source: '/about', destination: '/how-it-works', permanent: true },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {

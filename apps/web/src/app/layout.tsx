@@ -111,9 +111,15 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/manifest.webmanifest',
-  // NOTE: no site-wide canonical here — a static canonical in the root layout is
-  // inherited by EVERY page, telling Google all URLs are duplicates of the homepage.
-  // Each page self-canonicalises to its own URL (metadataBase resolves relatives).
+  alternates: {
+    // './' resolves against the CURRENT route, not the root — so every page
+    // canonicalises to its own clean URL. Pages do not self-canonicalise
+    // otherwise: Next only emits <link rel="canonical"> when it is declared,
+    // and until now the site emitted none at all. Query strings are dropped,
+    // which is the point — Instagram traffic arrives carrying ?fbclid= and
+    // ?utm_*, and each variant would otherwise be a separate URL to Google.
+    canonical: './',
+  },
   category: 'entertainment',
   classification: 'Prize Competitions',
   referrer: 'origin-when-cross-origin',
