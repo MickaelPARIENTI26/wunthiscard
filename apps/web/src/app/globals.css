@@ -1550,6 +1550,57 @@ a { transition: color 0.2s; }
 .wup-clock__cell--sec .wup-clock__l { color: rgba(10, 10, 10, 0.7); }
 
 /* ---- Panel / card ---- */
+/* ---- 404 internal links (fixture-row hover, in a grid) ---- */
+.nf-link {
+  position: relative;
+  display: block;
+  padding: 14px 34px 14px 15px;
+  background: var(--surface);
+  border: 1px solid rgba(244, 241, 234, 0.18);
+  border-left: 3px solid transparent;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.nf-link:hover, .nf-link:focus-visible {
+  border-color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--bg-3);
+  transform: translateX(4px);
+}
+.nf-link__label {
+  display: block;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.nf-link__hint {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-dim);
+}
+.nf-link__arrow {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: 17px;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.nf-link:hover .nf-link__arrow, .nf-link:focus-visible .nf-link__arrow { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-link, .nf-link__arrow { transition: none; }
+  .nf-link:hover, .nf-link:focus-visible { transform: none; }
+}
+
 .wup-panel { background: var(--surface); border: 1px solid rgba(244, 241, 234, 0.18); border-radius: 0; }
 .wup-panel--accent-top { border-top: 3px solid var(--accent); }
 .wup-panel--accent-left { border-left: 3px solid var(--accent); }
