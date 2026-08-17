@@ -197,13 +197,12 @@ export async function generateMetadata({ params }: { params: Promise<PageParams>
     openGraph: {
       title: `${title} | WinUPrize`,
       description,
-      ...(isMysteryUnrevealed ? {} : { images: [{ url: competition.mainImageUrl }] }),
+      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${title} | WinUPrize`,
       description,
-      ...(isMysteryUnrevealed ? {} : { images: [competition.mainImageUrl] }),
     },
   };
 }
