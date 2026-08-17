@@ -8,6 +8,12 @@ const MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 const COOKIE_CONSENT_KEY = 'cookie-consent';
 /** Broadcast by the cookie banner so this mounts without a page reload. */
 export const CONSENT_EVENT = 'winuprize:cookie-consent';
+/**
+ * Broadcast once gtag actually exists. Consent alone is not enough to start
+ * sending: the tag still has to load, so anything queued at consent time would
+ * fire into a window with no gtag on it.
+ */
+export const GA_READY_EVENT = 'winuprize:ga-ready';
 
 declare global {
   interface Window {
@@ -74,7 +80,13 @@ export function Analytics() {
         src={`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`}
         strategy="afterInteractive"
       />
-      <Script id="ga4-init" strategy="afterInteractive">
+      <Script
+        id="ga4-init"
+        strategy="afterInteractive"
+        onReady={() => {
+          window.dispatchEvent(new Event(GA_READY_EVENT));
+        }}
+      >
         {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
