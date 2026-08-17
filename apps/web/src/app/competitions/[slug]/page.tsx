@@ -12,6 +12,7 @@ import { ScoreboardClock } from '@/components/common/scoreboard-clock';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { StructuredData } from '@/components/common/structured-data';
 import { Breadcrumbs } from '@/components/common/breadcrumbs';
+import { TrackViewItem } from '@/components/common/track-event';
 import { ShareCompetition } from '@/components/competition/share-competition';
 import { generateCompetitionSchema } from '@/lib/structured-data';
 import { siteConfig } from '@/lib/seo';
@@ -305,6 +306,15 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           status: competition.status,
         })}
       />
+      <TrackViewItem
+        competition={{
+          id: competition.id,
+          name: competition.title,
+          category: competition.category,
+          price: Number(competition.ticketPrice),
+        }}
+      />
+
       {/* Breadcrumbs (also emits BreadcrumbList JSON-LD) */}
       <div className="comp-back">
         <Breadcrumbs
@@ -444,6 +454,8 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <SimpleTicketSelector
                 competitionId={competition.id}
                 competitionSlug={competition.slug}
+                competitionTitle={competition.title}
+                competitionCategory={competition.category}
                 ticketPrice={competition.ticketPrice}
                 maxTicketsPerUser={competition.maxTicketsPerUser}
                 availableTicketCount={availableTicketCount}
@@ -458,6 +470,8 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
               <FreeEntryButton
                 competitionId={competition.id}
                 competitionSlug={competition.slug}
+                competitionTitle={competition.title}
+                competitionCategory={competition.category}
                 userTicketCount={userTicketCount}
                 maxTicketsPerUser={competition.maxTicketsPerUser}
               />

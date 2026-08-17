@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { trackWaitlistSignup } from '@/lib/analytics-events';
 import Image from 'next/image';
 import { Check, Loader2 } from 'lucide-react';
 
@@ -47,6 +48,7 @@ export function ComingSoonOverlay() {
       });
       const data: { ok?: boolean; error?: string } = await res.json();
       if (res.ok && data.ok) {
+        trackWaitlistSignup();
         setStatus('done');
       } else {
         setStatus('error');

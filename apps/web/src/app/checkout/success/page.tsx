@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { TrackPurchase } from '@/components/common/track-event';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -63,6 +64,7 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
             id: true,
             slug: true,
             title: true,
+            category: true,
             mainImageUrl: true,
             drawDate: true,
           },
@@ -178,6 +180,20 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
       {/* Reset this tab's per-competition checkout state so a repeat purchase in the
           same session starts the funnel clean (no stale qcm/reservation dead-ends). */}
       <ClearCheckoutStorage competitionId={order.competition.id} />
+
+      {/* GA4 purchase — deduped on the order number so a refresh can't
+          double-count the sale. */}
+      <TrackPurchase
+        orderNumber={order.orderNumber}
+        value={totalAmount}
+        quantity={paidTickets.length}
+        competition={{
+          id: order.competition.id,
+          name: order.competition.title,
+          category: order.competition.category,
+          price: paidTickets.length > 0 ? Number((totalAmount / paidTickets.length).toFixed(2)) : 0,
+        }}
+      />
       <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
         {/* Celebration */}
         <div style={{ fontSize: '80px', marginBottom: '20px' }}>🎉</div>

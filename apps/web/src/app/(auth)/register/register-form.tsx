@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { trackSignUp } from '@/lib/analytics-events';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -188,6 +189,8 @@ export function RegisterForm() {
       }
 
       // Auto-login after successful registration
+      trackSignUp('credentials');
+
       const signInResult = await signIn('credentials', {
         email: data.email,
         password: data.password,

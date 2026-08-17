@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { trackFreeEntry } from '@/lib/analytics-events';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -9,6 +10,9 @@ import { Loader2, CheckCircle, CalendarClock } from 'lucide-react';
 interface FreeEntryButtonProps {
   competitionId: string;
   competitionSlug: string;
+  /** Analytics only. */
+  competitionTitle: string;
+  competitionCategory: string;
   userTicketCount: number;
   maxTicketsPerUser: number;
 }
@@ -16,6 +20,8 @@ interface FreeEntryButtonProps {
 export function FreeEntryButton({
   competitionId,
   competitionSlug,
+  competitionTitle,
+  competitionCategory,
   userTicketCount,
   maxTicketsPerUser,
 }: FreeEntryButtonProps) {
@@ -65,6 +71,12 @@ export function FreeEntryButton({
         return;
       }
 
+      trackFreeEntry({
+        id: competitionId,
+        name: competitionTitle,
+        category: competitionCategory,
+        price: 0,
+      });
       setEnteredCount((count) => count + 1);
       router.refresh();
       setIsSubmitting(false);

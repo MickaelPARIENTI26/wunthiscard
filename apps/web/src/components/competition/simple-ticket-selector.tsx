@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { trackBeginCheckout } from '@/lib/analytics-events';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { calculateBonusTickets } from '@winucard/shared/utils';
@@ -8,6 +9,9 @@ import { calculateBonusTickets } from '@winucard/shared/utils';
 interface SimpleTicketSelectorProps {
   competitionId: string;
   competitionSlug: string;
+  /** Analytics only — GA4 begin_checkout wants the item name and category. */
+  competitionTitle: string;
+  competitionCategory: string;
   ticketPrice: number;
   maxTicketsPerUser: number;
   availableTicketCount: number;
@@ -19,6 +23,8 @@ interface SimpleTicketSelectorProps {
 export function SimpleTicketSelector({
   competitionId,
   competitionSlug,
+  competitionTitle,
+  competitionCategory,
   ticketPrice,
   maxTicketsPerUser,
   availableTicketCount,
@@ -100,6 +106,16 @@ export function SimpleTicketSelector({
     } else {
       sessionStorage.removeItem(`useReferralTicket_${competitionId}`);
     }
+
+    trackBeginCheckout(
+      {
+        id: competitionId,
+        name: competitionTitle,
+        category: competitionCategory,
+        price: ticketPrice,
+      },
+      quantity
+    );
 
     // ?tickets= lets the server-rendered step header show the real order
     // total; sessionStorage remains the source of truth for the reservation.
