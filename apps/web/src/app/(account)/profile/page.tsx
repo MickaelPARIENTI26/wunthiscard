@@ -5,7 +5,8 @@ import { ProfileForm } from './profile-form';
 import { AddressSection } from './address-section';
 
 export const metadata = {
-  title: 'Profile | WinUPrize',
+  robots: { index: false, follow: false },
+  title: 'Profile',
   description: 'Manage your personal information and profile settings',
 };
 

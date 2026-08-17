@@ -57,7 +57,7 @@ const socialLinks = [
     icon: Instagram,
   },
   {
-    href: 'https://www.tiktok.com/@winuprize',
+    href: 'https://www.tiktok.com/@winuprize.official',
     label: 'TikTok',
     icon: TikTokIcon,
   },

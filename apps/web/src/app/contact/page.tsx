@@ -19,7 +19,7 @@ const infoRows = [
 
 const socials = [
   { href: 'https://www.instagram.com/winuprize.official/', label: 'Instagram' },
-  { href: 'https://www.tiktok.com/@winuprize', label: 'TikTok' },
+  { href: 'https://www.tiktok.com/@winuprize.official', label: 'TikTok' },
 ];
 
 export default function ContactPage() {

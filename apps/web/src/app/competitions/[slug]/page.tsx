@@ -11,7 +11,10 @@ import { FreeEntryButton } from '@/components/competition/free-entry-button';
 import { ScoreboardClock } from '@/components/common/scoreboard-clock';
 import { TrustStrip } from '@/components/home/trust-strip';
 import { StructuredData } from '@/components/common/structured-data';
+import { Breadcrumbs } from '@/components/common/breadcrumbs';
+import { ShareCompetition } from '@/components/competition/share-competition';
 import { generateCompetitionSchema } from '@/lib/structured-data';
+import { siteConfig } from '@/lib/seo';
 import type { CompetitionCategory, CompetitionPrize } from '@winucard/shared/types';
 import { formatPrice } from '@winucard/shared/utils';
 
@@ -303,11 +306,16 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
           status: competition.status,
         })}
       />
-      {/* Back */}
+      {/* Breadcrumbs (also emits BreadcrumbList JSON-LD) */}
       <div className="comp-back">
-        <Link href="/competitions" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.15em', textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-dim)', padding: '12px 0' }}>
-          ← Back to Competitions
-        </Link>
+        <Breadcrumbs
+          baseUrl={siteConfig.url}
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Competitions', href: '/competitions' },
+            { label: isMysteryUnrevealed ? `Mystery ${CATEGORY_LABELS[category]} Card` : competition.title },
+          ]}
+        />
       </div>
 
       {/* HERO */}
@@ -382,6 +390,12 @@ export default async function CompetitionDetailPage({ params }: { params: Promis
             <div className="comp-prize-line">
               Win this — worth <b>{formattedPrizeValue}</b>
             </div>
+
+            <ShareCompetition
+              url={`${siteConfig.url}/competitions/${competition.slug}`}
+              title={isMysteryUnrevealed ? `Mystery ${CATEGORY_LABELS[category]} Card` : competition.title}
+              prizeValue={competition.prizeValue}
+            />
 
             {/* Progress + countdown */}
             {hasTotalTickets && (

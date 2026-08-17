@@ -6,7 +6,8 @@ import { prisma } from '@/lib/db';
 import { Trophy, Package, Truck, CheckCircle, ExternalLink } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Wins | WinUPrize',
+  robots: { index: false, follow: false },
+  title: 'My Wins',
   description: 'View all your competition wins and delivery status',
 };
 

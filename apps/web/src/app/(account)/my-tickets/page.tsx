@@ -6,7 +6,8 @@ import { prisma } from '@/lib/db';
 import { Calendar, Trophy } from 'lucide-react';
 
 export const metadata = {
-  title: 'My Tickets | WinUPrize',
+  robots: { index: false, follow: false },
+  title: 'My Tickets',
   description: 'View all your competition entries and ticket numbers',
 };
 

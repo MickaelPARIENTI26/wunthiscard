@@ -80,7 +80,7 @@ export function SocialSettingsForm({ settings }: SocialSettingsFormProps) {
               name="socialTiktok"
               type="url"
               defaultValue={settings.socialTiktok ?? ''}
-              placeholder="https://tiktok.com/@winuprize"
+              placeholder="https://tiktok.com/@winuprize.official"
             />
           </div>
 

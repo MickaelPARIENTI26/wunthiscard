@@ -4,6 +4,7 @@ import './globals.css';
 import { StructuredData } from '@/components/common/structured-data';
 import { generateHomePageSchema } from '@/lib/structured-data';
 import { CookieConsentBanner } from '@/components/legal/cookie-consent-banner';
+import { Analytics } from '@/components/common/analytics';
 import { AgeGate } from '@/components/legal/age-gate';
 import { AuthHeader } from '@/components/layout/auth-header';
 import { TickerBar } from '@/components/layout/ticker-bar';
@@ -147,6 +148,9 @@ export default function RootLayout({
           <main id="main-content" className="flex-1">{children}</main>
           <Footer />
           <CookieConsentBanner />
+          <Suspense fallback={null}>
+            <Analytics />
+          </Suspense>
           <Toaster />
           <AgeGate />
           <Suspense fallback={null}><ReferralTracker /></Suspense>

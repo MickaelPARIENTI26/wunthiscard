@@ -6,7 +6,9 @@ import { auth } from '@/lib/auth';
 import { ReferralClientSection } from './referral-client-section';
 
 export const metadata: Metadata = {
-  title: 'Referrals | WinUPrize',
+  title: 'Referrals',
+  description: 'Invite friends to WinUPrize and earn a free ticket on their first purchase.',
+  robots: { index: false, follow: false },
 };
 
 function generateReferralCode(firstName: string): string {

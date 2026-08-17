@@ -5,7 +5,8 @@ import { AddressList } from './address-list';
 import { AddressForm } from './address-form';
 
 export const metadata = {
-  title: 'Addresses | WinUPrize',
+  robots: { index: false, follow: false },
+  title: 'Addresses',
   description: 'Manage your delivery addresses',
 };
 

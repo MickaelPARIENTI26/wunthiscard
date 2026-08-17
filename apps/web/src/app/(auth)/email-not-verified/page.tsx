@@ -1,4 +1,11 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
+
+export const metadata: Metadata = {
+  title: 'Verify Your Email',
+  description: 'Confirm your email address to finish setting up your WinUPrize account.',
+};
+
 import { EmailNotVerifiedContent } from './email-not-verified-content';
 
 export default function EmailNotVerifiedPage() {

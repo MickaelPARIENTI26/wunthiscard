@@ -519,7 +519,7 @@ async function main() {
         socialLinks: {
           instagram: 'https://instagram.com/winuprize',
           twitter: 'https://twitter.com/winuprize',
-          tiktok: 'https://tiktok.com/@winuprize',
+          tiktok: 'https://tiktok.com/@winuprize.official',
           facebook: 'https://facebook.com/winuprize',
           discord: 'https://discord.gg/winuprize',
         },
@@ -701,7 +701,7 @@ async function main() {
         <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
           <tr>
             <td align="center" style="padding-bottom: 20px;">
-              <a href="https://tiktok.com/@winuprize" style="display: inline-block; margin: 0 8px;"><img src="https://winuprize.com/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
+              <a href="https://tiktok.com/@winuprize.official" style="display: inline-block; margin: 0 8px;"><img src="https://winuprize.com/icons/tiktok.png" alt="TikTok" width="32" height="32" style="display: block;" /></a>
               <a href="https://instagram.com/winuprize" style="display: inline-block; margin: 0 8px;"><img src="https://winuprize.com/icons/instagram.png" alt="Instagram" width="32" height="32" style="display: block;" /></a>
               <a href="https://youtube.com/@winuprize" style="display: inline-block; margin: 0 8px;"><img src="https://winuprize.com/icons/youtube.png" alt="YouTube" width="32" height="32" style="display: block;" /></a>
               <a href="https://discord.gg/winuprize" style="display: inline-block; margin: 0 8px;"><img src="https://winuprize.com/icons/discord.png" alt="Discord" width="32" height="32" style="display: block;" /></a>

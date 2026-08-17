@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db';
 
 export const metadata: Metadata = {
   title: 'Unsubscribe',
+  description: 'Manage the marketing emails you receive from WinUPrize.',
   robots: { index: false, follow: false },
 };
 

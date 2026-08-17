@@ -1550,6 +1550,98 @@ a { transition: color 0.2s; }
 .wup-clock__cell--sec .wup-clock__l { color: rgba(10, 10, 10, 0.7); }
 
 /* ---- Panel / card ---- */
+/* ---- Breadcrumbs ---- */
+.wup-crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.wup-crumbs li { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.wup-crumbs a, .wup-crumbs span[aria-current] {
+  font-family: var(--display);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.wup-crumbs a {
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.wup-crumbs a:hover, .wup-crumbs a:focus-visible { color: var(--accent); }
+.wup-crumbs span[aria-current] {
+  color: var(--ink-dim);
+  /* Deep competition titles would otherwise wrap the trail onto three lines */
+  max-width: 46ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wup-crumbs__sep { color: rgba(244, 241, 234, 0.28); font-size: 12px; }
+
+/* ---- Share row on a competition page ---- */
+.share-comp {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.share-comp__label {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-right: 2px;
+}
+.share-comp__networks { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-comp__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid rgba(244, 241, 234, 0.2);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink-dim);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+}
+.share-comp__btn:hover, .share-comp__btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.share-comp__btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0A0A0A;
+}
+.share-comp__btn--primary:hover, .share-comp__btn--primary:focus-visible {
+  color: #0A0A0A;
+  box-shadow: var(--glow);
+}
+/* With the OS share sheet available, the per-network links are noise on a
+   phone — the sheet already lists those apps. */
+@media (max-width: 640px) {
+  .share-comp__networks--secondary { display: none; }
+}
+
 /* ---- 404 internal links (fixture-row hover, in a grid) ---- */
 .nf-link {
   position: relative;

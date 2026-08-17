@@ -3,7 +3,7 @@ import { BrandWordmark } from './header';
 
 const socialButtons = [
   { href: 'https://www.instagram.com/winuprize.official/', label: 'Instagram' },
-  { href: 'https://www.tiktok.com/@winuprize', label: 'TikTok' },
+  { href: 'https://www.tiktok.com/@winuprize.official', label: 'TikTok' },
   { href: 'https://www.facebook.com/winuprize', label: 'Facebook' },
 ];
 

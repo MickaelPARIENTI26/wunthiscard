@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { CONSENT_EVENT } from '@/components/common/analytics';
 import Link from 'next/link';
 
 const COOKIE_CONSENT_KEY = 'cookie-consent';
@@ -45,11 +46,9 @@ export function CookieConsentBanner() {
       setIsVisible(false);
     }, 300);
 
-    // If accepted, you could trigger analytics initialization here
-    if (accepted) {
-      // Initialize analytics, etc.
-      // window.gtag?.('consent', 'update', { analytics_storage: 'granted' });
-    }
+    // Let <Analytics> mount (or stay away) straight away rather than on the
+    // next page load.
+    window.dispatchEvent(new Event(CONSENT_EVENT));
   };
 
   if (!isVisible) {

@@ -6,7 +6,8 @@ import { NotificationPreferences } from './notification-preferences';
 import { DeleteAccountSection } from './delete-account-section';
 
 export const metadata = {
-  title: 'Settings | WinUPrize',
+  robots: { index: false, follow: false },
+  title: 'Settings',
   description: 'Manage your account settings and security options',
 };
 
