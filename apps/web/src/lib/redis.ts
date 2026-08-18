@@ -356,6 +356,10 @@ export const rateLimits = {
   // Global unauthenticated: 30 per minute (used by the public ticket-status poll)
   globalUnauth: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:global-unauth' }),
 
+  // Wheel: 30 spins per minute. A spin is single-use, so this is not the
+  // protection — it just stops a script probing spin ids at speed.
+  wheelSpin: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:wheel' }),
+
   // Coming-soon waiting list: 5 signups per hour per IP (unique-email upsert
   // dedupes anyway; this just blunts scripted spam).
   waitlist: createRateLimiter({ requests: 5, window: '1 h', prefix: 'ratelimit:waitlist' }),
