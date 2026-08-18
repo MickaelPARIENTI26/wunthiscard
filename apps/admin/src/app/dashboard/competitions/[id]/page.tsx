@@ -14,6 +14,7 @@ import { CancelCompetitionDialog } from './cancel-competition-dialog';
 import { RevealMysteryButton } from './reveal-mystery-button';
 import { ParticipantsExport } from './participants-export';
 import { RecordWinner } from './record-winner';
+import { WheelSettings } from './wheel-settings';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
@@ -36,6 +37,7 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
   const competition = await prisma.competition.findUnique({
     where: { id },
     include: {
+      wheelConfig: { include: { slots: true } },
       _count: {
         select: {
           tickets: true,
@@ -204,6 +206,30 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
       </div>
 
       <ParticipantsExport competitionId={id} stats={participantStats} />
+
+      <WheelSettings
+        competitionId={id}
+        totalTickets={competition.totalTickets}
+        config={
+          competition.wheelConfig
+            ? {
+                enabled: competition.wheelConfig.enabled,
+                jackpotEnabled: competition.wheelConfig.jackpotEnabled,
+                jackpotDescription: competition.wheelConfig.jackpotDescription,
+                jackpotValue: competition.wheelConfig.jackpotValue
+                  ? Number(competition.wheelConfig.jackpotValue)
+                  : null,
+                couponValidityDays: competition.wheelConfig.couponValidityDays,
+              }
+            : null
+        }
+        slots={(competition.wheelConfig?.slots ?? []).map((s) => ({
+          type: s.type,
+          value: s.value,
+          quantityConfigured: s.quantityConfigured,
+          quantityWon: s.quantityWon,
+        }))}
+      />
 
       {canRecordWinner && <RecordWinner competitionId={id} />}
 
