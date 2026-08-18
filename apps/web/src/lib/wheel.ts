@@ -1,5 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { prisma } from '@/lib/db';
+import { sendJackpotAlertEmail } from '@/lib/email';
 import type { WheelSlotType } from '@winucard/database';
 
 /**
@@ -112,8 +113,15 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       expiresAt: true,
       wheelConfigId: true,
       competitionId: true,
+      orderId: true,
       wheelConfig: {
-        select: { enabled: true, jackpotEnabled: true, couponValidityDays: true },
+        select: {
+          enabled: true,
+          jackpotEnabled: true,
+          couponValidityDays: true,
+          jackpotDescription: true,
+          jackpotValue: true,
+        },
       },
       // The competition's CURRENT draw date is the authority, not the copy
       // stored on the spin: an admin who pushes the date back would otherwise
@@ -127,8 +135,9 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
   if (spin.competition.drawDate.getTime() <= Date.now()) return { ok: false, reason: 'EXPIRED' };
   if (!spin.wheelConfig.enabled) return { ok: false, reason: 'WHEEL_DISABLED' };
 
+  let outcome: SpinOutcome;
   try {
-    return await prisma.$transaction(async (tx) => {
+    outcome = await prisma.$transaction(async (tx) => {
       // Claim the spin. The spunAt IS NULL guard is what stops a double-click,
       // two tabs, or a replayed request from spending the same spin twice.
       const claimed = await tx.wheelSpin.updateMany({
@@ -144,6 +153,21 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
         where: { id: spinId },
         data: { resultType: result.type, resultValue: result.value },
       });
+
+      if (result.type === 'JACKPOT') {
+        // Created inside the same transaction as the stock decrement: the card
+        // being gone and someone owning it must never disagree.
+        await tx.jackpotWin.create({
+          data: {
+            spinId,
+            competitionId: spin.competitionId,
+            userId,
+            orderId: spin.orderId,
+            prizeDescription: spin.wheelConfig.jackpotDescription ?? 'Graded card',
+            prizeValue: spin.wheelConfig.jackpotValue,
+          },
+        });
+      }
 
       let code: string | undefined;
       if (result.type === 'PERCENT_OFF') {
@@ -171,6 +195,54 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
     if (e instanceof SpinError) return { ok: false, reason: e.reason };
     throw e;
   }
+
+  // Outside the transaction, and swallowed: the win is committed and the card
+  // is already out of the pool. A mail outage must not cost the winner their
+  // prize, and the admin panel raises the same alert regardless.
+  if (outcome.ok && outcome.result.type === 'JACKPOT') {
+    void notifyJackpot(spinId).catch((e) =>
+      console.error('Jackpot alert email failed (the win is still recorded):', e)
+    );
+  }
+
+  return outcome;
+}
+
+/** Look up everything the team needs and send the alert. Never throws upward. */
+async function notifyJackpot(spinId: string): Promise<void> {
+  const win = await prisma.jackpotWin.findUnique({
+    where: { spinId },
+    select: {
+      spinId: true,
+      orderId: true,
+      prizeDescription: true,
+      prizeValue: true,
+      createdAt: true,
+      competition: { select: { title: true } },
+      user: { select: { id: true, firstName: true, lastName: true, email: true, phone: true } },
+    },
+  });
+  if (!win?.user) return;
+
+  const settings = await prisma.siteSettings.findUnique({ where: { id: 'global' } });
+  const data = (settings?.data ?? {}) as { jackpotNotificationEmail?: string };
+  // Configurable, never hardcoded — falls back to the public inbox so the alert
+  // still lands somewhere if nobody has set it.
+  const to = data.jackpotNotificationEmail?.trim() || 'contact@winuprize.com';
+
+  await sendJackpotAlertEmail(to, {
+    competitionTitle: win.competition.title,
+    prizeDescription: win.prizeDescription,
+    prizeValue: win.prizeValue ? Number(win.prizeValue) : null,
+    firstName: win.user.firstName,
+    lastName: win.user.lastName,
+    email: win.user.email,
+    phone: win.user.phone,
+    userId: win.user.id,
+    orderId: win.orderId,
+    spinId: win.spinId,
+    wonAt: win.createdAt,
+  });
 }
 
 class SpinError extends Error {

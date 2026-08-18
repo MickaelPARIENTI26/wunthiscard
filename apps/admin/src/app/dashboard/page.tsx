@@ -6,6 +6,7 @@ import { DollarSign, ShoppingCart, Users, Trophy, UserPlus, Ticket } from 'lucid
 import { RevenueChart } from '@/components/dashboard/revenue-chart';
 import { RecentOrders } from '@/components/dashboard/recent-orders';
 import { ActiveCompetitions } from '@/components/dashboard/active-competitions';
+import { JackpotAlert } from '@/components/dashboard/jackpot-alert';
 import { formatPrice } from '@winucard/shared';
 
 async function getStats() {
@@ -342,6 +343,10 @@ async function RevenueChartWrapper() {
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
+      <Suspense fallback={null}>
+        <JackpotAlert />
+      </Suspense>
+
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
         <p className="text-muted-foreground">

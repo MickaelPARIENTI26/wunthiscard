@@ -30,6 +30,8 @@ interface SiteSettingsData {
   socialYoutube?: string;
   socialTiktok?: string;
   socialDiscord?: string;
+  /** Where the wheel jackpot alert is sent. Never hardcoded. */
+  jackpotNotificationEmail?: string;
   bonusTiers?: Array<{ minTickets: number; bonusPercent: number }>;
   ticketPacks?: Array<{
     name: string;

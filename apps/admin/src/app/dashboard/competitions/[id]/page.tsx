@@ -15,6 +15,7 @@ import { RevealMysteryButton } from './reveal-mystery-button';
 import { ParticipantsExport } from './participants-export';
 import { RecordWinner } from './record-winner';
 import { WheelSettings } from './wheel-settings';
+import { JackpotWinner } from './jackpot-winner';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
@@ -38,6 +39,17 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
     where: { id },
     include: {
       wheelConfig: { include: { slots: true } },
+      jackpotWins: {
+        include: {
+          user: {
+            select: {
+              id: true, firstName: true, lastName: true, email: true, phone: true,
+              addresses: { take: 1, orderBy: { isDefault: 'desc' } },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      },
       _count: {
         select: {
           tickets: true,
@@ -206,6 +218,42 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
       </div>
 
       <ParticipantsExport competitionId={id} stats={participantStats} />
+
+      {competition.jackpotWins.map((win) => {
+        const addr = win.user?.addresses?.[0];
+        return (
+          <JackpotWinner
+            key={win.id}
+            win={{
+              id: win.id,
+              status: win.status,
+              prizeDescription: win.prizeDescription,
+              prizeValue: win.prizeValue ? Number(win.prizeValue) : null,
+              adminNotes: win.adminNotes,
+              trackingNumber: win.trackingNumber,
+              shippedAt: win.shippedAt?.toISOString() ?? null,
+              createdAt: win.createdAt.toISOString(),
+              spinId: win.spinId,
+              orderId: win.orderId,
+              competitionId: win.competitionId,
+              user: win.user
+                ? {
+                    id: win.user.id,
+                    firstName: win.user.firstName,
+                    lastName: win.user.lastName,
+                    email: win.user.email,
+                    phone: win.user.phone,
+                  }
+                : null,
+              address: addr
+                ? [addr.line1, addr.line2, addr.city, addr.postcode, addr.country]
+                    .filter(Boolean)
+                    .join(', ')
+                : null,
+            }}
+          />
+        );
+      })}
 
       <WheelSettings
         competitionId={id}

@@ -785,3 +785,77 @@ export async function sendCartRecoveryEmails(
   });
   return sendMarketingBatch(messages);
 }
+
+// ==========================================
+// JACKPOT — internal alert
+// ==========================================
+
+interface JackpotAlertData {
+  competitionTitle: string;
+  prizeDescription: string;
+  prizeValue: number | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string | null;
+  userId: string;
+  orderId: string | null;
+  spinId: string;
+  wonAt: Date;
+}
+
+/**
+ * Tell the team a jackpot has been won.
+ *
+ * This is an alert, not part of awarding the prize: the win is already
+ * committed and the card already out of stock by the time this runs. A failed
+ * send must therefore never surface as an error to the winner — it is logged
+ * and the admin panel shows the same alert anyway.
+ */
+export async function sendJackpotAlertEmail(to: string, data: JackpotAlertData) {
+  const value = data.prizeValue !== null ? formatGbp(data.prizeValue) : 'Not set';
+  const rows: [string, string][] = [
+    ['Competition', data.competitionTitle],
+    ['Prize', data.prizeDescription],
+    ['Approximate value', value],
+    ['Winner', `${data.firstName} ${data.lastName}`],
+    ['Email', data.email],
+    ['Phone', data.phone ?? 'Not provided'],
+    ['User ID', data.userId],
+    ['Order ID', data.orderId ?? 'n/a'],
+    ['Wheel Spin ID', data.spinId],
+    ['Date', new Intl.DateTimeFormat('en-GB', { dateStyle: 'full', timeStyle: 'short', timeZone: 'Europe/London' }).format(data.wonAt)],
+  ];
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">🎉 Wheel jackpot won</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 24px;">
+      A user has won the wheel jackpot. The reward is already recorded and removed
+      from the pool — this email is a notification, not an action.
+    </p>
+    <table style="width: 100%; border-collapse: collapse; margin: 0 0 24px;">
+      ${rows
+        .map(
+          ([k, v]) => `
+      <tr>
+        <td style="padding: 8px 12px 8px 0; color: #9A958B; font-size: 13px; text-transform: uppercase; white-space: nowrap; vertical-align: top;">${escapeHtml(k)}</td>
+        <td style="padding: 8px 0; color: #F4F1EA; font-size: 15px; word-break: break-word;">${escapeHtml(v)}</td>
+      </tr>`
+        )
+        .join('')}
+    </table>
+    <p style="color: #9A958B; font-size: 14px; margin: 0;">
+      Log in to the admin panel to process the reward.
+    </p>
+  `);
+
+  return sendEmail({
+    to,
+    subject: '🎉 WinUPrize — JACKPOT WON',
+    html,
+  });
+}
+
+function formatGbp(amount: number): string {
+  return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(amount);
+}

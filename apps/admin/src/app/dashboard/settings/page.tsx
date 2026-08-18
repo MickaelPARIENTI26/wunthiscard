@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CompanySettingsForm } from '@/components/settings/company-settings-form';
 import { SocialSettingsForm } from '@/components/settings/social-settings-form';
+import { JackpotSettingsForm } from '@/components/settings/jackpot-settings-form';
 import { BonusTiersForm } from '@/components/settings/bonus-tiers-form';
 import { PaymentSettingsForm } from '@/components/settings/payment-settings-form';
 import { HomepageSettingsForm } from '@/components/settings/homepage-settings-form';
@@ -90,6 +91,7 @@ export default async function SettingsPage() {
 
         <TabsContent value="social">
           <SocialSettingsForm settings={settings} />
+          <JackpotSettingsForm settings={settings} />
         </TabsContent>
 
         <TabsContent value="bonus">
