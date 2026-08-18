@@ -46,6 +46,9 @@ export async function grantSpinsForOrder(orderId: string): Promise<number> {
 
   const config = order?.competition.wheelConfig;
   if (!order || !config?.enabled) return 0;
+  // Anonymised order (account deleted): spins would belong to nobody and could
+  // never be played, so don't mint them.
+  if (!order.userId) return 0;
 
   const paidTickets = await prisma.ticket.findMany({
     where: { orderId: order.id, isBonus: false, isFreeEntry: false, status: 'SOLD' },
@@ -98,12 +101,16 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       expiresAt: true,
       wheelConfigId: true,
       wheelConfig: { select: { enabled: true, jackpotEnabled: true } },
+      // The competition's CURRENT draw date is the authority, not the copy
+      // stored on the spin: an admin who pushes the date back would otherwise
+      // kill spins that should still be live.
+      competition: { select: { drawDate: true } },
     },
   });
 
   if (!spin || spin.userId !== userId) return { ok: false, reason: 'NOT_FOUND' };
   if (spin.spunAt) return { ok: false, reason: 'ALREADY_SPUN' };
-  if (spin.expiresAt.getTime() <= Date.now()) return { ok: false, reason: 'EXPIRED' };
+  if (spin.competition.drawDate.getTime() <= Date.now()) return { ok: false, reason: 'EXPIRED' };
   if (!spin.wheelConfig.enabled) return { ok: false, reason: 'WHEEL_DISABLED' };
 
   try {
