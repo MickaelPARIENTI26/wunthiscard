@@ -13,6 +13,17 @@ import type { WheelSlotType } from '@winucard/database';
  * zero rows and re-draws.
  */
 
+/**
+ * Code alphabet without 0/O/1/I: these get read aloud and typed by hand.
+ */
+const CODE_ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+function generatePromoCode(percentOff: number): string {
+  let body = '';
+  for (let i = 0; i < 10; i++) body += CODE_ALPHABET[randomInt(CODE_ALPHABET.length)];
+  return `W${percentOff}-${body}`;
+}
+
 export interface DrawResult {
   slotId: string;
   type: WheelSlotType;
@@ -80,7 +91,7 @@ export type SpinFailure =
   | 'POOL_EMPTY';
 
 export type SpinOutcome =
-  | { ok: true; result: DrawResult }
+  | { ok: true; result: DrawResult; code?: string }
   | { ok: false; reason: SpinFailure };
 
 /**
@@ -100,7 +111,10 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       spunAt: true,
       expiresAt: true,
       wheelConfigId: true,
-      wheelConfig: { select: { enabled: true, jackpotEnabled: true } },
+      competitionId: true,
+      wheelConfig: {
+        select: { enabled: true, jackpotEnabled: true, couponValidityDays: true },
+      },
       // The competition's CURRENT draw date is the authority, not the copy
       // stored on the spin: an admin who pushes the date back would otherwise
       // kill spins that should still be live.
@@ -131,7 +145,27 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
         data: { resultType: result.type, resultValue: result.value },
       });
 
-      return { ok: true as const, result };
+      let code: string | undefined;
+      if (result.type === 'PERCENT_OFF') {
+        // 32^10 combinations, so a collision is vanishingly unlikely — and if
+        // one ever happened the unique index aborts this transaction, which
+        // un-claims the spin. The customer re-spins; nothing is lost.
+        code = generatePromoCode(result.value);
+        await tx.promoCode.create({
+          data: {
+            code,
+            userId,
+            spinId,
+            competitionId: spin.competitionId,
+            percentOff: result.value,
+            expiresAt: new Date(
+              Date.now() + spin.wheelConfig.couponValidityDays * 24 * 60 * 60 * 1000
+            ),
+          },
+        });
+      }
+
+      return { ok: true as const, result, code };
     });
   } catch (e) {
     if (e instanceof SpinError) return { ok: false, reason: e.reason };

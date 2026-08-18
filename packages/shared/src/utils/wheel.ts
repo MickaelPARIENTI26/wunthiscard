@@ -116,3 +116,33 @@ export function validateWheelConfig(
 
   return { errors, warnings };
 }
+
+/**
+ * Apply a percentage discount to an order, in pence.
+ *
+ * Percentages must be applied to the TOTAL, never per unit. Stripe computes
+ * amount_total as unit_amount x quantity, and fulfilment refuses any order
+ * where that does not equal the stored total to the penny
+ * (fulfill-checkout.ts, isChargedAmountValid). Per-unit rounding drifts:
+ * 10 tickets at £2.99 less 10% is £26.91, but rounding £2.691 per ticket to
+ * 269p and multiplying gives £26.90 — a penny short, and the buyer would pay
+ * and receive nothing.
+ *
+ * Callers must therefore send Stripe a single line item of quantity 1 whose
+ * unit_amount is exactly `discountedPence`.
+ */
+export function applyPercentDiscount(
+  ticketPricePence: number,
+  quantity: number,
+  percentOff: number
+): { subtotalPence: number; discountPence: number; discountedPence: number } {
+  const subtotalPence = ticketPricePence * quantity;
+  // Round the discount down so the customer is never charged a fraction more
+  // than the advertised percentage.
+  const discountPence = Math.floor((subtotalPence * percentOff) / 100);
+  return {
+    subtotalPence,
+    discountPence,
+    discountedPence: subtotalPence - discountPence,
+  };
+}

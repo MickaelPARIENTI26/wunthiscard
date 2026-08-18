@@ -7,11 +7,15 @@ import { prisma } from '@/lib/db';
 import { stripe, calculateBonusTickets, generateOrderNumber } from '@/lib/stripe';
 import { getReservation, extendReservation, recreateReservation, releaseTicketsFromRedis, hasPassedQcm, markQcmPassed, rateLimits, CHECKOUT_RESERVATION_TTL } from '@/lib/redis';
 import { getClientIp } from '@/lib/get-client-ip';
+import { lookupPromoCode, reservePromoCode, releasePromoCode } from '@/lib/promo-code';
+import { applyPercentDiscount } from '@winucard/shared';
 
 const createSessionSchema = z.object({
   competitionId: z.string().min(1),
   ticketNumbers: z.array(z.number().int().positive()).max(100).optional(),
   useReferralTicket: z.boolean().optional(),
+  /** One code per order — codes never stack with each other. */
+  promoCode: z.string().trim().max(32).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -261,7 +265,37 @@ export async function POST(request: NextRequest) {
 
     const paidTicketCount = applyReferralTicket ? ticketCount - 1 : ticketCount;
 
-    const totalAmount = paidTicketCount * ticketPrice;
+    // Percentages apply to the TOTAL. Applying one per ticket and multiplying
+    // drifts by a penny (10 x £2.99 less 10% is £26.91, not £26.90), and
+    // fulfilment refuses any order whose Stripe total isn't an exact match —
+    // the customer would pay and receive nothing.
+    const subtotalPence = Math.round(ticketPrice * 100) * paidTicketCount;
+    let promo: { id: string; code: string; percentOff: number } | null = null;
+    let totalPence = subtotalPence;
+
+    if (validation.data.promoCode) {
+      const lookup = await lookupPromoCode(validation.data.promoCode, userId);
+      if (!lookup.ok) {
+        const messages: Record<typeof lookup.reason, string> = {
+          NOT_FOUND: 'That promo code does not exist.',
+          NOT_YOURS: 'That promo code belongs to another account.',
+          ALREADY_USED: 'That promo code has already been used.',
+          EXPIRED: 'That promo code has expired.',
+        };
+        return NextResponse.json(
+          { error: messages[lookup.reason], code: lookup.reason },
+          { status: 400 }
+        );
+      }
+      promo = lookup.promo;
+      totalPence = applyPercentDiscount(
+        Math.round(ticketPrice * 100),
+        paidTicketCount,
+        promo.percentOff
+      ).discountedPence;
+    }
+
+    const totalAmount = totalPence / 100;
 
     // Create order in database (PENDING status). ticketCount = total tickets the
     // user receives; totalAmount reflects what they actually pay. Regenerate the
@@ -292,6 +326,19 @@ export async function POST(request: NextRequest) {
             : undefined;
         if (code === 'P2002' && attempt < 4) continue; // orderNumber collision — retry
         throw e;
+      }
+    }
+
+    // Claim the code now, not at payment: two tabs would otherwise both spend
+    // it. Guarded on redeemedAt IS NULL, so exactly one checkout wins.
+    if (order && promo) {
+      const reserved = await reservePromoCode(promo.id, userId, order.id);
+      if (!reserved) {
+        await prisma.order.delete({ where: { id: order.id } }).catch(() => {});
+        return NextResponse.json(
+          { error: 'That promo code has already been used.', code: 'ALREADY_USED' },
+          { status: 400 }
+        );
       }
     }
 
@@ -332,12 +379,18 @@ export async function POST(request: NextRequest) {
         ticketCount: ticketCount.toString(),
         bonusTickets: bonusTickets.toString(),
         referralTicketUsed: applyReferralTicket ? '1' : '0',
+        promoCode: promo?.code ?? '',
+        promoPercentOff: promo ? String(promo.percentOff) : '',
       },
       line_items: [
         {
           price_data: {
             currency: 'gbp',
-            unit_amount: Math.round(ticketPrice * 100), // Stripe uses cents/pence
+            // With a discount the whole order becomes ONE unit priced at the
+            // exact discounted total. Keeping quantity x unit_amount would let
+            // rounding put Stripe's total a penny away from the order's, and
+            // fulfilment refuses that outright.
+            unit_amount: promo ? totalPence : Math.round(ticketPrice * 100),
             product_data: {
               name: `${paidTicketCount} Ticket${paidTicketCount > 1 ? 's' : ''} - ${competition.title}`,
               description: [
@@ -347,13 +400,14 @@ export async function POST(request: NextRequest) {
                 bonusTickets > 0
                   ? `Includes ${bonusTickets} bonus ticket${bonusTickets > 1 ? 's' : ''}!`
                   : null,
+                promo ? `Promo ${promo.code} applied — ${promo.percentOff}% off.` : null,
               ]
                 .filter(Boolean)
                 .join(' ') || undefined,
               images: competition.mainImageUrl ? [competition.mainImageUrl] : [],
             },
           },
-          quantity: paidTicketCount,
+          quantity: promo ? 1 : paidTicketCount,
         },
       ],
       payment_intent_data: {
@@ -370,6 +424,27 @@ export async function POST(request: NextRequest) {
       });
     } catch (stripeError) {
       console.error('Stripe checkout session creation failed:', stripeError);
+      // Stripe refused the session, so nothing was bought. Hand back both the
+      // promo code and the referral ticket. Each is wrapped separately: if one
+      // restore throws, the other must still happen — losing an advantage to a
+      // failed checkout is exactly the kind of quiet unfairness nobody reports.
+      if (promo) {
+        try {
+          await releasePromoCode(promo.id);
+          await prisma.auditLog.create({
+            data: {
+              userId,
+              action: 'PROMO_CODE_RESTORED',
+              entity: 'order',
+              entityId: order.id,
+              metadata: { orderNumber: order.orderNumber, code: promo.code },
+            },
+          });
+        } catch (restoreError) {
+          console.error('Failed to release promo code after Stripe failure:', restoreError);
+        }
+      }
+
       // Re-credit the referral free ticket decremented above so it isn't silently lost.
       if (applyReferralTicket) {
         try {

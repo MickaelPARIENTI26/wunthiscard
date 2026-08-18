@@ -141,6 +141,30 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
     await releaseTicketsFromRedis(order.competitionId, order.userId);
   }
 
+  // Hand back the promo code reserved at session creation. Guarded by the
+  // atomic PENDING → CANCELLED flip above, so a retried webhook can't release
+  // a code that a later successful checkout has since consumed.
+  const promoCode = session.metadata?.promoCode;
+  if (promoCode) {
+    try {
+      await prisma.promoCode.updateMany({
+        where: { code: promoCode, redeemedOrderId: orderId },
+        data: { redeemedAt: null, redeemedOrderId: null },
+      });
+      await prisma.auditLog.create({
+        data: {
+          userId: order.userId,
+          action: 'PROMO_CODE_RESTORED',
+          entity: 'order',
+          entityId: orderId,
+          metadata: { orderNumber: order.orderNumber, code: promoCode, reason: 'session_expired' },
+        },
+      });
+    } catch (e) {
+      console.error('Failed to release promo code on session expiry:', e);
+    }
+  }
+
   // Re-credit the buyer's free referral ticket if one was reserved for this order at
   // checkout (decremented atomically in create-session, NOT here). The /checkout/cancel
   // page does the same when the user lands there — but on a SILENT expiry the buyer never
