@@ -54,6 +54,9 @@ model User {
   tickets            Ticket[]
   wins               Win[]
   auditLogs          AuditLog[]
+  wheelSpins         WheelSpin[]
+  promoCodes         PromoCode[]
+  jackpotWins        JackpotWin[]
   drawnCompetitions  Competition[] @relation("DrawnCompetitions")
   drawLogs           DrawLog[]     @relation("DrawnByUser")
   referredBy         User?         @relation("Referrals", fields: [referredById], references: [id], onDelete: SetNull)
@@ -211,10 +214,14 @@ model Competition {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets   Ticket[]
-  orders    Order[]
-  wins      Win[]
-  drawLogs  DrawLog[]
+  tickets     Ticket[]
+  orders      Order[]
+  wins        Win[]
+  drawLogs    DrawLog[]
+  wheelConfig WheelConfig?
+  wheelSpins  WheelSpin[]
+  jackpotWins JackpotWin[]
+  promoCodes  PromoCode[]
   drawnBy   User?     @relation("DrawnCompetitions", fields: [drawnById], references: [id], onDelete: SetNull)
 
   @@index([status])
@@ -263,6 +270,7 @@ model Ticket {
   competition Competition @relation(fields: [competitionId], references: [id])
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   order       Order?      @relation(fields: [orderId], references: [id])
+  wheelSpin   WheelSpin?
 
   @@unique([competitionId, ticketNumber])
   @@index([competitionId, status])
@@ -310,6 +318,9 @@ model Order {
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   competition Competition @relation(fields: [competitionId], references: [id])
   tickets     Ticket[]
+  wheelSpins  WheelSpin[]
+  jackpotWins JackpotWin[]
+  promoCodesRedeemed PromoCode[] @relation("PromoCodeRedeemedOrder")
 
   @@index([userId])
   @@index([competitionId])
@@ -490,4 +501,156 @@ model WaitlistSubscriber {
   notifiedAt DateTime?
 
   @@map("waitlist_subscribers")
+}
+
+// ==========================================
+// WHEEL — post-purchase reward wheel
+// See tasks/wheel-plan.md for the design decisions behind this.
+// ==========================================
+
+enum WheelSlotType {
+  NO_WIN
+  PERCENT_OFF
+  JACKPOT
+}
+
+enum JackpotStatus {
+  PENDING
+  CONTACTED
+  ADDRESS_CONFIRMED
+  SHIPPED
+  DELIVERED
+}
+
+/// Per-competition wheel settings. One row per competition, created by the admin.
+model WheelConfig {
+  id            String  @id @default(cuid())
+  competitionId String  @unique
+  enabled       Boolean @default(false)
+
+  jackpotEnabled     Boolean  @default(true)
+  jackpotDescription String?
+  jackpotValue       Decimal? @db.Decimal(10, 2)
+
+  /// How long a promo code stays valid once won.
+  couponValidityDays Int @default(30)
+
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  slots       WheelSlot[]
+  spins       WheelSpin[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// One reward kind and its finite stock — the wheel draws WITHOUT replacement,
+/// so a slot with quantityConfigured = 1 can be won exactly once.
+model WheelSlot {
+  id            String        @id @default(cuid())
+  wheelConfigId String
+  type          WheelSlotType
+  /// Percentage for PERCENT_OFF; 0 for NO_WIN and JACKPOT so the unique index
+  /// below actually constrains (Postgres treats NULLs as distinct).
+  value              Int @default(0)
+  quantityConfigured Int
+  quantityWon        Int @default(0)
+
+  wheelConfig WheelConfig @relation(fields: [wheelConfigId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([wheelConfigId, type, value])
+  @@index([wheelConfigId])
+}
+
+/// A spin owed to a buyer: one per PAID ticket (bonus, referral and free-entry
+/// tickets grant none). Banked until spunAt is set, and dead after expiresAt.
+model WheelSpin {
+  id            String @id @default(cuid())
+  wheelConfigId String
+  competitionId String
+  userId        String?
+  orderId       String?
+  /// One spin per ticket, enforced by the database rather than by application
+  /// code — a re-run of fulfilment can never mint a second spin for a ticket.
+  ticketId String? @unique
+
+  grantedAt DateTime  @default(now())
+  /// Competition draw date: an unspun wheel dies with its competition.
+  expiresAt DateTime
+  spunAt    DateTime?
+
+  /// Result, set at spin time. Null while unspun.
+  resultType  WheelSlotType?
+  resultValue Int?
+
+  wheelConfig WheelConfig @relation(fields: [wheelConfigId], references: [id], onDelete: Cascade)
+  competition Competition @relation(fields: [competitionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order       Order?      @relation(fields: [orderId], references: [id])
+  ticket      Ticket?     @relation(fields: [ticketId], references: [id])
+  promoCode   PromoCode?
+  jackpotWin  JackpotWin?
+
+  @@index([competitionId])
+  @@index([userId, spunAt])
+  @@index([orderId])
+}
+
+/// A discount won on the wheel. Owned by one user, single use, never transferable.
+model PromoCode {
+  id     String  @id @default(cuid())
+  code   String  @unique
+  userId String?
+  spinId String  @unique
+
+  /// Kept for reporting once the spin is anonymised.
+  competitionId String?
+  percentOff    Int
+
+  issuedAt  DateTime @default(now())
+  expiresAt DateTime
+
+  redeemedAt      DateTime?
+  redeemedOrderId String?
+
+  user          User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  spin          WheelSpin    @relation(fields: [spinId], references: [id], onDelete: Cascade)
+  competition   Competition? @relation(fields: [competitionId], references: [id], onDelete: SetNull)
+  redeemedOrder Order?       @relation("PromoCodeRedeemedOrder", fields: [redeemedOrderId], references: [id], onDelete: SetNull)
+
+  @@index([userId, redeemedAt])
+  @@index([competitionId])
+}
+
+/// The graded-card win. Mirrors Win's fulfilment lifecycle so the admin flow
+/// feels the same, but is kept separate: this is not a competition prize.
+model JackpotWin {
+  id            String  @id @default(cuid())
+  spinId        String  @unique
+  competitionId String
+  userId        String?
+  orderId       String?
+
+  status JackpotStatus @default(PENDING)
+
+  prizeDescription String
+  prizeValue       Decimal? @db.Decimal(10, 2)
+
+  adminNotes     String?
+  trackingNumber String?
+  shippedAt      DateTime?
+  deliveredAt    DateTime?
+
+  spin        WheelSpin   @relation(fields: [spinId], references: [id], onDelete: Cascade)
+  competition Competition @relation(fields: [competitionId], references: [id])
+  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order       Order?      @relation(fields: [orderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([competitionId])
 }
