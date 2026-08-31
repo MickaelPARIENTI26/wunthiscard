@@ -284,8 +284,11 @@ email équipe. **L'email n'est jamais bloquant** : le gain est enregistré et le
 stock décrémenté même si Resend est indisponible — l'erreur est seulement loggée.
 C'est déjà le patron du projet.
 
-**Phase 5 — dashboard admin**
-Wheel Results, historique, filtres, export.
+**Phase 5 — dashboard admin — FAIT**
+Carte *Wheel Results* sur la page compétition : spins distribués / joués / restants,
+répartition par lot avec le stock restant, taux de retour des codes, état du lot
+principal, historique filtrable (le filtre est dans l'URL, donc c'est la requête
+qui change, pas un tri côté navigateur) et export CSV/XLSX complet, audité.
 
 **Phase 6 — public — FAIT**
 La roue et son animation (sur la page de confirmation *et* dans **My Rewards**),

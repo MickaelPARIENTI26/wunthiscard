@@ -15,10 +15,14 @@ import { RevealMysteryButton } from './reveal-mystery-button';
 import { ParticipantsExport } from './participants-export';
 import { RecordWinner } from './record-winner';
 import { WheelSettings } from './wheel-settings';
+import { WheelResultsCard } from './wheel-results';
 import { JackpotWinner } from './jackpot-winner';
+import { getWheelResults } from '@/lib/wheel-results';
 
 interface CompetitionPageProps {
   params: Promise<{ id: string }>;
+  /** `?wheel=` filters the spin history — it changes the query, so it lives in the URL. */
+  searchParams: Promise<{ wheel?: string }>;
 }
 
 const statusColors: Record<CompetitionStatus, 'default' | 'secondary' | 'destructive' | 'success' | 'warning' | 'outline'> = {
@@ -31,9 +35,10 @@ const statusColors: Record<CompetitionStatus, 'default' | 'secondary' | 'destruc
   CANCELLED: 'destructive',
 };
 
-export default async function CompetitionPage({ params }: CompetitionPageProps) {
+export default async function CompetitionPage({ params, searchParams }: CompetitionPageProps) {
   const session = await auth();
   const { id } = await params;
+  const { wheel: wheelFilter = 'all' } = await searchParams;
 
   const competition = await prisma.competition.findUnique({
     where: { id },
@@ -78,6 +83,10 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
     where: { competitionId: id, paymentStatus: 'SUCCEEDED' },
     _sum: { totalAmount: true },
   });
+
+  // Null when this competition has no wheel configured — the card then hides
+  // and only the settings form below shows, which is what sets one up.
+  const wheelResults = await getWheelResults(id, wheelFilter);
 
   // Participant stats for export section
   const [paidTicketCount, freeTicketCount, bonusTicketCount, ticketRange, uniqueParticipants] = await Promise.all([
@@ -254,6 +263,10 @@ export default async function CompetitionPage({ params }: CompetitionPageProps) 
           />
         );
       })}
+
+      {wheelResults && (
+        <WheelResultsCard competitionId={id} filter={wheelFilter} results={wheelResults} />
+      )}
 
       <WheelSettings
         competitionId={id}
