@@ -42,19 +42,43 @@ interface SiteSettingsData {
   }>;
 }
 
-async function getSettings(): Promise<SiteSettingsData> {
-  const settings = await prisma.siteSettings.findUnique({
-    where: { id: 'global' },
-  });
-  return (settings?.data as SiteSettingsData) ?? {};
-}
-
-async function saveSettings(data: SiteSettingsData) {
-  await prisma.siteSettings.upsert({
-    where: { id: 'global' },
-    update: { data: data as Prisma.InputJsonValue },
-    create: { id: 'global', data: data as Prisma.InputJsonValue },
-  });
+/**
+ * Read, change and write the settings blob as ONE atomic step.
+ *
+ * Every settings card posts to this same single JSON column, so a plain
+ * read-then-write let two concurrent saves silently revert each other's fields —
+ * including jackpotNotificationEmail, after which jackpot alerts fall back to the
+ * default inbox while the form reports success. Serializable makes the loser fail
+ * rather than overwrite; the retry then re-reads and re-applies its own change.
+ */
+async function mutateSettings(
+  change: (current: SiteSettingsData) => SiteSettingsData
+): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await prisma.$transaction(
+        async (tx) => {
+          const existing = await tx.siteSettings.findUnique({ where: { id: 'global' } });
+          const next = change((existing?.data as SiteSettingsData) ?? {});
+          await tx.siteSettings.upsert({
+            where: { id: 'global' },
+            update: { data: next as Prisma.InputJsonValue },
+            create: { id: 'global', data: next as Prisma.InputJsonValue },
+          });
+        },
+        { isolationLevel: 'Serializable' }
+      );
+      return;
+    } catch (error) {
+      // Serialisation failure (P2034) or a write conflict: someone else committed
+      // between our read and our write. Re-run — the change closure is pure.
+      const code =
+        error && typeof error === 'object' && 'code' in error
+          ? (error as { code?: string }).code
+          : undefined;
+      if (attempt >= 3 || (code !== 'P2034' && code !== 'P2002')) throw error;
+    }
+  }
 }
 
 // Keys that must never be stored in database (security)
@@ -71,7 +95,6 @@ export async function updateSettings(formData: FormData) {
   const session = await auth();
   const adminId = requireAdmin(session);
 
-  const currentSettings = await getSettings();
   const updates: Record<string, string> = {};
 
   formData.forEach((value, key) => {
@@ -81,8 +104,7 @@ export async function updateSettings(formData: FormData) {
     }
   });
 
-  const newSettings = { ...currentSettings, ...updates };
-  await saveSettings(newSettings);
+  await mutateSettings((current) => ({ ...current, ...updates }));
 
   await createAuditLog({
     action: 'SETTINGS_UPDATED',
@@ -132,9 +154,7 @@ export async function updateTicketPacks(
     active: pack.active,
   }));
 
-  const currentSettings = await getSettings();
-  const newSettings = { ...currentSettings, ticketPacks: sanitizedPacks };
-  await saveSettings(newSettings);
+  await mutateSettings((current) => ({ ...current, ticketPacks: sanitizedPacks }));
 
   await createAuditLog({
     action: 'TICKET_PACKS_UPDATED',
@@ -151,9 +171,7 @@ export async function updateBonusTiers(tiers: Array<{ minTickets: number; bonusP
   const session = await auth();
   const adminId = requireAdmin(session);
 
-  const currentSettings = await getSettings();
-  const newSettings = { ...currentSettings, bonusTiers: tiers };
-  await saveSettings(newSettings);
+  await mutateSettings((current) => ({ ...current, bonusTiers: tiers }));
 
   await createAuditLog({
     action: 'BONUS_TIERS_UPDATED',

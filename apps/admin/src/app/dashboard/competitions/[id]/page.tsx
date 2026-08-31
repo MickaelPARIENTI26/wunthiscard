@@ -244,6 +244,8 @@ export default async function CompetitionPage({ params, searchParams }: Competit
               createdAt: win.createdAt.toISOString(),
               paymentReversedAt: win.paymentReversedAt?.toISOString() ?? null,
               paymentReversedReason: win.paymentReversedReason,
+              notAwardedAt: win.notAwardedAt?.toISOString() ?? null,
+              notAwardedReason: win.notAwardedReason,
               spinId: win.spinId,
               orderId: win.orderId,
               competitionId: win.competitionId,

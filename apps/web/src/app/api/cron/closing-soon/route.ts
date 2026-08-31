@@ -70,8 +70,16 @@ export async function GET(request: Request) {
   const results: { competitionId: string; sent: number; total: number }[] = [];
 
   for (const c of competitions) {
-    // Claim it first (idempotency) so a second overlapping run can't double-send.
-    await prisma.competition.update({ where: { id: c.id }, data: { closingSoonEmailSentAt: new Date() } });
+    // Claim it first, GUARDED. A bare update always succeeds, so the daily
+    // schedule overlapping a manual ?secret= run sent the same blast twice to the
+    // entire marketing list. updateMany with the null guard means exactly one run
+    // wins; the loser skips. (sendSpinReminders in this same handler already does
+    // it this way.)
+    const claimed = await prisma.competition.updateMany({
+      where: { id: c.id, closingSoonEmailSentAt: null },
+      data: { closingSoonEmailSentAt: new Date() },
+    });
+    if (claimed.count !== 1) continue;
 
     const data: CompetitionBlastData = {
       title: c.title,

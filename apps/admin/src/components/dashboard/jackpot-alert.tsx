@@ -11,10 +11,20 @@ import { Trophy, ArrowRight } from 'lucide-react';
  */
 export async function JackpotAlert() {
   const pending = await prisma.jackpotWin.findMany({
-    where: { status: { in: ['PENDING', 'CONTACTED'] } },
+    where: {
+      notAwardedAt: null,
+      OR: [
+        { status: { in: ['PENDING', 'CONTACTED'] } },
+        // A frozen win at ANY status, including SHIPPED and DELIVERED. That is
+        // precisely the case the alert email calls a recovery job, and filtering
+        // on status alone made the dashboard blind to it.
+        { paymentReversedAt: { not: null } },
+      ],
+    },
     select: {
       id: true,
       status: true,
+      paymentReversedAt: true,
       prizeDescription: true,
       createdAt: true,
       competitionId: true,
@@ -42,7 +52,9 @@ export async function JackpotAlert() {
               {w.prizeDescription}
               {' — '}
               <span className="text-muted-foreground">
-                {w.competition.title} · {w.status} · {new Date(w.createdAt).toLocaleDateString('en-GB')}
+                {w.competition.title} · {w.status}
+                {w.paymentReversedAt ? ' · PAYMENT REVERSED' : ''} ·{' '}
+                {new Date(w.createdAt).toLocaleDateString('en-GB')}
               </span>
             </span>
             <Link

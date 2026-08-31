@@ -146,3 +146,68 @@ export async function clearJackpotPaymentHold(
   revalidatePath('/dashboard/competitions');
   return { success: true, message: 'Payment hold cleared.' };
 }
+
+/**
+ * Close a frozen win without sending the card.
+ *
+ * The counterpart to clearing the hold. Without a terminal outcome a frozen win
+ * sits forever: the fulfilment form refuses every edit while frozen, so it can
+ * never reach DELIVERED, and the winner could never delete their account.
+ */
+export async function markJackpotNotAwarded(
+  winId: string,
+  reason: string
+): Promise<JackpotUpdateState> {
+  const session = await auth();
+  if (session?.user?.role !== 'SUPER_ADMIN') {
+    return { success: false, message: 'Only a super admin can close a win.' };
+  }
+
+  const trimmed = reason.trim();
+  if (trimmed.length < 10) {
+    return { success: false, message: 'Give a reason of at least 10 characters.' };
+  }
+
+  const existing = await prisma.jackpotWin.findUnique({
+    where: { id: winId },
+    select: { paymentReversedAt: true, shippedAt: true, prizeValue: true },
+  });
+  if (!existing) return { success: false, message: 'Jackpot win not found.' };
+  if (!existing.paymentReversedAt) {
+    return {
+      success: false,
+      message: 'Only a win whose payment was reversed can be closed this way.',
+    };
+  }
+  if (existing.shippedAt) {
+    return {
+      success: false,
+      message: 'This card has already shipped — it cannot be marked as not awarded.',
+    };
+  }
+
+  const closed = await prisma.jackpotWin.updateMany({
+    where: { id: winId, paymentReversedAt: { not: null }, notAwardedAt: null, shippedAt: null },
+    data: { notAwardedAt: new Date(), notAwardedReason: trimmed },
+  });
+  if (closed.count === 0) {
+    return { success: false, message: 'This win changed while you were deciding — reload.' };
+  }
+
+  await prisma.auditLog.create({
+    data: {
+      userId: session.user.id,
+      action: 'JACKPOT_NOT_AWARDED',
+      entity: 'jackpotWin',
+      entityId: winId,
+      metadata: {
+        prizeValue: existing.prizeValue ? existing.prizeValue.toString() : null,
+        reason: trimmed,
+      },
+    },
+  });
+
+  revalidatePath('/dashboard');
+  revalidatePath('/dashboard/competitions');
+  return { success: true, message: 'Win closed as not awarded.' };
+}

@@ -179,15 +179,21 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
     // onDelete: SetNull, so deleting now would sever the only link between the
     // card and the person owed it — and unlike a Win, nothing else records who
     // they are. Block until it has actually been delivered.
-    const undeliveredJackpot = await prisma.jackpotWin.findFirst({
-      where: { userId, deliveredAt: null },
+    // Only a card we still owe blocks erasure. A win closed as not-awarded is
+    // settled — before this, a frozen win could never reach DELIVERED (the
+    // fulfilment form refuses every edit while frozen), so the account was
+    // blocked forever and told "please wait until it arrives", which was untrue.
+    const owedJackpot = await prisma.jackpotWin.findFirst({
+      where: { userId, deliveredAt: null, notAwardedAt: null },
+      select: { paymentReversedAt: true },
     });
 
-    if (undeliveredJackpot) {
+    if (owedJackpot) {
       return {
         success: false,
-        error:
-          'You have a wheel prize that has not been delivered. Please wait until it arrives before deleting your account.',
+        error: owedJackpot.paymentReversedAt
+          ? 'You have a wheel prize on hold while we review the payment behind it. Contact us and we will settle it — your account can be deleted once that is done.'
+          : 'You have a wheel prize that has not been delivered. Please wait until it arrives before deleting your account.',
       };
     }
 
@@ -253,7 +259,7 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
       // shipped/delivered dates stay: those are the record, not the person.
       prisma.jackpotWin.updateMany({
         where: { userId },
-        data: { adminNotes: null, trackingNumber: null },
+        data: { adminNotes: null, trackingNumber: null, notAwardedReason: null },
       }),
 
       // Finally, delete the user

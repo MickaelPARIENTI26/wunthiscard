@@ -406,7 +406,15 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       });
     }
 
-    return { alreadyProcessed: false };
+    // Mint the wheel spins HERE, not after the commit. Outside the transaction
+    // this was fire-and-forget with no way back in: a Stripe retry returns at the
+    // alreadyProcessed guard above and the success page skips fulfilment once the
+    // order is SUCCEEDED, so a single failure left a paid order with SOLD tickets
+    // and no spins, permanently, invisible to buyer and admin alike. Inside, it
+    // either happens with the sale or the sale rolls back.
+    const spinsGranted = await grantSpinsForOrder(order.id, tx);
+
+    return { alreadyProcessed: false, spinsGranted };
   });
 
   // Check if order was already processed
@@ -446,17 +454,10 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     },
   });
 
-  // Grant wheel spins — one per paid ticket. Non-blocking on purpose: the
-  // order is already fulfilled at this point, and a wheel problem must never
-  // cost someone the tickets they paid for. Idempotent via the unique ticketId,
-  // so the webhook and the success page both running this is harmless.
-  try {
-    const spins = await grantSpinsForOrder(order.id);
-    if (spins > 0) {
-      console.log(`Granted ${spins} wheel spin(s) for order ${order.orderNumber}`);
-    }
-  } catch (wheelError) {
-    console.error('Failed to grant wheel spins:', wheelError);
+  if (transactionResult.spinsGranted && transactionResult.spinsGranted > 0) {
+    console.log(
+      `Granted ${transactionResult.spinsGranted} wheel spin(s) for order ${order.orderNumber}`
+    );
   }
 
   // Get the final ticket numbers including bonuses

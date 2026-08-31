@@ -596,6 +596,11 @@ model WheelSpin {
   reversedAt     DateTime?
   reversalReason String?
 
+  /// Stamped when this spin was included in an expiry reminder. Per SPIN, not
+  /// per competition: a single competition-level flag meant everyone who bought
+  /// during the last 48 hours — the heaviest selling period — was never warned.
+  reminderSentAt DateTime?
+
   wheelConfig WheelConfig @relation(fields: [wheelConfigId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id])
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -665,6 +670,13 @@ model JackpotWin {
   /// Freezing is automatic; deciding what to do about a real graded card is not.
   paymentReversedAt     DateTime?
   paymentReversedReason String?
+
+  /// Closed without the card being sent — the payment was reversed and a human
+  /// decided not to honour it. JackpotStatus deliberately has no such value:
+  /// status tracks where the parcel is, and there is no parcel. Set only by a
+  /// super admin, with the reason in the audit log.
+  notAwardedAt     DateTime?
+  notAwardedReason String?
 
   spin        WheelSpin   @relation(fields: [spinId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id])

@@ -96,7 +96,12 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
   const [revealed, setRevealed] = useState<Revealed | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The result is announced in a live region; focus goes there too so a keyboard
+  // or screen-reader user is standing on the outcome rather than on a button
+  // that just changed meaning underneath them.
+  const resultRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
@@ -192,6 +197,9 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
         });
         setSpinning(false);
         setQueue((q) => q.slice(1));
+        // Focus the outcome, not the button: the button is about to relabel
+        // itself, and disabling a focused control drops focus to <body>.
+        requestAnimationFrame(() => resultRef.current?.focus());
         // Refresh once the spin is spent so My Rewards, the code list and the
         // remaining-spin counts all agree with what just happened.
         router.refresh();
@@ -204,9 +212,13 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
+      setCopyFailed(false);
       setTimeout(() => setCopied(false), 2000);
     } catch {
+      // In-app webviews (Instagram, TikTok) reject the clipboard write. Saying
+      // nothing left the button looking broken with no way forward.
       setCopied(false);
+      setCopyFailed(true);
     }
   }, []);
 
@@ -234,6 +246,16 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
         </p>
       )}
 
+      {/* role="img" on the wheel collapsed every prize label, so the outcomes
+          existed nowhere as text. This is the real list. */}
+      <ul className="sr-only">
+        {[...new Map(segments.map((seg) => [`${seg.type}:${seg.value}`, seg])).values()].map(
+          (seg) => (
+            <li key={`${seg.type}-${seg.value}`}>{seg.label}</li>
+          )
+        )}
+      </ul>
+
       <div
         style={{
           position: 'relative',
@@ -257,8 +279,8 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
 
         <svg
           viewBox="0 0 200 200"
-          role="img"
-          aria-label={`Prize wheel with ${count} segments`}
+          aria-hidden="true"
+          focusable="false"
           style={{
             width: '100%', height: '100%', display: 'block',
             transform: `rotate(${rotation}deg)`,
@@ -313,19 +335,31 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
         </svg>
       </div>
 
-      {/* Result */}
-      {revealed && <RevealCard revealed={revealed} copied={copied} onCopy={copyCode} />}
+      {/* One live region for both outcomes, so a screen reader announces the
+          result and the errors that replace it. tabIndex -1 lets focus land here
+          when the wheel stops. */}
+      <div ref={resultRef} tabIndex={-1} role="status" aria-live="polite" style={{ outline: 'none' }}>
+        {revealed && (
+          <RevealCard
+            revealed={revealed}
+            copied={copied}
+            copyFailed={copyFailed}
+            onCopy={copyCode}
+          />
+        )}
 
-      {error && (
-        <p style={{ color: 'var(--warn)', fontSize: '14px', marginTop: '16px' }}>{error}</p>
-      )}
+        {error && (
+          <p style={{ color: 'var(--warn)', fontSize: '14px', marginTop: '16px' }}>{error}</p>
+        )}
+      </div>
 
       <div style={{ marginTop: '20px' }}>
         {remaining > 0 ? (
           <>
             <button
               onClick={spin}
-              disabled={spinning}
+              aria-disabled={spinning}
+              aria-describedby="wheel-spins-left"
               className={`btn ${spinning ? 'btn-mute' : 'btn-hot'} btn-xl`}
             >
               {spinning ? (
@@ -343,6 +377,7 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
               )}
             </button>
             <p
+              id="wheel-spins-left"
               style={{
                 fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.1em',
                 textTransform: 'uppercase', color: 'var(--ink-faint)', marginTop: '10px',
@@ -364,10 +399,12 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
 function RevealCard({
   revealed,
   copied,
+  copyFailed,
   onCopy,
 }: {
   revealed: Revealed;
   copied: boolean;
+  copyFailed: boolean;
   onCopy: (code: string) => void;
 }) {
   const expiry = revealed.codeExpiresAt
@@ -427,6 +464,11 @@ function RevealCard({
                   {copied ? 'Copied ✓' : 'Copy'}
                 </button>
               </div>
+              {copyFailed && (
+                <p style={{ color: 'var(--ink-faint)', fontSize: '12.5px', marginTop: '8px' }}>
+                  Press and hold the code to copy it.
+                </p>
+              )}
               <p style={{ color: 'var(--ink-dim)', fontSize: '13.5px', marginTop: '12px' }}>
                 Use it on your next ticket purchase — one code per order.
                 {expiry ? ` Valid until ${expiry}.` : ''}

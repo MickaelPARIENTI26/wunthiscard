@@ -321,9 +321,11 @@ export async function updateCompetition(id: string, formData: FormData) {
 
   // Wheel spins carry a copy of the draw date for cheap listing; keep it in
   // step so a moved date doesn't leave them expiring on the old one.
+  // Also clear the reminder stamp: a moved date means the warning that already
+  // went out named the wrong day, and these spins deserve a fresh one.
   await prisma.wheelSpin.updateMany({
     where: { competitionId: id, spunAt: null },
-    data: { expiresAt: new Date(drawDate) },
+    data: { expiresAt: new Date(drawDate), reminderSentAt: null },
   });
 
   await prisma.competition.update({

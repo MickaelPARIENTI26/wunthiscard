@@ -16,6 +16,9 @@ interface CheckoutClientProps {
   referralFreeTickets?: number;
 }
 
+/** Every reason lookupPromoCode can refuse a code. */
+const PROMO_FAILURES = new Set(['NOT_FOUND', 'NOT_YOURS', 'ALREADY_USED', 'VOIDED', 'EXPIRED']);
+
 export function CheckoutClient({
   competitionId,
   competitionSlug,
@@ -232,7 +235,10 @@ export function CheckoutClient({
         // The code is re-validated server-side at session creation. If it has
         // since been spent or expired, drop it so the summary stops promising a
         // discount the checkout will not honour.
-        if (['NOT_FOUND', 'NOT_YOURS', 'ALREADY_USED', 'VOIDED', 'EXPIRED'].includes(data.code)) {
+        // Any promo failure at all, not an enumerated list: a sixth reason added
+        // server-side would otherwise leave the summary quoting a discount the
+        // server refuses, with every retry hitting the same wall.
+        if (appliedPromo && typeof data.code === 'string' && PROMO_FAILURES.has(data.code)) {
           setAppliedPromo(null);
           setPromoError(data.error ?? 'That promo code is no longer valid.');
           setIsProcessing(false);

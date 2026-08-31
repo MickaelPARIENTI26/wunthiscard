@@ -50,7 +50,10 @@ export default async function MyRewardsPage() {
         userId,
         spunAt: null,
         reversedAt: null,
-        wheelConfig: { enabled: true },
+        // NOT filtered on wheelConfig.enabled. A spin on a switched-off wheel
+        // matched none of the three queries on this page and simply vanished,
+        // while the hero still promised spins last until the competition closes.
+        // They are shown paused instead.
         competition: { drawDate: { gt: now }, status: { in: ['ACTIVE', 'SOLD_OUT'] } },
       },
       select: {
@@ -61,6 +64,7 @@ export default async function MyRewardsPage() {
         },
         wheelConfig: {
           select: {
+            enabled: true,
             jackpotEnabled: true,
             slots: {
               select: { type: true, value: true, quantityConfigured: true, quantityWon: true },
@@ -138,7 +142,8 @@ export default async function MyRewardsPage() {
   const spentCodes = codes.filter(
     (c) => c.voidedAt !== null || c.redeemedAt !== null || c.expiresAt <= now
   );
-  const spinsAvailable = pendingSpins.length;
+  const spinsAvailable = pendingSpins.filter((s) => s.wheelConfig.enabled).length;
+  const pausedSpins = pendingSpins.length - spinsAvailable;
 
   return (
     <div>
@@ -151,6 +156,7 @@ export default async function MyRewardsPage() {
           }}
         >
           Your account · Rewards · {spinsAvailable} spin{spinsAvailable !== 1 ? 's' : ''} ready
+          {pausedSpins > 0 ? ` · ${pausedSpins} on hold` : ''}
         </div>
         <h1
           style={{
@@ -204,6 +210,7 @@ export default async function MyRewardsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '40px' }}>
           {wheels.map(({ first, spins }) => {
             const config = first.wheelConfig;
+            const paused = !config.enabled;
             const slots = config.jackpotEnabled
               ? config.slots
               : config.slots.filter((s) => s.type !== 'JACKPOT');
@@ -241,10 +248,19 @@ export default async function MyRewardsPage() {
                   </div>
                 </div>
 
-                <PrizeWheel
-                  spinIds={spins.map((s) => s.id)}
-                  segments={buildWheelSegments(slots)}
-                />
+                {paused ? (
+                  <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
+                    This wheel is paused right now, so your {spins.length} spin
+                    {spins.length !== 1 ? 's are' : ' is'} on hold. They are not lost — we
+                    will email you when it reopens, and they still last until this
+                    competition closes.
+                  </p>
+                ) : (
+                  <PrizeWheel
+                    spinIds={spins.map((s) => s.id)}
+                    segments={buildWheelSegments(slots)}
+                  />
+                )}
               </div>
             );
           })}
@@ -389,8 +405,10 @@ export default async function MyRewardsPage() {
                           style={{ display: 'block', fontSize: '11px', color: 'var(--ink-faint)' }}
                         >
                           {spin.reversalReason === 'COMPETITION_CANCELLED'
-                            ? 'Competition cancelled'
-                            : 'Cancelled — order refunded'}
+                            ? 'Competition cancelled — any code you won still works'
+                            : spin.reversalReason === 'DISPUTE_LOST'
+                              ? 'Cancelled — payment charged back'
+                              : 'Cancelled — order refunded'}
                         </span>
                       )}
                     </Td>

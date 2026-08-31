@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   updateJackpotWin,
   clearJackpotPaymentHold,
+  markJackpotNotAwarded,
   type JackpotUpdateState,
 } from './jackpot-actions';
 
@@ -27,6 +28,8 @@ export interface JackpotWinnerProps {
     createdAt: string;
     paymentReversedAt: string | null;
     paymentReversedReason: string | null;
+    notAwardedAt: string | null;
+    notAwardedReason: string | null;
     spinId: string;
     orderId: string | null;
     competitionId: string;
@@ -52,7 +55,8 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
     { success: false, message: '' }
   );
 
-  const frozen = win.paymentReversedAt !== null;
+  const closed = win.notAwardedAt !== null;
+  const frozen = win.paymentReversedAt !== null && !closed;
   const urgent = NEEDS_ACTION.includes(win.status) || frozen;
 
   const rows: [string, string][] = [
@@ -90,6 +94,15 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
           ))}
         </dl>
 
+        {closed && (
+          <div className="rounded-md border p-4">
+            <p className="font-semibold">Closed — card not awarded</p>
+            <p className="text-sm text-muted-foreground">
+              {win.notAwardedReason ?? 'No reason recorded.'}
+            </p>
+          </div>
+        )}
+
         {frozen && (
           <div className="rounded-md border border-destructive p-4 space-y-2">
             <p className="font-semibold text-destructive">
@@ -100,7 +113,10 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
               Nothing has been revoked and the winner has not been told. If the card has already
               shipped this is a recovery job; if it has not, decide before it does.
             </p>
-            <ClearHold winId={win.id} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <ClearHold winId={win.id} />
+              <NotAwarded winId={win.id} shipped={win.shippedAt !== null} />
+            </div>
           </div>
         )}
 
@@ -181,6 +197,49 @@ function ClearHold({ winId }: { winId: string }) {
       <Button type="submit" variant="outline" size="sm" disabled={pending}>
         {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Clear payment hold
+      </Button>
+      {state.message && (
+        <p className={state.success ? 'text-sm text-green-600' : 'text-sm text-destructive'}>
+          {state.message}
+        </p>
+      )}
+    </form>
+  );
+}
+
+/**
+ * The other half of a freeze: closing it without sending the card. Blocked once
+ * the card has shipped — at that point it is a recovery job, not a decision.
+ */
+function NotAwarded({ winId, shipped }: { winId: string; shipped: boolean }) {
+  const [state, action, pending] = useHoldState<JackpotUpdateState, FormData>(
+    async (_prev, formData) =>
+      markJackpotNotAwarded(winId, String(formData.get('reason') ?? '')),
+    { success: false, message: '' }
+  );
+
+  if (shipped) {
+    return (
+      <p className="text-sm text-muted-foreground">
+        This card has already shipped — recover it before closing the win.
+      </p>
+    );
+  }
+
+  return (
+    <form action={action} className="space-y-2">
+      <Label htmlFor={`not-awarded-${winId}`}>Reason for NOT sending the card</Label>
+      <Textarea
+        id={`not-awarded-${winId}`}
+        name="reason"
+        rows={2}
+        placeholder="e.g. chargeback upheld, buyer unreachable"
+        required
+        minLength={10}
+      />
+      <Button type="submit" variant="destructive" size="sm" disabled={pending}>
+        {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        Close — not awarded
       </Button>
       {state.message && (
         <p className={state.success ? 'text-sm text-green-600' : 'text-sm text-destructive'}>

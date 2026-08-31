@@ -429,6 +429,25 @@ export async function POST(request: NextRequest) {
       // promo code and the referral ticket. Each is wrapped separately: if one
       // restore throws, the other must still happen — losing an advantage to a
       // failed checkout is exactly the kind of quiet unfairness nobody reports.
+      //
+      // Close the order FIRST, guarded. "Refused" can also mean the session was
+      // created and the response never came back — in which case Stripe will fire
+      // checkout.session.expired later and that handler restores the same two
+      // things. Winning this flip is what stops both paths crediting the referral
+      // ticket: the expiry claim only fires on a non-CANCELLED order.
+      const closed = await prisma.order.updateMany({
+        where: { id: order.id, paymentStatus: { in: ['PENDING', 'PROCESSING'] } },
+        data: { paymentStatus: 'CANCELLED' },
+      });
+
+      if (closed.count !== 1) {
+        // Something else already settled this order — leave its restores alone.
+        return NextResponse.json(
+          { error: 'An error occurred while creating checkout session' },
+          { status: 500 }
+        );
+      }
+
       if (promo) {
         try {
           await releasePromoCode(promo.id);

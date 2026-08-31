@@ -24,6 +24,9 @@ function intField(formData: FormData, name: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/** A slot was won while the admin had the form open. Rolls the whole save back. */
+class WheelStockConflictError extends Error {}
+
 export async function saveWheelSettings(
   competitionId: string,
   _prev: WheelSettingsState,
@@ -74,41 +77,14 @@ export async function saveWheelSettings(
     return { success: false, message: 'Jackpot value must be a positive number.' };
   }
 
-  await prisma.$transaction(async (tx) => {
-    const config = await tx.wheelConfig.upsert({
-      where: { competitionId },
-      create: {
-        competitionId,
-        enabled,
-        jackpotEnabled,
-        jackpotDescription,
-        jackpotValue,
-        couponValidityDays,
-      },
-      update: { enabled, jackpotEnabled, jackpotDescription, jackpotValue, couponValidityDays },
-    });
-
-    for (const slot of nextSlots) {
-      await tx.wheelSlot.upsert({
-        where: {
-          wheelConfigId_type_value: {
-            wheelConfigId: config.id,
-            type: slot.type,
-            value: slot.value,
-          },
-        },
-        // quantityWon is deliberately absent from `update`: it is owned by the
-        // spin endpoint and must never be rewritten from an admin form.
-        create: {
-          wheelConfigId: config.id,
-          type: slot.type,
-          value: slot.value,
-          quantityConfigured: slot.quantityConfigured,
-        },
-        update: { quantityConfigured: slot.quantityConfigured },
-      });
+  try {
+    await saveSlots();
+  } catch (e) {
+    if (e instanceof WheelStockConflictError) {
+      return { success: false, message: e.message };
     }
-  });
+    throw e;
+  }
 
   await prisma.auditLog.create({
     data: {
@@ -126,4 +102,73 @@ export async function saveWheelSettings(
 
   revalidatePath(`/dashboard/competitions/${competitionId}`);
   return { success: true, message: 'Wheel settings saved.' };
+
+  async function saveSlots() {
+  await prisma.$transaction(async (tx) => {
+    const config = await tx.wheelConfig.upsert({
+      where: { competitionId },
+      create: {
+        competitionId,
+        enabled,
+        jackpotEnabled,
+        jackpotDescription,
+        jackpotValue,
+        couponValidityDays,
+      },
+      update: { enabled, jackpotEnabled, jackpotDescription, jackpotValue, couponValidityDays },
+    });
+
+    for (const slot of nextSlots) {
+      // The "never below what was won" rule was validated against a read taken
+      // before this transaction. Spins land continuously, so re-assert it in the
+      // WHERE clause: an admin lowering a slot while a spin commits could
+      // otherwise leave quantityWon above quantityConfigured — "-1 left" in both
+      // admin surfaces, and on the jackpot a committed win plus an alert email
+      // for a card that has just been withdrawn.
+      const updated = await tx.wheelSlot.updateMany({
+        where: {
+          wheelConfigId: config.id,
+          type: slot.type,
+          value: slot.value,
+          quantityWon: { lte: slot.quantityConfigured },
+        },
+        data: { quantityConfigured: slot.quantityConfigured },
+      });
+
+      if (updated.count === 0) {
+        // Either the row does not exist yet, or a spin overtook us. Creating is
+        // safe (the unique index decides); a genuine conflict throws and rolls
+        // the whole save back, which is what should happen.
+        const existing = await tx.wheelSlot.findUnique({
+          where: {
+            wheelConfigId_type_value: {
+              wheelConfigId: config.id,
+              type: slot.type,
+              value: slot.value,
+            },
+          },
+          select: { quantityWon: true },
+        });
+
+        if (existing) {
+          throw new WheelStockConflictError(
+            `${slot.type}${slot.value ? ` ${slot.value}%` : ''} has been won ${existing.quantityWon} time(s) ` +
+              `since you opened this form — it cannot be set to ${slot.quantityConfigured}.`
+          );
+        }
+
+        // quantityWon is deliberately absent: it is owned by the spin endpoint
+        // and must never be written from an admin form.
+        await tx.wheelSlot.create({
+          data: {
+            wheelConfigId: config.id,
+            type: slot.type,
+            value: slot.value,
+            quantityConfigured: slot.quantityConfigured,
+          },
+        });
+      }
+    }
+  });
+  }
 }

@@ -47,8 +47,17 @@ const MAX_DRAW_ATTEMPTS = 8;
  * Idempotent by construction: WheelSpin.ticketId is unique, so a webhook and
  * the success page both running fulfilment cannot mint two spins for a ticket.
  */
-export async function grantSpinsForOrder(orderId: string): Promise<number> {
-  const order = await prisma.order.findUnique({
+export async function grantSpinsForOrder(
+  orderId: string,
+  /**
+   * Run inside the caller's transaction. Fulfilment passes its own client so the
+   * spins are minted atomically with the order flipping to SUCCEEDED: outside it,
+   * a reversal committing in the gap finds no rows to mark and the insert then
+   * lands live, playable spins on an order that has already been refunded.
+   */
+  client: PrismaClientOrTx = prisma
+): Promise<number> {
+  const order = await client.order.findUnique({
     where: { id: orderId },
     select: {
       id: true,
@@ -70,13 +79,13 @@ export async function grantSpinsForOrder(orderId: string): Promise<number> {
   // never be played, so don't mint them.
   if (!order.userId) return 0;
 
-  const paidTickets = await prisma.ticket.findMany({
+  const paidTickets = await client.ticket.findMany({
     where: { orderId: order.id, isBonus: false, isFreeEntry: false, status: 'SOLD' },
     select: { id: true },
   });
   if (paidTickets.length === 0) return 0;
 
-  const { count } = await prisma.wheelSpin.createMany({
+  const { count } = await client.wheelSpin.createMany({
     data: paidTickets.map((t) => ({
       wheelConfigId: config.id,
       competitionId: order.competitionId,
@@ -342,6 +351,8 @@ class SpinError extends Error {
 }
 
 type Tx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+/** Either the shared client or a transaction client — the queries used are identical. */
+type PrismaClientOrTx = typeof prisma | Tx;
 
 export interface PoolEntry {
   remaining: number;
