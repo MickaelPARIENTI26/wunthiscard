@@ -9,6 +9,8 @@ const protectedRoutes = [
   '/profile',
   '/my-tickets',
   '/my-wins',
+  '/my-rewards',
+  '/referrals',
   '/addresses',
   '/settings',
   '/checkout',
