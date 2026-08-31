@@ -8,6 +8,7 @@ import {
   LogOut,
   Ticket,
   Trophy,
+  Sparkles,
   Settings,
   Instagram,
 } from 'lucide-react';
@@ -70,6 +71,7 @@ export function MobileMenu({ isOpen, onClose, user, navLinks }: MobileMenuProps)
     { href: '/profile', label: 'Profile', icon: User },
     { href: '/my-tickets', label: 'My Tickets', icon: Ticket },
     { href: '/my-wins', label: 'My Wins', icon: Trophy },
+    { href: '/my-rewards', label: 'My Rewards', icon: Sparkles },
     { href: '/settings', label: 'Settings', icon: Settings },
   ];
 

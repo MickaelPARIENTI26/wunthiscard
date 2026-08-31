@@ -287,9 +287,14 @@ C'est déjà le patron du projet.
 **Phase 5 — dashboard admin**
 Wheel Results, historique, filtres, export.
 
-**Phase 6 — public**
-La roue et son animation, la section **My Rewards** dans le profil, la relance
-email avant expiration des spins.
+**Phase 6 — public — FAIT**
+La roue et son animation (sur la page de confirmation *et* dans **My Rewards**),
+la section My Rewards (spins, codes promo copiables, historique), le champ code
+promo au checkout — sans lui les codes gagnés étaient inutilisables — et la
+relance email 48 h avant expiration, greffée sur le cron `closing-soon`
+(les spins meurent à la date de tirage : même fenêtre, même run).
+
+Il reste la **Phase 5** (dashboard admin) et les points de vigilance ci-dessous.
 
 ## 7. Points de vigilance
 

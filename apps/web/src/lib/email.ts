@@ -812,6 +812,67 @@ interface JackpotAlertData {
  * send must therefore never surface as an error to the winner — it is logged
  * and the admin panel shows the same alert anyway.
  */
+export interface SpinReminderData {
+  competitionTitle: string;
+  mainImageUrl?: string;
+  spins: number;
+  expiresAt: Date;
+}
+
+/**
+ * "Your spins expire when this competition closes."
+ *
+ * Transactional, not marketing: the spins were earned by a purchase the
+ * customer already made, and staying silent would let something they paid for
+ * lapse. It is therefore not gated on emailMarketing — the same reasoning the
+ * schema already applies to order, results and win emails.
+ */
+export async function sendSpinReminderEmail(
+  email: string,
+  firstName: string,
+  data: SpinReminderData
+) {
+  const rewardsUrl = `${BASE_URL}/my-rewards`;
+  const closes = new Intl.DateTimeFormat('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long',
+    hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/London',
+  }).format(data.expiresAt);
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 16px;">⏳ ${data.spins} unused spin${data.spins !== 1 ? 's' : ''}</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      ${firstName ? `${escapeHtml(firstName)}, y` : 'Y'}ou still have ${data.spins} spin${data.spins !== 1 ? 's' : ''} waiting from your entry. They expire when this competition closes.
+    </p>
+
+    ${competitionRow(data.mainImageUrl, data.competitionTitle)}
+
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Spins left</p>
+      <p style="color: #C9A227; font-size: 32px; font-weight: 800; margin: 0 0 10px;">${data.spins}</p>
+      <p style="color: #9A958B; font-size: 12px; margin: 0; text-transform: uppercase;">Expire ${closes}</p>
+    </div>
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="${rewardsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
+        Spin now
+      </a>
+    </div>
+
+    <p style="color: #9A958B; font-size: 14px; line-height: 22px; margin: 24px 0 0;">
+      Spinning costs nothing and changes nothing about your entry — your tickets are already in the draw either way.
+    </p>
+    <p style="color: #7A766D; font-size: 12px; margin: 16px 0 0;">
+      ${rewardsUrl}
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: `⏳ ${data.spins} unused spin${data.spins !== 1 ? 's' : ''} — expiring soon`,
+    html,
+  });
+}
+
 export async function sendJackpotAlertEmail(to: string, data: JackpotAlertData) {
   const value = data.prizeValue !== null ? formatGbp(data.prizeValue) : 'Not set';
   const rows: [string, string][] = [

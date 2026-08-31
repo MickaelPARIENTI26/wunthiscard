@@ -535,6 +535,10 @@ model WheelConfig {
   /// How long a promo code stays valid once won.
   couponValidityDays Int @default(30)
 
+  /// Stamped when the "your spins expire soon" reminder went out, so the daily
+  /// cron can never send it twice for the same competition.
+  spinReminderSentAt DateTime?
+
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   slots       WheelSlot[]
   spins       WheelSpin[]

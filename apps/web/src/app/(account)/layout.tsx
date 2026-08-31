@@ -7,6 +7,7 @@ const navItems = [
   { href: '/profile', label: 'Profile', icon: '👤' },
   { href: '/my-tickets', label: 'My Tickets', icon: '🎟' },
   { href: '/my-wins', label: 'My Wins', icon: '🏆' },
+  { href: '/my-rewards', label: 'My Rewards', icon: '🎡' },
   { href: '/addresses', label: 'Addresses', icon: '📍' },
   { href: '/referrals', label: 'Referrals', icon: '🎁' },
   { href: '/settings', label: 'Settings', icon: '⚙️' },

@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Gift, Loader2 } from 'lucide-react';
-import { formatPrice, calculateBonusTickets } from '@winucard/shared/utils';
+import { Gift, Loader2, Tag } from 'lucide-react';
+import { formatPrice, calculateBonusTickets, applyPercentDiscount } from '@winucard/shared/utils';
 
 interface CheckoutClientProps {
   competitionId: string;
@@ -33,6 +33,10 @@ export function CheckoutClient({
   const [countdown, setCountdown] = useState<string>('');
   const [qcmPassed, setQcmPassed] = useState(false);
   const [useReferralTicket, setUseReferralTicket] = useState(false);
+  const [promoInput, setPromoInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; percentOff: number } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoChecking, setPromoChecking] = useState(false);
 
   const ticketCount = selectedTickets.length;
   const bonusTickets = calculateBonusTickets(ticketCount);
@@ -41,7 +45,18 @@ export function CheckoutClient({
   const referralApplied =
     useReferralTicket && referralFreeTickets > 0 && ticketCount >= 2;
   const paidTicketCount = referralApplied ? ticketCount - 1 : ticketCount;
-  const totalPrice = paidTicketCount * ticketPrice;
+  // Mirrors the server exactly: the percentage is applied to the TOTAL, never
+  // per ticket, or the displayed price would drift a penny from what Stripe
+  // charges — and fulfilment refuses an order whose total doesn't match.
+  const ticketPricePence = Math.round(ticketPrice * 100);
+  const pricing = appliedPromo
+    ? applyPercentDiscount(ticketPricePence, paidTicketCount, appliedPromo.percentOff)
+    : {
+        subtotalPence: ticketPricePence * paidTicketCount,
+        discountPence: 0,
+        discountedPence: ticketPricePence * paidTicketCount,
+      };
+  const totalPrice = pricing.discountedPence / 100;
   const totalPriceLabel = totalPrice.toFixed(2);
 
   const formatCountdown = useCallback((ms: number): string => {
@@ -146,6 +161,36 @@ export function CheckoutClient({
     return () => clearInterval(interval);
   }, [reservation, formatCountdown]);
 
+  const applyPromo = async () => {
+    const code = promoInput.trim();
+    if (!code || promoChecking) return;
+
+    setPromoChecking(true);
+    setPromoError(null);
+
+    try {
+      const response = await fetch('/api/promo-code/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        setAppliedPromo(null);
+        setPromoError(data.error ?? 'That promo code could not be applied.');
+        return;
+      }
+
+      setAppliedPromo({ code: data.code, percentOff: data.percentOff });
+      setPromoInput('');
+    } catch {
+      setPromoError('Network error. Please try again.');
+    } finally {
+      setPromoChecking(false);
+    }
+  };
+
   const handleCheckout = async () => {
     if (isProcessing || !qcmPassed) return;
 
@@ -160,6 +205,7 @@ export function CheckoutClient({
           competitionId,
           ticketNumbers: selectedTickets.length > 0 ? selectedTickets : undefined,
           useReferralTicket: referralApplied,
+          promoCode: appliedPromo?.code,
         }),
       });
 
@@ -181,6 +227,15 @@ export function CheckoutClient({
             // best-effort
           }
           router.push('/competitions/' + competitionSlug + '/question');
+          return;
+        }
+        // The code is re-validated server-side at session creation. If it has
+        // since been spent or expired, drop it so the summary stops promising a
+        // discount the checkout will not honour.
+        if (['NOT_FOUND', 'NOT_YOURS', 'ALREADY_USED', 'EXPIRED'].includes(data.code)) {
+          setAppliedPromo(null);
+          setPromoError(data.error ?? 'That promo code is no longer valid.');
+          setIsProcessing(false);
           return;
         }
         setError(data.error ?? 'Failed to create checkout session');
@@ -398,6 +453,22 @@ export function CheckoutClient({
               <span>−{formatPrice(ticketPrice)}</span>
             </div>
           )}
+          {appliedPromo && pricing.discountPence > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                color: 'var(--gold-bright)',
+                fontWeight: 600,
+              }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Tag className="h-4 w-4" />
+                {appliedPromo.code} · {appliedPromo.percentOff}% off
+              </span>
+              <span>−{formatPrice(pricing.discountPence / 100)}</span>
+            </div>
+          )}
           {bonusTickets > 0 && (
             <div
               style={{
@@ -414,6 +485,72 @@ export function CheckoutClient({
               <span>+{bonusTickets} FREE</span>
             </div>
           )}
+        </div>
+
+        {/* Promo code — codes are won on the wheel, one per order. */}
+        <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid var(--line)' }}>
+          {appliedPromo ? (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px' }}>
+              <span style={{ fontSize: '13.5px', color: 'var(--ink-dim)' }}>
+                Code <b style={{ color: 'var(--accent-text)' }}>{appliedPromo.code}</b> applied
+              </span>
+              <button
+                type="button"
+                onClick={() => { setAppliedPromo(null); setPromoError(null); }}
+                style={{
+                  background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                  fontSize: '13px', color: 'var(--ink-faint)', textDecoration: 'underline',
+                }}
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <>
+              <label
+                htmlFor="promo-code"
+                style={{
+                  display: 'block', fontFamily: 'var(--display)', fontSize: '12px',
+                  letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 700,
+                  color: 'var(--ink-faint)', marginBottom: '8px',
+                }}
+              >
+                Promo code
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  id="promo-code"
+                  className="input"
+                  value={promoInput}
+                  onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void applyPromo(); } }}
+                  placeholder="W10-XXXXXXXXXX"
+                  autoComplete="off"
+                  spellCheck={false}
+                  maxLength={32}
+                  style={{ flex: 1, minWidth: 0, textTransform: 'uppercase' }}
+                />
+                <button
+                  type="button"
+                  onClick={applyPromo}
+                  disabled={promoChecking || promoInput.trim().length === 0}
+                  className="btn btn-ghost"
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {promoChecking ? 'Checking…' : 'Apply'}
+                </button>
+              </div>
+            </>
+          )}
+          {promoError && (
+            <p style={{ color: 'var(--warn)', fontSize: '13px', marginTop: '8px' }}>{promoError}</p>
+          )}
+          <p style={{ fontSize: '12px', color: 'var(--ink-faint)', marginTop: '8px' }}>
+            One code per order.{' '}
+            <Link href="/my-rewards" style={{ color: 'var(--ink-dim)', textDecoration: 'underline' }}>
+              See my codes
+            </Link>
+          </p>
         </div>
 
         {/* Total — part of the receipt, not a separate clickable-looking panel */}

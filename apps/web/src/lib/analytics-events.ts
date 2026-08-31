@@ -89,3 +89,14 @@ export function trackSignUp(method: 'credentials' | 'google'): void {
 export function trackWaitlistSignup(): void {
   send('generate_lead', { currency: 'GBP', value: 0 });
 }
+
+/**
+ * Post-purchase wheel spun.
+ *
+ * Not an ecommerce event — there is no revenue attached. It exists so the
+ * operator can see what share of granted spins are actually played, which is
+ * the number that says whether the mechanic is working at all.
+ */
+export function trackWheelSpin(resultType: string, value: number): void {
+  send('spin_wheel', { result_type: resultType, result_value: value });
+}

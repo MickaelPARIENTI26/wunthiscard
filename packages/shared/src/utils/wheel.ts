@@ -146,3 +146,57 @@ export function applyPercentDiscount(
     discountedPence: subtotalPence - discountPence,
   };
 }
+
+export interface WheelSegment {
+  type: WheelSlotKind;
+  /** Percentage for PERCENT_OFF; 0 otherwise. */
+  value: number;
+  label: string;
+}
+
+/** Below this the wheel reads as a pie chart rather than a wheel. */
+const MIN_SEGMENTS = 6;
+
+/**
+ * The wheel's visual layout.
+ *
+ * Segments are a PRESENTATION of the pool, never the mechanism: the server has
+ * already drawn by the time the wheel turns. Only slots that can still be won
+ * are drawn — a depleted slot could never be landed on, and painting it would
+ * promise something the pool cannot deliver.
+ *
+ * Prizes are separated by a No Win so the wheel alternates rather than showing
+ * every reward bunched together, and the cycle repeats until it is big enough
+ * to look like a wheel.
+ */
+export function buildWheelSegments(slots: WheelSlotCounts[]): WheelSegment[] {
+  const toSegment = (s: WheelSlotCounts): WheelSegment => ({
+    type: s.type,
+    value: s.value,
+    label: wheelSlotLabel(s.type, s.value),
+  });
+
+  const winnable = slots.filter((s) => s.quantityConfigured - s.quantityWon > 0);
+  const noWin = winnable.find((s) => s.type === 'NO_WIN');
+  const prizes = winnable
+    .filter((s) => s.type !== 'NO_WIN')
+    // Jackpot last, then percentages ascending: the wheel reads low → high → card.
+    .sort((a, b) => {
+      const jack = (a.type === 'JACKPOT' ? 1 : 0) - (b.type === 'JACKPOT' ? 1 : 0);
+      return jack !== 0 ? jack : a.value - b.value;
+    });
+
+  if (prizes.length === 0) {
+    return noWin ? Array.from({ length: MIN_SEGMENTS }, () => toSegment(noWin)) : [];
+  }
+
+  const cycle: WheelSegment[] = [];
+  for (const prize of prizes) {
+    if (noWin) cycle.push(toSegment(noWin));
+    cycle.push(toSegment(prize));
+  }
+
+  const segments = [...cycle];
+  while (segments.length < MIN_SEGMENTS) segments.push(...cycle);
+  return segments;
+}

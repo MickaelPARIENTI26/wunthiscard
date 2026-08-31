@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { User, Ticket, Trophy, Settings, Gift } from 'lucide-react';
+import { User, Ticket, Trophy, Sparkles, Settings, Gift } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -166,6 +166,9 @@ export function Header({ user = null }: HeaderProps) {
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/my-wins" className="cursor-pointer"><Trophy className="mr-2 h-4 w-4" />My Wins</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/my-rewards" className="cursor-pointer"><Sparkles className="mr-2 h-4 w-4" />My Rewards</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/referrals" className="cursor-pointer"><Gift className="mr-2 h-4 w-4" />Referrals</Link>

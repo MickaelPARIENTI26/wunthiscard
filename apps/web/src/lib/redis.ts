@@ -360,6 +360,11 @@ export const rateLimits = {
   // protection — it just stops a script probing spin ids at speed.
   wheelSpin: createRateLimiter({ requests: 30, window: '1 m', prefix: 'ratelimit:wheel' }),
 
+  // Promo-code check: 20 per minute. Codes are 10 characters from a 32-letter
+  // alphabet, so guessing one is not the threat — this only stops the endpoint
+  // being used as a fast oracle.
+  promoCheck: createRateLimiter({ requests: 20, window: '1 m', prefix: 'ratelimit:promo-check' }),
+
   // Coming-soon waiting list: 5 signups per hour per IP (unique-email upsert
   // dedupes anyway; this just blunts scripted spam).
   waitlist: createRateLimiter({ requests: 5, window: '1 h', prefix: 'ratelimit:waitlist' }),

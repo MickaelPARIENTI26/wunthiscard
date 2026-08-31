@@ -92,7 +92,7 @@ export type SpinFailure =
   | 'POOL_EMPTY';
 
 export type SpinOutcome =
-  | { ok: true; result: DrawResult; code?: string }
+  | { ok: true; result: DrawResult; code?: string; codeExpiresAt?: Date }
   | { ok: false; reason: SpinFailure };
 
 /**
@@ -170,11 +170,15 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       }
 
       let code: string | undefined;
+      let codeExpiresAt: Date | undefined;
       if (result.type === 'PERCENT_OFF') {
         // 32^10 combinations, so a collision is vanishingly unlikely — and if
         // one ever happened the unique index aborts this transaction, which
         // un-claims the spin. The customer re-spins; nothing is lost.
         code = generatePromoCode(result.value);
+        codeExpiresAt = new Date(
+          Date.now() + spin.wheelConfig.couponValidityDays * 24 * 60 * 60 * 1000
+        );
         await tx.promoCode.create({
           data: {
             code,
@@ -182,14 +186,12 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
             spinId,
             competitionId: spin.competitionId,
             percentOff: result.value,
-            expiresAt: new Date(
-              Date.now() + spin.wheelConfig.couponValidityDays * 24 * 60 * 60 * 1000
-            ),
+            expiresAt: codeExpiresAt,
           },
         });
       }
 
-      return { ok: true as const, result, code };
+      return { ok: true as const, result, code, codeExpiresAt };
     });
   } catch (e) {
     if (e instanceof SpinError) return { ok: false, reason: e.reason };

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import { getMarketingRecipients } from '@/lib/marketing-recipients';
 import { sendClosingSoonBlast, type CompetitionBlastData } from '@/lib/email';
 import { closingSoonWindow, CLOSING_SOON_WINDOW_HOURS } from '@/lib/closing-soon';
+import { sendSpinReminders } from '@/lib/wheel-reminder';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -37,6 +38,12 @@ export async function GET(request: Request) {
   const now = new Date();
   const { from, to } = closingSoonWindow(now);
 
+  // Wheel spins expire with their competition, so the deadline is the same one.
+  // Run before the early return below: a competition whose closing-soon blast
+  // already went out is not in the list that follows, but its unplayed spins
+  // still need the reminder.
+  const spinReminders = await sendSpinReminders(now);
+
   const competitions = await prisma.competition.findMany({
     where: {
       status: { in: ['ACTIVE', 'SOLD_OUT'] },
@@ -56,7 +63,7 @@ export async function GET(request: Request) {
   });
 
   if (competitions.length === 0) {
-    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0 });
+    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0, spinReminders });
   }
 
   const recipients = await getMarketingRecipients();
@@ -86,5 +93,6 @@ export async function GET(request: Request) {
     recipients: recipients.length,
     sent: results.reduce((n, r) => n + r.sent, 0),
     results,
+    spinReminders,
   });
 }

@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
       ok: true,
       result: { type: outcome.result.type, value: outcome.result.value },
       ...(outcome.code ? { promoCode: outcome.code } : {}),
+      ...(outcome.codeExpiresAt ? { codeExpiresAt: outcome.codeExpiresAt.toISOString() } : {}),
     });
   } catch (error) {
     console.error('Wheel spin failed:', error);

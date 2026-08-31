@@ -8,7 +8,8 @@ import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 import { fulfillCheckoutSession } from '@/lib/fulfill-checkout';
 import { Button } from '@/components/ui/button';
-import { formatPrice } from '@winucard/shared/utils';
+import { formatPrice, buildWheelSegments } from '@winucard/shared/utils';
+import { PrizeWheel } from '@/components/wheel/prize-wheel';
 import { ClearCheckoutStorage } from './clear-checkout-storage';
 
 export const metadata: Metadata = {
@@ -168,6 +169,38 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
     );
   }
 
+  // Spins this order earned and the buyer has not played yet. Fetched after
+  // fulfilment above, which is what mints them.
+  const spins = await prisma.wheelSpin.findMany({
+    where: {
+      orderId: order.id,
+      userId: session.user.id,
+      spunAt: null,
+      wheelConfig: { enabled: true },
+      competition: { drawDate: { gt: new Date() } },
+    },
+    select: {
+      id: true,
+      wheelConfig: {
+        select: {
+          jackpotEnabled: true,
+          slots: {
+            select: { type: true, value: true, quantityConfigured: true, quantityWon: true },
+          },
+        },
+      },
+    },
+    orderBy: { grantedAt: 'asc' },
+  });
+
+  const firstSpin = spins[0];
+  const wheelSlots = !firstSpin
+    ? []
+    : firstSpin.wheelConfig.jackpotEnabled
+      ? firstSpin.wheelConfig.slots
+      : firstSpin.wheelConfig.slots.filter((s) => s.type !== 'JACKPOT');
+  const wheelSegments = buildWheelSegments(wheelSlots);
+
   const paidTickets = order.tickets.filter((t) => !t.isBonus);
   const bonusTickets = order.tickets.filter((t) => t.isBonus);
   const totalAmount =
@@ -214,6 +247,40 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
         <p style={{ color: 'var(--ink-dim)', fontSize: '17px', lineHeight: 1.6, marginBottom: '32px' }}>
           We&apos;ve emailed your confirmation. When the countdown hits zero, an independent third party draws the winner and we publish the result right here.
         </p>
+
+        {/* The wheel — one spin per paid ticket, playable right here. */}
+        {spins.length > 0 && wheelSegments.length > 0 && (
+          <div className="drop-card" style={{ marginBottom: '32px', borderColor: 'var(--accent)' }}>
+            <div
+              style={{
+                fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.18em',
+                textTransform: 'uppercase', color: 'var(--accent-text)', fontWeight: 700,
+                marginBottom: '6px',
+              }}
+            >
+              Buyer bonus
+            </div>
+            <h2
+              style={{
+                fontFamily: 'var(--display)', fontSize: 'clamp(24px, 6vw, 34px)', fontWeight: 700,
+                letterSpacing: '-0.03em', lineHeight: 1, marginBottom: '8px',
+              }}
+            >
+              You unlocked {spins.length} spin{spins.length !== 1 ? 's' : ''}.
+            </h2>
+            <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', marginBottom: '22px' }}>
+              One per paid ticket. Nothing to lose — your entry is already confirmed.
+            </p>
+            <PrizeWheel spinIds={spins.map((s) => s.id)} segments={wheelSegments} />
+            <p style={{ color: 'var(--ink-faint)', fontSize: '12.5px', marginTop: '18px' }}>
+              Not now? Your spins wait for you in{' '}
+              <Link href="/my-rewards" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>
+                My Rewards
+              </Link>{' '}
+              until this competition closes.
+            </p>
+          </div>
+        )}
 
         {/* Order summary card */}
         <div className="drop-card" style={{ textAlign: 'left', marginBottom: '32px' }}>
