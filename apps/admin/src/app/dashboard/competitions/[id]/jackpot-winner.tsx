@@ -7,7 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Save, Trophy } from 'lucide-react';
-import { updateJackpotWin, type JackpotUpdateState } from './jackpot-actions';
+import { useActionState as useHoldState } from 'react';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  updateJackpotWin,
+  clearJackpotPaymentHold,
+  type JackpotUpdateState,
+} from './jackpot-actions';
 
 export interface JackpotWinnerProps {
   win: {
@@ -19,6 +25,8 @@ export interface JackpotWinnerProps {
     trackingNumber: string | null;
     shippedAt: string | null;
     createdAt: string;
+    paymentReversedAt: string | null;
+    paymentReversedReason: string | null;
     spinId: string;
     orderId: string | null;
     competitionId: string;
@@ -44,7 +52,8 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
     { success: false, message: '' }
   );
 
-  const urgent = NEEDS_ACTION.includes(win.status);
+  const frozen = win.paymentReversedAt !== null;
+  const urgent = NEEDS_ACTION.includes(win.status) || frozen;
 
   const rows: [string, string][] = [
     ['Name', win.user ? `${win.user.firstName} ${win.user.lastName}` : 'Account deleted'],
@@ -60,7 +69,7 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
   ];
 
   return (
-    <Card className={urgent ? 'border-2 border-amber-500' : undefined}>
+    <Card className={frozen ? 'border-2 border-destructive' : urgent ? 'border-2 border-amber-500' : undefined}>
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center gap-3">
           <Trophy className="h-5 w-5 text-amber-500" />
@@ -80,6 +89,20 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
             </div>
           ))}
         </dl>
+
+        {frozen && (
+          <div className="rounded-md border border-destructive p-4 space-y-2">
+            <p className="font-semibold text-destructive">
+              Payment reversed — fulfilment is frozen
+            </p>
+            <p className="text-sm text-muted-foreground">
+              The money behind this win came back ({win.paymentReversedReason ?? 'unknown cause'}).
+              Nothing has been revoked and the winner has not been told. If the card has already
+              shipped this is a recovery job; if it has not, decide before it does.
+            </p>
+            <ClearHold winId={win.id} />
+          </div>
+        )}
 
         <form action={formAction} className="space-y-4 border-t pt-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -129,5 +152,41 @@ export function JackpotWinner({ win }: JackpotWinnerProps) {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+/**
+ * Lifting a freeze is a decision, so it asks for one in writing. Super-admin
+ * only, and the reason lands in the audit log — it is the only account of why a
+ * card worth thousands went out on an order that did not pay.
+ */
+function ClearHold({ winId }: { winId: string }) {
+  const [state, action, pending] = useHoldState<JackpotUpdateState, FormData>(
+    async (_prev, formData) =>
+      clearJackpotPaymentHold(winId, String(formData.get('reason') ?? '')),
+    { success: false, message: '' }
+  );
+
+  return (
+    <form action={action} className="space-y-2">
+      <Label htmlFor={`hold-reason-${winId}`}>Reason for honouring this win anyway</Label>
+      <Textarea
+        id={`hold-reason-${winId}`}
+        name="reason"
+        rows={2}
+        placeholder="e.g. refund was our goodwill gesture, the win stands"
+        required
+        minLength={10}
+      />
+      <Button type="submit" variant="outline" size="sm" disabled={pending}>
+        {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        Clear payment hold
+      </Button>
+      {state.message && (
+        <p className={state.success ? 'text-sm text-green-600' : 'text-sm text-destructive'}>
+          {state.message}
+        </p>
+      )}
+    </form>
   );
 }

@@ -129,6 +129,10 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
 
   const ticketNumbers = JSON.parse(session.metadata?.ticketNumbers || '[]') as number[];
   const bonusTickets = parseInt(session.metadata?.bonusTickets || '0', 10);
+  // The status the order carried when we picked it up. Only ever used to undo a
+  // cancellation's side effects below; the claim itself is the source of truth
+  // for whether this call is the one that fulfils.
+  const wasCancelled = order.paymentStatus === 'CANCELLED';
 
   // Start a transaction to update order and assign tickets
   // Using a transaction with the idempotency check INSIDE to prevent race conditions
@@ -141,7 +145,14 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     const claim = await tx.order.updateMany({
       where: {
         id: orderId,
-        paymentStatus: { not: 'SUCCEEDED' },
+        // An ALLOWLIST, not "anything but SUCCEEDED". The excluded pair matters:
+        // SUCCEEDED is the idempotency guard, and REFUNDED means the money has
+        // already gone back — re-fulfilling there would re-mint tickets and wheel
+        // spins for an order nobody paid for. The four listed states are all
+        // "paid for now, nothing handed over yet", including FAILED and CANCELLED
+        // so a card retried on the same PaymentIntent, or a session paid after the
+        // buyer visited the cancel page, still delivers what was bought.
+        paymentStatus: { in: ['PENDING', 'PROCESSING', 'FAILED', 'CANCELLED'] },
       },
       data: {
         paymentStatus: 'SUCCEEDED',
@@ -151,6 +162,33 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
 
     if (claim.count === 0) {
       return { alreadyProcessed: true };
+    }
+
+    // Was this order cancelled before the buyer paid anyway? Both cancellation
+    // paths hand the referral free ticket back, and neither takes it away again
+    // when the session is subsequently paid — so without this the buyer keeps the
+    // free ticket AND the discount it bought, repeatably. Read inside the
+    // transaction, after the claim, so exactly one fulfilment can reconcile.
+    if (wasCancelled && session.metadata?.referralTicketUsed === '1' && order.userId) {
+      const reclaimed = await tx.user.updateMany({
+        where: { id: order.userId, referralFreeTicketsAvailable: { gt: 0 } },
+        data: { referralFreeTicketsAvailable: { decrement: 1 } },
+      });
+      await tx.auditLog.create({
+        data: {
+          userId: order.userId,
+          action: 'REFERRAL_FREE_TICKET_RECLAIMED',
+          entity: 'order',
+          entityId: orderId,
+          metadata: {
+            orderNumber: order.orderNumber,
+            reason: 'cancelled_order_paid_anyway',
+            // Zero means they had already spent it elsewhere; the counter is
+            // clamped at 0 rather than going negative, and this records that.
+            reclaimed: reclaimed.count,
+          },
+        },
+      });
     }
 
     // Defensive per-user cap (issue #B). maxTicketsPerUser is enforced at

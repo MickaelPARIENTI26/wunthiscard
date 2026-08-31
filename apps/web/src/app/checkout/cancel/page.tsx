@@ -106,6 +106,33 @@ async function getOrderAndRelease(orderId: string, userId: string) {
           });
         }
 
+        // Hand back the promo code reserved at session creation. The expiry
+        // webhook does this too, but it bails the moment this page has won the
+        // PENDING → CANCELLED flip — so without this the code stays marked
+        // redeemed forever and the customer permanently loses a reward they won.
+        // Matched on redeemedOrderId, which is what reservePromoCode wrote.
+        try {
+          const released = await prisma.promoCode.updateMany({
+            where: { redeemedOrderId: order.id, voidedAt: null },
+            data: { redeemedAt: null, redeemedOrderId: null },
+          });
+          if (released.count > 0) {
+            await prisma.auditLog.create({
+              data: {
+                userId,
+                action: 'PROMO_CODE_RESTORED',
+                entity: 'order',
+                entityId: order.id,
+                metadata: { orderNumber: order.orderNumber, reason: 'checkout_cancelled' },
+              },
+            });
+          }
+        } catch (promoError) {
+          // Best-effort, exactly like the referral read above: a failure here must
+          // not break the cancel page.
+          console.error('Failed to release promo code on cancel:', promoError);
+        }
+
         // Log the cancellation
         await prisma.auditLog.create({
           data: {

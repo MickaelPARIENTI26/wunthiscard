@@ -301,13 +301,39 @@ Il reste la **Phase 5** (dashboard admin) et les points de vigilance ci-dessous.
 
 ## 7. Points de vigilance
 
-- **Remboursement d'une commande dont le spin a gagné** : le lot est-il repris ?
-  Le code promo est-il annulé ? Le patron existe déjà pour le parrainage
-  (`voidOrderAndReleaseTickets` reverse la récompense) — à répliquer.
-- **Suppression de compte (RGPD)** : `JackpotWin` doit être anonymisé comme
-  `Win` et `DrawLog`, pas supprimé.
-- **Annulation d'un concours** : les spins non utilisés et les codes émis
-  deviennent quoi ?
+- ~~**Remboursement d'une commande dont le spin a gagné**~~ — **FAIT**.
+  `reverseWheelRewardsForOrder` dans `packages/database/src/wheel-reversal.ts`,
+  appelé par les trois seuls écrivains de `paymentStatus = 'REFUNDED'`
+  (webhook remboursement, webhook litige perdu, annulation de concours), dans la
+  même transaction que le flip de statut. Spins annulés, codes non utilisés
+  invalidés, carte gradée **gelée** (jamais révoquée automatiquement). Le jeton
+  du pool n'est **jamais** rendu : `quantityWon` est monotone parce que le
+  jackpot, c'est une seule carte physique.
+- ~~**Suppression de compte (RGPD)**~~ — **FAIT**. `WheelSpin`, `PromoCode` et
+  `JackpotWin` avaient déjà `onDelete: SetNull` ; ce qui manquait, c'était
+  (a) le blocage de la suppression tant qu'un `JackpotWin` n'est pas livré et
+  (b) l'effacement de `adminNotes` / `trackingNumber`, du texte libre qui
+  contient nom et adresse.
+- ~~**Annulation d'un concours**~~ — **FAIT**. Les spins meurent avec le
+  concours, mais les codes déjà gagnés **survivent** : l'annulation est notre
+  décision, pas celle du client.
+
+### Reste à faire sur la reprise (identifié par l'audit, volontairement non livré)
+
+- **Garde-fou d'épuisement du pool** : chaque spin annulé retire définitivement
+  un jeton. Répété, cela concentre les chances sur les joueurs restants. Il faut
+  un plafond de spins annulés par roue au-delà duquel `claimSlot` alerte.
+- **Délai avant expédition d'une carte gradée** (~30 j après le *gain*, pas
+  après le paiement — les spins se conservent jusqu'au tirage), pour qu'un
+  litige arrive pendant qu'on détient encore la carte.
+- **Gel à l'ouverture d'un litige** (`charge.dispute.created`), pas seulement à
+  sa perte : aujourd'hui la carte peut partir pendant l'arbitrage.
+- **Le ticket gratuit de parrainage donne un spin** alors que la règle dit le
+  contraire : il n'est pas marqué sur le ticket, seulement dans le prix.
+- **Page de remboursement** : `/checkout/success` fête encore la commande quand
+  elle a été remboursée.
+- **Conditions générales** : la règle « paiement repris = spins repris » doit
+  être publiée avant d'être appliquée.
 - **Affichage des probabilités côté public** : sur un jeu à lot, la transparence
   des chances est attendue par l'ASA. Prévoir une page publique des odds.
 - **Le garde-fou de montant** (`fulfill-checkout.ts:106`) doit être couvert par

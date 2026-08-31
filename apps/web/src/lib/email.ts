@@ -873,6 +873,62 @@ export async function sendSpinReminderEmail(
   });
 }
 
+export interface JackpotFrozenAlertData {
+  orderNumber: string;
+  cause: string;
+  wins: { spinId: string; status: string; prizeValue: string | null }[];
+}
+
+/**
+ * "The money behind a graded card just went back."
+ *
+ * Deliberately blunt and action-shaped: if the card has already been posted this
+ * is a recovery job with a clock on it, and nothing in the system will decide
+ * that for anyone.
+ */
+export async function sendJackpotFrozenAlertEmail(to: string, data: JackpotFrozenAlertData) {
+  const rows = data.wins
+    .map(
+      (w) => `
+      <tr>
+        <td style="padding: 6px 10px; border-top: 1px solid #2E2B26; color: #CFCAC0; font-size: 13px;">${escapeHtml(w.spinId)}</td>
+        <td style="padding: 6px 10px; border-top: 1px solid #2E2B26; color: #CFCAC0; font-size: 13px;">${escapeHtml(w.status)}</td>
+        <td style="padding: 6px 10px; border-top: 1px solid #2E2B26; color: #CFCAC0; font-size: 13px;">${w.prizeValue ? escapeHtml(w.prizeValue) : '—'}</td>
+      </tr>`
+    )
+    .join('');
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 12px;">⚠️ Jackpot frozen — payment reversed</h2>
+    <p style="color: #CFCAC0; font-size: 15px; line-height: 23px; margin: 0 0 18px;">
+      Order <strong>${escapeHtml(data.orderNumber)}</strong> was reversed (${escapeHtml(data.cause)}).
+      A graded card was won on that order, so the win has been frozen. Nothing has been
+      revoked and the winner has NOT been contacted — that decision is yours.
+    </p>
+
+    <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 20px;">
+      <tr>
+        <td style="padding: 6px 10px; color: #9A958B; font-size: 12px; text-transform: uppercase;">Spin</td>
+        <td style="padding: 6px 10px; color: #9A958B; font-size: 12px; text-transform: uppercase;">Status</td>
+        <td style="padding: 6px 10px; color: #9A958B; font-size: 12px; text-transform: uppercase;">Value</td>
+      </tr>
+      ${rows}
+    </table>
+
+    <p style="color: #CFCAC0; font-size: 14px; line-height: 22px; margin: 0;">
+      If the status is already SHIPPED or DELIVERED, the card has left the building and
+      this is a recovery job, not a database fix. If it has not shipped, the fulfilment
+      form is now blocked on this win until someone clears the hold.
+    </p>
+  `);
+
+  return sendEmail({
+    to,
+    subject: `⚠️ WinUPrize — jackpot frozen on reversed order ${data.orderNumber}`,
+    html,
+  });
+}
+
 export async function sendJackpotAlertEmail(to: string, data: JackpotAlertData) {
   const value = data.prizeValue !== null ? formatGbp(data.prizeValue) : 'Not set';
   const rows: [string, string][] = [

@@ -50,6 +50,7 @@ export interface WheelHistoryRow {
   promoCode: string | null;
   promoRedeemed: boolean;
   jackpotStatus: string | null;
+  reversed: boolean;
 }
 
 export interface WheelResults {
@@ -58,6 +59,8 @@ export interface WheelResults {
   granted: number;
   played: number;
   unplayed: number;
+  /** Spins whose payment came back. Shown separately, never netted off silently. */
+  reversed: number;
   /** True once the draw date has passed: the unplayed spins are dead, not pending. */
   expired: boolean;
   outcomes: WheelOutcomeCount[];
@@ -91,9 +94,16 @@ export async function getWheelResults(
     ? { resultType: parsed.type, resultValue: parsed.value }
     : {};
 
-  const [granted, played, byResult, codes, jackpots, historyTotal, history] = await Promise.all([
-    prisma.wheelSpin.count({ where: { competitionId } }),
-    prisma.wheelSpin.count({ where: { competitionId, spunAt: { not: null } } }),
+  const [granted, played, reversed, byResult, codes, jackpots, historyTotal, history] = await Promise.all([
+    // granted and played both exclude reversed spins, together — filtering one
+    // and not the other would quietly inflate "still to play", which is derived
+    // from the difference.
+    prisma.wheelSpin.count({ where: { competitionId, reversedAt: null } }),
+    prisma.wheelSpin.count({ where: { competitionId, reversedAt: null, spunAt: { not: null } } }),
+    prisma.wheelSpin.count({ where: { competitionId, reversedAt: { not: null } } }),
+    // Deliberately NOT filtered on reversedAt. WheelSlot.quantityWon is monotonic,
+    // so this is the count that must keep agreeing with it — filtering here would
+    // break the won-vs-remaining tripwire this card exists to show.
     prisma.wheelSpin.groupBy({
       by: ['resultType', 'resultValue'],
       where: { competitionId, spunAt: { not: null } },
@@ -114,6 +124,7 @@ export async function getWheelResults(
         resultType: true,
         resultValue: true,
         userId: true,
+        reversedAt: true,
         user: { select: { firstName: true, lastName: true, email: true } },
         order: { select: { orderNumber: true, ticketCount: true } },
         promoCode: { select: { code: true, redeemedAt: true } },
@@ -161,6 +172,7 @@ export async function getWheelResults(
     enabled: config.enabled,
     granted,
     played,
+    reversed,
     unplayed: granted - played,
     expired: config.competition.drawDate.getTime() <= Date.now(),
     outcomes,
@@ -185,6 +197,7 @@ export async function getWheelResults(
       promoCode: spin.promoCode?.code ?? null,
       promoRedeemed: Boolean(spin.promoCode?.redeemedAt),
       jackpotStatus: spin.jackpotWin?.status ?? null,
+      reversed: spin.reversedAt !== null,
     })),
   };
 }
@@ -220,6 +233,8 @@ const SPIN_EXPORT_SELECT = {
   resultType: true,
   resultValue: true,
   userId: true,
+  reversedAt: true,
+  reversalReason: true,
   user: { select: { firstName: true, lastName: true, email: true } },
   order: { select: { orderNumber: true, ticketCount: true } },
   promoCode: { select: { code: true, redeemedAt: true } },
@@ -272,4 +287,9 @@ export const WHEEL_EXPORT_COLUMNS = [
     accessor: (r: WheelExportRow) => (!r.promoCode ? '' : r.promoCode.redeemedAt ? 'used' : 'unused'),
   },
   { key: 'jackpotStatus', header: 'jackpot_status', accessor: (r: WheelExportRow) => r.jackpotWin?.status ?? '' },
+  {
+    key: 'reversed',
+    header: 'reversed',
+    accessor: (r: WheelExportRow) => (r.reversedAt ? (r.reversalReason ?? 'yes') : ''),
+  },
 ];

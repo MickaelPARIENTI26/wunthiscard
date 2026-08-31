@@ -589,6 +589,13 @@ model WheelSpin {
   resultType  WheelSlotType?
   resultValue Int?
 
+  /// Set when the money behind this spin came back — a refund, a lost dispute,
+  /// or a cancelled competition. An unspun reversed spin can never be played; a
+  /// spun one keeps its result as a record but stops counting as earned.
+  /// Rows are marked, never deleted: PromoCode and JackpotWin hang off them.
+  reversedAt     DateTime?
+  reversalReason String?
+
   wheelConfig WheelConfig @relation(fields: [wheelConfigId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id])
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -599,7 +606,7 @@ model WheelSpin {
 
   @@index([competitionId])
   @@index([userId, spunAt])
-  @@index([orderId])
+  @@index([orderId, reversedAt])
 }
 
 /// A discount won on the wheel. Owned by one user, single use, never transferable.
@@ -618,6 +625,12 @@ model PromoCode {
 
   redeemedAt      DateTime?
   redeemedOrderId String?
+
+  /// Cancelled because the order that earned it was refunded or charged back.
+  /// Distinct from expiry on purpose: "cancelled" and "expired" are different
+  /// things to tell a customer, and only one of them is our doing.
+  voidedAt   DateTime?
+  voidReason String?
 
   user          User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   spin          WheelSpin    @relation(fields: [spinId], references: [id], onDelete: Cascade)
@@ -647,6 +660,12 @@ model JackpotWin {
   shippedAt      DateTime?
   deliveredAt    DateTime?
 
+  /// The payment behind this win was reversed. Deliberately NOT a JackpotStatus:
+  /// status answers "where is the parcel", this answers "did the money stay".
+  /// Freezing is automatic; deciding what to do about a real graded card is not.
+  paymentReversedAt     DateTime?
+  paymentReversedReason String?
+
   spin        WheelSpin   @relation(fields: [spinId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id])
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -657,4 +676,5 @@ model JackpotWin {
 
   @@index([status])
   @@index([competitionId])
+  @@index([paymentReversedAt])
 }

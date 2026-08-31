@@ -40,6 +40,7 @@ export default async function MyRewardsPage() {
       where: {
         userId,
         spunAt: null,
+        reversedAt: null,
         wheelConfig: { enabled: true },
         competition: { drawDate: { gt: now } },
       },
@@ -68,6 +69,7 @@ export default async function MyRewardsPage() {
         percentOff: true,
         expiresAt: true,
         redeemedAt: true,
+        voidedAt: true,
       },
       orderBy: { issuedAt: 'desc' },
     }),
@@ -78,13 +80,14 @@ export default async function MyRewardsPage() {
         spunAt: true,
         resultType: true,
         resultValue: true,
+        reversedAt: true,
         competition: { select: { title: true } },
       },
       orderBy: { spunAt: 'desc' },
       take: 30,
     }),
     prisma.wheelSpin.count({
-      where: { userId, spunAt: null, competition: { drawDate: { lte: now } } },
+      where: { userId, spunAt: null, reversedAt: null, competition: { drawDate: { lte: now } } },
     }),
   ]);
 
@@ -103,8 +106,13 @@ export default async function MyRewardsPage() {
     }
   }
 
-  const activeCodes = codes.filter((c) => !c.redeemedAt && c.expiresAt > now);
-  const spentCodes = codes.filter((c) => c.redeemedAt !== null || c.expiresAt <= now);
+  // A cancelled code is neither usable nor silently hidden: it moves to the spent
+  // list labelled "Cancelled", because a reward that vanishes without a word
+  // reads as a bug.
+  const activeCodes = codes.filter((c) => !c.voidedAt && !c.redeemedAt && c.expiresAt > now);
+  const spentCodes = codes.filter(
+    (c) => c.voidedAt !== null || c.redeemedAt !== null || c.expiresAt <= now
+  );
   const spinsAvailable = pendingSpins.length;
 
   return (
@@ -268,7 +276,7 @@ export default async function MyRewardsPage() {
                   textTransform: 'uppercase', fontWeight: 700, color: 'var(--ink-faint)',
                 }}
               >
-                {code.redeemedAt ? 'Used' : 'Expired'}
+                {code.voidedAt ? 'Cancelled' : code.redeemedAt ? 'Used' : 'Expired'}
               </span>
             </div>
           ))}
@@ -304,13 +312,25 @@ export default async function MyRewardsPage() {
                         <span
                           style={{
                             fontWeight: 700,
-                            color: spin.resultType === 'NO_WIN' ? 'var(--ink-faint)' : 'var(--accent-text)',
+                            textDecoration: spin.reversedAt ? 'line-through' : 'none',
+                            color: spin.reversedAt
+                              ? 'var(--ink-faint)'
+                              : spin.resultType === 'NO_WIN'
+                                ? 'var(--ink-faint)'
+                                : 'var(--accent-text)',
                           }}
                         >
                           {wheelSlotLabel(spin.resultType, spin.resultValue ?? 0)}
                         </span>
                       ) : (
                         '—'
+                      )}
+                      {spin.reversedAt && (
+                        <span
+                          style={{ display: 'block', fontSize: '11px', color: 'var(--ink-faint)' }}
+                        >
+                          Cancelled — order refunded
+                        </span>
                       )}
                     </Td>
                   </tr>

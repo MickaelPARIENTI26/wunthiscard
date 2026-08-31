@@ -13,6 +13,10 @@ const MESSAGES: Record<SpinFailure, { status: number; error: string }> = {
   NOT_FOUND: { status: 404, error: 'Spin not found.' },
   ALREADY_SPUN: { status: 409, error: 'This spin has already been used.' },
   EXPIRED: { status: 410, error: 'This spin expired when the competition closed.' },
+  REVERSED: {
+    status: 409,
+    error: 'This spin was cancelled because the order that earned it was refunded.',
+  },
   WHEEL_DISABLED: { status: 409, error: 'The wheel is not available for this competition.' },
   POOL_EMPTY: { status: 409, error: 'No rewards left on this wheel.' },
 };

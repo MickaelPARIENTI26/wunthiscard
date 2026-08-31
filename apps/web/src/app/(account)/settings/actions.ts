@@ -175,6 +175,22 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
       };
     }
 
+    // Same rule for a graded card won on the wheel. JackpotWin.userId is
+    // onDelete: SetNull, so deleting now would sever the only link between the
+    // card and the person owed it — and unlike a Win, nothing else records who
+    // they are. Block until it has actually been delivered.
+    const undeliveredJackpot = await prisma.jackpotWin.findFirst({
+      where: { userId, deliveredAt: null },
+    });
+
+    if (undeliveredJackpot) {
+      return {
+        success: false,
+        error:
+          'You have a wheel prize that has not been delivered. Please wait until it arrives before deleting your account.',
+      };
+    }
+
     // Log the action before deletion
     await prisma.auditLog.create({
       data: {
@@ -227,6 +243,17 @@ export async function deleteAccount(): Promise<{ success: boolean; error?: strin
       prisma.drawLog.updateMany({
         where: { winnerUserId: userId },
         data: { winnerName: '[deleted]', winnerEmail: '[deleted]' },
+      }),
+
+      // Strip the jackpot record's free-text fields. userId is onDelete: SetNull so
+      // the link goes on its own, but adminNotes and trackingNumber are plain
+      // scalars the admin UI encourages filling with a name, an address or a
+      // courier reference — full PII that would otherwise survive erasure
+      // (UK GDPR Art. 17), exactly like the DrawLog scrub above. Status and the
+      // shipped/delivered dates stay: those are the record, not the person.
+      prisma.jackpotWin.updateMany({
+        where: { userId },
+        data: { adminNotes: null, trackingNumber: null },
       }),
 
       // Finally, delete the user

@@ -176,6 +176,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
       orderId: order.id,
       userId: session.user.id,
       spunAt: null,
+      reversedAt: null,
       wheelConfig: { enabled: true },
       competition: { drawDate: { gt: new Date() } },
     },

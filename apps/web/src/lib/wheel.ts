@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { prisma } from '@/lib/db';
-import { sendJackpotAlertEmail } from '@/lib/email';
+import { sendJackpotAlertEmail, sendJackpotFrozenAlertEmail } from '@/lib/email';
 import type { WheelSlotType } from '@winucard/database';
 
 /**
@@ -49,6 +49,7 @@ export async function grantSpinsForOrder(orderId: string): Promise<number> {
     select: {
       id: true,
       userId: true,
+      paymentStatus: true,
       competitionId: true,
       competition: {
         select: { drawDate: true, wheelConfig: { select: { id: true, enabled: true } } },
@@ -58,6 +59,9 @@ export async function grantSpinsForOrder(orderId: string): Promise<number> {
 
   const config = order?.competition.wheelConfig;
   if (!order || !config?.enabled) return 0;
+  // Only a paid order earns spins. Belt and braces with the fulfilment claim:
+  // a re-run against a refunded order must never mint a fresh set.
+  if (order.paymentStatus !== 'SUCCEEDED') return 0;
   // Anonymised order (account deleted): spins would belong to nobody and could
   // never be played, so don't mint them.
   if (!order.userId) return 0;
@@ -88,6 +92,7 @@ export type SpinFailure =
   | 'NOT_FOUND'
   | 'ALREADY_SPUN'
   | 'EXPIRED'
+  | 'REVERSED'
   | 'WHEEL_DISABLED'
   | 'POOL_EMPTY';
 
@@ -110,6 +115,7 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       id: true,
       userId: true,
       spunAt: true,
+      reversedAt: true,
       expiresAt: true,
       wheelConfigId: true,
       competitionId: true,
@@ -132,6 +138,9 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
 
   if (!spin || spin.userId !== userId) return { ok: false, reason: 'NOT_FOUND' };
   if (spin.spunAt) return { ok: false, reason: 'ALREADY_SPUN' };
+  // The money behind this spin went back. Checked here for the message, and
+  // again in the claim below so a reversal landing mid-request still wins.
+  if (spin.reversedAt) return { ok: false, reason: 'REVERSED' };
   if (spin.competition.drawDate.getTime() <= Date.now()) return { ok: false, reason: 'EXPIRED' };
   if (!spin.wheelConfig.enabled) return { ok: false, reason: 'WHEEL_DISABLED' };
 
@@ -141,10 +150,18 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       // Claim the spin. The spunAt IS NULL guard is what stops a double-click,
       // two tabs, or a replayed request from spending the same spin twice.
       const claimed = await tx.wheelSpin.updateMany({
-        where: { id: spinId, userId, spunAt: null },
+        where: { id: spinId, userId, spunAt: null, reversedAt: null },
         data: { spunAt: new Date() },
       });
-      if (claimed.count === 0) throw new SpinError('ALREADY_SPUN');
+      if (claimed.count === 0) {
+        // Either spent already or reversed while we were reading. Distinguish so
+        // the customer is told the truth rather than a plausible-sounding guess.
+        const live = await tx.wheelSpin.findUnique({
+          where: { id: spinId },
+          select: { reversedAt: true },
+        });
+        throw new SpinError(live?.reversedAt ? 'REVERSED' : 'ALREADY_SPUN');
+      }
 
       const result = await claimSlot(tx, spin.wheelConfigId, spin.wheelConfig.jackpotEnabled);
       if (!result) throw new SpinError('POOL_EMPTY');
@@ -210,6 +227,44 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
   return outcome;
 }
 
+/**
+ * Where jackpot alerts go. Configurable, never hardcoded — falls back to the
+ * public inbox so an alert still lands somewhere if nobody has set it.
+ */
+export async function jackpotAlertRecipient(): Promise<string> {
+  const settings = await prisma.siteSettings.findUnique({ where: { id: 'global' } });
+  const data = (settings?.data ?? {}) as { jackpotNotificationEmail?: string };
+  return data.jackpotNotificationEmail?.trim() || 'contact@winuprize.com';
+}
+
+/**
+ * Tell the team a graded card's payment was reversed.
+ *
+ * The freeze itself is already committed; this is the human's cue. It never
+ * throws upward — losing the email must not undo the freeze.
+ */
+export async function notifyJackpotFrozen(
+  orderId: string,
+  orderNumber: string,
+  cause: string
+): Promise<void> {
+  const wins = await prisma.jackpotWin.findMany({
+    where: { orderId, paymentReversedAt: { not: null } },
+    select: { spinId: true, status: true, prizeValue: true },
+  });
+  if (wins.length === 0) return;
+
+  await sendJackpotFrozenAlertEmail(await jackpotAlertRecipient(), {
+    orderNumber,
+    cause,
+    wins: wins.map((w) => ({
+      spinId: w.spinId,
+      status: w.status,
+      prizeValue: w.prizeValue ? w.prizeValue.toString() : null,
+    })),
+  });
+}
+
 /** Look up everything the team needs and send the alert. Never throws upward. */
 async function notifyJackpot(spinId: string): Promise<void> {
   const win = await prisma.jackpotWin.findUnique({
@@ -226,11 +281,7 @@ async function notifyJackpot(spinId: string): Promise<void> {
   });
   if (!win?.user) return;
 
-  const settings = await prisma.siteSettings.findUnique({ where: { id: 'global' } });
-  const data = (settings?.data ?? {}) as { jackpotNotificationEmail?: string };
-  // Configurable, never hardcoded — falls back to the public inbox so the alert
-  // still lands somewhere if nobody has set it.
-  const to = data.jackpotNotificationEmail?.trim() || 'contact@winuprize.com';
+  const to = await jackpotAlertRecipient();
 
   await sendJackpotAlertEmail(to, {
     competitionTitle: win.competition.title,

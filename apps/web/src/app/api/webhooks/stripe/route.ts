@@ -4,6 +4,8 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { prisma } from '@/lib/db';
+import { reverseWheelRewardsForOrder, type ReverseWheelRewardsResult } from '@winucard/database';
+import { notifyJackpotFrozen } from '@/lib/wheel';
 import { releaseTicketsFromRedis } from '@/lib/redis';
 import { fulfillCheckoutSession } from '@/lib/fulfill-checkout';
 
@@ -148,7 +150,7 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
   if (promoCode) {
     try {
       await prisma.promoCode.updateMany({
-        where: { code: promoCode, redeemedOrderId: orderId },
+        where: { code: promoCode, redeemedOrderId: orderId, voidedAt: null },
         data: { redeemedAt: null, redeemedOrderId: null },
       });
       await prisma.auditLog.create({
@@ -244,7 +246,9 @@ async function voidOrderAndReleaseTickets(
   // double-process the release.
   if (order.paymentStatus === 'REFUNDED') return;
 
-  await prisma.$transaction(async (tx) => {
+  // Returned from the transaction rather than captured in a closure variable, so
+  // the alert below sees what was actually reversed.
+  const reversal: ReverseWheelRewardsResult | undefined = await prisma.$transaction(async (tx) => {
     // Re-assert the guard inside the transaction so two concurrent reversals can't
     // both release tickets.
     const claim = await tx.order.updateMany({
@@ -252,6 +256,18 @@ async function voidOrderAndReleaseTickets(
       data: { paymentStatus: 'REFUNDED' },
     });
     if (claim.count === 0) return;
+
+    // Take back what the wheel gave. FIRST, before the tickets are released: the
+    // marking UPDATE inside the helper is what locks out a spin landing at this
+    // exact moment, and it needs WheelSpin.ticketId still pointing at the tickets
+    // it is about to free. Shares this transaction, so the guarded claim above
+    // makes it once-only — a refund followed by a lost dispute cannot double-run.
+    const reversed = await reverseWheelRewardsForOrder(tx, {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      userId: order.userId,
+      reason: action === 'PAYMENT_DISPUTE_LOST' ? 'DISPUTE_LOST' : 'REFUND',
+    });
 
     await tx.ticket.updateMany({
       where: { orderId: order.id },
@@ -318,6 +334,8 @@ async function voidOrderAndReleaseTickets(
         data: { grantedReferralReward: false },
       });
     }
+
+    return reversed;
   });
 
   await prisma.auditLog.create({
@@ -326,9 +344,22 @@ async function voidOrderAndReleaseTickets(
       action,
       entity: 'order',
       entityId: order.id,
-      metadata: { orderNumber: order.orderNumber, ...metadata },
+      metadata: {
+        orderNumber: order.orderNumber,
+        ...metadata,
+        ...(reversal ? { wheelReversal: { ...reversal } } : {}),
+      },
     },
   });
+
+  // A frozen graded card is the one outcome a human must act on, so it is told
+  // outside the transaction and its failure is swallowed — the freeze is already
+  // committed and the admin panel raises the same alarm either way.
+  if (reversal && reversal.jackpotsFrozen.length > 0) {
+    void notifyJackpotFrozen(order.id, order.orderNumber, action).catch((e) =>
+      console.error('Jackpot freeze alert failed (the freeze still stands):', e)
+    );
+  }
 }
 
 // charge.refunded — fires for BOTH full and partial refunds. A FULL refund voids the
@@ -482,11 +513,21 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
 
   if (!order) return;
 
-  // Update order status
-  await prisma.order.update({
-    where: { id: orderId },
+  // Update order status. Guarded, because Stripe does not promise delivery order:
+  // a payment_failed for an earlier attempt can arrive AFTER the retry succeeded,
+  // and an unguarded write would stamp FAILED over a paid order whose tickets are
+  // already SOLD — leaving the books saying it was never paid.
+  const failed = await prisma.order.updateMany({
+    where: { id: orderId, paymentStatus: { in: ['PENDING', 'PROCESSING'] } },
     data: { paymentStatus: 'FAILED' },
   });
+
+  if (failed.count === 0) {
+    console.warn(
+      `payment_failed ignored for order ${orderId}: status is ${order.paymentStatus}, not pending`
+    );
+    return;
+  }
 
   // Log failure
   await prisma.auditLog.create({

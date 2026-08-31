@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import { reverseWheelRewardsForOrder } from '@winucard/database';
 import { auth } from '@/lib/auth';
 import { generateSlug } from '@winucard/shared';
 import type { CompetitionStatus } from '@winucard/database';
@@ -661,6 +662,8 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
         },
         select: {
           id: true,
+          orderNumber: true,
+          userId: true,
           stripePaymentIntentId: true,
           totalAmount: true,
           user: {
@@ -728,12 +731,24 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
         // Mark the order refunded and record the Stripe refund id in the audit log
         // (no stripeRefundId column exists on Order). Done together so the order is
         // never flipped to REFUNDED without a recorded refund id.
-        await prisma.$transaction([
-          prisma.order.update({
-            where: { id: order.id },
+        // Interactive, and guarded on the status the way the webhook is: the bare
+        // update this replaced could re-run on a retry and reverse the wheel
+        // rewards twice. Everything the reversal touches shares this transaction.
+        await prisma.$transaction(async (tx) => {
+          const claim = await tx.order.updateMany({
+            where: { id: order.id, paymentStatus: { not: 'REFUNDED' } },
             data: { paymentStatus: 'REFUNDED' },
-          }),
-          prisma.auditLog.create({
+          });
+          if (claim.count === 0) return;
+
+          await reverseWheelRewardsForOrder(tx, {
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            userId: order.userId,
+            reason: 'COMPETITION_CANCELLED',
+          });
+
+          await tx.auditLog.create({
             data: {
               userId: session.user.id,
               action: 'ORDER_REFUNDED',
@@ -746,8 +761,8 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
                 amount: Number(order.totalAmount),
               },
             },
-          }),
-        ]);
+          });
+        });
 
         refundedCount++;
         refundedAmount += Number(order.totalAmount);
@@ -756,10 +771,22 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
         refundErrors.push(order.id);
       }
     } else {
-      // No Stripe payment intent (e.g. free entry) — just mark as refunded.
-      await prisma.order.update({
-        where: { id: order.id },
-        data: { paymentStatus: 'REFUNDED' },
+      // No Stripe payment intent (e.g. free entry) — mark as refunded. Guarded
+      // and wheel-aware for the same reason as the branch above: this is a
+      // REFUNDED writer, and every REFUNDED writer must reverse the wheel.
+      await prisma.$transaction(async (tx) => {
+        const claim = await tx.order.updateMany({
+          where: { id: order.id, paymentStatus: { not: 'REFUNDED' } },
+          data: { paymentStatus: 'REFUNDED' },
+        });
+        if (claim.count === 0) return;
+
+        await reverseWheelRewardsForOrder(tx, {
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          userId: order.userId,
+          reason: 'COMPETITION_CANCELLED',
+        });
       });
       refundedCount++;
       refundedAmount += Number(order.totalAmount);

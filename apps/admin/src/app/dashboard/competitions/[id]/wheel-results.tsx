@@ -75,6 +75,18 @@ export function WheelResultsCard({ competitionId, filter, results }: WheelResult
           />
         </div>
 
+        {results.reversed > 0 && (
+          <div className="rounded-md border border-destructive/40 p-3">
+            <p className="text-sm text-muted-foreground">Reversed</p>
+            <p className="text-xl font-bold">{results.reversed}</p>
+            <p className="text-xs text-muted-foreground">
+              Spins whose payment came back (refund, chargeback or cancellation). Their pool
+              tokens are NOT returned automatically — raise a slot&apos;s stock in the settings
+              below if you want them back in play.
+            </p>
+          </div>
+        )}
+
         <div>
           <p className="text-sm font-medium mb-2">Outcomes</p>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -152,8 +164,13 @@ export function WheelResultsCard({ competitionId, filter, results }: WheelResult
                   </TableRow>
                 ) : (
                   results.history.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableCell className="text-sm">{formatDateTime(row.spunAt)}</TableCell>
+                    <TableRow key={row.id} className={row.reversed ? 'opacity-60' : undefined}>
+                      <TableCell className="text-sm">
+                        {formatDateTime(row.spunAt)}
+                        {row.reversed && (
+                          <p className="text-xs text-destructive">Reversed</p>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <p className="text-sm font-medium">{row.userName}</p>
                         <p className="text-xs text-muted-foreground">{row.userEmail}</p>

@@ -51,7 +51,7 @@ export async function sendSpinReminders(now: Date = new Date()): Promise<SpinRem
 
     const holders = await prisma.wheelSpin.groupBy({
       by: ['userId'],
-      where: { wheelConfigId: config.id, spunAt: null, userId: { not: null } },
+      where: { wheelConfigId: config.id, spunAt: null, reversedAt: null, userId: { not: null } },
       _count: { _all: true },
     });
     if (holders.length === 0) continue;

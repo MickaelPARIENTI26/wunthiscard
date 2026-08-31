@@ -12,6 +12,7 @@ const MESSAGES: Record<PromoFailure, string> = {
   NOT_FOUND: 'That promo code does not exist.',
   NOT_YOURS: 'That promo code belongs to another account.',
   ALREADY_USED: 'That promo code has already been used.',
+  VOIDED: 'That code was cancelled because the order that earned it was refunded.',
   EXPIRED: 'That promo code has expired.',
 };
 
