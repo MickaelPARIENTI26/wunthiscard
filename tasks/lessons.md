@@ -13,3 +13,6 @@
 | 2026-03-19 | CAPTCHA token was optional — bots could skip it entirely | Make CAPTCHA required in production via conditional Zod schema |
 | 2026-03-19 | In-memory rate limiting (Map) resets on serverless cold starts | Always use Redis-based rate limiting in production, never in-memory Maps |
 | 2026-03-19 | findFirst + update is not atomic — race condition on concurrent claims | Use updateMany with a status guard in the WHERE clause for atomic claim operations |
+| 2026-08-31 | Après `prisma migrate dev`, le serveur Next en cours d'exécution garde l'ancien client Prisma en mémoire : la nouvelle colonne renvoie `Unknown argument` et un 500 trompeur | Redémarrer le serveur de dev après toute migration, avant de tester la requête qui utilise le nouveau champ |
+| 2026-08-31 | Texte soudé aux quartiers d'une roue : illisible (à l'envers) sur la moitié des positions, quel que soit l'angle d'arrêt | Contre-rotation des libellés (`rotate(-rotation)` autour de leur propre point) avec la même transition que la roue |
+| 2026-08-31 | Une remise affichée côté client doit utiliser exactement la même fonction que le serveur (`applyPercentDiscount` sur le TOTAL) | Ne jamais recalculer un prix « à la main » dans un composant : importer l'utilitaire partagé, sinon dérive d'un penny et commande refusée à la livraison |
