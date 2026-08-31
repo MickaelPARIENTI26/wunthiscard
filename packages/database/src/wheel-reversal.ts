@@ -16,6 +16,9 @@ import type { Prisma } from '@prisma/client';
  */
 
 export const REVERSAL_REASONS = ['REFUND', 'DISPUTE_LOST', 'COMPETITION_CANCELLED'] as const;
+
+/** How long a code kept through a cancellation is given, from the cancellation. */
+export const KEPT_CODE_EXTENSION_DAYS = 30;
 export type ReversalReason = (typeof REVERSAL_REASONS)[number];
 
 export interface ReverseWheelRewardsInput {
@@ -66,7 +69,12 @@ export async function reverseWheelRewardsForOrder(
       id: true,
       spunAt: true,
       promoCode: { select: { id: true, code: true, percentOff: true, redeemedAt: true, redeemedOrderId: true, voidedAt: true } },
-      jackpotWin: { select: { id: true, status: true, prizeValue: true, paymentReversedAt: true } },
+      jackpotWin: {
+        select: {
+          id: true, status: true, prizeValue: true,
+          paymentReversedAt: true, paymentReversedReason: true,
+        },
+      },
     },
   });
 
@@ -116,6 +124,21 @@ export async function reverseWheelRewardsForOrder(
     }
   }
 
+  if (keepCodes && result.codesKept.length > 0) {
+    // /competition-rules §8 says a code kept through a cancellation is extended.
+    // Publishing a term and not implementing it is worse than not offering it:
+    // the customer would find a code that expires on the old competition's clock.
+    const extendedTo = new Date(now.getTime() + KEPT_CODE_EXTENSION_DAYS * 24 * 60 * 60 * 1000);
+    await tx.promoCode.updateMany({
+      where: {
+        spinId: { in: spins.filter((s) => s.promoCode && !s.promoCode.redeemedAt).map((s) => s.id) },
+        voidedAt: null,
+        expiresAt: { lt: extendedTo },
+      },
+      data: { expiresAt: extendedTo },
+    });
+  }
+
   if (!keepCodes) {
     // Guarded on voidedAt so a second reversal cannot restamp, and on the ids we
     // actually inspected above.
@@ -130,11 +153,37 @@ export async function reverseWheelRewardsForOrder(
     }
   }
 
+  // A win already frozen by charge.dispute.created is NOT in jackpotsFrozen (that
+  // list is guarded on paymentReversedAt being null), so without this the final
+  // outcome would keep the weaker "DISPUTE_OPENED" label and the audit row would
+  // claim nothing was frozen for a reversal that stranded a real card.
+  const alreadyFrozen = spins
+    .filter((s) => s.jackpotWin?.paymentReversedAt && s.jackpotWin.paymentReversedReason === 'DISPUTE_OPENED')
+    .map((s) => s.id);
+  if (alreadyFrozen.length > 0) {
+    await tx.jackpotWin.updateMany({
+      where: { spinId: { in: alreadyFrozen }, paymentReversedReason: 'DISPUTE_OPENED' },
+      data: { paymentReversedReason: reason },
+    });
+    for (const spin of spins) {
+      if (alreadyFrozen.includes(spin.id) && spin.jackpotWin) {
+        result.jackpotsFrozen.push({
+          spinId: spin.id,
+          status: spin.jackpotWin.status,
+          prizeValue: spin.jackpotWin.prizeValue ? spin.jackpotWin.prizeValue.toString() : null,
+        });
+      }
+    }
+  }
+
   if (result.jackpotsFrozen.length > 0) {
     // FREEZE, never decide. `status` is untouched: a real graded card, possibly
     // already posted, is a recovery job for a human — not a database update.
     await tx.jackpotWin.updateMany({
-      where: { spinId: { in: result.jackpotsFrozen.map((j) => j.spinId) }, paymentReversedAt: null },
+      where: {
+        spinId: { in: result.jackpotsFrozen.map((j) => j.spinId) },
+        paymentReversedAt: null,
+      },
       data: { paymentReversedAt: now, paymentReversedReason: reason },
     });
   }

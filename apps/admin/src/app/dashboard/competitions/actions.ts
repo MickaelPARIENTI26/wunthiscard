@@ -323,9 +323,16 @@ export async function updateCompetition(id: string, formData: FormData) {
   // step so a moved date doesn't leave them expiring on the old one.
   // Also clear the reminder stamp: a moved date means the warning that already
   // went out named the wrong day, and these spins deserve a fresh one.
+  // Only on an ACTUAL date change. Clearing the stamp on every save meant an
+  // admin fixing a typo inside the closing window re-armed every unplayed spin
+  // and the next daily cron re-sent the identical warning to every holder.
+  const drawDateMoved = new Date(drawDate).getTime() !== existing.drawDate.getTime();
   await prisma.wheelSpin.updateMany({
     where: { competitionId: id, spunAt: null },
-    data: { expiresAt: new Date(drawDate), reminderSentAt: null },
+    data: {
+      expiresAt: new Date(drawDate),
+      ...(drawDateMoved ? { reminderSentAt: null } : {}),
+    },
   });
 
   await prisma.competition.update({
@@ -809,11 +816,18 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
   // reversed and never emailed, and the ticket release below would then wipe its
   // tickets while we kept the money. Refuse to finish rather than do that.
   const strandedOrders = await prisma.order.findMany({
-    where: { competitionId: id, paymentStatus: 'SUCCEEDED' },
+    where: {
+      competitionId: id,
+      paymentStatus: 'SUCCEEDED',
+      // A refund that THREW also leaves its order SUCCEEDED. Those are diagnosed
+      // by the refundErrors branch below with the right message; calling them
+      // "paid while the refunds were running" would be the wrong diagnosis.
+      id: { notIn: refundErrors },
+    },
     select: { id: true, orderNumber: true },
   });
 
-  if (strandedOrders.length > 0) {
+  if (refundErrors.length === 0 && strandedOrders.length > 0) {
     await prisma.auditLog.create({
       data: {
         userId: session.user.id,

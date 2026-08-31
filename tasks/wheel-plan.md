@@ -338,6 +338,30 @@ spin mort, `VOIDED` absent du checkout, libellé « annulé » sur un code encor
 valide, « ton dernier spin » faux pour un acheteur récurrent, et une erreur
 réseau qui affirmait à tort que le spin n'avait pas été consommé).
 
+### Deuxième audit (46 candidats, 42 retenus) — corrigé
+
+Le plus important : **une de mes propres corrections avait ouvert un trou d'argent.**
+Rendre le code promo à l'annulation était juste, mais rien n'expirait la session
+Stripe — donc on pouvait annuler, dépenser le code sur une 2e commande, puis
+payer la 1re restée ouverte. La reprise dans le fulfilment arrivait trop tard.
+Corrigé : la session est **tuée** avant toute restitution, et rien n'est rendu si
+elle refuse de mourir.
+
+Deux autres trous réels, indépendants :
+- **Un concours qui se vend entièrement est tiré en avance** — donc les spins
+  bancarisés mouraient en silence, sans ligne « expirés » (elle regardait la date,
+  pas le tirage) et sans email (la fenêtre de 48 h ne s'était pas ouverte). C'est
+  le meilleur scénario commercial qui détruisait ce que le client avait payé.
+- **Un litige ouvert avant que le spin soit joué ne gelait rien** : les spins se
+  conservent, donc au moment du litige la carte n'était pas encore gagnée.
+  L'état du litige est maintenant persisté sur la commande.
+
+Et la remarque la plus juste de tout l'audit : **la roue peignait la carte gradée
+comme 1 chance sur 6** alors qu'elle est à 1 sur 700 — un facteur 117. Les
+quartiers restent égaux (0,5° serait invisible), mais la vraie probabilité est
+maintenant écrite en clair au-dessus du bouton, et le panneau des chances est
+ouvert par défaut.
+
 ### Tout le reste est livré (2026-08-31)
 
 Les points différés puis les trouvailles secondaires de l'audit sont traités :

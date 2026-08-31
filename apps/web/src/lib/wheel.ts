@@ -160,6 +160,10 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       // stored on the spin: an admin who pushes the date back would otherwise
       // kill spins that should still be live.
       competition: { select: { drawDate: true, status: true } },
+      // Spins are banked, so the usual ordering is buy, charge back, spin weeks
+      // later. By then the dispute webhook has been and gone with no win to
+      // freeze — so the win must be born frozen instead.
+      order: { select: { disputeOpenedAt: true } },
     },
   });
 
@@ -207,6 +211,7 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       if (result.type === 'JACKPOT') {
         // Created inside the same transaction as the stock decrement: the card
         // being gone and someone owning it must never disagree.
+        const disputed = spin.order?.disputeOpenedAt ?? null;
         await tx.jackpotWin.create({
           data: {
             spinId,
@@ -215,6 +220,11 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
             orderId: spin.orderId,
             prizeDescription: spin.wheelConfig.jackpotDescription ?? 'Graded card',
             prizeValue: spin.wheelConfig.jackpotValue,
+            // The customer still WINS it — the freeze only stops it shipping
+            // while the money behind it is contested.
+            ...(disputed
+              ? { paymentReversedAt: new Date(), paymentReversedReason: 'DISPUTE_OPENED' }
+              : {}),
           },
         });
       }

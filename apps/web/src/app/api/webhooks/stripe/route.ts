@@ -436,6 +436,14 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
   // while the money is still contested, turning a reversible dispute into an
   // unrecoverable loss. Nothing else is touched: the tickets stay in the draw,
   // the spins stay live and the codes stay usable, because we may well win.
+  // Persist it. Sweeping the existing wins once is not enough: spins are banked
+  // until the draw, so the usual ordering is buy → chargeback → spin weeks later,
+  // and at chargeback time there is no JackpotWin in existence to freeze.
+  await prisma.order.updateMany({
+    where: { id: order.id, disputeOpenedAt: null },
+    data: { disputeOpenedAt: new Date() },
+  });
+
   const frozen = await prisma.jackpotWin.updateMany({
     where: { orderId: order.id, paymentReversedAt: null, notAwardedAt: null },
     data: { paymentReversedAt: new Date(), paymentReversedReason: 'DISPUTE_OPENED' },
@@ -505,6 +513,11 @@ async function handleDisputeClosed(dispute: Stripe.Dispute) {
   });
 
   if (live?.paymentStatus === 'SUCCEEDED') {
+    await prisma.order.updateMany({
+      where: { id: order.id },
+      data: { disputeOpenedAt: null },
+    });
+
     const released = await prisma.jackpotWin.updateMany({
       where: { orderId: order.id, paymentReversedReason: 'DISPUTE_OPENED', notAwardedAt: null },
       data: { paymentReversedAt: null, paymentReversedReason: null },

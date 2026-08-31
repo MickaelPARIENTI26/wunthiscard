@@ -100,8 +100,21 @@ export default async function MyRewardsPage() {
       orderBy: { spunAt: 'desc' },
       take: 30,
     }),
+    // A competition that sells out is DRAWN EARLY — recordWinner admits SOLD_OUT
+    // without waiting for the date — so the draw, not the calendar, is when spins
+    // die. Keying this on drawDate alone meant the whole wheel card vanished and
+    // the "expired" line never rendered: the buyer's spins disappeared in silence
+    // on the platform's best-case outcome.
     prisma.wheelSpin.count({
-      where: { userId, spunAt: null, reversedAt: null, competition: { drawDate: { lte: now } } },
+      where: {
+        userId,
+        spunAt: null,
+        reversedAt: null,
+        OR: [
+          { competition: { drawDate: { lte: now } } },
+          { competition: { status: { in: ['COMPLETED', 'CANCELLED', 'DRAWING'] } } },
+        ],
+      },
     }),
     // A graded card is the one prize that must survive a page refresh. The
     // reveal on the wheel is a single div in the browser; this is the record.
@@ -114,6 +127,8 @@ export default async function MyRewardsPage() {
         prizeValue: true,
         trackingNumber: true,
         createdAt: true,
+        paymentReversedAt: true,
+        notAwardedAt: true,
         competition: { select: { title: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -167,7 +182,8 @@ export default async function MyRewardsPage() {
           My <span className="chip">rewards</span>.
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
-          Every paid ticket earns one spin. Spins last until that competition closes.
+          Every paid ticket earns one spin. Spins last until that competition is drawn — on its
+          draw date, or as soon as it sells out.
         </p>
       </div>
 
@@ -192,9 +208,23 @@ export default async function MyRewardsPage() {
                 Won on {win.competition.title} · {DATE.format(win.createdAt)}
                 {win.prizeValue ? ` · approx. £${Number(win.prizeValue).toLocaleString('en-GB')}` : ''}
               </p>
+              {/* Neither terminal state touches `status` by design, so reading
+                  status alone promised delivery forever for a parcel that
+                  provably cannot move. */}
               <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
-                {JACKPOT_STATUS_COPY[win.status] ?? 'We are arranging delivery.'}
+                {win.notAwardedAt
+                  ? 'This win was closed without the card being sent. If you believe that is wrong, please get in touch.'
+                  : win.paymentReversedAt
+                    ? 'Delivery is paused while we confirm the payment behind this order. We will be in touch.'
+                    : (JACKPOT_STATUS_COPY[win.status] ?? 'We are arranging delivery.')}
               </p>
+              {(win.notAwardedAt || win.paymentReversedAt) && (
+                <p style={{ marginTop: '8px' }}>
+                  <Link href="/contact" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>
+                    Contact us
+                  </Link>
+                </p>
+              )}
               {win.trackingNumber && (
                 <p style={{ color: 'var(--ink-faint)', fontSize: '13px', marginTop: '6px' }}>
                   Tracking: <span style={{ fontFamily: 'var(--mono)' }}>{win.trackingNumber}</span>
@@ -243,7 +273,8 @@ export default async function MyRewardsPage() {
                         textTransform: 'uppercase', color: 'var(--ink-faint)', marginTop: '2px',
                       }}
                     >
-                      Spins expire {DATE.format(first.competition.drawDate)}
+                      Spins expire when this is drawn — {DATE.format(first.competition.drawDate)},
+                      or sooner if it sells out
                     </p>
                   </div>
                 </div>
@@ -251,15 +282,15 @@ export default async function MyRewardsPage() {
                 {paused ? (
                   <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
                     This wheel is paused right now, so your {spins.length} spin
-                    {spins.length !== 1 ? 's are' : ' is'} on hold. They are not lost — we
-                    will email you when it reopens, and they still last until this
-                    competition closes.
+                    {spins.length !== 1 ? 's are' : ' is'} on hold. They are not lost, and they
+                    still last until this competition is drawn — check back here.
                   </p>
                 ) : (
                   <PrizeWheel
                     spinIds={spins.map((s) => s.id)}
                     segments={buildWheelSegments(slots)}
                     odds={summariseWheelSlots(slots).map((o) => ({
+                      type: o.type,
                       label: o.label,
                       percentage: o.percentage,
                       remaining: o.remaining,
@@ -294,7 +325,9 @@ export default async function MyRewardsPage() {
 
       {expiredCount > 0 && (
         <p style={{ color: 'var(--ink-faint)', fontSize: '13px', marginTop: '-24px', marginBottom: '40px' }}>
-          {expiredCount} spin{expiredCount !== 1 ? 's' : ''} expired when their competition closed.
+          {expiredCount} spin{expiredCount !== 1 ? 's' : ''} expired when their competition was
+          drawn. A competition is drawn on its draw date, or as soon as it sells out — whichever
+          comes first.
         </p>
       )}
 

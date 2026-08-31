@@ -55,7 +55,13 @@ interface PrizeWheelProps {
    * presentation; these are the numbers a prize promotion is expected to publish,
    * and they are computed from the same config the draw uses.
    */
-  odds?: { label: string; percentage: number; remaining: number; configured: number }[];
+  odds?: {
+    type: SlotKind;
+    label: string;
+    percentage: number;
+    remaining: number;
+    configured: number;
+  }[];
 }
 
 const SEGMENT_FILL: Record<SlotKind, string> = {
@@ -179,8 +185,14 @@ export function PrizeWheel({
       }
     } catch {
       setSpinning(false);
-      // The request never left, so nothing was drawn. This one IS safe to assert.
-      setError('Network error — nothing was used. Please try again.');
+      // fetch also rejects when the connection dies AFTER the server committed —
+      // a cell handover, a proxy timeout. We cannot tell that apart from "never
+      // left", so we must not claim the spin is untouched: it may have drawn the
+      // card. Same wording and same recovery as the lost-body case above.
+      setError(
+        'We could not reach the server. Check My Rewards before spinning again — the spin may have counted.'
+      );
+      router.refresh();
       return;
     }
 
@@ -244,6 +256,20 @@ export function PrizeWheel({
 
   const remaining = queue.length;
   const motion = spinning && !reduceMotion;
+
+  // The rarest prize is the one the equal wedges most overstate, so it is the one
+  // named in the correction above.
+  const pool = odds?.reduce((n, o) => n + o.configured, 0) ?? 0;
+  const rarest = odds && odds.length > 0
+    ? odds.reduce((a, b) => (b.configured < a.configured ? b : a))
+    : undefined;
+  const headline =
+    rarest && pool > 0 && rarest.configured > 0 && rarest.type !== 'NO_WIN'
+      ? {
+          label: rarest.label,
+          odds: `1 in ${Math.round(pool / rarest.configured).toLocaleString('en-GB')} (${rarest.percentage}%)`,
+        }
+      : undefined;
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -365,8 +391,27 @@ export function PrizeWheel({
         )}
       </div>
 
+      {/* The wedges are equal because a 1-in-700 wedge would be half a degree
+          wide and impossible to see — but that makes the picture say "one chance
+          in six" for a card whose real chance is 0.14%. A collapsed panel cannot
+          correct an impression the main image contradicts, so the real number is
+          stated here, in plain sight, and the panel below opens by default. */}
+      {headline && (
+        <p
+          style={{
+            marginTop: '14px', fontSize: '13.5px', color: 'var(--ink-dim)', lineHeight: 1.5,
+          }}
+        >
+          The wedges are equal in size — the real chances are not.{' '}
+          <strong style={{ color: 'var(--ink)' }}>
+            {headline.label}: {headline.odds}
+          </strong>
+          .
+        </p>
+      )}
+
       {odds && odds.length > 0 && (
-        <details style={{ marginTop: '20px', textAlign: 'left' }}>
+        <details open style={{ marginTop: '14px', textAlign: 'left' }}>
           <summary
             style={{
               cursor: 'pointer', fontFamily: 'var(--display)', fontSize: '12.5px',

@@ -309,6 +309,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
               segments={wheelSegments}
               lastSpinCopy="That was your last spin from this order."
               odds={summariseWheelSlots(wheelSlots).map((o) => ({
+                type: o.type,
                 label: o.label,
                 percentage: o.percentage,
                 remaining: o.remaining,

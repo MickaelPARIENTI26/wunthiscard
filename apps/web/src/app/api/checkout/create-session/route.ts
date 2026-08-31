@@ -440,6 +440,10 @@ export async function POST(request: NextRequest) {
         data: { paymentStatus: 'CANCELLED' },
       });
 
+      // Unlike the cancel page, there is no payable session to kill here: if
+      // sessions.create threw we never learned an id, order.stripeSessionId is
+      // only written on success, and the buyer never received a URL — so nothing
+      // reachable can be paid after these restores.
       if (closed.count !== 1) {
         // Something else already settled this order — leave its restores alone.
         return NextResponse.json(

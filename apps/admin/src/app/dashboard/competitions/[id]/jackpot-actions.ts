@@ -59,7 +59,7 @@ export async function updateJackpotWin(
       deliveredAt: true,
       paymentReversedAt: true,
       createdAt: true,
-      order: { select: { paymentStatus: true } },
+      order: { select: { paymentStatus: true, disputeOpenedAt: true } },
     },
   });
   if (!existing) return { success: false, message: 'Jackpot win not found.' };
@@ -86,6 +86,16 @@ export async function updateJackpotWin(
       return {
         success: false,
         message: 'The order behind this win is not in a settled paid state — do not ship it.',
+      };
+    }
+
+    // A dispute stays open for 60-90 days, comfortably outliving the shipping
+    // hold. Nothing leaves while the money is contested.
+    if (existing.order.disputeOpenedAt) {
+      return {
+        success: false,
+        message:
+          'A payment dispute is open on the order behind this win. Nothing ships until it closes.',
       };
     }
 

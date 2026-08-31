@@ -308,6 +308,11 @@ model Order {
   // referrer a free ticket. Lets a full refund / lost dispute claw that reward back.
   grantedReferralReward Boolean @default(false)
 
+  /// An open Stripe dispute on this order. Persisted, not swept once: spins are
+  /// BANKED until the draw, so a chargeback filed on day 2 and a spin played on
+  /// day 30 means there was no JackpotWin to freeze when the dispute arrived.
+  disputeOpenedAt DateTime?
+
   // Set once an abandoned-cart recovery email has been sent for this order, so the
   // daily cron never nudges the same abandoned checkout twice.
   recoveryEmailSentAt DateTime?
@@ -535,9 +540,12 @@ model WheelConfig {
   /// How long a promo code stays valid once won.
   couponValidityDays Int @default(30)
 
-  /// Stamped when the "your spins expire soon" reminder went out, so the daily
-  /// cron can never send it twice for the same competition.
+  /// Stamped when the "your spins expire soon" reminder went out. Superseded by
+  /// WheelSpin.reminderSentAt, which is per spin; kept as a record of the first.
   spinReminderSentAt DateTime?
+
+  /// Claimed by the pool-drain check so overlapping cron runs cannot both alert.
+  lastDrainAlertAt DateTime?
 
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   slots       WheelSlot[]

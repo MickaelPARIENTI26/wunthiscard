@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   reverseWheelRewardsForOrder,
   REVERSAL_REASONS,
+  KEPT_CODE_EXTENSION_DAYS,
   type ReversalReason,
 } from '../../packages/database/src/wheel-reversal';
 
@@ -116,7 +117,28 @@ describe('reverseWheelRewardsForOrder — what a chargeback takes back', () => {
     const { result, calls } = await run([spin('s1', { promoCode: code() })], 'COMPETITION_CANCELLED');
     expect(result.codesKept).toEqual(['W10-AAAAAAAAAA']);
     expect(result.codesVoided).toEqual([]);
-    expect(calls.some((c) => c.model === 'promoCode')).toBe(false);
+
+    // The one promoCode write is the EXTENSION the rules promise, never a void.
+    const promoWrites = calls.filter((c) => c.model === 'promoCode');
+    expect(promoWrites).toHaveLength(1);
+    // Only the expiry is written. voidedAt appears in the WHERE — a code already
+    // cancelled must not be quietly resurrected by an extension — never in data.
+    const { where, data } = promoWrites[0]!.args as {
+      where: Record<string, unknown>;
+      data: Record<string, unknown>;
+    };
+    expect(Object.keys(data)).toEqual(['expiresAt']);
+    expect(where.voidedAt).toBeNull();
+  });
+
+  it('extends a kept code far enough to be worth keeping', async () => {
+    // Publishing "we extend it" in the rules and then leaving the old
+    // competition's clock on the code would be worse than not offering it.
+    const { calls } = await run([spin('s1', { promoCode: code() })], 'COMPETITION_CANCELLED');
+    const write = calls.find((c) => c.model === 'promoCode');
+    const expiresAt = (write!.args as { data: { expiresAt: Date } }).data.expiresAt;
+    const days = (expiresAt.getTime() - Date.now()) / 86_400_000;
+    expect(days).toBeGreaterThan(KEPT_CODE_EXTENSION_DAYS - 1);
   });
 
   it('still cancels the spins of a cancelled competition', async () => {

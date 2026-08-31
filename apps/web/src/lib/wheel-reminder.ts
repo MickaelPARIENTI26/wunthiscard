@@ -37,10 +37,18 @@ export async function sendSpinReminders(now: Date = new Date()): Promise<SpinRem
       reversedAt: null,
       reminderSentAt: null,
       userId: { not: null },
-      wheelConfig: { enabled: true },
+      // NOT gated on wheelConfig.enabled: a wheel paused by the operator still
+      // has holders whose spins die with the competition, and staying silent
+      // there is the same failure as never warning them at all.
       competition: {
-        status: { in: ['ACTIVE', 'SOLD_OUT'] },
-        drawDate: { gt: from, lte: to },
+        OR: [
+          { status: 'ACTIVE', drawDate: { gt: from, lte: to } },
+          // Selling out is itself the warning: recordWinner may draw a SOLD_OUT
+          // competition immediately, well before its draw date, and every banked
+          // spin dies at that instant. Waiting for the 48h date window would mean
+          // the heaviest-selling competitions warned nobody at all.
+          { status: 'SOLD_OUT' },
+        ],
       },
     },
     _count: { _all: true },

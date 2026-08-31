@@ -53,6 +53,28 @@ async function getOrderAndRelease(orderId: string, userId: string) {
       });
 
       if (cancelled.count === 1) {
+        // KILL THE STRIPE SESSION FIRST, and refuse to hand anything back if we
+        // cannot. A cancelled order's session stays payable for its full window,
+        // so releasing the promo code and the referral ticket here while the tab
+        // is still live let the buyer spend both on a second order and then pay
+        // this one — one wheel win, two discounts, repeatable. Fulfilment tries
+        // to re-take them, but by then the second order holds them and the
+        // re-take matches nothing.
+        let sessionClosed = false;
+        if (order.stripeSessionId) {
+          try {
+            await stripe.checkout.sessions.expire(order.stripeSessionId);
+            sessionClosed = true;
+          } catch (expireError) {
+            // Already complete or expired. "Complete" means the buyer paid after
+            // all — leave their rewards spent and let fulfilment run.
+            console.error('Could not expire the checkout session on cancel:', expireError);
+          }
+        } else {
+          // No session was ever created, so there is nothing payable.
+          sessionClosed = true;
+        }
+
         // Release Redis locks for this user/competition
         await releaseTicketsFromRedis(order.competitionId, userId);
 
@@ -89,7 +111,7 @@ async function getOrderAndRelease(orderId: string, userId: string) {
           }
         }
 
-        if (referralTicketUsed) {
+        if (referralTicketUsed && sessionClosed) {
           await prisma.user.update({
             where: { id: userId },
             data: { referralFreeTicketsAvailable: { increment: 1 } },
@@ -115,10 +137,12 @@ async function getOrderAndRelease(orderId: string, userId: string) {
         // redeemed forever and the customer permanently loses a reward they won.
         // Matched on redeemedOrderId, which is what reservePromoCode wrote.
         try {
-          const released = await prisma.promoCode.updateMany({
-            where: { redeemedOrderId: order.id, voidedAt: null },
-            data: { redeemedAt: null, redeemedOrderId: null },
-          });
+          const released = sessionClosed
+            ? await prisma.promoCode.updateMany({
+                where: { redeemedOrderId: order.id, voidedAt: null },
+                data: { redeemedAt: null, redeemedOrderId: null },
+              })
+            : { count: 0 };
           if (released.count > 0) {
             await prisma.auditLog.create({
               data: {

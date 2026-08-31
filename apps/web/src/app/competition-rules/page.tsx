@@ -359,7 +359,7 @@ function PlaceholderCompetitionRulesContent() {
           The draw for each competition is conducted fairly and transparently:
         </p>
 
-        <h3>8.1 Draw Timing</h3>
+        <h3>9.1 Draw Timing</h3>
         <ul>
           <li>
             Each competition has a stated draw date displayed on the competition
@@ -375,7 +375,7 @@ function PlaceholderCompetitionRulesContent() {
           </li>
         </ul>
 
-        <h3>8.2 Draw Method</h3>
+        <h3>9.2 Draw Method</h3>
         <ul>
           <li>
             The winning ticket number is selected by an independent third party
@@ -392,7 +392,7 @@ function PlaceholderCompetitionRulesContent() {
           <li>The draw result is final and binding</li>
         </ul>
 
-        <h3>8.3 Draw Records</h3>
+        <h3>9.3 Draw Records</h3>
         <ul>
           <li>All draws are recorded in our audit log</li>
           <li>
@@ -444,7 +444,7 @@ function PlaceholderCompetitionRulesContent() {
           </li>
         </ol>
 
-        <h3>10.1 Important Notes</h3>
+        <h3>11.1 Important Notes</h3>
         <ul>
           <li>Prizes cannot be exchanged for cash</li>
           <li>Prizes are non-transferable</li>
@@ -491,7 +491,7 @@ function PlaceholderCompetitionRulesContent() {
       <section id="cancellation">
         <h2>13. Cancellation & Refunds</h2>
 
-        <h3>12.1 Competition Cancellation</h3>
+        <h3>13.1 Competition Cancellation</h3>
         <p>
           We reserve the right to cancel a competition before the draw takes
           place. If a competition is cancelled:
@@ -502,7 +502,7 @@ function PlaceholderCompetitionRulesContent() {
           <li>Refunds are typically processed within 5-10 working days</li>
         </ul>
 
-        <h3>12.2 Ticket Refunds</h3>
+        <h3>13.2 Ticket Refunds</h3>
         <p>
           Tickets are generally non-refundable once purchased. However, you may
           be entitled to a refund:

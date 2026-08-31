@@ -34,6 +34,7 @@ export async function checkWheelDrain(now: Date = new Date()): Promise<WheelDrai
       id: true,
       competitionId: true,
       competition: { select: { title: true } },
+      lastDrainAlertAt: true,
       slots: { select: { quantityConfigured: true } },
     },
   });
@@ -49,17 +50,18 @@ export async function checkWheelDrain(now: Date = new Date()): Promise<WheelDrai
     });
     if (reversed / pool < DRAIN_ALERT_FRACTION) continue;
 
-    // Don't nag: one alarm per competition per week is enough to act on.
+    // Don't nag: one alarm per competition per week is enough to act on. CLAIMED,
+    // not checked-then-created — the daily schedule overlapping a manual ?secret=
+    // run is exactly how the closing-soon blast once went out twice.
     const since = new Date(now.getTime() - REALERT_DAYS * 24 * 60 * 60 * 1000);
-    const recent = await prisma.auditLog.findFirst({
+    const claimed = await prisma.wheelConfig.updateMany({
       where: {
-        action: 'WHEEL_POOL_DRAIN_ALERT',
-        entityId: config.competitionId,
-        createdAt: { gt: since },
+        id: config.id,
+        OR: [{ lastDrainAlertAt: null }, { lastDrainAlertAt: { lte: since } }],
       },
-      select: { id: true },
+      data: { lastDrainAlertAt: now },
     });
-    if (recent) continue;
+    if (claimed.count !== 1) continue;
 
     await prisma.auditLog.create({
       data: {
