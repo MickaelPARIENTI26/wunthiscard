@@ -129,10 +129,6 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
 
   const ticketNumbers = JSON.parse(session.metadata?.ticketNumbers || '[]') as number[];
   const bonusTickets = parseInt(session.metadata?.bonusTickets || '0', 10);
-  // The status the order carried when we picked it up. Only ever used to undo a
-  // cancellation's side effects below; the claim itself is the source of truth
-  // for whether this call is the one that fulfils.
-  const wasCancelled = order.paymentStatus === 'CANCELLED';
 
   // Start a transaction to update order and assign tickets
   // Using a transaction with the idempotency check INSIDE to prevent race conditions
@@ -142,33 +138,72 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     // its where clause, so a duplicate/retried webhook delivery (order already SUCCEEDED)
     // would throw → 500 → Stripe retries forever. updateMany returns { count } and never
     // throws on no-match, so count === 0 means "already processed" → return 200 quietly.
-    const claim = await tx.order.updateMany({
-      where: {
-        id: orderId,
-        // An ALLOWLIST, not "anything but SUCCEEDED". The excluded pair matters:
-        // SUCCEEDED is the idempotency guard, and REFUNDED means the money has
-        // already gone back — re-fulfilling there would re-mint tickets and wheel
-        // spins for an order nobody paid for. The four listed states are all
-        // "paid for now, nothing handed over yet", including FAILED and CANCELLED
-        // so a card retried on the same PaymentIntent, or a session paid after the
-        // buyer visited the cancel page, still delivers what was bought.
-        paymentStatus: { in: ['PENDING', 'PROCESSING', 'FAILED', 'CANCELLED'] },
-      },
-      data: {
-        paymentStatus: 'SUCCEEDED',
-        stripePaymentIntentId: session.payment_intent as string,
-      },
-    });
+    const claimData = {
+      paymentStatus: 'SUCCEEDED' as const,
+      stripePaymentIntentId: session.payment_intent as string,
+    };
 
-    if (claim.count === 0) {
-      return { alreadyProcessed: true };
+    // The cancelled-then-paid case is claimed on its own, FIRST, so we learn
+    // which state we came from from the statement itself rather than from a read
+    // taken outside the transaction — that read could be stale, and the
+    // reconciliation below is exactly what must not run twice or be skipped.
+    //
+    // A cancelled order is still payable: nothing calls stripe.checkout.sessions
+    // .expire, so the buyer's Stripe tab stays live for its full window after
+    // they hit /checkout/cancel. Both cancellation paths hand back the referral
+    // ticket and the promo code, and paying afterwards must take them back.
+    const cancelledClaim = await tx.order.updateMany({
+      where: { id: orderId, paymentStatus: 'CANCELLED' },
+      data: claimData,
+    });
+    const wasCancelled = cancelledClaim.count === 1;
+
+    if (!wasCancelled) {
+      // An ALLOWLIST, not "anything but SUCCEEDED". The excluded pair matters:
+      // SUCCEEDED is the idempotency guard, and REFUNDED means the money has
+      // already gone back — re-fulfilling there would re-mint tickets and wheel
+      // spins for an order nobody paid for. FAILED stays in so a card retried on
+      // the same PaymentIntent still delivers what was bought.
+      const claim = await tx.order.updateMany({
+        where: { id: orderId, paymentStatus: { in: ['PENDING', 'PROCESSING', 'FAILED'] } },
+        data: claimData,
+      });
+      if (claim.count === 0) {
+        return { alreadyProcessed: true };
+      }
     }
 
-    // Was this order cancelled before the buyer paid anyway? Both cancellation
-    // paths hand the referral free ticket back, and neither takes it away again
-    // when the session is subsequently paid — so without this the buyer keeps the
-    // free ticket AND the discount it bought, repeatably. Read inside the
-    // transaction, after the claim, so exactly one fulfilment can reconcile.
+    // Re-take the promo code released by the cancellation. Without this, one
+    // wheel win becomes a permanent standing discount: apply the code, open the
+    // cancel page in a second tab, then pay the still-open Stripe tab — the
+    // order fulfils at the discounted total and the code is free again.
+    if (wasCancelled) {
+      const promoCode = session.metadata?.promoCode;
+      if (promoCode && order.userId) {
+        const retaken = await tx.promoCode.updateMany({
+          where: { code: promoCode, userId: order.userId, redeemedAt: null, voidedAt: null },
+          data: { redeemedAt: new Date(), redeemedOrderId: orderId },
+        });
+        if (retaken.count === 0) {
+          // Already spent elsewhere in the gap, or voided. The discount on THIS
+          // order still stood, so record the leak rather than failing the sale.
+          await tx.auditLog.create({
+            data: {
+              userId: order.userId,
+              action: 'PROMO_CODE_LEAKED',
+              entity: 'order',
+              entityId: orderId,
+              metadata: {
+                orderNumber: order.orderNumber,
+                code: promoCode,
+                reason: 'cancelled_order_paid_anyway',
+              },
+            },
+          });
+        }
+      }
+    }
+
     if (wasCancelled && session.metadata?.referralTicketUsed === '1' && order.userId) {
       const reclaimed = await tx.user.updateMany({
         where: { id: order.userId, referralFreeTicketsAvailable: { gt: 0 } },

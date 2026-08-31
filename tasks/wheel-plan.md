@@ -318,7 +318,27 @@ Il reste la **Phase 5** (dashboard admin) et les points de vigilance ci-dessous.
   concours, mais les codes déjà gagnés **survivent** : l'annulation est notre
   décision, pas celle du client.
 
-### Reste à faire sur la reprise (identifié par l'audit, volontairement non livré)
+### Audit complet du 2026-08-31 (6 angles, passage adverse : 13 réfutées, 29 retenues)
+
+**Verdict initial : PAS prêt.** Quatre bloquantes, toutes corrigées depuis :
+1. Un code promo gagné à la roue était **réutilisable indéfiniment** — la page
+   d'annulation le rendait, la session Stripe restait payable, et payer ensuite
+   refaisait la commande au tarif remisé sans reprendre le code.
+2. Annuler un concours **gardait l'argent d'un acheteur de dernière minute** :
+   la liste des commandes était figée avant une boucle de remboursement longue,
+   pendant laquelle le concours restait en vente.
+3. Le gain de la carte gradée n'était annoncé **que dans un div côté client** —
+   un rafraîchissement le détruisait. Aucun email au gagnant, aucune trace sur
+   son compte, alors que le texte promettait un email.
+4. Une carte refusée laissait le code promo bloqué en « utilisé » et le ticket
+   de parrainage perdu : le webhook d'expiration ne réclamait que `PENDING`.
+
+Cinq correctifs secondaires livrés en même temps (file de spins bloquée par un
+spin mort, `VOIDED` absent du checkout, libellé « annulé » sur un code encore
+valide, « ton dernier spin » faux pour un acheteur récurrent, et une erreur
+réseau qui affirmait à tort que le spin n'avait pas été consommé).
+
+### Reste à faire (audit, volontairement non livré)
 
 - **Garde-fou d'épuisement du pool** : chaque spin annulé retire définitivement
   un jeton. Répété, cela concentre les chances sur les joueurs restants. Il faut
@@ -334,6 +354,17 @@ Il reste la **Phase 5** (dashboard admin) et les points de vigilance ci-dessous.
   elle a été remboursée.
 - **Conditions générales** : la règle « paiement repris = spins repris » doit
   être publiée avant d'être appliquée.
+- **Accessibilité de la roue** : aucune région live, le SVG en `role="img"`
+  masque les libellés — inutilisable au lecteur d'écran.
+- **La relance d'expiration rate les bons acheteurs** : une seule fois par
+  concours, dans une fenêtre de 48 h sur un cron quotidien, donc personne
+  n'est prévenu s'il achète pendant les 48 dernières heures.
+- **Désactiver une roue fait disparaître les spins bancarisés** sans un mot ni
+  un compteur.
+- **Un jackpot gelé bloque la suppression de compte définitivement**, avec un
+  message faux (aucun statut terminal « non attribué » n'existe).
+- **Le « claim » du cron closing-soon n'est pas gardé** : deux exécutions qui se
+  chevauchent envoient deux fois la campagne à toute la liste.
 - **Affichage des probabilités côté public** : sur un jeu à lot, la transparence
   des chances est attendue par l'ASA. Prévoir une page publique des odds.
 - **Le garde-fou de montant** (`fulfill-checkout.ts:106`) doit être couvert par

@@ -146,3 +146,59 @@ describe('fulfillCheckoutSession — refusal & idempotency', () => {
     expect(sendPurchaseConfirmationEmail).not.toHaveBeenCalled();
   });
 });
+
+/**
+ * The claim is an ALLOWLIST of statuses, not "anything but SUCCEEDED".
+ *
+ * REFUNDED is the one that costs money: re-fulfilling there would re-assign
+ * tickets and mint fresh wheel spins for an order whose money has gone back.
+ * CANCELLED is claimed separately because a cancelled order is still payable —
+ * nothing expires the Stripe session — and paying it must take back the rewards
+ * the cancellation handed out.
+ */
+describe('fulfillCheckoutSession — which statuses may still be fulfilled', () => {
+  function captureClaims() {
+    const claims: Record<string, unknown>[] = [];
+    mockPrisma.$transaction.mockImplementation((cb: (tx: unknown) => Promise<unknown>) =>
+      cb({
+        order: {
+          updateMany: (args: { where: Record<string, unknown> }) => {
+            claims.push(args.where);
+            return Promise.resolve({ count: 0 });
+          },
+        },
+      })
+    );
+    return claims;
+  }
+
+  it('claims CANCELLED on its own, before the ordinary states', async () => {
+    const claims = captureClaims();
+    await fulfillCheckoutSession(makeSession());
+
+    expect(claims[0]?.paymentStatus).toBe('CANCELLED');
+    expect(claims[1]?.paymentStatus).toEqual({ in: ['PENDING', 'PROCESSING', 'FAILED'] });
+  });
+
+  it('never offers to fulfil a REFUNDED or SUCCEEDED order', async () => {
+    const claims = captureClaims();
+    await fulfillCheckoutSession(makeSession());
+
+    const allowed = claims.flatMap((w) => {
+      const status = w.paymentStatus as string | { in: string[] };
+      return typeof status === 'string' ? [status] : status.in;
+    });
+    expect(allowed).not.toContain('REFUNDED');
+    expect(allowed).not.toContain('SUCCEEDED');
+  });
+
+  it('keeps FAILED fulfillable, so a retried card still delivers', async () => {
+    // Stripe fires payment_failed for the declined attempt before the retry
+    // succeeds, so the order can legitimately be FAILED when payment lands.
+    const claims = captureClaims();
+    await fulfillCheckoutSession(makeSession());
+
+    const second = claims[1]?.paymentStatus as { in: string[] };
+    expect(second.in).toContain('FAILED');
+  });
+});

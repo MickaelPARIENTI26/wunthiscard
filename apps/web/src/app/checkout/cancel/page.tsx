@@ -43,9 +43,12 @@ async function getOrderAndRelease(orderId: string, userId: string) {
     // that follows (releasing tickets, re-crediting the referral ticket) runs ONLY on
     // that winning transition — so a double page-load, a refresh, or a racing webhook
     // can never re-credit the free ticket twice or fight a successful payment.
-    if (order.paymentStatus === 'PENDING') {
+    // FAILED included for the same reason as the expiry webhook: a declined card
+    // leaves the order FAILED, and this page is where a buyer who then gives up
+    // actually lands. Without it their promo code stays stamped redeemed.
+    if (order.paymentStatus === 'PENDING' || order.paymentStatus === 'FAILED') {
       const cancelled = await prisma.order.updateMany({
-        where: { id: orderId, paymentStatus: 'PENDING' },
+        where: { id: orderId, paymentStatus: { in: ['PENDING', 'PROCESSING', 'FAILED'] } },
         data: { paymentStatus: 'CANCELLED' },
       });
 

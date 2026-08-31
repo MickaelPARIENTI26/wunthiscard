@@ -44,6 +44,12 @@ interface PrizeWheelProps {
   segments: WheelSegment[];
   /** Shown above the wheel so a multi-competition page stays unambiguous. */
   competitionTitle?: string;
+  /**
+   * What to say once the queue is empty. The confirmation page only ever holds
+   * ONE order's spins, so "your last spin for this competition" is false there
+   * for a repeat buyer with spins banked from an earlier order.
+   */
+  lastSpinCopy?: string;
 }
 
 const SEGMENT_FILL: Record<SlotKind, string> = {
@@ -80,7 +86,7 @@ function labelLines(label: string): string[] {
   return [words.slice(0, cut).join(' '), words.slice(cut).join(' ')];
 }
 
-export function PrizeWheel({ spinIds, segments, competitionTitle }: PrizeWheelProps) {
+export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }: PrizeWheelProps) {
   const router = useRouter();
   // The queue is local: once a spin is spent it must leave the list even though
   // the server component that supplied it has not re-rendered yet.
@@ -118,14 +124,37 @@ export function PrizeWheel({ spinIds, segments, competitionTitle }: PrizeWheelPr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ spinId }),
       });
-      data = (await response.json()) as SpinResponse;
+
+      try {
+        data = (await response.json()) as SpinResponse;
+      } catch {
+        // The request reached the server but the body did not come back — a
+        // gateway error page, a dropped connection after the commit. We cannot
+        // claim the spin is unused, because it may well have been drawn and
+        // awarded. Send them somewhere that reads the truth from the database.
+        setSpinning(false);
+        setError(
+          'We could not read the result. Check My Rewards before spinning again — the spin may have counted.'
+        );
+        router.refresh();
+        return;
+      }
 
       if (!response.ok || !data.result) {
         setSpinning(false);
         setError(data.error ?? 'Something went wrong. Please try again.');
         // A spin that can never succeed must not stay at the head of the queue
         // blocking the ones behind it.
-        if (data.code === 'ALREADY_SPUN' || data.code === 'EXPIRED') {
+        // Every terminal reason, not just the first two: a spin that can never
+        // succeed must not sit at the head of the queue blocking the live ones
+        // behind it. A chargeback landing mid-session used to leave the buyer
+        // clicking a dead spin forever.
+        if (
+          data.code === 'ALREADY_SPUN' ||
+          data.code === 'EXPIRED' ||
+          data.code === 'REVERSED' ||
+          data.code === 'WHEEL_DISABLED'
+        ) {
           setQueue((q) => q.slice(1));
           router.refresh();
         }
@@ -133,7 +162,8 @@ export function PrizeWheel({ spinIds, segments, competitionTitle }: PrizeWheelPr
       }
     } catch {
       setSpinning(false);
-      setError('Network error. Your spin has not been used — please try again.');
+      // The request never left, so nothing was drawn. This one IS safe to assert.
+      setError('Network error — nothing was used. Please try again.');
       return;
     }
 
@@ -323,7 +353,7 @@ export function PrizeWheel({ spinIds, segments, competitionTitle }: PrizeWheelPr
           </>
         ) : (
           <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
-            That was your last spin for this competition.
+            {lastSpinCopy ?? 'That was your last spin for this competition.'}
           </p>
         )}
       </div>

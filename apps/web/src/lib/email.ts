@@ -873,6 +873,67 @@ export async function sendSpinReminderEmail(
   });
 }
 
+export interface JackpotWinnerEmailData {
+  competitionTitle: string;
+  prizeDescription: string;
+  prizeValue: number | null;
+  mainImageUrl?: string;
+}
+
+/**
+ * "You won the graded card."
+ *
+ * The reveal on the wheel is one div in a client component: a refresh, a closed
+ * tab or a dropped response destroys it. This is the copy of record for the most
+ * valuable thing in the product, and it must exist independently of whether the
+ * browser survived the animation.
+ */
+export async function sendJackpotWinnerEmail(
+  email: string,
+  firstName: string,
+  data: JackpotWinnerEmailData
+) {
+  const rewardsUrl = `${BASE_URL}/my-rewards`;
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 22px; margin: 0 0 16px;">🏆 You won the graded card</h2>
+    <p style="color: #CFCAC0; font-size: 16px; line-height: 24px; margin: 0 0 20px;">
+      ${firstName ? `${escapeHtml(firstName)}, t` : 'T'}his is not the competition draw — it is the
+      wheel prize from your entry, and it is yours.
+    </p>
+
+    ${competitionRow(data.mainImageUrl, data.competitionTitle)}
+
+    <div style="background-color: #050505; border-radius: 0; padding: 24px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 6px; text-transform: uppercase;">Your prize</p>
+      <p style="color: #C9A227; font-size: 20px; font-weight: 800; margin: 0;">${escapeHtml(data.prizeDescription)}</p>
+      ${data.prizeValue !== null ? `<p style="color: #9A958B; font-size: 13px; margin: 8px 0 0;">Approximate value ${formatGbp(data.prizeValue)}</p>` : ''}
+    </div>
+
+    <p style="color: #CFCAC0; font-size: 15px; line-height: 23px; margin: 0 0 20px;">
+      <strong>What happens next.</strong> We will reply to this address to confirm your delivery
+      address, then ship the card tracked and insured. If you do not hear from us within three
+      working days, reply to this email — do not assume it is lost.
+    </p>
+
+    <div style="text-align: center; margin: 28px 0;">
+      <a href="${rewardsUrl}" style="display: inline-block; background-color: #C9A227; color: #0A0A0A; padding: 12px 32px; text-decoration: none; border-radius: 0; font-weight: 600;">
+        See it in My Rewards
+      </a>
+    </div>
+
+    <p style="color: #9A958B; font-size: 13px; line-height: 21px; margin: 0;">
+      Your competition tickets are unaffected — they are still in the draw.
+    </p>
+  `);
+
+  return sendEmail({
+    to: email,
+    subject: '🏆 You won the graded card on WinUPrize',
+    html,
+  });
+}
+
 export interface JackpotFrozenAlertData {
   orderNumber: string;
   cause: string;

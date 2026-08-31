@@ -232,7 +232,7 @@ export function CheckoutClient({
         // The code is re-validated server-side at session creation. If it has
         // since been spent or expired, drop it so the summary stops promising a
         // discount the checkout will not honour.
-        if (['NOT_FOUND', 'NOT_YOURS', 'ALREADY_USED', 'EXPIRED'].includes(data.code)) {
+        if (['NOT_FOUND', 'NOT_YOURS', 'ALREADY_USED', 'VOIDED', 'EXPIRED'].includes(data.code)) {
           setAppliedPromo(null);
           setPromoError(data.error ?? 'That promo code is no longer valid.');
           setIsProcessing(false);

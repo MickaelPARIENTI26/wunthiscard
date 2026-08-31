@@ -17,6 +17,15 @@ export const metadata = {
 // served from a cached render.
 export const dynamic = 'force-dynamic';
 
+/** What each fulfilment stage means to the person waiting for the card. */
+const JACKPOT_STATUS_COPY: Record<string, string> = {
+  PENDING: 'We have been alerted and will email you to confirm your delivery address.',
+  CONTACTED: 'We have emailed you — reply with your delivery address and we will ship it.',
+  ADDRESS_CONFIRMED: 'Address confirmed. Your card is being packed for tracked, insured delivery.',
+  SHIPPED: 'On its way, tracked and insured.',
+  DELIVERED: 'Delivered. Enjoy it.',
+};
+
 const DATE = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'short',
@@ -33,7 +42,7 @@ export default async function MyRewardsPage() {
   const userId = session.user.id;
   const now = new Date();
 
-  const [pendingSpins, codes, history, expiredCount] = await Promise.all([
+  const [pendingSpins, codes, history, expiredCount, jackpotWins] = await Promise.all([
     prisma.wheelSpin.findMany({
       // A spin dies with its competition, so the live draw date is the filter —
       // never the copy stored on the spin, which an admin can move.
@@ -42,7 +51,7 @@ export default async function MyRewardsPage() {
         spunAt: null,
         reversedAt: null,
         wheelConfig: { enabled: true },
-        competition: { drawDate: { gt: now } },
+        competition: { drawDate: { gt: now }, status: { in: ['ACTIVE', 'SOLD_OUT'] } },
       },
       select: {
         id: true,
@@ -81,6 +90,7 @@ export default async function MyRewardsPage() {
         resultType: true,
         resultValue: true,
         reversedAt: true,
+        reversalReason: true,
         competition: { select: { title: true } },
       },
       orderBy: { spunAt: 'desc' },
@@ -88,6 +98,21 @@ export default async function MyRewardsPage() {
     }),
     prisma.wheelSpin.count({
       where: { userId, spunAt: null, reversedAt: null, competition: { drawDate: { lte: now } } },
+    }),
+    // A graded card is the one prize that must survive a page refresh. The
+    // reveal on the wheel is a single div in the browser; this is the record.
+    prisma.jackpotWin.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        status: true,
+        prizeDescription: true,
+        prizeValue: true,
+        trackingNumber: true,
+        createdAt: true,
+        competition: { select: { title: true } },
+      },
+      orderBy: { createdAt: 'desc' },
     }),
   ]);
 
@@ -139,6 +164,40 @@ export default async function MyRewardsPage() {
           Every paid ticket earns one spin. Spins last until that competition closes.
         </p>
       </div>
+
+      {/* A won graded card — shown first and permanently. */}
+      {jackpotWins.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+          {jackpotWins.map((win) => (
+            <div key={win.id} className="drop-card" style={{ borderColor: 'var(--accent)' }}>
+              <div
+                style={{
+                  fontFamily: 'var(--display)', fontSize: '12.5px', letterSpacing: '0.18em',
+                  textTransform: 'uppercase', color: 'var(--accent-text)', fontWeight: 700,
+                  marginBottom: '6px',
+                }}
+              >
+                🏆 Graded card won
+              </div>
+              <p style={{ fontSize: '17px', fontWeight: 700, marginBottom: '4px' }}>
+                {win.prizeDescription}
+              </p>
+              <p style={{ color: 'var(--ink-dim)', fontSize: '14px', marginBottom: '12px' }}>
+                Won on {win.competition.title} · {DATE.format(win.createdAt)}
+                {win.prizeValue ? ` · approx. £${Number(win.prizeValue).toLocaleString('en-GB')}` : ''}
+              </p>
+              <p style={{ color: 'var(--ink-dim)', fontSize: '14px' }}>
+                {JACKPOT_STATUS_COPY[win.status] ?? 'We are arranging delivery.'}
+              </p>
+              {win.trackingNumber && (
+                <p style={{ color: 'var(--ink-faint)', fontSize: '13px', marginTop: '6px' }}>
+                  Tracking: <span style={{ fontFamily: 'var(--mono)' }}>{win.trackingNumber}</span>
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Wheels */}
       {wheels.length > 0 ? (
@@ -329,7 +388,9 @@ export default async function MyRewardsPage() {
                         <span
                           style={{ display: 'block', fontSize: '11px', color: 'var(--ink-faint)' }}
                         >
-                          Cancelled — order refunded
+                          {spin.reversalReason === 'COMPETITION_CANCELLED'
+                            ? 'Competition cancelled'
+                            : 'Cancelled — order refunded'}
                         </span>
                       )}
                     </Td>

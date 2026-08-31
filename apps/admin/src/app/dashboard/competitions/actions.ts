@@ -798,6 +798,49 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
   // safe: orders already marked REFUNDED above are skipped before any Stripe call,
   // so only the failed orders are re-attempted, and the competition is only
   // cancelled once every refund has gone through.
+  //
+  // Before that: the order list above was snapshotted before a refund loop that
+  // makes one sequential Stripe call per order — seconds to minutes on a real
+  // competition — while the competition is STILL ACTIVE and still selling
+  // (create-session only requires status ACTIVE). A checkout that completes
+  // during the loop is absent from the snapshot, so it is never refunded, never
+  // reversed and never emailed, and the ticket release below would then wipe its
+  // tickets while we kept the money. Refuse to finish rather than do that.
+  const strandedOrders = await prisma.order.findMany({
+    where: { competitionId: id, paymentStatus: 'SUCCEEDED' },
+    select: { id: true, orderNumber: true },
+  });
+
+  if (strandedOrders.length > 0) {
+    await prisma.auditLog.create({
+      data: {
+        userId: session.user.id,
+        action: 'COMPETITION_CANCEL_ORDERS_ARRIVED_MIDWAY',
+        entity: 'competition',
+        entityId: id,
+        metadata: {
+          competitionTitle: competition.title,
+          ordersRefunded: refundedCount,
+          strandedOrderNumbers: strandedOrders.map((o) => o.orderNumber),
+        },
+      },
+    });
+
+    revalidatePath('/dashboard/competitions');
+    revalidatePath(`/dashboard/competitions/${id}`);
+
+    return {
+      success: false,
+      refundedCount,
+      refundedAmount,
+      failedRefundOrderIds: strandedOrders.map((o) => o.id),
+      error:
+        `${strandedOrders.length} order(s) were paid while the refunds were running and have ` +
+        'NOT been refunded. The competition was NOT cancelled — nobody has lost their tickets. ' +
+        'Run the cancellation again: the orders already refunded are skipped.',
+    };
+  }
+
   if (refundErrors.length > 0) {
     await prisma.auditLog.create({
       data: {

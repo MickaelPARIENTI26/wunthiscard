@@ -178,7 +178,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
       spunAt: null,
       reversedAt: null,
       wheelConfig: { enabled: true },
-      competition: { drawDate: { gt: new Date() } },
+      competition: { drawDate: { gt: new Date() }, status: { in: ['ACTIVE', 'SOLD_OUT'] } },
     },
     select: {
       id: true,
@@ -272,7 +272,11 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', marginBottom: '22px' }}>
               One per paid ticket. Nothing to lose — your entry is already confirmed.
             </p>
-            <PrizeWheel spinIds={spins.map((s) => s.id)} segments={wheelSegments} />
+            <PrizeWheel
+              spinIds={spins.map((s) => s.id)}
+              segments={wheelSegments}
+              lastSpinCopy="That was your last spin from this order."
+            />
             <p style={{ color: 'var(--ink-faint)', fontSize: '12.5px', marginTop: '18px' }}>
               Not now? Your spins wait for you in{' '}
               <Link href="/my-rewards" style={{ color: 'var(--ink)', textDecoration: 'underline' }}>

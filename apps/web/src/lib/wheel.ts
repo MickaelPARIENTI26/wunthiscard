@@ -1,6 +1,10 @@
 import { randomInt } from 'node:crypto';
 import { prisma } from '@/lib/db';
-import { sendJackpotAlertEmail, sendJackpotFrozenAlertEmail } from '@/lib/email';
+import {
+  sendJackpotAlertEmail,
+  sendJackpotFrozenAlertEmail,
+  sendJackpotWinnerEmail,
+} from '@/lib/email';
 import type { WheelSlotType } from '@winucard/database';
 
 /**
@@ -132,7 +136,7 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
       // The competition's CURRENT draw date is the authority, not the copy
       // stored on the spin: an admin who pushes the date back would otherwise
       // kill spins that should still be live.
-      competition: { select: { drawDate: true } },
+      competition: { select: { drawDate: true, status: true } },
     },
   });
 
@@ -142,6 +146,12 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
   // again in the claim below so a reversal landing mid-request still wins.
   if (spin.reversedAt) return { ok: false, reason: 'REVERSED' };
   if (spin.competition.drawDate.getTime() <= Date.now()) return { ok: false, reason: 'EXPIRED' };
+  // The draw date alone is not enough: a cancelled competition can still have a
+  // future date, and its spins must die with it — otherwise a spin could still
+  // take the single graded card off a wheel that no longer exists.
+  if (spin.competition.status === 'CANCELLED' || spin.competition.status === 'COMPLETED') {
+    return { ok: false, reason: 'EXPIRED' };
+  }
   if (!spin.wheelConfig.enabled) return { ok: false, reason: 'WHEEL_DISABLED' };
 
   let outcome: SpinOutcome;
@@ -222,6 +232,12 @@ export async function spinWheel(spinId: string, userId: string): Promise<SpinOut
     void notifyJackpot(spinId).catch((e) =>
       console.error('Jackpot alert email failed (the win is still recorded):', e)
     );
+    // And tell the winner. The reveal on the wheel is one div in the browser —
+    // a refresh destroys it — so this is the copy of record for a prize worth
+    // thousands. Swallowed like the team alert: the win is already committed.
+    void notifyJackpotWinner(spinId).catch((e) =>
+      console.error('Jackpot winner email failed (the win is still recorded):', e)
+    );
   }
 
   return outcome;
@@ -262,6 +278,27 @@ export async function notifyJackpotFrozen(
       status: w.status,
       prizeValue: w.prizeValue ? w.prizeValue.toString() : null,
     })),
+  });
+}
+
+/** Tell the person who won. Never throws upward — the win stands regardless. */
+async function notifyJackpotWinner(spinId: string): Promise<void> {
+  const win = await prisma.jackpotWin.findUnique({
+    where: { spinId },
+    select: {
+      prizeDescription: true,
+      prizeValue: true,
+      competition: { select: { title: true, mainImageUrl: true } },
+      user: { select: { firstName: true, email: true } },
+    },
+  });
+  if (!win?.user) return;
+
+  await sendJackpotWinnerEmail(win.user.email, win.user.firstName, {
+    competitionTitle: win.competition.title,
+    prizeDescription: win.prizeDescription,
+    prizeValue: win.prizeValue ? Number(win.prizeValue) : null,
+    mainImageUrl: win.competition.mainImageUrl,
   });
 }
 

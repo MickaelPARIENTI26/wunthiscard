@@ -109,8 +109,15 @@ async function handleCheckoutSessionExpired(session: Stripe.Checkout.Session) {
   // performs the transition, so a racing cancel page, a webhook retry, or a successful
   // payment can never trip the cleanup below — and, critically, can never re-credit the
   // referral free ticket twice. Everything after this runs ONLY on the winning flip.
+  // FAILED is in the list on purpose. A card declined on Stripe's own page moves
+  // the order PENDING -> FAILED, and if the buyer then walks away this handler is
+  // the ONLY cleanup that ever runs — nothing else sweeps abandoned orders. With
+  // a PENDING-only claim it returned early and left the promo code stamped
+  // redeemed against an order that was never paid, and the referral free ticket
+  // silently gone. An expired session can never be paid afterwards, so widening
+  // this is safe; the atomic flip still runs the cleanup at most once.
   const cancelled = await prisma.order.updateMany({
-    where: { id: orderId, paymentStatus: 'PENDING' },
+    where: { id: orderId, paymentStatus: { in: ['PENDING', 'PROCESSING', 'FAILED'] } },
     data: { paymentStatus: 'CANCELLED' },
   });
 
