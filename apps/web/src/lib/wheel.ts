@@ -55,7 +55,16 @@ export async function grantSpinsForOrder(
    * a reversal committing in the gap finds no rows to mark and the insert then
    * lands live, playable spins on an order that has already been refunded.
    */
-  client: PrismaClientOrTx = prisma
+  client: PrismaClientOrTx = prisma,
+  /**
+   * Tickets on this order that were NOT paid for and therefore earn nothing.
+   *
+   * The referral free ticket is a price cut, not a flagged ticket: create-session
+   * charges for ticketCount - 1 but mints them all as ordinary paid tickets, so
+   * counting rows would hand out one spin more than was bought — against the rule
+   * this whole feature is built on.
+   */
+  unpaidTickets = 0
 ): Promise<number> {
   const order = await client.order.findUnique({
     where: { id: orderId },
@@ -82,11 +91,16 @@ export async function grantSpinsForOrder(
   const paidTickets = await client.ticket.findMany({
     where: { orderId: order.id, isBonus: false, isFreeEntry: false, status: 'SOLD' },
     select: { id: true },
+    orderBy: { ticketNumber: 'asc' },
   });
-  if (paidTickets.length === 0) return 0;
+  // Deterministic: drop the highest-numbered tickets, so a re-run of fulfilment
+  // trims the same ones and skipDuplicates stays meaningful.
+  const eligible =
+    unpaidTickets > 0 ? paidTickets.slice(0, Math.max(0, paidTickets.length - unpaidTickets)) : paidTickets;
+  if (eligible.length === 0) return 0;
 
   const { count } = await client.wheelSpin.createMany({
-    data: paidTickets.map((t) => ({
+    data: eligible.map((t) => ({
       wheelConfigId: config.id,
       competitionId: order.competitionId,
       userId: order.userId,

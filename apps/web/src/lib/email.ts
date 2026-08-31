@@ -934,6 +934,41 @@ export async function sendJackpotWinnerEmail(
   });
 }
 
+export interface WheelDrainAlertData {
+  competitionTitle: string;
+  pool: number;
+  reversedSpins: number;
+}
+
+/** The pool is being eaten by reversals — a judgement call, so it goes to a human. */
+export async function sendWheelDrainAlertEmail(to: string, data: WheelDrainAlertData) {
+  const pct = data.pool > 0 ? Math.round((data.reversedSpins / data.pool) * 1000) / 10 : 0;
+
+  const html = emailWrapper(`
+    <h2 style="color: #F4F1EA; font-size: 20px; margin: 0 0 12px;">⚠️ Wheel pool draining</h2>
+    <p style="color: #CFCAC0; font-size: 15px; line-height: 23px; margin: 0 0 18px;">
+      <strong>${escapeHtml(data.competitionTitle)}</strong> has lost
+      <strong>${data.reversedSpins}</strong> of its ${data.pool} pool tokens to reversed
+      payments — ${pct}%. Those tokens are gone for good: stock is never given back
+      automatically, because the graded card is a single physical object.
+    </p>
+    <p style="color: #CFCAC0; font-size: 14px; line-height: 22px; margin: 0 0 18px;">
+      The practical effect is that the remaining players' odds have shifted. Worth a look
+      at whether this is ordinary refund traffic or one account repeating the pattern.
+    </p>
+    <p style="color: #9A958B; font-size: 14px; line-height: 22px; margin: 0;">
+      Your options: raise a slot's stock in the wheel settings, pause the wheel, or leave
+      it. Nothing has been changed for you.
+    </p>
+  `);
+
+  return sendEmail({
+    to,
+    subject: `⚠️ WinUPrize — wheel pool draining on ${data.competitionTitle}`,
+    html,
+  });
+}
+
 export interface JackpotFrozenAlertData {
   orderNumber: string;
   cause: string;

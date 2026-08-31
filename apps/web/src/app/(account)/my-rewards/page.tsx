@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
-import { buildWheelSegments, wheelSlotLabel } from '@winucard/shared/utils';
+import { buildWheelSegments, summariseWheelSlots, wheelSlotLabel } from '@winucard/shared/utils';
 import { PrizeWheel } from '@/components/wheel/prize-wheel';
 import { CopyCode } from './copy-code';
 
@@ -259,6 +259,12 @@ export default async function MyRewardsPage() {
                   <PrizeWheel
                     spinIds={spins.map((s) => s.id)}
                     segments={buildWheelSegments(slots)}
+                    odds={summariseWheelSlots(slots).map((o) => ({
+                      label: o.label,
+                      percentage: o.percentage,
+                      remaining: o.remaining,
+                      configured: o.quantityConfigured,
+                    }))}
                   />
                 )}
               </div>

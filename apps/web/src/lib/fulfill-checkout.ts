@@ -412,7 +412,11 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
     // order is SUCCEEDED, so a single failure left a paid order with SOLD tickets
     // and no spins, permanently, invisible to buyer and admin alike. Inside, it
     // either happens with the sale or the sale rolls back.
-    const spinsGranted = await grantSpinsForOrder(order.id, tx);
+    const spinsGranted = await grantSpinsForOrder(
+      order.id,
+      tx,
+      session.metadata?.referralTicketUsed === '1' ? 1 : 0
+    );
 
     return { alreadyProcessed: false, spinsGranted };
   });

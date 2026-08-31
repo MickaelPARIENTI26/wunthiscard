@@ -50,6 +50,12 @@ interface PrizeWheelProps {
    * for a repeat buyer with spins banked from an earlier order.
    */
   lastSpinCopy?: string;
+  /**
+   * The real pool behind this wheel, for the odds disclosure. The segments are a
+   * presentation; these are the numbers a prize promotion is expected to publish,
+   * and they are computed from the same config the draw uses.
+   */
+  odds?: { label: string; percentage: number; remaining: number; configured: number }[];
 }
 
 const SEGMENT_FILL: Record<SlotKind, string> = {
@@ -86,7 +92,13 @@ function labelLines(label: string): string[] {
   return [words.slice(0, cut).join(' '), words.slice(cut).join(' ')];
 }
 
-export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }: PrizeWheelProps) {
+export function PrizeWheel({
+  spinIds,
+  segments,
+  competitionTitle,
+  lastSpinCopy,
+  odds,
+}: PrizeWheelProps) {
   const router = useRouter();
   // The queue is local: once a spin is spent it must leave the list even though
   // the server component that supplied it has not re-rendered yet.
@@ -352,6 +364,52 @@ export function PrizeWheel({ spinIds, segments, competitionTitle, lastSpinCopy }
           <p style={{ color: 'var(--warn)', fontSize: '14px', marginTop: '16px' }}>{error}</p>
         )}
       </div>
+
+      {odds && odds.length > 0 && (
+        <details style={{ marginTop: '20px', textAlign: 'left' }}>
+          <summary
+            style={{
+              cursor: 'pointer', fontFamily: 'var(--display)', fontSize: '12.5px',
+              letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-faint)',
+              fontWeight: 700,
+            }}
+          >
+            Your chances
+          </summary>
+          <div style={{ overflowX: 'auto', marginTop: '10px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', padding: '6px 0', color: 'var(--ink-faint)', fontWeight: 600 }}>
+                    Outcome
+                  </th>
+                  <th style={{ textAlign: 'right', padding: '6px 0', color: 'var(--ink-faint)', fontWeight: 600 }}>
+                    Share of pool
+                  </th>
+                  <th style={{ textAlign: 'right', padding: '6px 0', color: 'var(--ink-faint)', fontWeight: 600 }}>
+                    Left
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {odds.map((o) => (
+                  <tr key={o.label} style={{ borderTop: '1px solid var(--line)' }}>
+                    <td style={{ padding: '6px 0' }}>{o.label}</td>
+                    <td style={{ padding: '6px 0', textAlign: 'right' }}>{o.percentage}%</td>
+                    <td style={{ padding: '6px 0', textAlign: 'right', color: 'var(--ink-dim)' }}>
+                      {o.remaining} of {o.configured}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p style={{ fontSize: '12px', color: 'var(--ink-faint)', marginTop: '8px' }}>
+            Prizes are drawn from this fixed pool without replacement, so every prize won is
+            one fewer left. The share shown is of the pool as originally set.
+          </p>
+        </details>
+      )}
 
       <div style={{ marginTop: '20px' }}>
         {remaining > 0 ? (

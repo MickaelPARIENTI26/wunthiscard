@@ -8,7 +8,7 @@ import { prisma } from '@/lib/db';
 import { stripe } from '@/lib/stripe';
 import { fulfillCheckoutSession } from '@/lib/fulfill-checkout';
 import { Button } from '@/components/ui/button';
-import { formatPrice, buildWheelSegments } from '@winucard/shared/utils';
+import { formatPrice, buildWheelSegments, summariseWheelSlots } from '@winucard/shared/utils';
 import { PrizeWheel } from '@/components/wheel/prize-wheel';
 import { ClearCheckoutStorage } from './clear-checkout-storage';
 
@@ -101,6 +101,13 @@ async function getOrderDetails(sessionId: string, viewerId: string) {
       return 'pending' as const;
     }
 
+    // A refunded order used to fall straight through to the celebration: 🎉,
+    // "ENTRY CONFIRMED", "You're in", and a promise about the draw — for an order
+    // whose tickets have been released and whose wheel rewards were taken back.
+    if (order?.paymentStatus === 'REFUNDED') {
+      return 'refunded' as const;
+    }
+
     return order;
   } catch (error) {
     // A backend hiccup (Stripe/DB) is NOT the same as "order doesn't exist". The
@@ -146,6 +153,31 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
             </Button>
             <Button variant="outline" size="lg" asChild>
               <Link href="/">Return Home</Link>
+            </Button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  if (order === 'refunded') {
+    return (
+      <main>
+        <section className="drop-section" style={{ textAlign: 'center', maxWidth: '700px', paddingTop: '80px' }}>
+          <h1 style={{ fontFamily: 'var(--display)', fontSize: '36px', fontWeight: 700, marginBottom: '12px' }}>
+            This order was refunded
+          </h1>
+          <p style={{ color: 'var(--ink-dim)', marginBottom: '24px', lineHeight: 1.6 }}>
+            The money has gone back to your card, so the tickets and any wheel spins this
+            order earned were returned with it. If that is not what you expected, get in
+            touch and we will look into it.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Button variant="primary" size="lg" asChild>
+              <Link href="/contact">Contact us</Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link href="/competitions">Browse competitions</Link>
             </Button>
           </div>
         </section>
@@ -276,6 +308,12 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
               spinIds={spins.map((s) => s.id)}
               segments={wheelSegments}
               lastSpinCopy="That was your last spin from this order."
+              odds={summariseWheelSlots(wheelSlots).map((o) => ({
+                label: o.label,
+                percentage: o.percentage,
+                remaining: o.remaining,
+                configured: o.quantityConfigured,
+              }))}
             />
             <p style={{ color: 'var(--ink-faint)', fontSize: '12.5px', marginTop: '18px' }}>
               Not now? Your spins wait for you in{' '}

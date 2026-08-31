@@ -338,37 +338,20 @@ spin mort, `VOIDED` absent du checkout, libellé « annulé » sur un code encor
 valide, « ton dernier spin » faux pour un acheteur récurrent, et une erreur
 réseau qui affirmait à tort que le spin n'avait pas été consommé).
 
-### Reste à faire (audit, volontairement non livré)
+### Tout le reste est livré (2026-08-31)
 
-- **Garde-fou d'épuisement du pool** : chaque spin annulé retire définitivement
-  un jeton. Répété, cela concentre les chances sur les joueurs restants. Il faut
-  un plafond de spins annulés par roue au-delà duquel `claimSlot` alerte.
-- **Délai avant expédition d'une carte gradée** (~30 j après le *gain*, pas
-  après le paiement — les spins se conservent jusqu'au tirage), pour qu'un
-  litige arrive pendant qu'on détient encore la carte.
-- **Gel à l'ouverture d'un litige** (`charge.dispute.created`), pas seulement à
-  sa perte : aujourd'hui la carte peut partir pendant l'arbitrage.
-- **Le ticket gratuit de parrainage donne un spin** alors que la règle dit le
-  contraire : il n'est pas marqué sur le ticket, seulement dans le prix.
-- **Page de remboursement** : `/checkout/success` fête encore la commande quand
-  elle a été remboursée.
-- **Conditions générales** : la règle « paiement repris = spins repris » doit
-  être publiée avant d'être appliquée.
-- **Accessibilité de la roue** : aucune région live, le SVG en `role="img"`
-  masque les libellés — inutilisable au lecteur d'écran.
-- **La relance d'expiration rate les bons acheteurs** : une seule fois par
-  concours, dans une fenêtre de 48 h sur un cron quotidien, donc personne
-  n'est prévenu s'il achète pendant les 48 dernières heures.
-- **Désactiver une roue fait disparaître les spins bancarisés** sans un mot ni
-  un compteur.
-- **Un jackpot gelé bloque la suppression de compte définitivement**, avec un
-  message faux (aucun statut terminal « non attribué » n'existe).
-- **Le « claim » du cron closing-soon n'est pas gardé** : deux exécutions qui se
-  chevauchent envoient deux fois la campagne à toute la liste.
-- **Affichage des probabilités côté public** : sur un jeu à lot, la transparence
-  des chances est attendue par l'ASA. Prévoir une page publique des odds.
-- **Le garde-fou de montant** (`fulfill-checkout.ts:106`) doit être couvert par
-  des tests dès l'introduction des remises — c'est le point où un bug se paie en
-  commandes encaissées et non livrées.
+Les points différés puis les trouvailles secondaires de l'audit sont traités :
+garde-fou d'épuisement du pool (détection quotidienne + alerte, pas de blocage —
+refuser un spin punirait des acheteurs honnêtes) ; délai avant expédition d'une
+carte gradée, calé sur la date du **gain** et non du paiement ; gel dès
+l'**ouverture** d'un litige ; le ticket gratuit de parrainage ne donne plus de
+spin ; page de commande remboursée ; règles publiques de la roue dans
+`/competition-rules` §8 ; probabilités réelles affichées sur la roue elle-même ;
+accessibilité ; relance d'expiration par spin ; état « en pause » visible ;
+statut terminal pour un jackpot non attribué.
+
+Il ne reste que des points hors code : validation juridique, `CRON_SECRET` sur
+Vercel, webhook Stripe Live.
+
 - **Codes promo et RGPD** : rattachés à un `userId`. À la suppression de compte,
   les anonymiser comme `Win` et `DrawLog`, ou les supprimer s'ils sont inutilisés.

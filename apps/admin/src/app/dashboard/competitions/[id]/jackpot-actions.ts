@@ -5,6 +5,21 @@ import { prisma } from '@/lib/db';
 import { auth } from '@/lib/auth';
 import type { JackpotStatus } from '@winucard/database';
 
+/**
+ * How long a graded card waits before it may ship, in days.
+ *
+ * Lives in the existing SiteSettings JSON blob next to jackpotNotificationEmail,
+ * so it needs no migration. Fails CLOSED: an unreadable or nonsense value gives
+ * the default rather than no protection at all.
+ */
+async function jackpotShippingHoldDays(): Promise<number> {
+  const settings = await prisma.siteSettings.findUnique({ where: { id: 'global' } });
+  const raw = (settings?.data as { jackpotShippingHoldDays?: unknown } | null)
+    ?.jackpotShippingHoldDays;
+  const days = typeof raw === 'number' ? raw : Number(raw);
+  return Number.isFinite(days) && days >= 0 ? days : 30;
+}
+
 export interface JackpotUpdateState {
   success: boolean;
   message: string;
@@ -38,7 +53,14 @@ export async function updateJackpotWin(
 
   const existing = await prisma.jackpotWin.findUnique({
     where: { id: winId },
-    select: { status: true, shippedAt: true, deliveredAt: true, paymentReversedAt: true },
+    select: {
+      status: true,
+      shippedAt: true,
+      deliveredAt: true,
+      paymentReversedAt: true,
+      createdAt: true,
+      order: { select: { paymentStatus: true } },
+    },
   });
   if (!existing) return { success: false, message: 'Jackpot win not found.' };
 
@@ -51,6 +73,45 @@ export async function updateJackpotWin(
       message:
         'This win is frozen: the payment behind it was reversed. Clear the payment hold before updating fulfilment.',
     };
+  }
+
+  // A hold before the card can physically leave.
+  //
+  // Chargebacks arrive weeks after the payment, and spins are BANKED until the
+  // draw date — so the buyer, not the clock, decides when the win happens. The
+  // hold therefore runs from the later of the two: paying early and spinning on
+  // the last day must not ship the card the same afternoon.
+  if (status === 'SHIPPED' && !existing.shippedAt) {
+    if (existing.order?.paymentStatus !== 'SUCCEEDED') {
+      return {
+        success: false,
+        message: 'The order behind this win is not in a settled paid state — do not ship it.',
+      };
+    }
+
+    const holdDays = await jackpotShippingHoldDays();
+    const releaseAt = new Date(existing.createdAt.getTime() + holdDays * 24 * 60 * 60 * 1000);
+
+    if (Date.now() < releaseAt.getTime()) {
+      if (session.user.role !== 'SUPER_ADMIN') {
+        return {
+          success: false,
+          message:
+            `This card is inside its ${holdDays}-day payment hold until ` +
+            `${releaseAt.toLocaleDateString('en-GB')}. A super admin can ship it early.`,
+        };
+      }
+      // A super admin may override, but never silently.
+      await prisma.auditLog.create({
+        data: {
+          userId: session.user.id,
+          action: 'JACKPOT_SHIPPED_INSIDE_HOLD',
+          entity: 'jackpotWin',
+          entityId: winId,
+          metadata: { holdDays, releaseAt: releaseAt.toISOString() },
+        },
+      });
+    }
   }
 
   // Stamp the milestone the first time it is reached, and leave it alone after —

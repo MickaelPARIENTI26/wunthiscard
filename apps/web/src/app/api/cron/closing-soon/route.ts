@@ -4,6 +4,7 @@ import { getMarketingRecipients } from '@/lib/marketing-recipients';
 import { sendClosingSoonBlast, type CompetitionBlastData } from '@/lib/email';
 import { closingSoonWindow, CLOSING_SOON_WINDOW_HOURS } from '@/lib/closing-soon';
 import { sendSpinReminders } from '@/lib/wheel-reminder';
+import { checkWheelDrain } from '@/lib/wheel-drain';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -44,6 +45,11 @@ export async function GET(request: Request) {
   // still need the reminder.
   const spinReminders = await sendSpinReminders(now);
 
+  // Reversals permanently remove tokens from a finite pool. Detected here rather
+  // than blocked in the spin path: refusing honest buyers is not the answer, and
+  // what to do about it is the operator's call.
+  const wheelDrain = await checkWheelDrain(now);
+
   const competitions = await prisma.competition.findMany({
     where: {
       status: { in: ['ACTIVE', 'SOLD_OUT'] },
@@ -63,7 +69,7 @@ export async function GET(request: Request) {
   });
 
   if (competitions.length === 0) {
-    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0, spinReminders });
+    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0, spinReminders, wheelDrain });
   }
 
   const recipients = await getMarketingRecipients();
@@ -102,5 +108,6 @@ export async function GET(request: Request) {
     sent: results.reduce((n, r) => n + r.sent, 0),
     results,
     spinReminders,
+    wheelDrain,
   });
 }

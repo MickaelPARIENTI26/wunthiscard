@@ -24,14 +24,15 @@ const tableOfContents: TableOfContentsItem[] = [
   { id: 'skill-question', title: '5. Skill Question' },
   { id: 'tickets', title: '6. Tickets & Pricing' },
   { id: 'bonus-tickets', title: '7. Bonus Tickets' },
-  { id: 'draw-process', title: '8. Draw Process' },
-  { id: 'winner-notification', title: '9. Winner Notification' },
-  { id: 'prize-claiming', title: '10. Prize Claiming' },
-  { id: 'delivery', title: '11. Prize Delivery' },
-  { id: 'cancellation', title: '12. Cancellation & Refunds' },
-  { id: 'disputes', title: '13. Disputes' },
-  { id: 'legal', title: '14. Legal Compliance' },
-  { id: 'contact', title: '15. Contact' },
+  { id: 'buyer-wheel', title: '8. The Buyer Wheel' },
+  { id: 'draw-process', title: '9. Draw Process' },
+  { id: 'winner-notification', title: '10. Winner Notification' },
+  { id: 'prize-claiming', title: '11. Prize Claiming' },
+  { id: 'delivery', title: '12. Prize Delivery' },
+  { id: 'cancellation', title: '13. Cancellation & Refunds' },
+  { id: 'disputes', title: '14. Disputes' },
+  { id: 'legal', title: '15. Legal Compliance' },
+  { id: 'contact', title: '16. Contact' },
 ];
 
 async function getCompetitionRulesContent() {
@@ -306,8 +307,54 @@ function PlaceholderCompetitionRulesContent() {
         </ul>
       </section>
 
+      <section id="buyer-wheel">
+        <h2>8. The Buyer Wheel</h2>
+        <p>
+          Some competitions include a wheel as a thank-you for buying tickets. It is
+          separate from the competition draw and has no effect on it: your tickets are in
+          the draw either way, and spinning changes nothing about your chance of winning
+          the prize.
+        </p>
+        <ul>
+          <li>
+            <strong>One spin for every paid ticket.</strong> Bonus tickets and free postal
+            entries do not earn spins, because no payment was made for them. The free entry
+            route remains a full and equal entry to the competition itself
+          </li>
+          <li>
+            <strong>Spins last until that competition closes.</strong> They are yours to
+            use whenever you like until then, and we email you before they expire
+          </li>
+          <li>
+            <strong>The prizes come from a fixed pool</strong> set before the competition
+            opens, drawn without replacement — every prize won is one fewer left. The exact
+            make-up of that pool, and how much of it remains, is shown on the wheel itself
+          </li>
+          <li>
+            <strong>Discount codes are single-use and cannot be combined.</strong> One code
+            per order. Each has an expiry date shown in My Rewards
+          </li>
+          <li>
+            <strong>If a payment is reversed, the rewards go with it.</strong> A refund or a
+            chargeback cancels the spins that order earned and any unused code won on them,
+            because the tickets that earned them were not paid for. A code you have already
+            spent is not clawed back
+          </li>
+          <li>
+            <strong>If we cancel a competition</strong>, its spins end with it — but any code
+            you already won stays valid, and we extend it. That cancellation is our decision,
+            not yours
+          </li>
+          <li>
+            <strong>A graded card won on the wheel</strong> is shipped tracked and insured,
+            like any other prize. Where the payment behind it has been reversed or disputed,
+            we hold delivery until that is settled and will contact you
+          </li>
+        </ul>
+      </section>
+
       <section id="draw-process">
-        <h2>8. Draw Process</h2>
+        <h2>9. Draw Process</h2>
         <p>
           The draw for each competition is conducted fairly and transparently:
         </p>
@@ -357,7 +404,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="winner-notification">
-        <h2>9. Winner Notification</h2>
+        <h2>10. Winner Notification</h2>
         <p>Winners are notified and announced as follows:</p>
         <ul>
           <li>
@@ -381,7 +428,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="prize-claiming">
-        <h2>10. Prize Claiming</h2>
+        <h2>11. Prize Claiming</h2>
         <p>To claim your prize:</p>
         <ol>
           <li>Respond to the winner notification email within 14 days</li>
@@ -413,7 +460,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="delivery">
-        <h2>11. Prize Delivery</h2>
+        <h2>12. Prize Delivery</h2>
         <ul>
           <li>
             Prizes are shipped free of charge
@@ -442,7 +489,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="cancellation">
-        <h2>12. Cancellation & Refunds</h2>
+        <h2>13. Cancellation & Refunds</h2>
 
         <h3>12.1 Competition Cancellation</h3>
         <p>
@@ -471,7 +518,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="disputes">
-        <h2>13. Disputes</h2>
+        <h2>14. Disputes</h2>
         <ul>
           <li>
             Any dispute regarding the outcome of a draw must be raised within 7
@@ -501,7 +548,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="legal">
-        <h2>14. Legal Compliance</h2>
+        <h2>15. Legal Compliance</h2>
         <p>Our competitions are operated in compliance with:</p>
         <ul>
           <li>
@@ -528,7 +575,7 @@ function PlaceholderCompetitionRulesContent() {
       </section>
 
       <section id="contact">
-        <h2>15. Contact</h2>
+        <h2>16. Contact</h2>
         <p>
           If you have any questions about our competition rules, please contact
           us:

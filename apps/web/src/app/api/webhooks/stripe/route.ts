@@ -431,6 +431,22 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
   // If the order was already fully voided (e.g. refunded then disputed), nothing to do.
   if (order.paymentStatus === 'REFUNDED') return;
 
+  // Freeze any graded card won on this order NOW, not when the dispute closes.
+  // Arbitration takes weeks; without this the card could be packed and posted
+  // while the money is still contested, turning a reversible dispute into an
+  // unrecoverable loss. Nothing else is touched: the tickets stay in the draw,
+  // the spins stay live and the codes stay usable, because we may well win.
+  const frozen = await prisma.jackpotWin.updateMany({
+    where: { orderId: order.id, paymentReversedAt: null, notAwardedAt: null },
+    data: { paymentReversedAt: new Date(), paymentReversedReason: 'DISPUTE_OPENED' },
+  });
+
+  if (frozen.count > 0) {
+    void notifyJackpotFrozen(order.id, order.orderNumber, 'PAYMENT_DISPUTE_OPENED').catch((e) =>
+      console.error('Jackpot freeze alert failed (the freeze still stands):', e)
+    );
+  }
+
   await prisma.auditLog.create({
     data: {
       userId: order.userId,
@@ -448,6 +464,7 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
         amount: dispute.amount,
         currency: dispute.currency,
         reason: dispute.reason,
+        jackpotsFrozen: frozen.count,
       },
     },
   });
@@ -475,6 +492,34 @@ async function handleDisputeClosed(dispute: Stripe.Dispute) {
   if (dispute.status === 'lost') {
     await voidOrderAndReleaseTickets(order, 'PAYMENT_DISPUTE_LOST', disputeMetadata);
     return;
+  }
+
+  // We kept the money — lift the freeze this dispute put on. Guarded on the
+  // reason AND re-read against the live payment status: an order that was
+  // refunded in the meantime (settling the dispute by paying it back) must stay
+  // frozen, and the stronger reason recorded by the reversal must not be
+  // overwritten by a "we won" that no longer describes reality.
+  const live = await prisma.order.findUnique({
+    where: { id: order.id },
+    select: { paymentStatus: true },
+  });
+
+  if (live?.paymentStatus === 'SUCCEEDED') {
+    const released = await prisma.jackpotWin.updateMany({
+      where: { orderId: order.id, paymentReversedReason: 'DISPUTE_OPENED', notAwardedAt: null },
+      data: { paymentReversedAt: null, paymentReversedReason: null },
+    });
+    if (released.count > 0) {
+      await prisma.auditLog.create({
+        data: {
+          userId: order.userId,
+          action: 'JACKPOT_FREEZE_RELEASED',
+          entity: 'order',
+          entityId: order.id,
+          metadata: { ...disputeMetadata, orderNumber: order.orderNumber, released: released.count },
+        },
+      });
+    }
   }
 
   // Won (or otherwise closed without a chargeback): keep the entries in the draw and
