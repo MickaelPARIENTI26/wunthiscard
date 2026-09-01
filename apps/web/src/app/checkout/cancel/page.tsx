@@ -60,15 +60,32 @@ async function getOrderAndRelease(orderId: string, userId: string) {
         // this one — one wheel win, two discounts, repeatable. Fulfilment tries
         // to re-take them, but by then the second order holds them and the
         // re-take matches nothing.
+        // Branch on the session's STATUS, not on whether expire() threw. It
+        // throws for "already complete" AND for "already expired", and those are
+        // opposites: complete means the buyer paid after all, so their rewards
+        // are rightly spent — expired means nobody can ever pay it, so the code
+        // must come back. Treating both as "do not release" re-created the very
+        // bug this page was fixed for, and with the Stripe webhook not yet live
+        // in production nothing else would have released it.
         let sessionClosed = false;
+        let referralTicketUsed = false;
         if (order.stripeSessionId) {
           try {
-            await stripe.checkout.sessions.expire(order.stripeSessionId);
-            sessionClosed = true;
-          } catch (expireError) {
-            // Already complete or expired. "Complete" means the buyer paid after
-            // all — leave their rewards spent and let fulfilment run.
-            console.error('Could not expire the checkout session on cancel:', expireError);
+            const live = await stripe.checkout.sessions.retrieve(order.stripeSessionId);
+            // Same read answers both questions: is it still payable, and did it
+            // use the referral ticket.
+            referralTicketUsed = live.metadata?.referralTicketUsed === '1';
+            if (live.status === 'expired') {
+              sessionClosed = true;
+            } else if (live.status === 'open') {
+              await stripe.checkout.sessions.expire(order.stripeSessionId);
+              sessionClosed = true;
+            }
+            // 'complete' — they paid. Leave everything spent; fulfilment runs.
+          } catch (stripeError) {
+            // Unreadable: fail CLOSED. Holding a code back is recoverable by
+            // support; handing back one that is still payable is not.
+            console.error('Could not settle the checkout session on cancel:', stripeError);
           }
         } else {
           // No session was ever created, so there is nothing payable.
@@ -93,24 +110,11 @@ async function getOrderAndRelease(orderId: string, userId: string) {
         });
 
         // Re-credit the buyer's free referral ticket if one was reserved for this
-        // order at checkout (the free ticket is decremented atomically in
-        // create-session, NOT in the webhook). The source of truth for "this order
-        // used a referral ticket" is the Stripe session metadata. Best-effort: a
-        // Stripe read failure here must not break the cancel page. The atomic
-        // PENDING → CANCELLED flip above guarantees this runs at most once per order,
-        // so the counter can never be over-credited.
-        let referralTicketUsed = false;
-        if (order.stripeSessionId) {
-          try {
-            const stripeSession = await stripe.checkout.sessions.retrieve(
-              order.stripeSessionId
-            );
-            referralTicketUsed = stripeSession.metadata?.referralTicketUsed === '1';
-          } catch (stripeError) {
-            console.error('Failed to read Stripe session on cancel:', stripeError);
-          }
-        }
-
+        // order at checkout (it is decremented atomically in create-session, NOT
+        // in the webhook). Gated on the session being dead for the same reason as
+        // the promo code: a live session could still be paid, and then they would
+        // have both the ticket and what it bought. The atomic PENDING → CANCELLED
+        // flip above guarantees this runs at most once per order.
         if (referralTicketUsed && sessionClosed) {
           await prisma.user.update({
             where: { id: userId },
