@@ -94,3 +94,81 @@ describe('grantSpinsForOrder — one spin per paid ticket, and not one more', ()
     expect(await grantSpinsForOrder('o1', anon.client as any)).toBe(0);
   });
 });
+
+const { grantSpinForFreeEntry } = await import('../../apps/web/src/lib/wheel');
+
+/**
+ * The free postal route earns the same spin as a bought ticket.
+ *
+ * This is the legal load-bearing rule, not a product nicety: a prize allocated
+ * wholly by chance among people who paid, with no equal free route, is a lottery
+ * under the Gambling Act 2005. Giving the postal entry the same spin is what
+ * keeps the wheel inside the protection the competition itself relies on.
+ */
+function freeEntryClient(over: {
+  status?: string;
+  userId?: string | null;
+  enabled?: boolean;
+} = {}) {
+  const created: { data: unknown[] } = { data: [] };
+  const client = {
+    ticket: {
+      findUnique: () =>
+        Promise.resolve({
+          id: 't1',
+          userId: over.userId === undefined ? 'u1' : over.userId,
+          competitionId: 'c1',
+          status: over.status ?? 'FREE_ENTRY',
+          competition: {
+            drawDate: new Date('2026-12-01'),
+            wheelConfig: { id: 'wc1', enabled: over.enabled ?? true },
+          },
+        }),
+    },
+    wheelSpin: {
+      createMany: ({ data }: { data: unknown[] }) => {
+        created.data = data;
+        return Promise.resolve({ count: data.length });
+      },
+    },
+  };
+  return { client, created };
+}
+
+describe('grantSpinForFreeEntry — the free route is not a lesser route', () => {
+  it('grants exactly one spin for a free postal entry', async () => {
+    const { client, created } = freeEntryClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(await grantSpinForFreeEntry('t1', client as any)).toBe(1);
+    expect(created.data).toHaveLength(1);
+  });
+
+  it('ties the spin to the ticket and to NO order', async () => {
+    // orderId null is what makes it unreversible: there was no payment to take
+    // back, so no refund or chargeback can ever reach it.
+    const { client, created } = freeEntryClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await grantSpinForFreeEntry('t1', client as any);
+    const row = created.data[0] as Record<string, unknown>;
+    expect(row.ticketId).toBe('t1');
+    expect(row.orderId).toBeUndefined();
+  });
+
+  it('grants nothing for a ticket that is not a free entry', async () => {
+    // A SOLD ticket is the paid path's business — granting here as well would
+    // hand that buyer two spins for one ticket.
+    const { client } = freeEntryClient({ status: 'SOLD' });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(await grantSpinForFreeEntry('t1', client as any)).toBe(0);
+  });
+
+  it('grants nothing when the wheel is off or the ticket has no owner', async () => {
+    const off = freeEntryClient({ enabled: false });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(await grantSpinForFreeEntry('t1', off.client as any)).toBe(0);
+
+    const orphan = freeEntryClient({ userId: null });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect(await grantSpinForFreeEntry('t1', orphan.client as any)).toBe(0);
+  });
+});

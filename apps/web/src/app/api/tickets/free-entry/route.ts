@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { rateLimits, nextFreeEntryTicketNumber } from '@/lib/redis';
 import { sendFreeEntryConfirmationEmail } from '@/lib/email';
+import { grantSpinForFreeEntry } from '@/lib/wheel';
 import { getClientIp } from '@/lib/get-client-ip';
 
 const freeEntrySchema = z.object({
@@ -177,12 +178,15 @@ export async function POST(request: NextRequest) {
                 data: { status: 'FREE_ENTRY', userId, isFreeEntry: true },
               });
               if (upd.count === 0) return { status: 'conflict' as const };
+              // The free route earns its spin here, inside the same transaction
+              // that claims the ticket — so an entry either has both or neither.
+              await grantSpinForFreeEntry(available.id, tx);
               return { status: 'ok' as const, ticketNumber: available.ticketNumber };
             }
 
             // Unlimited path: create on demand. A P2002 (number collision) rolls the
             // tx back and propagates to the retry loop below.
-            await tx.ticket.create({
+            const created = await tx.ticket.create({
               data: {
                 competitionId,
                 ticketNumber: candidateNumber,
@@ -190,7 +194,9 @@ export async function POST(request: NextRequest) {
                 status: 'FREE_ENTRY',
                 isFreeEntry: true,
               },
+              select: { id: true },
             });
+            await grantSpinForFreeEntry(created.id, tx);
             return { status: 'ok' as const, ticketNumber: candidateNumber };
           },
           { isolationLevel: 'Serializable' }

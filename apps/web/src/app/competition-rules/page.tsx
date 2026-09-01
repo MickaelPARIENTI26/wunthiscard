@@ -317,9 +317,10 @@ function PlaceholderCompetitionRulesContent() {
         </p>
         <ul>
           <li>
-            <strong>One spin for every paid ticket.</strong> Bonus tickets and free postal
-            entries do not earn spins, because no payment was made for them. The free entry
-            route remains a full and equal entry to the competition itself
+            <strong>One spin for every entry.</strong> It makes no difference whether you
+            bought your ticket or claimed it through the free postal route — both earn the
+            same single spin, on the same wheel, with the same chances. Bonus tickets are an
+            extra on a purchase and do not earn additional spins
           </li>
           <li>
             <strong>Spins last until that competition closes.</strong> They are yours to

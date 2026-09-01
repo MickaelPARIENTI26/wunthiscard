@@ -153,7 +153,7 @@ export function WheelSettings({ competitionId, totalTickets, config, slots }: Wh
               <span>Slots configured: <b className="tabular-nums">{pool}</b></span>
               <span>
                 Expected spins: <b className="tabular-nums">~{spins}</b>{' '}
-                <span className="text-muted-foreground">(paid tickets only)</span>
+                <span className="text-muted-foreground">(excludes bonus tickets)</span>
               </span>
             </div>
             {warnings.map((w) => (

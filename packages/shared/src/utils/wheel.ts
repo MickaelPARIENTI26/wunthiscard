@@ -50,10 +50,12 @@ export function summariseWheelSlots(slots: WheelSlotCounts[]): WheelSlotSummary[
 /**
  * How many spins a competition will actually produce.
  *
- * One spin per PAID ticket. Bonus tickets (tier rewards) and the referral free
- * ticket grant none, yet still consume numbers from the competition's pool — so
- * this is always lower than totalTickets, and the admin needs to see the gap or
- * the displayed odds will not match what players experience.
+ * One spin per ENTRY — bought, or claimed through the free postal route, which
+ * earns the same spin so the wheel inherits the competition's free-entry
+ * protection. Bonus tickets (tier rewards) and the referral free ticket earn
+ * none, yet still consume numbers from the competition's pool — so this stays
+ * below totalTickets, and the admin needs to see the gap or the displayed odds
+ * will not match what players experience.
  */
 export function expectedSpins(totalTickets: number | null, bonusRatio = 0.09): number {
   if (!totalTickets || totalTickets <= 0) return 0;

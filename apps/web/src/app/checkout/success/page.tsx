@@ -281,7 +281,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           We&apos;ve emailed your confirmation. When the countdown hits zero, an independent third party draws the winner and we publish the result right here.
         </p>
 
-        {/* The wheel — one spin per paid ticket, playable right here. */}
+        {/* The wheel — one spin per entry, playable right here. */}
         {spins.length > 0 && wheelSegments.length > 0 && (
           <div className="drop-card" style={{ marginBottom: '32px', borderColor: 'var(--accent)' }}>
             <div
@@ -302,7 +302,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
               You unlocked {spins.length} spin{spins.length !== 1 ? 's' : ''}.
             </h2>
             <p style={{ color: 'var(--ink-dim)', fontSize: '14.5px', marginBottom: '22px' }}>
-              One per paid ticket. Nothing to lose — your entry is already confirmed.
+              One per ticket. Nothing to lose — your entry is already confirmed.
             </p>
             <PrizeWheel
               spinIds={spins.map((s) => s.id)}

@@ -182,8 +182,8 @@ export default async function MyRewardsPage() {
           My <span className="chip">rewards</span>.
         </h1>
         <p style={{ color: 'var(--ink-dim)', fontSize: '15px' }}>
-          Every paid ticket earns one spin. Spins last until that competition is drawn — on its
-          draw date, or as soon as it sells out.
+          Every entry earns one spin — bought or claimed through the free postal route. Spins last
+          until that competition is drawn: on its draw date, or as soon as it sells out.
         </p>
       </div>
 
@@ -314,8 +314,8 @@ export default async function MyRewardsPage() {
             No spins waiting
           </h3>
           <p style={{ color: 'var(--ink-dim)', fontSize: '14px', maxWidth: '380px', margin: '0 auto 22px' }}>
-            You get one spin for every paid ticket. Free entries and bonus tickets don&apos;t
-            earn spins.
+            You get one spin for every entry — whether you bought it or claimed it through
+            the free postal route. Bonus tickets don&apos;t earn extra spins.
           </p>
           <Link href="/competitions" className="btn btn-hot btn-xl">
             Enter a competition →

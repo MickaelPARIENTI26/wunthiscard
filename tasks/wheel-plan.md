@@ -338,6 +338,27 @@ spin mort, `VOIDED` absent du checkout, libellé « annulé » sur un code encor
 valide, « ton dernier spin » faux pour un acheteur récurrent, et une erreur
 réseau qui affirmait à tort que le spin n'avait pas été consommé).
 
+### DÉCISION 3 INVERSÉE (2026-08-31) — l'entrée gratuite donne un spin
+
+La décision initiale (« entrée gratuite = pas de spin, concours payant seulement »)
+était le **seul** point qui portait le risque juridique. Un lot attribué
+entièrement par hasard, réservé à ceux qui ont payé, sans voie gratuite
+équivalente, c'est la définition d'une loterie au sens du Gambling Act 2005 —
+et ni la question de compétence ni la voie postale du concours principal ne
+protégeaient la roue, puisqu'elles ne lui donnaient pas accès.
+
+Désormais : **une entrée = un spin**, achetée ou postale, sur la même roue avec
+les mêmes chances. La roue hérite ainsi de la protection du concours lui-même.
+Les tickets bonus et le ticket de parrainage restent à zéro : ce sont des extras
+sur un achat, pas des voies d'entrée — les exclure ne désavantage pas la voie
+gratuite.
+
+Un spin d'entrée gratuite porte `orderId: null`, donc **aucun remboursement ni
+litige ne peut l'atteindre** : il n'y a pas de paiement à reprendre.
+
+Reste à faire valider par un avocat, mais la question posée est maintenant
+beaucoup plus simple.
+
 ### Deuxième audit (46 candidats, 42 retenus) — corrigé
 
 Le plus important : **une de mes propres corrections avait ouvert un trou d'argent.**

@@ -41,8 +41,14 @@ const MAX_DRAW_ATTEMPTS = 8;
 /**
  * Grant one spin per PAID ticket on a fulfilled order.
  *
- * Bonus tickets (tier rewards), the referral free ticket and free postal
- * entries grant nothing — decision 1 and 3 in tasks/wheel-plan.md.
+ * Bonus tickets (tier rewards) and the referral free ticket grant nothing —
+ * both are volume incentives on a purchase, not entries in their own right.
+ *
+ * The FREE POSTAL ENTRY route grants a spin too, via grantSpinForFreeEntry
+ * below. That is not a generosity: under the Gambling Act 2005 a prize
+ * allocated wholly by chance to people who paid, with no equal free route,
+ * is a lottery. Giving the postal route the same spin is what keeps the
+ * wheel inside the same protection the competition itself relies on.
  *
  * Idempotent by construction: WheelSpin.ticketId is unique, so a webhook and
  * the success page both running fulfilment cannot mint two spins for a ticket.
@@ -109,6 +115,55 @@ export async function grantSpinsForOrder(
       // A spin dies with the competition that issued it — decision 2.
       expiresAt: order.competition.drawDate,
     })),
+    skipDuplicates: true,
+  });
+
+  return count;
+}
+
+/**
+ * Grant the one spin that a free postal entry earns.
+ *
+ * Separate from grantSpinsForOrder because a free entry has no Order at all —
+ * the ticket is claimed directly. The resulting spin therefore carries
+ * orderId: null, which also means no refund or chargeback can ever reverse it:
+ * there was no payment to take back.
+ *
+ * Idempotent by the same mechanism as the paid path: WheelSpin.ticketId is
+ * unique, so the Serializable retry loop around the claim cannot mint two.
+ */
+export async function grantSpinForFreeEntry(
+  ticketId: string,
+  client: PrismaClientOrTx = prisma
+): Promise<number> {
+  const ticket = await client.ticket.findUnique({
+    where: { id: ticketId },
+    select: {
+      id: true,
+      userId: true,
+      competitionId: true,
+      status: true,
+      competition: {
+        select: { drawDate: true, wheelConfig: { select: { id: true, enabled: true } } },
+      },
+    },
+  });
+
+  if (!ticket || ticket.status !== 'FREE_ENTRY' || !ticket.userId) return 0;
+
+  const config = ticket.competition.wheelConfig;
+  if (!config?.enabled) return 0;
+
+  const { count } = await client.wheelSpin.createMany({
+    data: [
+      {
+        wheelConfigId: config.id,
+        competitionId: ticket.competitionId,
+        userId: ticket.userId,
+        ticketId: ticket.id,
+        expiresAt: ticket.competition.drawDate,
+      },
+    ],
     skipDuplicates: true,
   });
 

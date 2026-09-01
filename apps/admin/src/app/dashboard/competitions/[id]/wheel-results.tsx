@@ -51,7 +51,7 @@ export function WheelResultsCard({ competitionId, filter, results }: WheelResult
             </CardTitle>
             <CardDescription>
               {results.enabled
-                ? 'One spin per paid ticket.'
+                ? 'One spin per entry — bought or claimed through the free postal route.'
                 : 'The wheel is switched off — no new spins are being granted.'}
             </CardDescription>
           </div>
