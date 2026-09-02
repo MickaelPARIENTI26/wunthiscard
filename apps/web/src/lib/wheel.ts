@@ -170,6 +170,42 @@ export async function grantSpinForFreeEntry(
   return count;
 }
 
+/**
+ * Give a spin to any free entry that ended up without one.
+ *
+ * The mint is deliberately non-blocking at claim time — a wheel problem must
+ * never void a free entry, because that is the route the law requires to work.
+ * The cost of that choice is that a spin can be missed, so it is repaid here:
+ * idempotent, cheap, and run daily. Without it a missed spin would be permanent
+ * and invisible, and the free route would quietly become the lesser route —
+ * which is the exact inequality the whole change exists to remove.
+ */
+export async function repairMissingFreeEntrySpins(limit = 500): Promise<number> {
+  const orphans = await prisma.ticket.findMany({
+    where: {
+      status: 'FREE_ENTRY',
+      userId: { not: null },
+      wheelSpin: { is: null },
+      competition: {
+        status: { in: ['ACTIVE', 'SOLD_OUT'] },
+        wheelConfig: { enabled: true },
+      },
+    },
+    select: { id: true },
+    take: limit,
+  });
+
+  let granted = 0;
+  for (const ticket of orphans) {
+    try {
+      granted += await grantSpinForFreeEntry(ticket.id);
+    } catch (error) {
+      console.error(`Could not repair the free-entry spin for ${ticket.id}:`, error);
+    }
+  }
+  return granted;
+}
+
 export type SpinFailure =
   | 'NOT_FOUND'
   | 'ALREADY_SPUN'

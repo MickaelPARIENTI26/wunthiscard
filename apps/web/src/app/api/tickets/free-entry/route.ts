@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
     const MAX_CLAIM_ATTEMPTS = 5;
 
     let ticketNumber = 0;
+    let ticketId = '';
     let claimResult: 'ok' | 'cap' | 'full' | 'conflict' = 'conflict';
 
     for (let attempt = 0; attempt < MAX_CLAIM_ATTEMPTS; attempt++) {
@@ -178,10 +179,11 @@ export async function POST(request: NextRequest) {
                 data: { status: 'FREE_ENTRY', userId, isFreeEntry: true },
               });
               if (upd.count === 0) return { status: 'conflict' as const };
-              // The free route earns its spin here, inside the same transaction
-              // that claims the ticket — so an entry either has both or neither.
-              await grantSpinForFreeEntry(available.id, tx);
-              return { status: 'ok' as const, ticketNumber: available.ticketNumber };
+              return {
+                status: 'ok' as const,
+                ticketNumber: available.ticketNumber,
+                ticketId: available.id,
+              };
             }
 
             // Unlimited path: create on demand. A P2002 (number collision) rolls the
@@ -196,14 +198,18 @@ export async function POST(request: NextRequest) {
               },
               select: { id: true },
             });
-            await grantSpinForFreeEntry(created.id, tx);
-            return { status: 'ok' as const, ticketNumber: candidateNumber };
+            return {
+              status: 'ok' as const,
+              ticketNumber: candidateNumber,
+              ticketId: created.id,
+            };
           },
           { isolationLevel: 'Serializable' }
         );
 
         if (res.status === 'ok') {
           ticketNumber = res.ticketNumber;
+          ticketId = res.ticketId;
           claimResult = 'ok';
           break;
         }
@@ -257,6 +263,17 @@ export async function POST(request: NextRequest) {
         ipAddress: ip,
       },
     });
+
+    // Grant the wheel spin the free route earns — AFTER the claim, and
+    // non-blocking, for the same reason the email below is: a wheel problem must
+    // never void a valid free entry. This is the route the Gambling Act requires
+    // to work, so it cannot be made to depend on the wheel. A miss is repaired by
+    // the daily sweep (repairMissingFreeEntrySpins) and costs nobody their entry.
+    try {
+      await grantSpinForFreeEntry(ticketId);
+    } catch (wheelError) {
+      console.error('Failed to grant the free-entry wheel spin:', wheelError);
+    }
 
     // Send free-entry confirmation email — same treatment as the paid route,
     // required for UK compliance (free route must be handled identically).

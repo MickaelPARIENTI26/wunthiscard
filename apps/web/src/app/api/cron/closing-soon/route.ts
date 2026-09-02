@@ -5,6 +5,7 @@ import { sendClosingSoonBlast, type CompetitionBlastData } from '@/lib/email';
 import { closingSoonWindow, CLOSING_SOON_WINDOW_HOURS } from '@/lib/closing-soon';
 import { sendSpinReminders } from '@/lib/wheel-reminder';
 import { checkWheelDrain } from '@/lib/wheel-drain';
+import { repairMissingFreeEntrySpins } from '@/lib/wheel';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -50,6 +51,10 @@ export async function GET(request: Request) {
   // what to do about it is the operator's call.
   const wheelDrain = await checkWheelDrain(now);
 
+  // The free-entry spin is minted best-effort so a wheel problem can never void
+  // a free entry. This is the other half of that bargain.
+  const freeEntrySpinsRepaired = await repairMissingFreeEntrySpins();
+
   const competitions = await prisma.competition.findMany({
     where: {
       status: { in: ['ACTIVE', 'SOLD_OUT'] },
@@ -69,7 +74,7 @@ export async function GET(request: Request) {
   });
 
   if (competitions.length === 0) {
-    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0, spinReminders, wheelDrain });
+    return NextResponse.json({ ok: true, windowHours: CLOSING_SOON_WINDOW_HOURS, competitions: 0, recipients: 0, sent: 0, spinReminders, wheelDrain, freeEntrySpinsRepaired });
   }
 
   const recipients = await getMarketingRecipients();
@@ -109,5 +114,6 @@ export async function GET(request: Request) {
     results,
     spinReminders,
     wheelDrain,
+    freeEntrySpinsRepaired,
   });
 }
