@@ -259,6 +259,8 @@ function competitionRow(
 }
 
 interface PurchaseConfirmationData {
+  /** Spins this entry earned. Told identically on the free route — see wheelSpinsBlock. */
+  wheelSpins?: number;
   orderNumber: string;
   competitionTitle: string;
   competitionSlug?: string;
@@ -332,6 +334,8 @@ export async function sendPurchaseConfirmationEmail(
     <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       We'll notify you when the draw takes place. Good luck! 🍀
     </p>
+
+    ${wheelSpinsBlock(data.wheelSpins)}
   `);
 
   return sendEmail({
@@ -393,6 +397,8 @@ export async function sendDrawCompleteNotificationEmail(
 
 // Free Entry Confirmation
 interface FreeEntryConfirmationData {
+  /** Spins this entry earned. Told identically on the paid route — see wheelSpinsBlock. */
+  wheelSpins?: number;
   competitionTitle: string;
   competitionSlug?: string;
   mainImageUrl?: string;
@@ -452,6 +458,8 @@ export async function sendFreeEntryConfirmationEmail(
     <p style="color: #9A958B; font-size: 14px; text-align: center; margin: 24px 0 0;">
       We'll notify you when the draw takes place. Good luck! 🍀
     </p>
+
+    ${wheelSpinsBlock(data.wheelSpins)}
   `);
 
   return sendEmail({
@@ -871,6 +879,28 @@ export async function sendSpinReminderEmail(
     subject: `⏳ ${data.spins} unused spin${data.spins !== 1 ? 's' : ''} — expiring soon`,
     html,
   });
+}
+
+/**
+ * "You have spins waiting."
+ *
+ * Rendered into BOTH confirmations, identically. The buyer meets the wheel on
+ * the confirmation page the moment they pay; a free postal entrant has no such
+ * moment, so without this they would never learn they had a spin at all. The
+ * routes would then be formally equal and practically not — which is the exact
+ * inequality the free-entry spin exists to remove.
+ */
+function wheelSpinsBlock(spins: number | undefined): string {
+  if (!spins || spins <= 0) return '';
+  return `
+    <div style="background-color: #050505; border-radius: 0; padding: 20px; margin: 24px 0; text-align: center;">
+      <p style="color: #9A958B; font-size: 12px; margin: 0 0 4px; text-transform: uppercase;">Wheel spins earned</p>
+      <p style="color: #C9A227; font-size: 28px; font-weight: 800; margin: 0 0 8px;">${spins}</p>
+      <p style="color: #CFCAC0; font-size: 14px; line-height: 21px; margin: 0;">
+        One for every entry. Play them any time before this competition is drawn —
+        <a href="${BASE_URL}/my-rewards" style="color: #C9A227;">My Rewards</a>.
+      </p>
+    </div>`;
 }
 
 export interface JackpotWinnerEmailData {

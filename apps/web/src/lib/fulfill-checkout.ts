@@ -501,6 +501,7 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       bonusTicketNumbers,
       totalAmount,
       drawDate: order.competition.drawDate,
+      wheelSpins: transactionResult.spinsGranted ?? 0,
     });
   }
 

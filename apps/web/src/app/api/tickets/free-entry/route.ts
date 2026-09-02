@@ -269,8 +269,9 @@ export async function POST(request: NextRequest) {
     // never void a valid free entry. This is the route the Gambling Act requires
     // to work, so it cannot be made to depend on the wheel. A miss is repaired by
     // the daily sweep (repairMissingFreeEntrySpins) and costs nobody their entry.
+    let wheelSpins = 0;
     try {
-      await grantSpinForFreeEntry(ticketId);
+      wheelSpins = await grantSpinForFreeEntry(ticketId);
     } catch (wheelError) {
       console.error('Failed to grant the free-entry wheel spin:', wheelError);
     }
@@ -286,6 +287,7 @@ export async function POST(request: NextRequest) {
         ticketNumber,
         drawDate: competition.drawDate,
         entryMethod: 'email',
+        wheelSpins,
       });
     } catch (emailError) {
       console.error('Failed to send free-entry confirmation email:', emailError);
