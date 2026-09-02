@@ -181,7 +181,16 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       const promoCode = session.metadata?.promoCode;
       if (promoCode && order.userId) {
         const retaken = await tx.promoCode.updateMany({
-          where: { code: promoCode, userId: order.userId, redeemedAt: null, voidedAt: null },
+          where: {
+            code: promoCode,
+            userId: order.userId,
+            // Also re-take a code still stamped against THIS order: the cancel
+            // page may have declined to release it (a session it could not read,
+            // or one already complete), in which case nothing was handed back and
+            // there is nothing to reclaim — but the stamp must still point here.
+            OR: [{ redeemedAt: null }, { redeemedOrderId: orderId }],
+            voidedAt: null,
+          },
           data: { redeemedAt: new Date(), redeemedOrderId: orderId },
         });
         if (retaken.count === 0) {
@@ -204,7 +213,20 @@ export async function fulfillCheckoutSession(session: Stripe.Checkout.Session): 
       }
     }
 
-    if (wasCancelled && session.metadata?.referralTicketUsed === '1' && order.userId) {
+    // Only reclaim the referral ticket if it was actually GIVEN BACK. Both
+    // cancellation paths now decline to restore anything when the Stripe session
+    // is still payable or unreadable, so assuming a restore happened would take a
+    // ticket the customer never got back. The audit row the restore writes is the
+    // evidence, so look for it rather than guessing.
+    const restored =
+      wasCancelled && order.userId
+        ? await tx.auditLog.findFirst({
+            where: { action: 'REFERRAL_FREE_TICKET_RESTORED', entityId: orderId },
+            select: { id: true },
+          })
+        : null;
+
+    if (restored && session.metadata?.referralTicketUsed === '1' && order.userId) {
       const reclaimed = await tx.user.updateMany({
         where: { id: order.userId, referralFreeTicketsAvailable: { gt: 0 } },
         data: { referralFreeTicketsAvailable: { decrement: 1 } },

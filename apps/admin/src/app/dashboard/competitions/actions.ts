@@ -3,7 +3,10 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
-import { reverseWheelRewardsForOrder } from '@winucard/database';
+import {
+  reverseWheelRewardsForOrder,
+  KEPT_CODE_EXTENSION_DAYS,
+} from '@winucard/database';
 import { auth } from '@/lib/auth';
 import { generateSlug } from '@winucard/shared';
 import type { CompetitionStatus } from '@winucard/database';
@@ -890,6 +893,51 @@ export async function cancelCompetition(id: string, reason: string): Promise<Can
 
   // All refunds succeeded — update competition status and release all tickets.
   await prisma.$transaction(async (tx) => {
+    // Free-entry spins carry NO orderId, so the per-order reversal loop above
+    // never touched them: the postal entrant kept a live spin on a dead
+    // competition, got no cancellation stamp, and — the part that actually costs
+    // them — no 30-day extension on a code they had won, which §8 promises to
+    // everyone. Reverse by COMPETITION here so every holder is covered.
+    const now = new Date();
+    const orphanSpins = await tx.wheelSpin.findMany({
+      where: { competitionId: id, orderId: null, reversedAt: null },
+      select: { id: true },
+    });
+
+    if (orphanSpins.length > 0) {
+      await tx.wheelSpin.updateMany({
+        where: { competitionId: id, orderId: null, reversedAt: null },
+        data: { reversedAt: now, reversalReason: 'COMPETITION_CANCELLED' },
+      });
+
+      // Same deal as a buyer gets: the spins die with the competition, the code
+      // survives and is extended, because cancelling was our decision.
+      const extendedTo = new Date(now.getTime() + KEPT_CODE_EXTENSION_DAYS * 24 * 60 * 60 * 1000);
+      await tx.promoCode.updateMany({
+        where: {
+          spinId: { in: orphanSpins.map((s) => s.id) },
+          redeemedAt: null,
+          voidedAt: null,
+          expiresAt: { lt: extendedTo },
+        },
+        data: { expiresAt: extendedTo },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          userId: session.user.id,
+          action: 'WHEEL_REWARDS_REVERSED',
+          entity: 'competition',
+          entityId: id,
+          metadata: {
+            reason: 'COMPETITION_CANCELLED',
+            route: 'free_entry',
+            spinsReversed: orphanSpins.length,
+          },
+        },
+      });
+    }
+
     // Set competition to CANCELLED
     await tx.competition.update({
       where: { id },

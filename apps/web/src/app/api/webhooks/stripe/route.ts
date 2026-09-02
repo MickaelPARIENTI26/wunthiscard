@@ -436,6 +436,25 @@ async function handleDisputeCreated(dispute: Stripe.Dispute) {
   // while the money is still contested, turning a reversible dispute into an
   // unrecoverable loss. Nothing else is touched: the tickets stay in the draw,
   // the spins stay live and the codes stay usable, because we may well win.
+  // Stripe does not promise delivery order, and retries a failed delivery for up
+  // to three days — long enough for an inquiry to open, close, and have its
+  // close delivered first. Stamping blindly would then freeze the order with no
+  // exit, because the close that would have lifted it has already been handled.
+  // Re-read the live dispute, the same way handleDisputeClosed re-reads the order.
+  try {
+    const liveDispute = await stripe.disputes.retrieve(dispute.id);
+    if (['won', 'lost', 'warning_closed'].includes(liveDispute.status)) {
+      console.warn(
+        `dispute.created for ${dispute.id} arrived after it closed (${liveDispute.status}) — not freezing`
+      );
+      return;
+    }
+  } catch (e) {
+    // Unreadable: fail CLOSED and freeze. A card held back is recoverable; one
+    // posted against contested money is not.
+    console.error('Could not re-read the dispute; freezing anyway:', e);
+  }
+
   // Persist it. Sweeping the existing wins once is not enough: spins are banked
   // until the draw, so the usual ordering is buy → chargeback → spin weeks later,
   // and at chargeback time there is no JackpotWin in existence to freeze.

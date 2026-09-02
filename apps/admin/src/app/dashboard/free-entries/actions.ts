@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
+import { grantSpinForFreeEntryTicket } from '@winucard/database';
 import { auth } from '@/lib/auth';
 
 export async function assignFreeEntry(formData: FormData) {
@@ -175,6 +176,41 @@ export async function assignFreeEntry(formData: FormData) {
       },
     });
   });
+
+  // THE POSTAL ENTRY EARNS ITS WHEEL SPIN.
+  //
+  // This is the statutory free route, and it runs on PAID competitions — the only
+  // ones the wheel and its single graded card exist on. Without this the wheel is
+  // a paid-only allocation of chances at a real prize, which is the whole reason
+  // the free-entry spin exists. The self-serve route in apps/web only ever serves
+  // competitions that are free in their entirety, so wiring that one alone left
+  // this gap open on everything that matters.
+  //
+  // AFTER the transaction and best-effort, exactly like the self-serve route: a
+  // wheel problem must never void a legally required entry. Missed spins are
+  // repaired by repairMissingFreeEntrySpins on the daily cron.
+  let wheelSpins = 0;
+  for (const ticketId of ticketIds) {
+    try {
+      wheelSpins += await grantSpinForFreeEntryTicket(prisma, ticketId);
+    } catch (wheelError) {
+      console.error(`Failed to grant the postal entry's wheel spin (${ticketId}):`, wheelError);
+    }
+  }
+
+  if (wheelSpins > 0) {
+    await prisma.auditLog
+      .create({
+        data: {
+          userId: session.user.id,
+          action: 'FREE_ENTRY_SPINS_GRANTED',
+          entity: 'competition',
+          entityId: competitionId,
+          metadata: { recipientUserId: user.id, spins: wheelSpins, route: 'postal' },
+        },
+      })
+      .catch(() => {});
+  }
 
   revalidatePath('/dashboard/free-entries');
 

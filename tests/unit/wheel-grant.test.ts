@@ -95,7 +95,13 @@ describe('grantSpinsForOrder — one spin per paid ticket, and not one more', ()
   });
 });
 
-const { grantSpinForFreeEntry } = await import('../../apps/web/src/lib/wheel');
+const { grantSpinForFreeEntryTicket } = await import(
+  '../../packages/database/src/wheel-free-entry'
+);
+/** Both free routes call the same implementation; test it directly. */
+const grantSpinForFreeEntry = (id: string, client: unknown) =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  grantSpinForFreeEntryTicket(client as any, id);
 
 /**
  * The free postal route earns the same spin as a bought ticket.

@@ -5,7 +5,7 @@ import {
   sendJackpotFrozenAlertEmail,
   sendJackpotWinnerEmail,
 } from '@/lib/email';
-import type { WheelSlotType } from '@winucard/database';
+import { grantSpinForFreeEntryTicket, type WheelSlotType } from '@winucard/database';
 
 /**
  * Wheel granting and drawing.
@@ -122,52 +122,15 @@ export async function grantSpinsForOrder(
 }
 
 /**
- * Grant the one spin that a free postal entry earns.
- *
- * Separate from grantSpinsForOrder because a free entry has no Order at all —
- * the ticket is claimed directly. The resulting spin therefore carries
- * orderId: null, which also means no refund or chargeback can ever reverse it:
- * there was no payment to take back.
- *
- * Idempotent by the same mechanism as the paid path: WheelSpin.ticketId is
- * unique, so the Serializable retry loop around the claim cannot mint two.
+ * The self-serve free route's spin. Delegates to the shared implementation in
+ * @winucard/database, which the admin postal desk also calls — the two free
+ * routes live in different apps and must not drift.
  */
 export async function grantSpinForFreeEntry(
   ticketId: string,
   client: PrismaClientOrTx = prisma
 ): Promise<number> {
-  const ticket = await client.ticket.findUnique({
-    where: { id: ticketId },
-    select: {
-      id: true,
-      userId: true,
-      competitionId: true,
-      status: true,
-      competition: {
-        select: { drawDate: true, wheelConfig: { select: { id: true, enabled: true } } },
-      },
-    },
-  });
-
-  if (!ticket || ticket.status !== 'FREE_ENTRY' || !ticket.userId) return 0;
-
-  const config = ticket.competition.wheelConfig;
-  if (!config?.enabled) return 0;
-
-  const { count } = await client.wheelSpin.createMany({
-    data: [
-      {
-        wheelConfigId: config.id,
-        competitionId: ticket.competitionId,
-        userId: ticket.userId,
-        ticketId: ticket.id,
-        expiresAt: ticket.competition.drawDate,
-      },
-    ],
-    skipDuplicates: true,
-  });
-
-  return count;
+  return grantSpinForFreeEntryTicket(client, ticketId);
 }
 
 /**
@@ -187,7 +150,11 @@ export async function repairMissingFreeEntrySpins(limit = 500): Promise<number> 
       userId: { not: null },
       wheelSpin: { is: null },
       competition: {
-        status: { in: ['ACTIVE', 'SOLD_OUT'] },
+        // NOT filtered to ACTIVE/SOLD_OUT. recordWinner draws a sold-out
+        // competition early and flips it to COMPLETED, and postal entries arrive
+        // batched near the closing date — exactly the window a status filter
+        // would drop. A spin on a drawn competition is dead anyway, but the row
+        // must exist so the entrant's history is not silently short.
         wheelConfig: { enabled: true },
       },
     },
